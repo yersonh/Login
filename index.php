@@ -63,7 +63,8 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             if ($usuario['id_rol'] == 1) {
                 header("Location: views/admin.php");
             } else {
-                header("Location: views/panelInicio.php");
+                header("Location: https://app.brevo.com/");
+                exit;
             }
             exit();
         } else {
