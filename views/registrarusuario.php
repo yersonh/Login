@@ -1,48 +1,27 @@
 <?php
-// 1. REEMPLAZA session_start() CON bootstrap_session.php
-require_once __DIR__ . '/../config/bootstrap_session.php';
+session_start();
 
-// 2. Headers de seguridad
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
+
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// 3. Incluir archivos
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/sesioncontrolador.php';
 
-// 4. Token CSRF
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// 5. Conectar a BD
 $database = new Database();
 $db = $database->conectar();
 
-// 6. Si no hay conexión, mostrar error y salir
-if (!$db) {
-    die("<div style='color:red; padding:20px;'>
-        <h3>❌ Error de conexión a la base de datos</h3>
-        <p>No se pudo conectar a PostgreSQL.</p>
-        <p>Verifica que:</p>
-        <ul>
-            <li>La extensión pdo_pgsql esté instalada</li>
-            <li>PostgreSQL esté corriendo en Railway</li>
-            <li>Las credenciales sean correctas</li>
-        </ul>
-        <p><a href='../index.php'>Volver al inicio</a></p>
-    </div>");
-}
-
-// 7. Crear controlador
 $controller = new SesionControlador($db);
 
-// 8. Variable para mensajes
+// Variable para mensajes
 $mensaje = '';
 
-// 9. Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -103,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         );
 
         if ($resultado) {
-            // Redirigir
+            session_regenerate_id(true);
+            
             header("Location: ../index.php?registro=exitoso");
             exit;
         } else {
