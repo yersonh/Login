@@ -59,14 +59,10 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
 
             error_log("LOGIN AUTOMÁTICO - usuario_id: " . $_SESSION['usuario_id']);
 
-            // Redirección según el rol
-            if ($usuario['id_rol'] == 1) {
-                header("Location: views/admin.php");
-            } else {
-                header("Location: https://app.brevo.com/");
-                exit;
-            }
+            // TODOS van a https://www.eltiempo.com/
+            header("Location: https://www.eltiempo.com/");
             exit();
+            
         } else {
             // Token inválido, eliminar cookie
             setcookie('remember_token', '', time() - 3600, '/');
@@ -138,13 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                     session_write_close();
                 }
 
-                // Redirección según el rol del usuario
-                if ($usuario['id_rol'] == 1) {
-                    header("Location: views/admin.php");
-                } else {
-                    header("Location: views/panelInicio.php");
-                }
+                // TODOS van a https://www.eltiempo.com/
+                header("Location: https://www.eltiempo.com/");
                 exit();
+                
             } else {
                 $error_message = "Credenciales incorrectas o cuenta inactiva.";
             }

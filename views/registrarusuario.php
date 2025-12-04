@@ -317,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 <label for="telefono">Teléfono:</label>
                 <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono"
                     pattern="[0-9]{7,15}" maxlength="15" required>
-                <small style="color: #ccc;">Solo números, 7-15 dígitos</small>
+                <small style="color: #ccc;">Solo números, 10 dígitos</small>
             </div>
 
             <div class="form-group">
