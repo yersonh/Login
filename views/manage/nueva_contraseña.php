@@ -20,16 +20,16 @@ if (!isset($_GET['token']) || empty($_GET['token'])) {
 } else {
     $token = trim($_GET['token']);
     
-    // Verificar formato del token (UUID)
-    if (!preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $token)) {
+    // VERIFICACIÓN CORREGIDA - acepta tokens hex de 64 caracteres
+    if (!preg_match('/^[a-f0-9]{64}$/i', $token)) {
         $mensaje = "Token con formato inválido.";
         $tipoMensaje = "error";
     } else {
         // Verificar token válido en la base de datos
         try {
             $stmt = $db->prepare("
-                SELECT rt.*, u.email, u.estado 
-                FROM public.recovery_tokens rt
+                SELECT rt.*, u.correo, u.estado 
+                FROM recovery_tokens rt
                 JOIN usuario u ON rt.id_usuario = u.id_usuario
                 WHERE rt.token = :token 
                   AND rt.expiracion > NOW() 
@@ -43,7 +43,7 @@ if (!isset($_GET['token']) || empty($_GET['token'])) {
             if (!$tokenData) {
                 $mensaje = "El enlace de recuperación ha expirado o ya fue utilizado.";
                 $tipoMensaje = "error";
-            } elseif ($tokenData['estado'] !== 'Activo') {
+            } elseif (isset($tokenData['estado']) && $tokenData['estado'] !== 'Activo') {
                 $mensaje = "La cuenta asociada a este enlace no está activa.";
                 $tipoMensaje = "error";
             }
@@ -77,9 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
     } elseif (!preg_match('/[0-9]/', $password)) {
         $mensaje = "La contraseña debe contener al menos un número.";
         $tipoMensaje = "error";
-    } elseif (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
-        $mensaje = "La contraseña debe contener al menos un carácter especial.";
-        $tipoMensaje = "error";
     } elseif ($password !== $confirm_password) {
         $mensaje = "Las contraseñas no coinciden.";
         $tipoMensaje = "error";
@@ -103,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
 
             // Marcar token como usado
             $stmtUsed = $db->prepare("
-                UPDATE public.recovery_tokens 
+                UPDATE recovery_tokens 
                 SET usado = TRUE 
                 WHERE id = :id
             ");
@@ -114,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
             $db->commit();
 
             // Registrar el cambio
-            error_log("Contraseña restablecida para usuario: " . $tokenData['email']);
+            error_log("Contraseña restablecida para usuario: " . $tokenData['correo']);
 
             // Mostrar mensaje de éxito
             $mensaje = "✅ Contraseña cambiada correctamente. Serás redirigido al inicio de sesión en 3 segundos...";
@@ -387,7 +384,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
                     <li id="req-uppercase">• Al menos una mayúscula</li>
                     <li id="req-lowercase">• Al menos una minúscula</li>
                     <li id="req-number">• Al menos un número</li>
-                    <li id="req-special">• Al menos un carácter especial</li>
+                    <li id="req-match">• Ambas contraseñas deben coincidir</li>
                 </ul>
             </div>
 
@@ -429,8 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
                     length: password.length >= 8,
                     uppercase: /[A-Z]/.test(password),
                     lowercase: /[a-z]/.test(password),
-                    number: /[0-9]/.test(password),
-                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                    number: /[0-9]/.test(password)
                 };
 
                 // Actualizar indicadores visuales
@@ -438,17 +434,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
                 document.getElementById('req-uppercase').className = requirements.uppercase ? 'valid' : 'invalid';
                 document.getElementById('req-lowercase').className = requirements.lowercase ? 'valid' : 'invalid';
                 document.getElementById('req-number').className = requirements.number ? 'valid' : 'invalid';
-                document.getElementById('req-special').className = requirements.special ? 'valid' : 'invalid';
             }
 
             function validateConfirmPassword() {
                 const password = passwordInput.value;
                 const confirm = confirmInput.value;
+                const matchElement = document.getElementById('req-match');
                 
                 if (confirm && password !== confirm) {
                     confirmInput.style.borderColor = '#dc3545';
+                    matchElement.className = 'invalid';
+                } else if (confirm) {
+                    confirmInput.style.borderColor = '#28a745';
+                    matchElement.className = 'valid';
                 } else {
-                    confirmInput.style.borderColor = password ? '#28a745' : 'rgba(255, 255, 255, 0.3)';
+                    confirmInput.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    matchElement.className = '';
                 }
             }
 
