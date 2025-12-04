@@ -1,67 +1,64 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
 
-// Evitar cache
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
-
 $database = new Database();
 $db = $database->conectar();
 
 // Variable para mensajes
 $mensaje = "";
-$tipoMensaje = ""; // success, error, warning
+$tipoMensaje = "";
+$mostrarFormulario = false;
+$token_valido = "";
+$tokenData = null; // Inicializar
 
 // Validación token
 if (!isset($_GET['token']) || empty($_GET['token'])) {
     $mensaje = "Token no proporcionado o inválido.";
     $tipoMensaje = "error";
 } else {
-    $token = trim($_GET['token']);
+    $token_valido = trim($_GET['token']);
     
-    // VERIFICACIÓN CORREGIDA - acepta tokens hex de 64 caracteres
-    if (!preg_match('/^[a-f0-9]{64}$/i', $token)) {
+    // VERIFICACIÓN CORREGIDA
+    if (!preg_match('/^[a-f0-9]{64}$/i', $token_valido)) {
         $mensaje = "Token con formato inválido.";
         $tipoMensaje = "error";
     } else {
-        // Verificar token válido en la base de datos
         try {
+            // CONSULTA CORREGIDA - usa id_recovery en lugar de id
             $stmt = $db->prepare("
-                SELECT rt.*, u.correo, u.estado 
+                SELECT rt.*, u.correo
                 FROM recovery_tokens rt
                 JOIN usuario u ON rt.id_usuario = u.id_usuario
                 WHERE rt.token = :token 
                   AND rt.expiracion > NOW() 
-                  AND rt.usado = FALSE 
+                  AND rt.usado = FALSE
                 LIMIT 1
             ");
-            $stmt->bindParam(':token', $token);
+            $stmt->bindParam(':token', $token_valido);
             $stmt->execute();
             $tokenData = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$tokenData) {
                 $mensaje = "El enlace de recuperación ha expirado o ya fue utilizado.";
                 $tipoMensaje = "error";
-            } elseif (isset($tokenData['estado']) && $tokenData['estado'] !== 'Activo') {
-                $mensaje = "La cuenta asociada a este enlace no está activa.";
-                $tipoMensaje = "error";
+            } else {
+                $mostrarFormulario = true;
             }
         } catch (Exception $e) {
-            error_log("Error al verificar token: " . $e->getMessage());
+            error_log("Error en recuperación: " . $e->getMessage());
             $mensaje = "Error interno del sistema. Por favor intenta más tarde.";
             $tipoMensaje = "error";
         }
     }
 }
 
-// Procesar el formulario (POST) solo si el token es válido
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
+// Procesar formulario POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    $token = $_POST['token'] ?? '';
+    $token_post = $_POST['token'] ?? '';
 
-    // Validaciones de contraseña
+    // Validaciones
     if (empty($password) || empty($confirm_password)) {
         $mensaje = "Por favor completa todos los campos.";
         $tipoMensaje = "error";
@@ -82,13 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
         $tipoMensaje = "error";
     } else {
         try {
-            // Hashear la nueva contraseña
+            // Hashear nueva contraseña
             $nuevaContrasena = password_hash($password, PASSWORD_DEFAULT);
 
             // Iniciar transacción
             $db->beginTransaction();
 
-            // Actualizar contraseña del usuario
+            // Actualizar contraseña
             $stmtUpdate = $db->prepare("
                 UPDATE usuario 
                 SET contrasena = :contrasena 
@@ -98,30 +95,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
             $stmtUpdate->bindParam(':id_usuario', $tokenData['id_usuario']);
             $stmtUpdate->execute();
 
-            // Marcar token como usado
+            // Marcar token como usado - CORREGIDO: usa id_recovery
             $stmtUsed = $db->prepare("
                 UPDATE recovery_tokens 
                 SET usado = TRUE 
-                WHERE id = :id
+                WHERE id_recovery = :id_recovery
             ");
-            $stmtUsed->bindParam(':id', $tokenData['id']);
+            $stmtUsed->bindParam(':id_recovery', $tokenData['id_recovery']);
             $stmtUsed->execute();
 
             // Confirmar transacción
             $db->commit();
 
-            // Registrar el cambio
-            error_log("Contraseña restablecida para usuario: " . $tokenData['correo']);
-
-            // Mostrar mensaje de éxito
             $mensaje = "✅ Contraseña cambiada correctamente. Serás redirigido al inicio de sesión en 3 segundos...";
             $tipoMensaje = "success";
+            $mostrarFormulario = false;
             
-            // Redirigir después de 3 segundos
             header("refresh:3;url=/index.php");
             
         } catch (Exception $e) {
-            // Revertir transacción en caso de error
             $db->rollBack();
             error_log("Error al actualizar contraseña: " . $e->getMessage());
             $mensaje = "Error al procesar la solicitud. Por favor intenta nuevamente.";
@@ -136,10 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restablecer Contraseña - Ojo en la Vía</title>
-    <link rel="icon" href="/imagenes/fiveicon.png" type="image/png">
-    <link rel="shortcut icon" href="/imagenes/fiveicon.png" type="image/png">
-
+    <title>Restablecer Contraseña</title>
     <style>
         * {
             margin: 0;
@@ -148,142 +137,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-
-            /* 🔹 Imagen de fondo */
-            background-image: url("/imagenes/hola.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
         }
 
         .container {
-            /* 🔹 Fondo semitransparente tipo "vidrio" */
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 400px;
-            text-align: center;
-            color: #fff;
         }
 
         h2 {
-            margin-bottom: 1.5rem;
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-            text-align: left;
-        }
-
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #fff;
-            font-size: 0.9rem;
-        }
-
-        input[type="password"] {
-            width: 100%;
-            padding: 0.9rem 1.2rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px;
-            outline: none;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        input[type="password"]:focus {
-            border-color: #007BFF;
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        input[type="password"]::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        button {
-            width: 100%;
-            background: linear-gradient(135deg, #007BFF, #0056b3);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0.5rem;
-            font-weight: 600;
-            font-size: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
         }
 
         .message {
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
         .message.success {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.5);
-            color: #d4edda;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .message.error {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.5);
-            color: #f8d7da;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
-        .message.warning {
-            background: rgba(255, 193, 7, 0.2);
-            border: 1px solid rgba(255, 193, 7, 0.5);
-            color: #fff3cd;
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0056b3;
         }
 
         .password-requirements {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            text-align: left;
-            font-size: 0.8rem;
-        }
-
-        .password-requirements h4 {
-            margin-bottom: 0.5rem;
-            color: #fff;
-            font-size: 0.9rem;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
         }
 
         .password-requirements ul {
@@ -292,74 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
         }
 
         .password-requirements li {
-            margin-bottom: 0.3rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .password-requirements li.valid {
-            color: #28a745;
-        }
-
-        .password-requirements li.invalid {
-            color: #dc3545;
-        }
-
-        /* Responsive para móviles */
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-                align-items: flex-start;
-                padding-top: 40px;
-            }
-
-            .container {
-                padding: 1.5rem;
-                border-radius: 15px;
-                max-width: 100%;
-            }
-
-            h2 {
-                font-size: 1.3rem;
-                margin-bottom: 1.2rem;
-            }
-
-            input[type="password"] {
-                padding: 0.8rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            button {
-                padding: 0.9rem;
-                font-size: 0.95rem;
-            }
-
-            .password-requirements {
-                padding: 0.8rem;
-                font-size: 0.75rem;
-            }
-        }
-
-        @media (max-width: 320px) {
-            .container {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.2rem;
-            }
-        }
-
-        /* Estilos para landscape en móviles */
-        @media (max-height: 500px) and (orientation: landscape) {
-            body {
-                align-items: flex-start;
-                padding-top: 20px;
-                padding-bottom: 20px;
-            }
-
-            .container {
-                max-width: 90%;
-            }
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -370,37 +240,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
                 <?php echo $mensaje; ?>
             </div>
             <?php if ($tipoMensaje === 'success'): ?>
-                <p style="color: rgba(255,255,255,0.8); margin-top: 1rem;">
+                <p style="text-align: center; color: #666;">
                     Redirigiendo al inicio de sesión...
                 </p>
             <?php endif; ?>
-        <?php else: ?>
+        <?php endif; ?>
+
+        <?php if ($mostrarFormulario && !$mensaje): ?>
             <h2>Restablecer Contraseña</h2>
             
             <div class="password-requirements">
-                <h4>Requisitos de la contraseña:</h4>
+                <p><strong>Requisitos:</strong></p>
                 <ul>
-                    <li id="req-length">• Mínimo 8 caracteres</li>
-                    <li id="req-uppercase">• Al menos una mayúscula</li>
-                    <li id="req-lowercase">• Al menos una minúscula</li>
-                    <li id="req-number">• Al menos un número</li>
-                    <li id="req-match">• Ambas contraseñas deben coincidir</li>
+                    <li>• Mínimo 8 caracteres</li>
+                    <li>• Al menos una mayúscula</li>
+                    <li>• Al menos una minúscula</li>
+                    <li>• Al menos un número</li>
+                    <li>• Ambas contraseñas deben coincidir</li>
                 </ul>
             </div>
 
             <form method="POST" action="" id="passwordForm">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token_valido); ?>">
                 
                 <div class="form-group">
                     <label for="password">Nueva contraseña:</label>
-                    <input type="password" name="password" id="password" required minlength="8" 
-                           placeholder="Ingresa tu nueva contraseña">
+                    <input type="password" name="password" id="password" required minlength="8">
                 </div>
 
                 <div class="form-group">
                     <label for="confirm_password">Confirmar contraseña:</label>
-                    <input type="password" name="confirm_password" id="confirm_password" required 
-                           placeholder="Confirma tu contraseña">
+                    <input type="password" name="confirm_password" id="confirm_password" required>
                 </div>
 
                 <button type="submit" id="submitBtn">Cambiar contraseña</button>
@@ -408,63 +278,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($mensaje)) {
         <?php endif; ?>
     </div>
 
+    <?php if ($mostrarFormulario && !$mensaje): ?>
     <script>
-        // Validación en tiempo real de la contraseña
+        // Solo ejecuta JavaScript si el formulario está visible
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
             const confirmInput = document.getElementById('confirm_password');
             const form = document.getElementById('passwordForm');
             
-            if (passwordInput) {
+            if (passwordInput && confirmInput && form) {
                 passwordInput.addEventListener('input', validatePassword);
                 confirmInput.addEventListener('input', validateConfirmPassword);
+                
+                form.addEventListener('submit', function(e) {
+                    const password = passwordInput.value;
+                    const confirm = confirmInput.value;
+                    
+                    if (password !== confirm) {
+                        e.preventDefault();
+                        alert('Las contraseñas no coinciden. Por favor verifica.');
+                        confirmInput.focus();
+                    }
+                });
             }
 
             function validatePassword() {
                 const password = passwordInput.value;
-                const requirements = {
-                    length: password.length >= 8,
-                    uppercase: /[A-Z]/.test(password),
-                    lowercase: /[a-z]/.test(password),
-                    number: /[0-9]/.test(password)
-                };
-
-                // Actualizar indicadores visuales
-                document.getElementById('req-length').className = requirements.length ? 'valid' : 'invalid';
-                document.getElementById('req-uppercase').className = requirements.uppercase ? 'valid' : 'invalid';
-                document.getElementById('req-lowercase').className = requirements.lowercase ? 'valid' : 'invalid';
-                document.getElementById('req-number').className = requirements.number ? 'valid' : 'invalid';
+                
+                if (password.length >= 8) {
+                    passwordInput.style.borderColor = '#28a745';
+                } else {
+                    passwordInput.style.borderColor = '#dc3545';
+                }
             }
 
             function validateConfirmPassword() {
                 const password = passwordInput.value;
                 const confirm = confirmInput.value;
-                const matchElement = document.getElementById('req-match');
                 
                 if (confirm && password !== confirm) {
                     confirmInput.style.borderColor = '#dc3545';
-                    matchElement.className = 'invalid';
                 } else if (confirm) {
                     confirmInput.style.borderColor = '#28a745';
-                    matchElement.className = 'valid';
                 } else {
-                    confirmInput.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                    matchElement.className = '';
+                    confirmInput.style.borderColor = '#ddd';
                 }
             }
-
-            // Validación antes del envío
-            form.addEventListener('submit', function(e) {
-                const password = passwordInput.value;
-                const confirm = confirmInput.value;
-                
-                if (password !== confirm) {
-                    e.preventDefault();
-                    alert('Las contraseñas no coinciden. Por favor verifica.');
-                    confirmInput.focus();
-                }
-            });
         });
     </script>
+    <?php endif; ?>
 </body>
 </html>
