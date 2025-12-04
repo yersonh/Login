@@ -1,5 +1,5 @@
 <?php
-// 1. EN LUGAR de session_start(), usa tu bootstrap_session.php
+// 1. REEMPLAZA session_start() CON bootstrap_session.php
 require_once __DIR__ . '/../config/bootstrap_session.php';
 
 // 2. Headers de seguridad
@@ -8,140 +8,109 @@ header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// 3. Habilitar errores para debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// 4. Verificar extensión PDO PostgreSQL ANTES de intentar conectar
-if (!extension_loaded('pdo_pgsql')) {
-    die("❌ ERROR CRÍTICO: La extensión PHP 'pdo_pgsql' no está instalada.<br>
-         En Railway, añade en Variables: PHP_EXTENSIONS = pdo_pgsql<br>
-         O en tu entorno local: sudo apt-get install php-pgsql");
-}
-
-// 5. Incluir archivos necesarios
+// 3. Incluir archivos
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/sesioncontrolador.php';
 
-// 6. Generar token CSRF si no existe
+// 4. Token CSRF
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// 7. Conectar a la base de datos CON MANEJO DE ERRORES
-try {
-    $database = new Database();
-    $db = $database->conectar();
-    
-    if (!$db) {
-        throw new Exception("No se pudo obtener conexión a la base de datos");
-    }
-    
-    // Probar conexión ejecutando una consulta simple
-    $test = $db->query("SELECT 1 as test")->fetch();
-    if (!$test || !isset($test['test'])) {
-        throw new Exception("La conexión a la base de datos no responde correctamente");
-    }
-    
-    error_log("✅ Conexión a BD establecida correctamente");
-    
-    $controller = new SesionControlador($db);
-    
-} catch (Exception $e) {
-    error_log("❌ Error crítico de conexión: " . $e->getMessage());
-    die("<div class='alert alert-error' style='margin:20px;padding:20px;'>
-            <h3>❌ Error de conexión a la base de datos</h3>
-            <p>" . htmlspecialchars($e->getMessage()) . "</p>
-            <p>Verifica:</p>
-            <ul>
-                <li>Que las variables de entorno de Railway estén configuradas</li>
-                <li>Que la extensión pdo_pgsql esté instalada</li>
-                <li>Que la base de datos PostgreSQL esté activa en Railway</li>
-            </ul>
-            <p>Variables detectadas:</p>
-            <pre>" . htmlspecialchars(json_encode([
-                'PGHOST' => getenv('PGHOST'),
-                'PGPORT' => getenv('PGPORT'),
-                'PGDATABASE' => getenv('PGDATABASE'),
-                'PGUSER' => getenv('PGUSER'),
-                'PGPASSWORD' => getenv('PGPASSWORD') ? '***' : 'NO SET'
-            ], JSON_PRETTY_PRINT)) . "</pre>
-        </div>");
+// 5. Conectar a BD
+$database = new Database();
+$db = $database->conectar();
+
+// 6. Si no hay conexión, mostrar error y salir
+if (!$db) {
+    die("<div style='color:red; padding:20px;'>
+        <h3>❌ Error de conexión a la base de datos</h3>
+        <p>No se pudo conectar a PostgreSQL.</p>
+        <p>Verifica que:</p>
+        <ul>
+            <li>La extensión pdo_pgsql esté instalada</li>
+            <li>PostgreSQL esté corriendo en Railway</li>
+            <li>Las credenciales sean correctas</li>
+        </ul>
+        <p><a href='../index.php'>Volver al inicio</a></p>
+    </div>");
 }
 
-// 8. Variable para mensajes
-$mensaje_error = '';
-$datos_formulario = [];
+// 7. Crear controlador
+$controller = new SesionControlador($db);
 
-// 9. Procesar formulario si es POST
+// 8. Variable para mensajes
+$mensaje = '';
+
+// 9. Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $mensaje_error = "Token de seguridad inválido";
+        die("Token de seguridad inválido");
+    }
+
+    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
+    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Validaciones
+    $errores = [];
+    
+    if (empty($nombres) || strlen($nombres) > 50) {
+        $errores[] = "Nombre inválido";
+    }
+
+    if (empty($apellidos) || strlen($apellidos) > 50) {
+        $errores[] = "Apellido inválido";
+    }
+
+    if (!$correo || strlen($correo) > 100) {
+        $errores[] = "Correo electrónico inválido";
+    }
+
+    if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
+        $errores[] = "Teléfono inválido (7-15 dígitos)";
+    }
+
+    if (empty($password) || strlen($password) < 8) {
+        $errores[] = "La contraseña debe tener al menos 8 caracteres";
+    }
+
+    if (!preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password)) {
+        $errores[] = "La contraseña debe contener mayúsculas, minúsculas y números";
+    }
+
+    if ($password !== $confirm_password) {
+        $errores[] = "Las contraseñas no coinciden";
+    }
+
+    // Si hay errores, mostrarlos
+    if (!empty($errores)) {
+        $mensaje = '<div class="alert alert-error">' . implode('<br>', $errores) . '</div>';
     } else {
-        // Recoger y sanitizar datos
-        $datos_formulario['nombres'] = trim(htmlspecialchars($_POST['nombres'] ?? ''));
-        $datos_formulario['apellidos'] = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
-        $datos_formulario['correo'] = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
-        $datos_formulario['telefono'] = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm_password = $_POST['confirm_password'] ?? '';
+        // Registrar usuario
+        $resultado = $controller->registrar(
+            $nombres,
+            $apellidos,
+            $correo,
+            $telefono,
+            $password
+        );
 
-        // Validaciones
-        if (empty($datos_formulario['nombres']) || strlen($datos_formulario['nombres']) > 50) {
-            $mensaje_error = "Nombre inválido (máximo 50 caracteres)";
-        } elseif (empty($datos_formulario['apellidos']) || strlen($datos_formulario['apellidos']) > 50) {
-            $mensaje_error = "Apellido inválido (máximo 50 caracteres)";
-        } elseif (!$datos_formulario['correo'] || strlen($datos_formulario['correo']) > 100) {
-            $mensaje_error = "Correo electrónico inválido";
-        } elseif (empty($datos_formulario['telefono']) || strlen($datos_formulario['telefono']) < 7 || strlen($datos_formulario['telefono']) > 15) {
-            $mensaje_error = "Teléfono inválido (7-15 dígitos)";
-        } elseif (empty($password) || strlen($password) < 8) {
-            $mensaje_error = "La contraseña debe tener al menos 8 caracteres";
-        } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) {
-            $mensaje_error = "La contraseña debe contener mayúsculas, minúsculas y números";
-        } elseif ($password !== $confirm_password) {
-            $mensaje_error = "Las contraseñas no coinciden";
-        }
-
-        // Si no hay errores, intentar registrar
-        if (empty($mensaje_error)) {
-            error_log("⚠️ Intentando registrar usuario: " . $datos_formulario['correo']);
-            
-            try {
-                $resultado = $controller->registrar(
-                    $datos_formulario['nombres'],
-                    $datos_formulario['apellidos'],
-                    $datos_formulario['correo'],
-                    $datos_formulario['telefono'],
-                    $password
-                );
-
-                if ($resultado) {
-                    error_log("✅ Usuario registrado exitosamente: " . $datos_formulario['correo']);
-                    
-                    // Redirigir a index.php
-                    header("Location: ../index.php?registro=exitoso");
-                    exit;
-                } else {
-                    $mensaje_error = "Error al registrar usuario. El correo ya puede estar registrado o hubo un error en la base de datos.";
-                    error_log("❌ Registro fallido para: " . $datos_formulario['correo']);
-                }
-                
-            } catch (Exception $e) {
-                error_log("❌ Excepción en registro: " . $e->getMessage());
-                $mensaje_error = "Error interno del servidor al registrar. Por favor, intenta nuevamente.";
-            }
+        if ($resultado) {
+            // Redirigir
+            header("Location: ../index.php?registro=exitoso");
+            exit;
         } else {
-            error_log("❌ Errores de validación: " . $mensaje_error);
+            $mensaje = '<div class="alert alert-error">Error al registrar usuario. El correo ya puede estar registrado.</div>';
         }
     }
 }
-
-// 10. LOG para debugging
-error_log("=== FIN PROCESAMIENTO REGISTRO ===");
-error_log("Mensaje error: " . $mensaje_error);
-error_log("Datos formulario: " . json_encode($datos_formulario));
 ?>
 <!DOCTYPE html>
 <html lang="es">
