@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Headers de seguridad
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
+
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
@@ -16,143 +16,74 @@ if (empty($_SESSION['csrf_token'])) {
 
 $database = new Database();
 $db = $database->conectar();
-$controller = new SesionControlador($db);
 
-// Variable para mensaje
-$mensaje_error = '';
+$controller = new SesionControlador($db);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $mensaje_error = 'Token de seguridad inválido. Recarga la página.';
-    } else {
-        // Limpiar y validar datos
-        $nombres = trim(htmlspecialchars($_POST['nombres'] ?? '', ENT_QUOTES, 'UTF-8'));
-        $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? '', ENT_QUOTES, 'UTF-8'));
-        $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_SANITIZE_EMAIL);
-        $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm_password = $_POST['confirm_password'] ?? '';
-
-        // Validaciones detalladas
-        $errores = [];
-        
-        // Validar nombres
-        if (empty($nombres)) {
-            $errores[] = "El nombre es requerido";
-        } elseif (strlen($nombres) > 50) {
-            $errores[] = "El nombre no debe exceder 50 caracteres";
-        } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/', $nombres)) {
-            $errores[] = "El nombre solo puede contener letras y espacios";
-        }
-
-        // Validar apellidos
-        if (empty($apellidos)) {
-            $errores[] = "El apellido es requerido";
-        } elseif (strlen($apellidos) > 50) {
-            $errores[] = "El apellido no debe exceder 50 caracteres";
-        } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/', $apellidos)) {
-            $errores[] = "El apellido solo puede contener letras y espacios";
-        }
-
-        // Validar correo
-        if (empty($correo)) {
-            $errores[] = "El correo electrónico es requerido";
-        } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-            $errores[] = "Formato de correo electrónico inválido";
-        } elseif (strlen($correo) > 100) {
-            $errores[] = "El correo no debe exceder 100 caracteres";
-        }
-
-        // Validar teléfono
-        if (empty($telefono)) {
-            $errores[] = "El teléfono es requerido";
-        } elseif (strlen($telefono) < 7 || strlen($telefono) > 15) {
-            $errores[] = "El teléfono debe tener entre 7 y 15 dígitos";
-        } elseif (!preg_match('/^[0-9]+$/', $telefono)) {
-            $errores[] = "El teléfono solo puede contener números";
-        }
-
-        // Validar contraseña
-        if (empty($password)) {
-            $errores[] = "La contraseña es requerida";
-        } elseif (strlen($password) < 8) {
-            $errores[] = "La contraseña debe tener al menos 8 caracteres";
-        } elseif (!preg_match('/[A-Z]/', $password)) {
-            $errores[] = "La contraseña debe contener al menos una letra mayúscula";
-        } elseif (!preg_match('/[a-z]/', $password)) {
-            $errores[] = "La contraseña debe contener al menos una letra minúscula";
-        } elseif (!preg_match('/[0-9]/', $password)) {
-            $errores[] = "La contraseña debe contener al menos un número";
-        } elseif (preg_match('/\s/', $password)) {
-            $errores[] = "La contraseña no debe contener espacios";
-        }
-
-        // Validar confirmación de contraseña
-        if (empty($confirm_password)) {
-            $errores[] = "Debes confirmar tu contraseña";
-        } elseif ($password !== $confirm_password) {
-            $errores[] = "Las contraseñas no coinciden";
-        }
-
-        // Si hay errores, preparar mensaje
-        if (!empty($errores)) {
-            $mensaje_error = implode('<br>', $errores);
-            $_SESSION['registro_error'] = $mensaje_error;
-            $_SESSION['valores_previos'] = [
-                'nombres' => $nombres,
-                'apellidos' => $apellidos,
-                'correo' => $correo,
-                'telefono' => $telefono
-            ];
-            
-            // Redirigir de vuelta al formulario
-            header('Location: registro.php');
-            exit;
-        }
-
-        // Si pasa todas las validaciones, registrar usuario
-        $resultado = $controller->registrar(
-            $nombres,
-            $apellidos,
-            $correo,
-            $telefono,
-            $password
-        );
-
-        if ($resultado === true) {
-            // Éxito: limpiar sesión y redirigir
-            session_regenerate_id(true);
-            unset($_SESSION['registro_error']);
-            unset($_SESSION['valores_previos']);
-            
-            // Guardar mensaje de éxito
-            $_SESSION['registro_exitoso'] = '¡Usuario registrado correctamente! Ya puedes iniciar sesión.';
-            
-            header('Location: ../index.php');
-            exit;
-            
-        } elseif (is_string($resultado)) {
-            // Error específico del controlador
-            $mensaje_error = $resultado;
-            $_SESSION['registro_error'] = $mensaje_error;
-            header('Location: registro.php');
-            exit;
-            
-        } else {
-            // Error genérico
-            $mensaje_error = 'Error al registrar usuario. Intenta nuevamente.';
-            $_SESSION['registro_error'] = $mensaje_error;
-            header('Location: registro.php');
-            exit;
-        }
+        die("Token de seguridad inválido");
     }
-}
 
-// Si se accede directamente sin POST, redirigir al formulario
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: registro.php');
-    exit;
+    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
+    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Validaciones
+    if (empty($nombres) || strlen($nombres) > 50) {
+        die("Nombre inválido");
+    }
+
+    if (empty($apellidos) || strlen($apellidos) > 50) {
+        die("Apellido inválido");
+    }
+
+    if (!$correo || strlen($correo) > 100) {
+        die("Correo electrónico inválido");
+    }
+
+    if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
+        die("Teléfono inválido");
+    }
+
+    if (empty($password) || strlen($password) < 8) {
+        die("La contraseña debe tener al menos 8 caracteres");
+    }
+
+    if (!preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password)) {
+        die("La contraseña debe contener mayúsculas, minúsculas y números");
+    }
+
+    if ($password !== $confirm_password) {
+        die("Las contraseñas no coinciden");
+    }
+
+    // Registrar usuario
+    $resultado = $controller->registrar(
+        $nombres,
+        $apellidos,
+        $correo,
+        $telefono,
+        $password
+    );
+
+    if ($resultado) {
+        session_regenerate_id(true);
+        $_SESSION = [];
+
+        echo "<script>
+            alert('Usuario registrado correctamente.');
+            window.location.href = '../index.php';
+        </script>";
+        exit;
+    } else {
+        echo "<script>alert('Error al registrar usuario.');</script>";
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -160,11 +91,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Registro seguro de usuario - Ojo en la vía">
+    <meta name="description" content="Registro seguro de usuario - Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo">
     <link rel="shortcut icon" href="../imagenes/image.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <title>Registrar Usuario - Ojo en la vía</title>
+    <title>Registrar Usuario - Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
     <style>
         * {
             margin: 0;
