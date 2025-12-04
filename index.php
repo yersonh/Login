@@ -18,9 +18,6 @@ $database = new Database();
 $db = $database->conectar();
 $sesionControlador = new SesionControlador($db);
 
-error_log("🔍 INDEX.PHP - Estado sesión: " . session_status());
-error_log("🔍 INDEX.PHP - Datos sesión inicial: " . print_r($_SESSION, true));
-
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -32,7 +29,6 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
     try {
         $stmt = $db->prepare("SELECT
                                 u.id_usuario,
-                                u.id_rol,
                                 u.correo,
                                 p.nombres,
                                 p.apellidos,
@@ -47,19 +43,12 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
 
         if ($usuario) {
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
-            $_SESSION['rol'] = $usuario['id_rol'];
             $_SESSION['nombres'] = $usuario['nombres'];
             $_SESSION['apellidos'] = $usuario['apellidos'];
             $_SESSION['telefono'] = $usuario['telefono'];
             $_SESSION['correo'] = $usuario['correo'];
 
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                session_write_close();
-            }
-
-            error_log("LOGIN AUTOMÁTICO - usuario_id: " . $_SESSION['usuario_id']);
-
-            // TODOS van a https://www.eltiempo.com/
+            // Redirigir a El Tiempo
             header("Location: https://www.eltiempo.com/");
             exit();
             
@@ -68,7 +57,6 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             setcookie('remember_token', '', time() - 3600, '/');
         }
     } catch (PDOException $e) {
-        error_log("Error al verificar token de recordar: " . $e->getMessage());
         setcookie('remember_token', '', time() - 3600, '/');
     }
 }
@@ -77,7 +65,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $error_message = "Token de seguridad inválido. Por favor, recarga la página e intenta nuevamente.";
+        $error_message = "Token de seguridad inválido. Recarga la página.";
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     } else {
 
@@ -91,19 +79,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
 
             if ($usuario) {
                 $_SESSION['usuario_id'] = $usuario['id_usuario'];
-                $_SESSION['rol'] = $usuario['id_rol'];
-                $_SESSION['nombres'] = $usuario['nombres'];
-                $_SESSION['apellidos'] = $usuario['apellidos'];
-                $_SESSION['telefono'] = $usuario['telefono'];
+                $_SESSION['nombres'] = $usuario['nombres'] ?? '';
+                $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
+                $_SESSION['telefono'] = $usuario['telefono'] ?? '';
                 $_SESSION['correo'] = $usuario['correo'];
-
-                error_log("LOGIN EXITOSO - Datos COMPLETOS guardados:");
-                error_log("  usuario_id: " . $_SESSION['usuario_id']);
-                error_log("  nombres: " . $_SESSION['nombres']);
-                error_log("  apellidos: " . $_SESSION['apellidos']);
-                error_log("  telefono: " . $_SESSION['telefono']);
-                error_log("  correo: " . $_SESSION['correo']);
-                error_log("  session_id: " . session_id());
 
                 if ($remember) {
                     try {
@@ -126,23 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                             'samesite' => 'Strict'
                         ]);
                     } catch (PDOException $e) {
-                        error_log("Error al crear token de recordar: " . $e->getMessage());
+                        // Silenciar error
                     }
                 }
 
-                if (session_status() === PHP_SESSION_ACTIVE) {
-                    session_write_close();
-                }
-
-                // TODOS van a https://www.eltiempo.com/
+                // Redirigir a El Tiempo
                 header("Location: https://www.eltiempo.com/");
                 exit();
                 
             } else {
-                $error_message = "Credenciales incorrectas o cuenta inactiva.";
+                $error_message = "Credenciales incorrectas";
             }
         } else {
-             // Procesar recuperación de contraseña
+            // Procesar recuperación de contraseña
             $correoRecuperacion = trim($_POST['email']);
             $mensaje_recuperacion = procesarRecuperacion($db, $correoRecuperacion, $base_url);
 
@@ -168,7 +143,6 @@ function limpiarTokensExpirados($db) {
         $stmt->execute();
         return true;
     } catch (PDOException $e) {
-        error_log("Error al limpiar tokens expirados: " . $e->getMessage());
         return false;
     }
 }
@@ -178,7 +152,7 @@ if (rand(1, 10) === 1) {
     try {
         limpiarTokensExpirados($db);
     } catch (Exception $e) {
-        error_log("Error en limpieza periódica: " . $e->getMessage());
+        // Silenciar error
     }
 }
 
@@ -247,7 +221,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 return "Se ha enviado un enlace de recuperación a: $correoUsuario";
             }
             else {
-                return "Error al enviar el correo (Código: $httpCode). Respuesta: $response";
+                return "Error al enviar el correo (Código: $httpCode).";
             }
         } else {
             return "Error al generar el enlace de recuperación.";
