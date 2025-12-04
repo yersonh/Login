@@ -52,13 +52,11 @@ if (!isset($_GET['token']) || empty($_GET['token'])) {
     }
 }
 
-// Procesar formulario POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     $token_post = $_POST['token'] ?? '';
 
-    // Validaciones
     if (empty($password) || empty($confirm_password)) {
         $mensaje = "Por favor completa todos los campos.";
         $tipoMensaje = "error";
@@ -79,13 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         $tipoMensaje = "error";
     } else {
         try {
-            // Hashear nueva contraseña
             $nuevaContrasena = password_hash($password, PASSWORD_DEFAULT);
 
-            // Iniciar transacción
             $db->beginTransaction();
 
-            // Actualizar contraseña
             $stmtUpdate = $db->prepare("
                 UPDATE usuario 
                 SET contrasena = :contrasena 
@@ -95,19 +90,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
             $stmtUpdate->bindParam(':id_usuario', $tokenData['id_usuario']);
             $stmtUpdate->execute();
 
-            // Marcar token como usado - CORREGIDO: usa id_recovery
             $stmtUsed = $db->prepare("
                 UPDATE recovery_tokens 
                 SET usado = TRUE 
                 WHERE id_recovery = :id_recovery
             ");
             $stmtUsed->bindParam(':id_recovery', $tokenData['id_recovery']);
-            $stmtUsed->execute();
 
-            // Confirmar transacción
             $db->commit();
 
-            $mensaje = "✅ Contraseña cambiada correctamente. Serás redirigido al inicio de sesión en 3 segundos...";
+            $mensaje = "Contraseña cambiada correctamente. Serás redirigido al inicio de sesión en 3 segundos...";
             $tipoMensaje = "success";
             $mostrarFormulario = false;
             
@@ -137,13 +129,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+
+            /* 🔹 Imagen de fondo */
+            background-image: url("/imagenes/hola.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
         .container {
@@ -280,7 +279,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
 
     <?php if ($mostrarFormulario && !$mensaje): ?>
     <script>
-        // Solo ejecuta JavaScript si el formulario está visible
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
             const confirmInput = document.getElementById('confirm_password');
