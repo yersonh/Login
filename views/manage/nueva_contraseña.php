@@ -120,7 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restablecer Contraseña</title>
+    <title>Restablecer Contraseña - Ojo en la Vía</title>
+    <link rel="icon" href="/imagenes/fiveicon.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/fiveicon.png" type="image/png">
+
     <style>
         * {
             margin: 0;
@@ -146,80 +149,125 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         }
 
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            /* 🔹 Fondo semitransparente tipo "vidrio" */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 400px;
+            text-align: center;
+            color: #fff;
         }
 
         h2 {
-            margin-bottom: 20px;
-            color: #333;
-            text-align: center;
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.2rem;
+            text-align: left;
         }
 
         label {
+            font-weight: 600;
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-size: 0.9rem;
         }
 
         input[type="password"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="password"]:focus {
+            border-color: #007BFF;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            background: #007bff;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 1rem;
+            border-radius: 50px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
         }
 
         button:hover {
-            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #d4edda;
+        }
+
+        .message.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #f8d7da;
+        }
+
+        .message.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #fff3cd;
         }
 
         .password-requirements {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #666;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        .password-requirements h4 {
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-size: 0.9rem;
         }
 
         .password-requirements ul {
@@ -228,7 +276,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         }
 
         .password-requirements li {
-            margin-bottom: 5px;
+            margin-bottom: 0.3rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .password-requirements li.valid {
+            color: #28a745;
+        }
+
+        .password-requirements li.invalid {
+            color: #dc3545;
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+
+            .container {
+                padding: 1.5rem;
+                border-radius: 15px;
+                max-width: 100%;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1.2rem;
+            }
+
+            input[type="password"] {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.9rem;
+                font-size: 0.95rem;
+            }
+
+            .password-requirements {
+                padding: 0.8rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Estilos para landscape en móviles */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .container {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
@@ -239,37 +354,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
                 <?php echo $mensaje; ?>
             </div>
             <?php if ($tipoMensaje === 'success'): ?>
-                <p style="text-align: center; color: #666;">
+                <p style="color: rgba(255,255,255,0.8); margin-top: 1rem;">
                     Redirigiendo al inicio de sesión...
                 </p>
             <?php endif; ?>
-        <?php endif; ?>
-
-        <?php if ($mostrarFormulario && !$mensaje): ?>
+        <?php else: ?>
             <h2>Restablecer Contraseña</h2>
-            
+
             <div class="password-requirements">
-                <p><strong>Requisitos:</strong></p>
+                <h4>Requisitos de la contraseña:</h4>
                 <ul>
-                    <li>• Mínimo 8 caracteres</li>
-                    <li>• Al menos una mayúscula</li>
-                    <li>• Al menos una minúscula</li>
-                    <li>• Al menos un número</li>
-                    <li>• Ambas contraseñas deben coincidir</li>
+                    <li id="req-length">• Mínimo 8 caracteres</li>
+                    <li id="req-uppercase">• Al menos una mayúscula</li>
+                    <li id="req-lowercase">• Al menos una minúscula</li>
+                    <li id="req-number">• Al menos un número</li>
+                    <li id="req-special">• Al menos un carácter especial</li>
                 </ul>
             </div>
 
             <form method="POST" action="" id="passwordForm">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token_valido); ?>">
-                
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+
                 <div class="form-group">
                     <label for="password">Nueva contraseña:</label>
-                    <input type="password" name="password" id="password" required minlength="8">
+                    <input type="password" name="password" id="password" required minlength="8"
+                           placeholder="Ingresa tu nueva contraseña">
                 </div>
 
                 <div class="form-group">
                     <label for="confirm_password">Confirmar contraseña:</label>
-                    <input type="password" name="confirm_password" id="confirm_password" required>
+                    <input type="password" name="confirm_password" id="confirm_password" required
+                           placeholder="Confirma tu contraseña">
                 </div>
 
                 <button type="submit" id="submitBtn">Cambiar contraseña</button>
@@ -277,53 +392,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         <?php endif; ?>
     </div>
 
-    <?php if ($mostrarFormulario && !$mensaje): ?>
     <script>
+        // Validación en tiempo real de la contraseña
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
             const confirmInput = document.getElementById('confirm_password');
             const form = document.getElementById('passwordForm');
-            
-            if (passwordInput && confirmInput && form) {
+
+            if (passwordInput) {
                 passwordInput.addEventListener('input', validatePassword);
                 confirmInput.addEventListener('input', validateConfirmPassword);
-                
-                form.addEventListener('submit', function(e) {
-                    const password = passwordInput.value;
-                    const confirm = confirmInput.value;
-                    
-                    if (password !== confirm) {
-                        e.preventDefault();
-                        alert('Las contraseñas no coinciden. Por favor verifica.');
-                        confirmInput.focus();
-                    }
-                });
             }
 
             function validatePassword() {
                 const password = passwordInput.value;
-                
-                if (password.length >= 8) {
-                    passwordInput.style.borderColor = '#28a745';
-                } else {
-                    passwordInput.style.borderColor = '#dc3545';
-                }
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                };
+
+                // Actualizar indicadores visuales
+                document.getElementById('req-length').className = requirements.length ? 'valid' : 'invalid';
+                document.getElementById('req-uppercase').className = requirements.uppercase ? 'valid' : 'invalid';
+                document.getElementById('req-lowercase').className = requirements.lowercase ? 'valid' : 'invalid';
+                document.getElementById('req-number').className = requirements.number ? 'valid' : 'invalid';
+                document.getElementById('req-special').className = requirements.special ? 'valid' : 'invalid';
             }
 
             function validateConfirmPassword() {
                 const password = passwordInput.value;
                 const confirm = confirmInput.value;
-                
+
                 if (confirm && password !== confirm) {
                     confirmInput.style.borderColor = '#dc3545';
-                } else if (confirm) {
-                    confirmInput.style.borderColor = '#28a745';
                 } else {
-                    confirmInput.style.borderColor = '#ddd';
+                    confirmInput.style.borderColor = password ? '#28a745' : 'rgba(255, 255, 255, 0.3)';
                 }
             }
+
+            // Validación antes del envío
+            form.addEventListener('submit', function(e) {
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+
+                if (password !== confirm) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden. Por favor verifica.');
+                    confirmInput.focus();
+                }
+            });
         });
     </script>
-    <?php endif; ?>
 </body>
 </html>
