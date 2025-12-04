@@ -187,7 +187,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 "htmlContent" => "
                     <h2>Recuperación de Contraseña</h2>
                     <p>Hola,</p>
-                    <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>Ojo en la Vía</strong>.</p>
+                    <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo>.</p>
                     <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
                     <p>
                         <a href='{$link}'
@@ -198,7 +198,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     <p><strong>Este enlace expirará en 1 hora.</strong></p>
                     <p>Si no solicitaste este cambio, ignora este mensaje.</p>
                     <br>
-                    <p>Saludos,<br>El equipo de Ojo en la Vía</p>
+                    <p>Saludos,<br>El equipo de Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</p>
                 "
             ];
 
