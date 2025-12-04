@@ -6,9 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ojo en la vía</title>
-    <link rel="icon" href="/imagenes/fiveicon.png" type="image/png">
-    <link rel="shortcut icon" href="/imagenes/fiveicon.png" type="image/png">
+    <title> Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
+    <link rel="icon" href="/imagenes/image.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/image.png" type="image/png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -369,7 +369,7 @@
     <!-- Lado izquierdo -->
         <div class="left">
         <h1>Bienvenido!</h1>
-        <p>Explora nuestra plataforma "Ojo en la vía", donde podrás reportar y consultar el estado de las calles de Villavicencio.</p>
+        <p> Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
         <div class="icons">
             <i class="fab fa-facebook"></i>
             <i class="fab fa-twitter"></i>
@@ -430,7 +430,7 @@
             <button class="btn" type="submit">Ingresar</button>
 
             <div class="signup">
-            ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/usuarioregistrar.php">Regístrate</a>
+            ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
             </div>
         </form>
         </div>
