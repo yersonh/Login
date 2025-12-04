@@ -361,17 +361,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
         <?php else: ?>
             <h2>Restablecer Contraseña</h2>
 
-            <div class="password-requirements">
-                <h4>Requisitos de la contraseña:</h4>
-                <ul>
-                    <li id="req-length">• Mínimo 8 caracteres</li>
-                    <li id="req-uppercase">• Al menos una mayúscula</li>
-                    <li id="req-lowercase">• Al menos una minúscula</li>
-                    <li id="req-number">• Al menos un número</li>
-                    <li id="req-special">• Al menos un carácter especial</li>
-                </ul>
-            </div>
-
             <form method="POST" action="" id="passwordForm">
                 <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
