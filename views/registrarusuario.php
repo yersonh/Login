@@ -19,9 +19,6 @@ $db = $database->conectar();
 
 $controller = new SesionControlador($db);
 
-// Variable para mensajes
-$mensaje = '';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -36,59 +33,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
     $confirm_password = $_POST['confirm_password'] ?? '';
 
     // Validaciones
-    $errores = [];
-    
     if (empty($nombres) || strlen($nombres) > 50) {
-        $errores[] = "Nombre inválido";
+        die("Nombre inválido");
     }
 
     if (empty($apellidos) || strlen($apellidos) > 50) {
-        $errores[] = "Apellido inválido";
+        die("Apellido inválido");
     }
 
     if (!$correo || strlen($correo) > 100) {
-        $errores[] = "Correo electrónico inválido";
+        die("Correo electrónico inválido");
     }
 
     if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
-        $errores[] = "Teléfono inválido (7-15 dígitos)";
+        die("Teléfono inválido");
     }
 
     if (empty($password) || strlen($password) < 8) {
-        $errores[] = "La contraseña debe tener al menos 8 caracteres";
+        die("La contraseña debe tener al menos 8 caracteres");
     }
 
     if (!preg_match('/[A-Z]/', $password) ||
         !preg_match('/[a-z]/', $password) ||
         !preg_match('/[0-9]/', $password)) {
-        $errores[] = "La contraseña debe contener mayúsculas, minúsculas y números";
+        die("La contraseña debe contener mayúsculas, minúsculas y números");
     }
 
     if ($password !== $confirm_password) {
-        $errores[] = "Las contraseñas no coinciden";
+        die("Las contraseñas no coinciden");
     }
 
-    // Si hay errores, mostrarlos
-    if (!empty($errores)) {
-        $mensaje = '<div class="alert alert-error">' . implode('<br>', $errores) . '</div>';
-    } else {
-        // Registrar usuario
-        $resultado = $controller->registrar(
-            $nombres,
-            $apellidos,
-            $correo,
-            $telefono,
-            $password
-        );
+    // Registrar usuario
+    $resultado = $controller->registrar(
+        $nombres,
+        $apellidos,
+        $correo,
+        $telefono,
+        $password
+    );
 
-        if ($resultado) {
-            session_regenerate_id(true);
-            
-            header("Location: ../index.php?registro=exitoso");
-            exit;
-        } else {
-            $mensaje = '<div class="alert alert-error">Error al registrar usuario. El correo ya puede estar registrado.</div>';
-        }
+    if ($resultado) {
+        session_regenerate_id(true);
+        $_SESSION = [];
+
+        echo "<script>
+            alert('Usuario registrado correctamente.');
+            window.location.href = '../index.php';
+        </script>";
+        exit;
+    } else {
+        echo "<script>alert('Error al registrar usuario.');</script>";
     }
 }
 ?>
@@ -237,19 +231,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 15px;
-            text-align: left;
+            display: none;
         }
 
         .alert-error {
-            background: rgba(255, 68, 68, 0.9);
+            background: #ff4444;
             color: white;
-            border-left: 4px solid #ff0000;
         }
 
         .alert-success {
-            background: rgba(68, 255, 68, 0.9);
+            background: #44ff44;
             color: black;
-            border-left: 4px solid #00ff00;
         }
 
         /* Media Queries para Responsive */
@@ -293,12 +285,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
     <div class="form-box">
         <h2>Registrar Usuario</h2>
 
-        <!-- Mostrar mensajes de PHP -->
-        <?php if (!empty($mensaje)): ?>
-            <div id="php-message"><?php echo $mensaje; ?></div>
-        <?php endif; ?>
-
-        <!-- Mensaje para JavaScript -->
         <div id="alert-message" class="alert"></div>
 
         <form method="POST" id="registroForm">
@@ -308,23 +294,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             <div class="form-group">
                 <label for="nombres">Nombres:</label>
                 <input type="text" id="nombres" name="nombres" placeholder="Ingresa tus nombres"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo isset($_POST['nombres']) ? htmlspecialchars($_POST['nombres']) : ''; ?>">
+                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
             </div>
 
             <div class="form-group">
                 <label for="apellidos">Apellidos:</label>
                 <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo isset($_POST['apellidos']) ? htmlspecialchars($_POST['apellidos']) : ''; ?>">
+                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
             </div>
 
             <div class="form-group">
                 <label for="correo">Correo electrónico:</label>
                 <div class="input-group">
                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com"
-                        maxlength="100" required
-                        value="<?php echo isset($_POST['correo']) ? htmlspecialchars($_POST['correo']) : ''; ?>">
+                        maxlength="100" required>
                     <span id="correo-alerta" class="icono-alerta" title="Este correo ya está registrado"></span>
                 </div>
                 <small id="mensaje-error" class="mensaje-error"></small>
@@ -333,8 +316,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             <div class="form-group">
                 <label for="telefono">Teléfono:</label>
                 <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono"
-                    pattern="[0-9]{7,15}" maxlength="15" required
-                    value="<?php echo isset($_POST['telefono']) ? htmlspecialchars($_POST['telefono']) : ''; ?>">
+                    pattern="[0-9]{7,15}" maxlength="15" required>
                 <small style="color: #ccc;">Solo números, 7-15 dígitos</small>
             </div>
 
@@ -354,11 +336,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 <small id="password-match-error" class="mensaje-error">Las contraseñas no coinciden</small>
             </div>
 
-            <!-- ELIMINA ESTOS CAMPOS OCULTOS -->
-            <!-- 
+            <!-- Campos ocultos para rol y estado fijos -->
             <input type="hidden" name="id_rol" value="2">
             <input type="hidden" name="id_estado" value="1">
-            -->
 
             <button type="submit" name="registrar" id="btnRegistrar">Registrar</button>
         </form>
@@ -399,7 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             if (/[^A-Za-z0-9]/.test(password)) strength++;
 
             if (strength <= 2) {
-                feedback = "Débil";
+                feedback = "Debil";
                 strengthElement.className = "password-strength strength-weak";
             } else if (strength <= 4) {
                 feedback = "Media";
@@ -473,13 +453,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             if (!emailRegex.test(correo)) {
                 alerta.style.display = "inline";
                 mensajeError.style.display = "block";
-                mensajeError.textContent = "Formato de correo inválido";
+                mensajeError.textContent = "Formato de correo invalido";
                 btnRegistrar.disabled = true;
                 return;
             }
 
-            // Verificar si el correo existe - CORRIGE LA RUTA AQUÍ
-            fetch("../manage/verificar_correoManage.php", {
+            // Verificar si el correo existe
+            fetch("manage/verificar_correoManage.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -496,7 +476,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 if (data.existe) {
                     alerta.style.display = "inline";
                     mensajeError.style.display = "block";
-                    mensajeError.textContent = "Este correo ya está registrado. Intenta con otro.";
+                    mensajeError.textContent = "Este correo ya esta registrado. Intenta con otro.";
                     btnRegistrar.disabled = true;
                 } else {
                     alerta.style.display = "none";
@@ -510,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 }
             })
             .catch(err => {
-                console.error("Error en la verificación:", err);
+                console.error("Error en la verificacion:", err);
                 alerta.style.display = "none";
                 mensajeError.style.display = "none";
                 btnRegistrar.disabled = false;
@@ -526,7 +506,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (alerta.style.display === "inline") {
                 e.preventDefault();
-                mostrarAlerta("Por favor, usa un correo electrónico que no esté registrado.", "error");
+                mostrarAlerta("Por favor, usa un correo electronico que no este registrado.", "error");
                 return false;
             }
 
@@ -539,7 +519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password)) {
                 e.preventDefault();
-                mostrarAlerta("La contraseña debe contener mayúsculas, minúsculas y números.", "error");
+                mostrarAlerta("La contraseña debe contener mayusculas, minusculas y numeros.", "error");
                 return false;
             }
 
@@ -559,11 +539,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 }
             }
 
-            // Mostrar mensaje de carga
-            const btn = document.getElementById("btnRegistrar");
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
-            
             return true;
         });
 
