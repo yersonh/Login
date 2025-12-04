@@ -1,86 +1,93 @@
 <?php
-// Iniciar sesión (esto debe ir ANTES de cualquier output)
-session_start();
+require_once __DIR__ . '/../config/bootstrap_session.php';
 
-// Headers de seguridad
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
+
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// Incluir archivos necesarios
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/sesioncontrolador.php';
 
-// Generar token CSRF si no existe
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Conectar a la base de datos
 $database = new Database();
 $db = $database->conectar();
 
-// Crear controlador
 $controller = new SesionControlador($db);
 
-// Variable para mensajes de error
-$mensaje_error = '';
-$datos_formulario = [];
+// Variable para mensajes
+$mensaje = '';
 
-// Procesar formulario si es POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
-    // Validar token CSRF
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $mensaje_error = "Token de seguridad inválido";
+        die("Token de seguridad inválido");
+    }
+
+    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
+    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Validaciones
+    $errores = [];
+    
+    if (empty($nombres) || strlen($nombres) > 50) {
+        $errores[] = "Nombre inválido";
+    }
+
+    if (empty($apellidos) || strlen($apellidos) > 50) {
+        $errores[] = "Apellido inválido";
+    }
+
+    if (!$correo || strlen($correo) > 100) {
+        $errores[] = "Correo electrónico inválido";
+    }
+
+    if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
+        $errores[] = "Teléfono inválido (7-15 dígitos)";
+    }
+
+    if (empty($password) || strlen($password) < 8) {
+        $errores[] = "La contraseña debe tener al menos 8 caracteres";
+    }
+
+    if (!preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password)) {
+        $errores[] = "La contraseña debe contener mayúsculas, minúsculas y números";
+    }
+
+    if ($password !== $confirm_password) {
+        $errores[] = "Las contraseñas no coinciden";
+    }
+
+    // Si hay errores, mostrarlos
+    if (!empty($errores)) {
+        $mensaje = '<div class="alert alert-error">' . implode('<br>', $errores) . '</div>';
     } else {
-        // Recoger y sanitizar datos
-        $datos_formulario['nombres'] = trim(htmlspecialchars($_POST['nombres'] ?? ''));
-        $datos_formulario['apellidos'] = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
-        $datos_formulario['correo'] = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
-        $datos_formulario['telefono'] = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm_password = $_POST['confirm_password'] ?? '';
+        // Registrar usuario
+        $resultado = $controller->registrar(
+            $nombres,
+            $apellidos,
+            $correo,
+            $telefono,
+            $password
+        );
 
-        // Validaciones
-        if (empty($datos_formulario['nombres']) || strlen($datos_formulario['nombres']) > 50) {
-            $mensaje_error = "Nombre inválido (máximo 50 caracteres)";
-        } elseif (empty($datos_formulario['apellidos']) || strlen($datos_formulario['apellidos']) > 50) {
-            $mensaje_error = "Apellido inválido (máximo 50 caracteres)";
-        } elseif (!$datos_formulario['correo'] || strlen($datos_formulario['correo']) > 100) {
-            $mensaje_error = "Correo electrónico inválido";
-        } elseif (empty($datos_formulario['telefono']) || strlen($datos_formulario['telefono']) < 7 || strlen($datos_formulario['telefono']) > 15) {
-            $mensaje_error = "Teléfono inválido (7-15 dígitos)";
-        } elseif (empty($password) || strlen($password) < 8) {
-            $mensaje_error = "La contraseña debe tener al menos 8 caracteres";
-        } elseif (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) {
-            $mensaje_error = "La contraseña debe contener mayúsculas, minúsculas y números";
-        } elseif ($password !== $confirm_password) {
-            $mensaje_error = "Las contraseñas no coinciden";
-        }
-
-        // Si no hay errores, intentar registrar
-        if (empty($mensaje_error)) {
-            $resultado = $controller->registrar(
-                $datos_formulario['nombres'],
-                $datos_formulario['apellidos'],
-                $datos_formulario['correo'],
-                $datos_formulario['telefono'],
-                $password
-            );
-
-            if ($resultado) {
-                // Limpiar sesión y redirigir
-                session_regenerate_id(true);
-                $_SESSION = [];
-                
-                // Redirigir a index.php
-                header("Location: ../index.php?registro=exitoso");
-                exit;
-            } else {
-                $mensaje_error = "Error al registrar usuario. El correo ya puede estar registrado.";
-            }
+        if ($resultado) {
+            session_regenerate_id(true);
+            
+            header("Location: ../index.php?registro=exitoso");
+            exit;
+        } else {
+            $mensaje = '<div class="alert alert-error">Error al registrar usuario. El correo ya puede estar registrado.</div>';
         }
     }
 }
@@ -286,11 +293,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
     <div class="form-box">
         <h2>Registrar Usuario</h2>
 
-        <!-- Mostrar mensajes de error de PHP -->
-        <?php if (!empty($mensaje_error)): ?>
-            <div class="alert alert-error" id="php-error-message">
-                <?php echo htmlspecialchars($mensaje_error); ?>
-            </div>
+        <!-- Mostrar mensajes de PHP -->
+        <?php if (!empty($mensaje)): ?>
+            <div id="php-message"><?php echo $mensaje; ?></div>
         <?php endif; ?>
 
         <!-- Mensaje para JavaScript -->
@@ -304,14 +309,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 <label for="nombres">Nombres:</label>
                 <input type="text" id="nombres" name="nombres" placeholder="Ingresa tus nombres"
                     maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo isset($datos_formulario['nombres']) ? htmlspecialchars($datos_formulario['nombres']) : ''; ?>">
+                    value="<?php echo isset($_POST['nombres']) ? htmlspecialchars($_POST['nombres']) : ''; ?>">
             </div>
 
             <div class="form-group">
                 <label for="apellidos">Apellidos:</label>
                 <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos"
                     maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo isset($datos_formulario['apellidos']) ? htmlspecialchars($datos_formulario['apellidos']) : ''; ?>">
+                    value="<?php echo isset($_POST['apellidos']) ? htmlspecialchars($_POST['apellidos']) : ''; ?>">
             </div>
 
             <div class="form-group">
@@ -319,7 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 <div class="input-group">
                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com"
                         maxlength="100" required
-                        value="<?php echo isset($datos_formulario['correo']) ? htmlspecialchars($datos_formulario['correo']) : ''; ?>">
+                        value="<?php echo isset($_POST['correo']) ? htmlspecialchars($_POST['correo']) : ''; ?>">
                     <span id="correo-alerta" class="icono-alerta" title="Este correo ya está registrado"></span>
                 </div>
                 <small id="mensaje-error" class="mensaje-error"></small>
@@ -329,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 <label for="telefono">Teléfono:</label>
                 <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono"
                     pattern="[0-9]{7,15}" maxlength="15" required
-                    value="<?php echo isset($datos_formulario['telefono']) ? htmlspecialchars($datos_formulario['telefono']) : ''; ?>">
+                    value="<?php echo isset($_POST['telefono']) ? htmlspecialchars($_POST['telefono']) : ''; ?>">
                 <small style="color: #ccc;">Solo números, 7-15 dígitos</small>
             </div>
 
@@ -348,6 +353,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                     minlength="8" required>
                 <small id="password-match-error" class="mensaje-error">Las contraseñas no coinciden</small>
             </div>
+
+            <!-- ELIMINA ESTOS CAMPOS OCULTOS -->
+            <!-- 
+            <input type="hidden" name="id_rol" value="2">
+            <input type="hidden" name="id_estado" value="1">
+            -->
 
             <button type="submit" name="registrar" id="btnRegistrar">Registrar</button>
         </form>
@@ -467,11 +478,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 return;
             }
 
-            // IMPORTANTE: Ajusta esta ruta según tu estructura de archivos
-            // Si registrarusuario.php está en views/, y verificar_correoManage.php está en views/manage/
-            // entonces la ruta es "manage/verificar_correoManage.php"
-            // Si está en otra ubicación, ajusta la ruta
-            fetch("manage/verificar_correoManage.php", {
+            // Verificar si el correo existe - CORRIGE LA RUTA AQUÍ
+            fetch("../manage/verificar_correoManage.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -562,14 +570,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         document.getElementById("telefono").addEventListener("input", function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
-
-        // Ocultar mensaje de error de PHP después de 5 segundos
-        const phpError = document.getElementById("php-error-message");
-        if (phpError) {
-            setTimeout(() => {
-                phpError.style.display = "none";
-            }, 5000);
-        }
     </script>
 </body>
 </html>
