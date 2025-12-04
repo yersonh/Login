@@ -1,5 +1,90 @@
 <?php
+session_start();
 
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
+
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../controllers/sesioncontrolador.php';
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+$database = new Database();
+$db = $database->conectar();
+
+$controller = new SesionControlador($db);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
+
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Token de seguridad inválido");
+    }
+
+    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
+    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Validaciones
+    if (empty($nombres) || strlen($nombres) > 50) {
+        die("Nombre inválido");
+    }
+
+    if (empty($apellidos) || strlen($apellidos) > 50) {
+        die("Apellido inválido");
+    }
+
+    if (!$correo || strlen($correo) > 100) {
+        die("Correo electrónico inválido");
+    }
+
+    if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
+        die("Teléfono inválido");
+    }
+
+    if (empty($password) || strlen($password) < 8) {
+        die("La contraseña debe tener al menos 8 caracteres");
+    }
+
+    if (!preg_match('/[A-Z]/', $password) ||
+        !preg_match('/[a-z]/', $password) ||
+        !preg_match('/[0-9]/', $password)) {
+        die("La contraseña debe contener mayúsculas, minúsculas y números");
+    }
+
+    if ($password !== $confirm_password) {
+        die("Las contraseñas no coinciden");
+    }
+
+    // Registrar usuario
+    $resultado = $controller->registrar(
+        $nombres,
+        $apellidos,
+        $correo,
+        $telefono,
+        $password
+    );
+
+    if ($resultado) {
+        session_regenerate_id(true);
+        $_SESSION = [];
+
+        echo "<script>
+            alert('Usuario registrado correctamente.');
+            window.location.href = '../index.php';
+        </script>";
+        exit;
+    } else {
+        echo "<script>alert('Error al registrar usuario.');</script>";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -7,7 +92,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Registro seguro de usuario - Ojo en la vía">
-    <link rel="shortcut icon" href="../imagenes/fiveicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../imagenes/image.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>Registrar Usuario - Ojo en la vía</title>
@@ -198,7 +283,7 @@
 </head>
 <body>
     <div class="form-box">
-        <h2>👤 Registrar Usuario</h2>
+        <h2>Registrar Usuario</h2>
 
         <div id="alert-message" class="alert"></div>
 
@@ -223,7 +308,7 @@
                 <div class="input-group">
                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com"
                         maxlength="100" required>
-                    <span id="correo-alerta" class="icono-alerta" title="Este correo ya está registrado">⚠️</span>
+                    <span id="correo-alerta" class="icono-alerta" title="Este correo ya está registrado"></span>
                 </div>
                 <small id="mensaje-error" class="mensaje-error"></small>
             </div>
@@ -243,6 +328,14 @@
                 <div id="password-strength" class="password-strength"></div>
             </div>
 
+            <div class="form-group">
+                <label for="confirm_password">Confirmar Contraseña:</label>
+                <input type="password" id="confirm_password" name="confirm_password"
+                    placeholder="Repite tu contraseña"
+                    minlength="8" required>
+                <small id="password-match-error" class="mensaje-error">Las contraseñas no coinciden</small>
+            </div>
+
             <!-- Campos ocultos para rol y estado fijos -->
             <input type="hidden" name="id_rol" value="2">
             <input type="hidden" name="id_estado" value="1">
@@ -250,7 +343,7 @@
             <button type="submit" name="registrar" id="btnRegistrar">Registrar</button>
         </form>
 
-        <a href="../index.php" class="volver-link">⬅ Volver al inicio</a>
+        <a href="../index.php" class="volver-link">Volver al inicio</a>
     </div>
 
     <script>
@@ -286,7 +379,7 @@
             if (/[^A-Za-z0-9]/.test(password)) strength++;
 
             if (strength <= 2) {
-                feedback = "Débil";
+                feedback = "Debil";
                 strengthElement.className = "password-strength strength-weak";
             } else if (strength <= 4) {
                 feedback = "Media";
@@ -297,7 +390,39 @@
             }
 
             strengthElement.textContent = `Fortaleza: ${feedback}`;
+            
+            // Verificar coincidencia de contraseñas
+            verificarCoincidenciaContraseñas();
         });
+
+        // Verificar coincidencia de contraseñas
+        document.getElementById("confirm_password").addEventListener("input", function(e) {
+            verificarCoincidenciaContraseñas();
+        });
+
+        function verificarCoincidenciaContraseñas() {
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+            const errorElement = document.getElementById("password-match-error");
+            const btnRegistrar = document.getElementById("btnRegistrar");
+
+            if (confirmPassword.length === 0) {
+                errorElement.style.display = "none";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorElement.style.display = "block";
+                btnRegistrar.disabled = true;
+            } else {
+                errorElement.style.display = "none";
+                // Solo habilitar si no hay otros errores
+                const correoError = document.getElementById("correo-alerta").style.display !== "inline";
+                if (correoError) {
+                    btnRegistrar.disabled = false;
+                }
+            }
+        }
 
         document.getElementById("correo").addEventListener("blur", function() {
             verificarCorreo(this.value);
@@ -328,7 +453,7 @@
             if (!emailRegex.test(correo)) {
                 alerta.style.display = "inline";
                 mensajeError.style.display = "block";
-                mensajeError.textContent = "Formato de correo inválido";
+                mensajeError.textContent = "Formato de correo invalido";
                 btnRegistrar.disabled = true;
                 return;
             }
@@ -351,16 +476,21 @@
                 if (data.existe) {
                     alerta.style.display = "inline";
                     mensajeError.style.display = "block";
-                    mensajeError.textContent = "Este correo ya está registrado. Intenta con otro.";
+                    mensajeError.textContent = "Este correo ya esta registrado. Intenta con otro.";
                     btnRegistrar.disabled = true;
                 } else {
                     alerta.style.display = "none";
                     mensajeError.style.display = "none";
-                    btnRegistrar.disabled = false;
+                    // Verificar si las contraseñas coinciden antes de habilitar
+                    const password = document.getElementById("password").value;
+                    const confirmPassword = document.getElementById("confirm_password").value;
+                    if (password === confirmPassword || confirmPassword.length === 0) {
+                        btnRegistrar.disabled = false;
+                    }
                 }
             })
             .catch(err => {
-                console.error("Error en la verificación:", err);
+                console.error("Error en la verificacion:", err);
                 alerta.style.display = "none";
                 mensajeError.style.display = "none";
                 btnRegistrar.disabled = false;
@@ -372,10 +502,11 @@
             const correo = document.getElementById("correo").value;
             const alerta = document.getElementById("correo-alerta");
             const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
 
             if (alerta.style.display === "inline") {
                 e.preventDefault();
-                mostrarAlerta("Por favor, usa un correo electrónico que no esté registrado.", "error");
+                mostrarAlerta("Por favor, usa un correo electronico que no este registrado.", "error");
                 return false;
             }
 
@@ -388,11 +519,18 @@
 
             if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password)) {
                 e.preventDefault();
-                mostrarAlerta("La contraseña debe contener mayúsculas, minúsculas y números.", "error");
+                mostrarAlerta("La contraseña debe contener mayusculas, minusculas y numeros.", "error");
                 return false;
             }
 
-            const campos = ['nombres', 'apellidos', 'telefono', 'password'];
+            // Validar que las contraseñas coincidan
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                mostrarAlerta("Las contraseñas no coinciden.", "error");
+                return false;
+            }
+
+            const campos = ['nombres', 'apellidos', 'telefono', 'password', 'confirm_password'];
             for (let campo of campos) {
                 if (!document.getElementById(campo).value.trim()) {
                     e.preventDefault();
