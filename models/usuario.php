@@ -6,15 +6,13 @@ class Usuario {
         $this->conn = $db;
     }
 
-    public function insertar($id_persona, $id_rol, $id_estado, $correo, $password) {
+    public function insertar($id_persona, $correo, $password) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO usuario (id_persona, id_rol, id_estado, correo, contrasena)
-                VALUES (:id_persona, :id_rol, :id_estado, :correo, :password)";
+        $sql = "INSERT INTO usuario (id_persona, correo, contrasena)
+                VALUES (:id_persona, :correo, :password)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id_persona', $id_persona);
-        $stmt->bindParam(':id_rol', $id_rol);
-        $stmt->bindParam(':id_estado', $id_estado);
         $stmt->bindParam(':correo', $correo);
         $stmt->bindParam(':password', $hash);
 

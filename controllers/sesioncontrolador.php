@@ -12,7 +12,7 @@ class SesionControlador {
     }
 
     public function registrar($nombres, $apellidos, $correo, $telefono, $password) {
-
+        // Verificar si el correo ya existe
         if ($this->usuarioModel->existeCorreo($correo)) {
             return false;
         }
@@ -21,11 +21,8 @@ class SesionControlador {
         $id_persona = $this->personaModel->insertar($nombres, $apellidos, $telefono);
 
         if ($id_persona) {
-            $id_rol = 2; 
-            $id_estado = 1; 
-            
-            // Insertar usuario asociado a la persona
-            return $this->usuarioModel->insertar($id_persona, $id_rol, $id_estado, $correo, $password);
+            // Solo pasar id_persona, correo y password (sin id_rol ni id_estado)
+            return $this->usuarioModel->insertar($id_persona, $correo, $password);
         }
 
         return false;
@@ -35,11 +32,8 @@ class SesionControlador {
         $usuario = $this->usuarioModel->obtenerPorCorreo($correo);
 
         if ($usuario && password_verify($password, $usuario['contrasena'])) {
-            if ($usuario['id_estado'] == 1) { // 1 = Activo
-                return $usuario;
-            } else {
-                return false;
-            }
+            // Ya no verificamos id_estado porque no existe
+            return $usuario;
         }
 
         return false;
