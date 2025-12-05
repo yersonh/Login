@@ -173,39 +173,202 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         if ($stmtToken->execute()) {
             $link = "{$base_url}/views/manage/nueva_contraseña.php?token={$token}";
             
-            // Obtener el nombre de la persona
             $nombrePersona = $usuario['nombres'] . ' ' . $usuario['apellidos'];
+            $nombreSistema = "Sistema SGEA";
+            $nombreCompletoSistema = "Sistema SGEA - Sistema de Gestión y Enrutamiento Administrativo";
             
-            // Corrección: La etiqueta <strong> estaba mal cerrada
-            $nombreSistema = "Sistema SGEA Sistema de Gestión y Enrutamiento Administrativo";
+            $logo_url = $base_url . "/imagenes/logo.php";
 
             $payload = [
                 "sender" => [
-                    "name"  => getenv('SMTP_FROM_NAME') ?: "Soporte - Ojo en la Vía",
+                    "name"  => getenv('SMTP_FROM_NAME') ?: "Soporte - Sistema SGEA",
                     "email" => getenv('SMTP_FROM') ?: "988a48002@smtp-brevo.com"
                 ],
                 "to" => [
                     [
                         "email" => $correoUsuario,
-                        "name" => $nombrePersona  // Opcional: nombre para el destinatario
+                        "name" => $nombrePersona
                     ]
                 ],
-                "subject" => "Recuperación de contraseña - Ojo en la Vía",
+                "subject" => "Recuperación de contraseña - Sistema SGEA",
                 "htmlContent" => "
-                    <h2>Recuperación de Contraseña</h2>
-                    <p>Hola <strong>{$nombrePersona}</strong>,</p>
-                    <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>{$nombreSistema}</strong>.</p>
-                    <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
-                    <p>
-                        <a href='{$link}'
-                            style='background: #1e8ee9; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>
-                            Restablecer Contraseña
-                        </a>
-                    </p>
-                    <p><strong>Este enlace expirará en 1 hora.</strong></p>
-                    <p>Si no solicitaste este cambio, ignora este mensaje.</p>
-                    <br>
-                    <p>Saludos,<br>El equipo de {$nombreSistema}</p>
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset='UTF-8'>
+                        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                        <title>Recuperación de Contraseña</title>
+                        <style>
+                            body {
+                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                line-height: 1.6;
+                                color: #333333;
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                background-color: #f8f9fa;
+                            }
+                            .container {
+                                background: white;
+                                border-radius: 8px;
+                                overflow: hidden;
+                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                                border: 1px solid #e0e0e0;
+                            }
+                            .header {
+                                padding: 25px 20px;
+                                text-align: center;
+                                border-bottom: 1px solid #e0e0e0;
+                                background: #ffffff;
+                            }
+                            .logo {
+                                max-width: 180px;
+                                height: auto;
+                                margin-bottom: 15px;
+                            }
+                            .content {
+                                padding: 30px;
+                            }
+                            .btn-primary {
+                                background: #1e8ee9;
+                                color: white;
+                                padding: 12px 25px;
+                                text-decoration: none;
+                                border-radius: 4px;
+                                display: inline-block;
+                                font-weight: bold;
+                                font-size: 15px;
+                                margin: 20px 0;
+                                transition: background 0.3s;
+                            }
+                            .btn-primary:hover {
+                                background: #1565c0;
+                            }
+                            .footer {
+                                background: #f8f9fa;
+                                padding: 20px;
+                                text-align: center;
+                                color: #666;
+                                font-size: 13px;
+                                border-top: 1px solid #e9ecef;
+                            }
+                            .warning-box {
+                                background: #f8f9fa;
+                                border-left: 3px solid #6c757d;
+                                padding: 12px 15px;
+                                margin: 20px 0;
+                                font-size: 14px;
+                            }
+                            .expiry-note {
+                                color: #666;
+                                font-size: 13px;
+                                margin: 15px 0;
+                            }
+                            .institutional-text {
+                                color: #444;
+                                font-size: 14px;
+                                line-height: 1.5;
+                            }
+                            .link-backup {
+                                background: #f8f9fa;
+                                padding: 8px 12px;
+                                border-radius: 4px;
+                                font-family: monospace;
+                                font-size: 11px;
+                                word-break: break-all;
+                                margin: 10px 0;
+                                display: block;
+                            }
+                            @media (max-width: 480px) {
+                                .content { padding: 20px; }
+                                .btn-primary { 
+                                    padding: 10px 20px;
+                                    width: 100%;
+                                    text-align: center;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class='container'>
+                            <!-- ENCABEZADO CON LOGO INSTITUCIONAL -->
+                            <div class='header'>
+                                <img src='{$logo_url}' 
+                                     alt='Logo Gobernación' 
+                                     class='logo'
+                                     style='max-width: 180px; height: auto;'>
+                                <h2 style='color: #333; margin: 10px 0 5px 0; font-size: 20px;'>
+                                    Sistema SGEA
+                                </h2>
+                                <p style='color: #666; margin: 0; font-size: 14px;'>
+                                    Sistema de Gestión y Enrutamiento Administrativo
+                                </p>
+                            </div>
+                            
+                            <!-- CONTENIDO PRINCIPAL -->
+                            <div class='content'>
+                                <p class='institutional-text'>
+                                    Señor(a) <strong>{$nombrePersona}</strong>,
+                                </p>
+                                
+                                <p class='institutional-text'>
+                                    Hemos recibido una solicitud para restablecer su contraseña en el 
+                                    <strong>Sistema SGEA - Sistema de Gestión y Enrutamiento Administrativo</strong> 
+                                    de la Gobernación.
+                                </p>
+                                
+                                <p class='institutional-text'>
+                                    Para crear una nueva contraseña, haga clic en el siguiente enlace:
+                                </p>
+                                
+                                <!-- BOTÓN DE ACCIÓN -->
+                                <div style='text-align: center; margin: 25px 0;'>
+                                    <a href='{$link}' class='btn-primary'>
+                                        Restablecer Contraseña
+                                    </a>
+                                </div>
+                                
+                                <p class='expiry-note'>
+                                    <strong>⏰ Vigencia:</strong> Este enlace tiene una validez de 1 hora.
+                                </p>
+                                
+                                <p class='institutional-text'>
+                                    <strong>Enlace alternativo:</strong> Si presenta inconvenientes con el botón anterior, 
+                                    copie y pegue la siguiente dirección en su navegador:
+                                </p>
+                                
+                                <span class='link-backup'>{$link}</span>
+                                
+                                <!-- AVISO DE SEGURIDAD -->
+                                <div class='warning-box'>
+                                    <strong>Nota de seguridad:</strong><br>
+                                    Si usted no solicitó el restablecimiento de contraseña, ignore este mensaje. 
+                                    Su cuenta permanecerá segura.
+                                </div>
+                                
+                                <p class='institutional-text'>
+                                    Para asistencia adicional, comuníquese con el área de soporte técnico.
+                                </p>
+                            </div>
+                            
+                            <!-- PIE DE PÁGINA INSTITUCIONAL -->
+                            <div class='footer'>
+                                <div style='margin-bottom: 15px;'>
+                                    <img src='{$logo_url}' 
+                                         alt='Logo Gobernación' 
+                                         style='max-width: 80px; height: auto; opacity: 0.7;'>
+                                </div>
+                                <p style='margin: 5px 0;'><strong>Sistema SGEA</strong></p>
+                                <p style='margin: 5px 0; font-size: 12px;'>Gobernación - Sistema de Gestión y Enrutamiento Administrativo</p>
+                                <p style='margin-top: 15px; font-size: 11px; color: #999;'>
+                                    Este es un mensaje automático generado por el sistema.<br>
+                                    Favor no responder a esta dirección de correo.<br>
+                                    © " . date('Y') . " Gobernación. Todos los derechos reservados.
+                                </p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
                 "
             ];
 
@@ -233,7 +396,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             return "Error al generar el enlace de recuperación.";
         }
     } else {
-        return "El correo ingresado no está registrado en nuestro sistema.";
+        return "Si el correo está registrado en nuestro sistema, recibirás un enlace de recuperación en unos minutos.";
     }
 }
 ?>
