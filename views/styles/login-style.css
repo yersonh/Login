@@ -252,6 +252,7 @@ body {
     
     .left {
         padding: 40px 15px 30px 15px;
+        min-height: auto; /* Elimina la altura mínima fija */
     }
 }
 
@@ -455,7 +456,8 @@ input:-webkit-autofill:focus {
 
     .left {
         order: 2;
-        padding: 40px 25px;
+        padding: 40px 25px 25px 25px; /* Padding inferior reducido */
+        min-height: auto; /* Elimina altura mínima fija */
     }
 
     .right {
@@ -516,7 +518,7 @@ input:-webkit-autofill:focus {
     }
 
     .left {
-        padding: 30px 20px;
+        padding: 30px 20px 20px 20px; /* Padding inferior reducido */
     }
 
     .input-box input {
@@ -555,25 +557,5 @@ input:-webkit-autofill:focus {
 @media (max-width: 360px) {
     .titulo-sgea {
         font-size: 1.1rem;
-    }
-}
-/* Para pantallas medianas (tablets) */
-@media (max-width: 768px) {
-    .icons {
-        margin-top: 20px; /* Ajusta este valor según necesites */
-    }
-}
-
-/* Para pantallas pequeñas (móviles) */
-@media (max-width: 480px) {
-    .icons {
-        margin-top: 15px; /* Aún más reducido para móviles muy pequeños */
-    }
-}
-
-/* Para móviles muy pequeños */
-@media (max-width: 360px) {
-    .icons {
-        margin-top: 10px; /* Mínimo espacio */
     }
 }
