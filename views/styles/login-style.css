@@ -237,8 +237,38 @@ body {
 }
 
 .titulo-sgea {
-    font-size: 1.6rem;
-    line-height: 1.2; 
+    font-size: 1.8rem;
+    line-height: 1.2;
+    word-break: break-word;
+    hyphens: auto; /* Agrega guiones automáticos si es necesario */
+}
+
+@media (max-width: 768px) {
+    .titulo-sgea {
+        font-size: 1.4rem;
+        line-height: 1.1;
+        margin: 25px 0; /* Reducir margen para dar más espacio */
+    }
+    
+    .left {
+        padding: 40px 15px 30px 15px; /* Reducir padding lateral */
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-sgea {
+        font-size: 1.2rem;
+    }
+    
+    .left h1 {
+        margin: 20px 0; /* Aún menos margen */
+    }
+}
+
+@media (max-width: 360px) {
+    .titulo-sgea {
+        font-size: 1.1rem;
+    }
 }
 
 .alert-success {
