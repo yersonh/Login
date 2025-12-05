@@ -64,6 +64,11 @@
             margin-bottom: 40px;
         }
         
+        /* Centrar el último botón cuando haya 2 columnas */
+        .menu-item.last-item-center {
+            grid-column: 2 / 3; /* Centrado en la columna del medio */
+        }
+        
         .menu-item {
             background-color: white;
             border-radius: 10px;
@@ -163,6 +168,13 @@
                 grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
             }
             
+            /* Para centrar el último botón en 2 columnas */
+            .menu-item:nth-child(odd):last-child {
+                grid-column: 1 / -1;
+                justify-self: center;
+                width: 50%; /* Ocupa solo la mitad del ancho */
+            }
+            
             .title {
                 font-size: 28px;
             }
@@ -177,6 +189,13 @@
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
                 gap: 12px;
+            }
+            
+            /* Para centrar el último botón en 2 columnas */
+            .menu-item:nth-child(odd):last-child {
+                grid-column: 1 / -1;
+                justify-self: center;
+                width: 50%;
             }
             
             .title {
@@ -213,6 +232,13 @@
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr); /* Mantenemos 2 columnas */
                 gap: 10px;
+            }
+            
+            /* Para centrar el último botón en 2 columnas */
+            .menu-item:nth-child(odd):last-child {
+                grid-column: 1 / -1;
+                justify-self: center;
+                width: 80%; /* Un poco más ancho en móviles pequeños */
             }
             
             .title {
@@ -267,6 +293,13 @@
                 grid-template-columns: 1fr; /* 1 columna solo en pantallas muy pequeñas */
             }
             
+            /* En una columna no necesitamos centrar */
+            .menu-item:nth-child(odd):last-child {
+                grid-column: 1 / -1;
+                justify-self: stretch;
+                width: 100%;
+            }
+            
             .logo {
                 max-height: 80px;
             }
@@ -282,7 +315,7 @@
         <div class="header">
             <div class="logo-container">
                 <!-- Logo de la Gobernación del Meta -->
-                <img src="/../imagenes/logo.php" alt="Logo Gobernación del Meta" class="logo">
+                <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
             </div>
             <h1 class="title">Secretaría de Minas y Energía</h1>
             <p class="subtitle">Selecciona una de las opciones disponibles</p>
@@ -348,7 +381,8 @@
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <div class="menu-item">
+            <!-- Último botón - Se centrará cuando haya número impar -->
+            <div class="menu-item last-item-center">
                 <i class="fas fa-tasks"></i>
                 <div class="menu-item-name">Tareas</div>
                 <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
@@ -368,7 +402,7 @@
         </div>
     </div>
     
-    <scripts>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Añadir funcionalidad a los botones del menú
             const menuItems = document.querySelectorAll('.menu-item');
@@ -386,7 +420,9 @@
                     }
                 });
             });
+            
+            const logoImg = document.querySelector('.logo');
         });
-    </scripts>
+    </script>
 </body>
 </html>
