@@ -453,9 +453,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .left h1 {
-        font-size: clamp(2rem, 4vw, 2.5rem);
-        margin-bottom: 20px;
-        text-align: center;
+    font-size: clamp(1.6rem, 2.5vw, 2rem);
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.3;
     }
 
     .left p {
