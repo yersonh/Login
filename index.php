@@ -149,7 +149,14 @@ if (rand(1, 10) === 1) {
 }
 
 function procesarRecuperacion($db, $correoUsuario, $base_url) {
-    $stmt = $db->prepare("SELECT * FROM usuario WHERE correo = :correo LIMIT 1");
+    // Modifica la consulta para incluir datos de persona
+    $stmt = $db->prepare("SELECT 
+                            u.id_usuario,
+                            p.nombres,
+                            p.apellidos
+                          FROM usuario u
+                          INNER JOIN persona p ON u.id_persona = p.id_persona
+                          WHERE u.correo = :correo LIMIT 1");
     $stmt->bindParam(':correo', $correoUsuario);
     $stmt->execute();
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -165,6 +172,12 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
         if ($stmtToken->execute()) {
             $link = "{$base_url}/views/manage/nueva_contraseña.php?token={$token}";
+            
+            // Obtener el nombre de la persona
+            $nombrePersona = $usuario['nombres'] . ' ' . $usuario['apellidos'];
+            
+            // Corrección: La etiqueta <strong> estaba mal cerrada
+            $nombreSistema = "Sistema SGEA Sistema de Gestión y Enrutamiento Administrativo";
 
             $payload = [
                 "sender" => [
@@ -172,13 +185,16 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     "email" => getenv('SMTP_FROM') ?: "988a48002@smtp-brevo.com"
                 ],
                 "to" => [
-                    ["email" => $correoUsuario]
+                    [
+                        "email" => $correoUsuario,
+                        "name" => $nombrePersona  // Opcional: nombre para el destinatario
+                    ]
                 ],
                 "subject" => "Recuperación de contraseña - Ojo en la Vía",
                 "htmlContent" => "
                     <h2>Recuperación de Contraseña</h2>
-                    <p>Hola,</p>
-                    <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo.</p>
+                    <p>Hola <strong>{$nombrePersona}</strong>,</p>
+                    <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>{$nombreSistema}</strong>.</p>
                     <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
                     <p>
                         <a href='{$link}'
@@ -189,7 +205,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     <p><strong>Este enlace expirará en 1 hora.</strong></p>
                     <p>Si no solicitaste este cambio, ignora este mensaje.</p>
                     <br>
-                    <p>Saludos,<br>El equipo de Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</p>
+                    <p>Saludos,<br>El equipo de {$nombreSistema}</p>
                 "
             ];
 
