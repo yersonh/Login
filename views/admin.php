@@ -64,11 +64,6 @@
             margin-bottom: 40px;
         }
         
-        /* Centrar el último botón cuando haya 2 columnas */
-        .menu-item.last-item-center {
-            grid-column: 2 / 3; /* Centrado en la columna del medio */
-        }
-        
         .menu-item {
             background-color: white;
             border-radius: 10px;
@@ -168,13 +163,6 @@
                 grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
             }
             
-            /* Para centrar el último botón en 2 columnas */
-            .menu-item:nth-child(odd):last-child {
-                grid-column: 1 / -1;
-                justify-self: center;
-                width: 50%; /* Ocupa solo la mitad del ancho */
-            }
-            
             .title {
                 font-size: 28px;
             }
@@ -191,11 +179,12 @@
                 gap: 12px;
             }
             
-            /* Para centrar el último botón en 2 columnas */
-            .menu-item:nth-child(odd):last-child {
+            /* SOLO para móviles - Centrar el último botón */
+            .menu-item:nth-child(9):last-child {
                 grid-column: 1 / -1;
                 justify-self: center;
-                width: 50%;
+                width: 50%; /* Ocupa solo la mitad del ancho para verse centrado */
+                max-width: 250px; /* Ancho máximo */
             }
             
             .title {
@@ -234,11 +223,12 @@
                 gap: 10px;
             }
             
-            /* Para centrar el último botón en 2 columnas */
-            .menu-item:nth-child(odd):last-child {
+            /* SOLO para móviles pequeños - Centrar el último botón */
+            .menu-item:nth-child(9):last-child {
                 grid-column: 1 / -1;
                 justify-self: center;
                 width: 80%; /* Un poco más ancho en móviles pequeños */
+                max-width: 280px;
             }
             
             .title {
@@ -294,10 +284,11 @@
             }
             
             /* En una columna no necesitamos centrar */
-            .menu-item:nth-child(odd):last-child {
+            .menu-item:nth-child(9):last-child {
                 grid-column: 1 / -1;
                 justify-self: stretch;
                 width: 100%;
+                max-width: none;
             }
             
             .logo {
@@ -381,8 +372,8 @@
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Último botón - Se centrará cuando haya número impar -->
-            <div class="menu-item last-item-center">
+            <!-- Último botón - Solo se centrará en móviles -->
+            <div class="menu-item">
                 <i class="fas fa-tasks"></i>
                 <div class="menu-item-name">Tareas</div>
                 <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
@@ -420,8 +411,6 @@
                     }
                 });
             });
-            
-            const logoImg = document.querySelector('.logo');
         });
     </script>
 </body>
