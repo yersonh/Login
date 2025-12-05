@@ -860,6 +860,10 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 <div class="signup">
                     ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
                 </div>
+
+                <div class="sisgonTech">
+                    <small>Desarrollado por SisgonTech 2026. Version Runtime</small>
+                </div>
             </form>
         </div>
     </div>
