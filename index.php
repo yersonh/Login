@@ -48,7 +48,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['correo'] = $usuario['correo'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; // ← AÑADIR ESTA LÍNEA
 
-            header("Location: https://www.eltiempo.com/");
+            header("Location: /views/menu.php");
             exit();
             
         } else {
