@@ -58,6 +58,10 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
     }
 }
 
+// Variable para marcar error en los campos
+$has_login_error = false;
+$error_message = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
 
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -107,7 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 exit();
                 
             } else {
-                $error_message = "Credenciales incorrectas";
+                $has_login_error = true;
+                $error_message = "Credenciales incorrectas. Comprueba tu correo y contraseña e inténtalo de nuevo.";
             }
         } else {
             $correoRecuperacion = trim($_POST['email']);
@@ -195,7 +200,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             $ch = curl_init("https://api.brevo.com/v3/smtp/email");
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 "Accept: application/json",
-                "Content-Type: application/json",
+                "Content-Type": application/json",
                 "api-key: $apiKey"
             ]);
             curl_setopt($ch, CURLOPT_POST, true);
@@ -312,8 +317,24 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .right h2 {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         font-size: clamp(1.5rem, 3vw, 1.8rem);
+    }
+
+    /* Mensaje de error profesional */
+    .error-subtitle {
+        text-align: center;
+        color: #ff6b6b;
+        margin-bottom: 25px;
+        font-size: 14px;
+        line-height: 1.4;
+        padding: 0 10px;
+    }
+
+    .error-subtitle strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
     }
 
     .input-box {
@@ -333,6 +354,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         transition: border-color 0.3s;
     }
 
+    /* Borde rojo cuando hay error */
+    .input-box input.error-border {
+        border-bottom-color: #ff6b6b !important;
+    }
+
     .input-box input:focus {
         border-bottom-color: #1e8ee9;
     }
@@ -348,6 +374,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         transform: translateY(-50%);
         color: white;
         z-index: 2;
+    }
+
+    /* Icono rojo cuando hay error */
+    .input-box i.error-icon {
+        color: #ff6b6b;
     }
 
     /* Botón para mostrar/ocultar contraseña */
@@ -439,17 +470,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     /* Mensajes */
-    .alert-error {
-        background: rgba(255, 68, 68, 0.9);
-        color: white;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        text-align: center;
-        display: <?php echo isset($error_message) ? 'block' : 'none'; ?>;
-        border-left: 4px solid #ff4444;
-    }
-
     .alert-success {
         background: rgba(76, 175, 80, 0.9);
         color: white;
@@ -601,8 +621,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         <div class="right">
         <h2>Iniciar Sesión</h2>
 
-        <?php if (isset($error_message)): ?>
-            <div class="alert-error"><?php echo $error_message; ?></div>
+        <?php if ($has_login_error): ?>
+            <div class="error-subtitle">
+                <strong>Credenciales incorrectas</strong>
+                Comprueba tu correo y contraseña e inténtalo de nuevo.
+            </div>
         <?php endif; ?>
 
         <?php if (isset($mensaje_recuperacion)): ?>
@@ -613,7 +636,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             <div class="input-box">
-                <i class="fa-solid fa-envelope"></i>
+                <i class="fa-solid fa-envelope <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
                 <input
                     type="email"
                     name="email"
@@ -622,11 +645,12 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
                     autocomplete="email"
                     id="email-field"
+                    class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
                 >
             </div>
 
             <div class="input-box">
-                <i class="fa-solid fa-lock"></i>
+                <i class="fa-solid fa-lock <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
                 <input
                     type="password"
                     name="password"
@@ -634,6 +658,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     required
                     autocomplete="current-password"
                     id="password-field"
+                    class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
                 >
                 <button type="button" class="toggle-password" id="togglePassword">
                     <i class="fa-solid fa-eye"></i>
