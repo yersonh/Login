@@ -1,10 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -200,7 +193,7 @@ if (!isset($_SESSION['usuario_id'])) {
         <div class="header">
             <div class="logo-container">
                 <!-- Logo de la Gobernación del Meta -->
-                <img src="/../imagenes/logo.php" alt="Logo Gobernación del Meta" class="logo">
+                <img src="/../imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
             </div>
             <h1 class="title">Secretaría de Minas y Energía</h1>
             <p class="subtitle">Selecciona una de las opciones disponibles</p>
