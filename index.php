@@ -46,7 +46,6 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['telefono'] = $usuario['telefono'];
             $_SESSION['correo'] = $usuario['correo'];
 
-            // Redirigir a El Tiempo
             header("Location: https://www.eltiempo.com/");
             exit();
             
@@ -58,7 +57,6 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
     }
 }
 
-// Variable para marcar error en los campos
 $has_login_error = false;
 $error_message = '';
 
@@ -147,7 +145,6 @@ if (rand(1, 10) === 1) {
     try {
         limpiarTokensExpirados($db);
     } catch (Exception $e) {
-        // Silenciar error
     }
 }
 
@@ -213,8 +210,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
             if ($httpCode >= 200 && $httpCode < 300) {
                 return "Se ha enviado un enlace de recuperación a: $correoUsuario";
-            }
-            else {
+            } else {
                 return "Error al enviar el correo (Código: $httpCode).";
             }
         } else {
@@ -231,10 +227,9 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
+    <title>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
     <link rel="icon" href="/imagenes/image.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/image.png" type="image/png">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     * {
@@ -265,7 +260,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
     }
 
-    /* Lado izquierdo */
     .left {
         background: rgba(59, 57, 57, 0.8);
         color: white;
@@ -304,7 +298,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         color: #1e8ee9;
     }
 
-    /* Lado derecho */
     .right {
         background: rgba(40, 38, 38, 0.85);
         backdrop-filter: blur(10px);
@@ -317,24 +310,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .right h2 {
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 30px;
         font-size: clamp(1.5rem, 3vw, 1.8rem);
-    }
-
-    /* Mensaje de error profesional */
-    .error-subtitle {
-        text-align: center;
-        color: #ff6b6b;
-        margin-bottom: 25px;
-        font-size: 14px;
-        line-height: 1.4;
-        padding: 0 10px;
-    }
-
-    .error-subtitle strong {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 15px;
     }
 
     .input-box {
@@ -354,7 +331,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         transition: border-color 0.3s;
     }
 
-    /* Borde rojo cuando hay error */
     .input-box input.error-border {
         border-bottom-color: #ff6b6b !important;
     }
@@ -376,12 +352,10 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         z-index: 2;
     }
 
-    /* Icono rojo cuando hay error */
     .input-box i.error-icon {
         color: #ff6b6b;
     }
 
-    /* Botón para mostrar/ocultar contraseña */
     .toggle-password {
         position: absolute;
         right: 10px;
@@ -440,6 +414,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         border-radius: 8px;
         transition: all 0.3s;
         font-weight: bold;
+        margin-bottom: 15px;
     }
 
     .btn:hover {
@@ -450,6 +425,25 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .btn:active {
         transform: translateY(0);
+    }
+
+    /* Mensaje de error profesional debajo del botón */
+    .error-message {
+        text-align: center;
+        color: #ff6b6b;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.4;
+        padding: 10px;
+        border: 1px solid #ff6b6b;
+        border-radius: 8px;
+        background: rgba(255, 107, 107, 0.1);
+    }
+
+    .error-message strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
     }
 
     .signup {
@@ -469,7 +463,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         text-decoration: underline;
     }
 
-    /* Mensajes */
     .alert-success {
         background: rgba(76, 175, 80, 0.9);
         color: white;
@@ -481,7 +474,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         display: <?php echo isset($mensaje_recuperacion) ? 'block' : 'none'; ?>;
     }
 
-    /* Modal de recuperación */
     .modal {
         display: none;
         position: fixed;
@@ -535,7 +527,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         line-height: 1.5;
     }
 
-    /* Mejorar el autocompletar del navegador */
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus {
@@ -544,7 +535,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         transition: background-color 5000s ease-in-out 0s !important;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
         body {
             padding: 15px;
@@ -582,9 +572,9 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             margin: 20%;
             width: 95%;
         }
-        }
+    }
 
-        @media (max-width: 480px) {
+    @media (max-width: 480px) {
         .left, .right {
             padding: 25px 20px;
         }
@@ -601,104 +591,101 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         .modal-content {
             padding: 20px;
         }
-        }
+    }
     </style>
 </head>
 <body>
     <div class="container">
-    <!-- Lado izquierdo -->
         <div class="left">
-        <h1>Bienvenido!</h1>
-        <p> Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
-        <div class="icons">
-            <i class="fab fa-facebook"></i>
-            <i class="fab fa-twitter"></i>
-            <i class="fab fa-instagram"></i>
-        </div>
+            <h1>Bienvenido!</h1>
+            <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
+            <div class="icons">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-instagram"></i>
+            </div>
         </div>
 
-        <!-- Lado derecho -->
         <div class="right">
-        <h2>Iniciar Sesión</h2>
+            <h2>Iniciar Sesión</h2>
 
-        <?php if ($has_login_error): ?>
-            <div class="error-subtitle">
-                <strong>Credenciales incorrectas</strong>
-                Comprueba tu correo y contraseña e inténtalo de nuevo.
-            </div>
-        <?php endif; ?>
+            <?php if (isset($mensaje_recuperacion)): ?>
+                <div class="alert-success"><?php echo $mensaje_recuperacion; ?></div>
+            <?php endif; ?>
 
-        <?php if (isset($mensaje_recuperacion)): ?>
-            <div class="alert-success"><?php echo $mensaje_recuperacion; ?></div>
-        <?php endif; ?>
+            <form method="POST" action="" id="loginForm" autocomplete="on">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
-        <form method="POST" action="" id="loginForm" autocomplete="on">
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
+                        autocomplete="email"
+                        id="email-field"
+                        class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
+                    >
+                </div>
 
-            <div class="input-box">
-                <i class="fa-solid fa-envelope <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    required
-                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
-                    autocomplete="email"
-                    id="email-field"
-                    class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
-                >
-            </div>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Contraseña"
+                        required
+                        autocomplete="current-password"
+                        id="password-field"
+                        class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
+                    >
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
 
-            <div class="input-box">
-                <i class="fa-solid fa-lock <?php echo $has_login_error ? 'error-icon' : ''; ?>"></i>
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Contraseña"
-                    required
-                    autocomplete="current-password"
-                    id="password-field"
-                    class="<?php echo $has_login_error ? 'error-border' : ''; ?>"
-                >
-                <button type="button" class="toggle-password" id="togglePassword">
-                    <i class="fa-solid fa-eye"></i>
-                </button>
-            </div>
+                <div class="options">
+                    <label>
+                        <input type="checkbox" name="remember"> Recuérdame
+                    </label>
+                    <a id="openRecoveryModal">¿Olvidaste tu contraseña?</a>
+                </div>
 
-            <div class="options">
-            <label>
-                <input type="checkbox" name="remember"> Recuérdame
-            </label>
-            <a id="openRecoveryModal">¿Olvidaste tu contraseña?</a>
-            </div>
+                <button class="btn" type="submit">Ingresar</button>
 
-            <button class="btn" type="submit">Ingresar</button>
+                <?php if ($has_login_error): ?>
+                    <div class="error-message">
+                        <strong>Credenciales incorrectas</strong>
+                        Comprueba tu correo y contraseña e inténtalo de nuevo.
+                    </div>
+                <?php endif; ?>
 
-            <div class="signup">
-            ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
-            </div>
-        </form>
+                <div class="signup">
+                    ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal de recuperación de contraseña -->
     <div id="recoveryModal" class="modal">
         <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-key"></i> Recuperar Contraseña</h3>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-text">
-            <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
-        </div>
-        <form method="POST" action="" id="recoveryForm">
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-            <div class="input-box">
-            <i class="fa-solid fa-envelope"></i>
-            <input type="email" name="email" placeholder="Tu correo electrónico" required autocomplete="email">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-key"></i> Recuperar Contraseña</h3>
+                <span class="close">&times;</span>
             </div>
-            <button class="btn" type="submit">Enviar Enlace</button>
-        </form>
+            <div class="modal-text">
+                <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+            </div>
+            <form method="POST" action="" id="recoveryForm">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Tu correo electrónico" required autocomplete="email">
+                </div>
+                <button class="btn" type="submit">Enviar Enlace</button>
+            </form>
         </div>
     </div>
 
@@ -759,8 +746,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
         return true;
     });
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Función para mostrar/ocultar contraseña
         const togglePassword = document.getElementById('togglePassword');
         const passwordField = document.getElementById('password-field');
         const toggleIcon = togglePassword.querySelector('i');
