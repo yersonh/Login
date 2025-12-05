@@ -636,6 +636,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         text-align: center;
         margin-top: 20px;
         font-size: 14px;
+        margin-bottom: 15px;
     }
 
     .signup a {
@@ -647,6 +648,13 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .signup a:hover {
         text-decoration: underline;
+    }
+
+    .sisgonTech {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 12px;
+        color: #ccc;
     }
 
     .alert-success {
