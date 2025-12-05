@@ -550,11 +550,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 </div>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" id="closeLicenseModal">
-                <i class="fa-solid fa-check"></i> Aceptar
-            </button>
-        </div>
+        
     </div>
 </div>
 
