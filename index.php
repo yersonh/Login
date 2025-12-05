@@ -46,9 +46,13 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['apellidos'] = $usuario['apellidos'];
             $_SESSION['telefono'] = $usuario['telefono'];
             $_SESSION['correo'] = $usuario['correo'];
-            $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; // ← AÑADIR ESTA LÍNEA
+            $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
 
-            header("Location: /views/menu.php");
+            if($_SESSION['tipo_usuario'] === 'administrador') {
+                header("Location: /views/admin.php");
+            } else {
+                header("Location: /views/menu.php");
+            }
             exit();
             
         } else {
@@ -82,7 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
     $_SESSION['telefono'] = $usuario['telefono'] ?? '';
     $_SESSION['correo'] = $usuario['correo'];
-    $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; // ← AÑADIR ESTA LÍNEA
+    $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; 
+
+    
 
     if ($remember) {
         try {
@@ -108,7 +114,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         }
     }
 
-    header("Location: views/menu.php");
+    if ($_SESSION['tipo_usuario'] === 'administrador') {
+        header("Location: views/admin.php");
+    } else {
+        header("Location: views/menu.php");
+    }
     exit();
     
 } else {
