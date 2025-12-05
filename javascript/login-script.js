@@ -163,14 +163,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const openLicenseBtn = document.getElementById('openLicenseModal');
     
     if (licenseModal && openLicenseBtn) {
-        //const closeLicenseBtn = licenseModal.querySelector('.close');
-        //const closeLicenseButton = document.getElementById('closeLicenseModal');
+        const closeLicenseBtn = licenseModal.querySelector('.close');
+        const closeLicenseButton = document.getElementById('closeLicenseModal');
         
         openLicenseBtn.addEventListener('click', function() {
             licenseModal.style.display = 'flex';
         });
 
-        /*if (closeLicenseBtn) {
+        if (closeLicenseBtn) {
             closeLicenseBtn.addEventListener('click', function() {
                 licenseModal.style.display = 'none';
             });
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeLicenseButton.addEventListener('click', function() {
                 licenseModal.style.display = 'none';
             });
-        }*/
+        }
 
         // Cerrar al hacer clic fuera del modal de licencia
         window.addEventListener('click', function(event) {
