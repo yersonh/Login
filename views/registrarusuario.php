@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Registro seguro de usuario - Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo">
-    <link rel="shortcut icon" href="../imagenes/image.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../imagenes/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>Registrar Usuario - Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>

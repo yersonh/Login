@@ -228,8 +228,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
-    <link rel="icon" href="/imagenes/image.png" type="image/png">
-    <link rel="shortcut icon" href="/imagenes/image.png" type="image/png">
+    <link rel="icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     * {
