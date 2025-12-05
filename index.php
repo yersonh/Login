@@ -776,7 +776,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1>Bienvenido!</h1>
+            <h1>Sistemas SGEA Sistema y enrutamiento administrativo</h1>
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
