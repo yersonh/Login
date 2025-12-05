@@ -33,7 +33,7 @@ if (!isset($_SESSION['usuario_id'])) {
         
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
@@ -43,18 +43,18 @@ if (!isset($_SESSION['usuario_id'])) {
         }
         
         .logo-container {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .logo {
-            max-height: 80px;
+            max-height: 120px;
             max-width: 100%;
         }
         
         .title {
-            color: #004a8d;
+            color: #000000; /* Cambiado a negro */
             margin-bottom: 10px;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
         }
         
@@ -66,7 +66,7 @@ if (!isset($_SESSION['usuario_id'])) {
         
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr); /* Cambiado a 3 columnas */
             gap: 15px;
             margin-bottom: 40px;
         }
@@ -74,7 +74,7 @@ if (!isset($_SESSION['usuario_id'])) {
         .menu-item {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 18px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
@@ -92,26 +92,27 @@ if (!isset($_SESSION['usuario_id'])) {
         }
         
         .menu-item i {
-            font-size: 36px;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin-bottom: 12px;
             color: #004a8d;
         }
         
         .menu-item-name {
             font-weight: 600;
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 5px;
             color: #333;
         }
         
         .menu-item-desc {
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
+            margin-bottom: 8px;
         }
         
         .status-indicator {
-            margin-top: 10px;
-            font-size: 12px;
+            margin-top: 5px;
+            font-size: 11px;
             padding: 3px 10px;
             border-radius: 20px;
             display: inline-block;
@@ -160,9 +161,23 @@ if (!isset($_SESSION['usuario_id'])) {
         }
         
         /* Responsive design */
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .menu-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .logo {
+                max-height: 100px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-grid {
+                grid-template-columns: 1fr; /* 1 columna en móviles */
             }
             
             .title {
@@ -173,6 +188,10 @@ if (!isset($_SESSION['usuario_id'])) {
                 flex-direction: column;
                 gap: 5px;
             }
+            
+            .logo {
+                max-height: 80px;
+            }
         }
     </style>
 </head>
@@ -180,15 +199,15 @@ if (!isset($_SESSION['usuario_id'])) {
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <!-- Aquí se cargaría el logo.png -->
-                <img src="/../imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
+                <!-- Logo de la Gobernación del Meta -->
+                <img src="/../imagenes/logo.php" alt="Logo Gobernación del Meta" class="logo">
             </div>
             <h1 class="title">Secretaría de Minas y Energía</h1>
             <p class="subtitle">Selecciona una de las opciones disponibles</p>
         </div>
         
         <div class="menu-grid">
-            <!-- Fila 1 -->
+            <!-- Fila 1 con 3 botones -->
             <div class="menu-item">
                 <i class="fas fa-file-contract"></i>
                 <div class="menu-item-name">Gestión CPS</div>
@@ -203,7 +222,6 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Fila 2 -->
             <div class="menu-item">
                 <i class="fas fa-envelope"></i>
                 <div class="menu-item-name">Correo</div>
@@ -211,6 +229,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="status-indicator status-active">Disponible</div>
             </div>
             
+            <!-- Fila 2 con 3 botones -->
             <div class="menu-item">
                 <i class="fas fa-hdd"></i>
                 <div class="menu-item-name">Drive SME</div>
@@ -218,7 +237,6 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Fila 3 -->
             <div class="menu-item">
                 <i class="fas fa-mobile-alt"></i>
                 <div class="menu-item-name">APP RAI</div>
@@ -233,7 +251,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Fila 4 -->
+            <!-- Fila 3 con 3 botones -->
             <div class="menu-item">
                 <i class="fas fa-calendar-alt"></i>
                 <div class="menu-item-name">Agenda</div>
@@ -248,8 +266,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Fila 5 - Solo un botón en esta fila -->
-            <div class="menu-item" style="grid-column: span 2;">
+            <div class="menu-item">
                 <i class="fas fa-tasks"></i>
                 <div class="menu-item-name">Tareas</div>
                 <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
@@ -270,11 +287,7 @@ if (!isset($_SESSION['usuario_id'])) {
     </div>
     
     <script>
-        // Simulación de carga del logo real
         document.addEventListener('DOMContentLoaded', function() {
-            // En una implementación real, aquí se cargaría el logo.png
-            // document.querySelector('.logo').src = 'logo.png';
-            
             // Añadir funcionalidad a los botones del menú
             const menuItems = document.querySelectorAll('.menu-item');
             
