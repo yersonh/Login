@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBtn = modal.querySelector('.close');
 
     openBtn.addEventListener('click', function() {
-        modal.style.display = 'flex';
+        modal.style.display = 'block';
     });
 
     closeBtn.addEventListener('click', function() {
@@ -98,9 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.addEventListener('click', function(event) {
-        if (event.target === licenseModal) {
-        licenseModal.style.display = 'none';
-        }
         if (event.target === modal) {
             modal.style.display = 'none';
         }
@@ -145,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeLicenseButton = document.getElementById('closeLicenseModal');
 
     openLicenseBtn.addEventListener('click', function() {
-        licenseModal.style.display = 'flex';
+        licenseModal.style.display = 'block';
     });
 
     closeLicenseBtn.addEventListener('click', function() {
