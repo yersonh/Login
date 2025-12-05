@@ -177,7 +177,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             $nombreSistema = "Sistema SGEA";
             $nombreCompletoSistema = "Sistema SGEA - Sistema de Gestión y Enrutamiento Administrativo";
             
-            $logo_url = $base_url . "/imagenes/logo.php";
+            $logo_url = $base_url . "/imagenes/logo.png";
 
             $payload = [
                 "sender" => [
@@ -329,7 +329,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                                 </div>
                                 
                                 <p class='expiry-note'>
-                                    <strong>⏰ Vigencia:</strong> Este enlace tiene una validez de 1 hora.
+                                    <strong>Vigencia:</strong> Este enlace tiene una validez de 1 hora.
                                 </p>
                                 
                                 <p class='institutional-text'>
@@ -355,8 +355,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                             <div class='footer'>
                                 <div style='margin-bottom: 15px;'>
                                     <img src='{$logo_url}' 
-                                         alt='Logo Gobernación' 
-                                         style='max-width: 80px; height: auto; opacity: 0.7;'>
+                                        alt='Logo Gobernación' 
+                                        style='max-width: 80px; height: auto; opacity: 0.7;'>
                                 </div>
                                 <p style='margin: 5px 0;'><strong>Sistema SGEA</strong></p>
                                 <p style='margin: 5px 0; font-size: 12px;'>Gobernación - Sistema de Gestión y Enrutamiento Administrativo</p>
