@@ -251,8 +251,8 @@ body {
     }
     
     .left {
-        padding: 40px 15px 30px 15px;
-        min-height: auto; /* Elimina la altura mínima fija */
+        padding: 25px 15px 25px 15px;
+        min-height: auto; 
     }
 }
 
@@ -262,7 +262,7 @@ body {
     }
     
     .left h1 {
-        margin: 20px 0;
+        margin: 15px 0;
     }
 }
 
@@ -441,7 +441,7 @@ input:-webkit-autofill:focus {
         height: auto;
         min-height: 100vh;
         align-items: flex-start;
-        padding-top: 40px;
+        padding-top: 20px;
     }
 
     .container {
@@ -451,13 +451,13 @@ input:-webkit-autofill:focus {
     }
 
     .left, .right {
-        padding: 40px 25px;
+        padding: 25px 25px;
     }
 
     .left {
         order: 2;
-        padding: 40px 25px 25px 25px; /* Padding inferior reducido */
-        min-height: auto; /* Elimina altura mínima fija */
+        padding: 25px 25px 25px 25px; 
+        min-height: auto; /
     }
 
     .right {
@@ -518,7 +518,7 @@ input:-webkit-autofill:focus {
     }
 
     .left {
-        padding: 30px 20px 20px 20px; /* Padding inferior reducido */
+        padding: 20px 20px 20px 20px; /* Padding inferior reducido */
     }
 
     .input-box input {
