@@ -14,7 +14,7 @@
         }
         
         body {
-            background-color: #f5f7fa;
+            background-color: #FFFFFF;
             color: #333;
             line-height: 1.6;
             padding: 20px;
