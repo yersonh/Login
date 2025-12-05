@@ -428,6 +428,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 <i class="fab fa-facebook"></i>
                 <i class="fab fa-twitter"></i>
                 <i class="fab fa-instagram"></i>
+                <i class="fab fa-instagram"></i>
+                <a id="openLicenseModal" style="color: white; text-decoration: none; cursor: pointer; margin-left: 15px;" 
+                title="Ver información de licencia">
+                    <i class="fa-solid fa-id-card"></i> Licencia
+                </a>
             </div>
         </div>
 
