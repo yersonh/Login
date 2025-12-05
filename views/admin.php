@@ -13,8 +13,8 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Sistema SGEA</title>
-    <link rel="icon" href="<?php echo $base_url; ?>/imagenes/logo.png" type="image/png">
+    <title>Menú Principal - Secretaría de Minas y Energía</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -24,404 +24,277 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
             padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
         }
         
         .header {
-            background: white;
-            border-radius: 10px;
-            padding: 25px 30px;
+            text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid #1e8ee9;
         }
         
-        .header h1 {
-            color: #2c3e50;
+        .logo-container {
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            max-height: 80px;
+            max-width: 100%;
+        }
+        
+        .title {
+            color: #004a8d;
             margin-bottom: 10px;
             font-size: 28px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            font-weight: 700;
         }
         
-        .header h1 i {
-            color: #1e8ee9;
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
         }
         
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #5a6c7d;
-            font-size: 14px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            margin-top: 15px;
-        }
-        
-        .user-info .badge {
-            background: #1e8ee9;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .dashboard {
+        .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
             margin-bottom: 40px;
         }
         
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 35px 30px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            height: 100%;
+        .menu-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border-left: 5px solid #004a8d;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            text-align: center;
+            height: 100%;
         }
         
-        .card:hover {
+        .menu-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
         
-        .card-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #1e8ee9, #1565c0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            font-size: 32px;
-            color: white;
-        }
-        
-        .card-title {
-            color: #2c3e50;
-            font-size: 22px;
-            font-weight: 600;
+        .menu-item i {
+            font-size: 36px;
             margin-bottom: 15px;
+            color: #004a8d;
         }
         
-        .card-description {
-            color: #5a6c7d;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 30px;
-            max-width: 300px;
-        }
-        
-        .btn-admin {
-            background: linear-gradient(135deg, #1e8ee9, #1565c0);
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            font-size: 16px;
+        .menu-item-name {
             font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            min-width: 200px;
-            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #333;
         }
         
-        .btn-admin:hover {
-            background: linear-gradient(135deg, #1565c0, #0d4d8c);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(30, 142, 233, 0.3);
+        .menu-item-desc {
+            font-size: 14px;
+            color: #666;
         }
         
-        .btn-admin:active {
-            transform: translateY(0);
+        .status-indicator {
+            margin-top: 10px;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .status-active {
+            background-color: #e6f7e9;
+            color: #2e7d32;
+        }
+        
+        .status-inactive {
+            background-color: #f5f5f5;
+            color: #757575;
         }
         
         .footer {
             text-align: center;
-            margin-top: 50px;
+            margin-top: 40px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
-            color: #7f8c8d;
+            color: #666;
             font-size: 14px;
         }
         
-        .system-info {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .system-info h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        
-        .info-label {
-            color: #5a6c7d;
-            font-weight: 500;
-        }
-        
-        .info-value {
-            color: #2c3e50;
+        .programmer-info {
+            margin-bottom: 10px;
             font-weight: 600;
         }
         
-        .logout-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s;
-            margin-left: 15px;
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
         }
         
-        .logout-btn:hover {
-            background: #c0392b;
+        .copyright {
+            font-size: 13px;
+            color: #888;
         }
         
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .dashboard {
+        .copyright-year {
+            color: #004a8d;
+            font-weight: bold;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .menu-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
             
-            .card {
-                padding: 25px 20px;
-            }
-            
-            .header {
-                padding: 20px;
-            }
-            
-            .header h1 {
+            .title {
                 font-size: 24px;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 5px;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <!-- Encabezado -->
         <div class="header">
-            <h1>
-                <i class="fas fa-cogs"></i>
-                Panel de Administración - Sistema SGEA
-            </h1>
-            <p style="color: #5a6c7d; font-size: 15px;">
-                Sistema de Gestión y Enrutamiento Administrativo - Gobernación
-            </p>
-            
-            <div class="user-info">
-                <div>
-                    <strong><?php echo htmlspecialchars($_SESSION['nombres'] . ' ' . $_SESSION['apellidos']); ?></strong>
-                    <span style="color: #7f8c8d; margin: 0 10px;">|</span>
-                    <?php echo htmlspecialchars($_SESSION['correo']); ?>
-                </div>
-                <div>
-                    <span class="badge">
-                        <i class="fas fa-user-shield"></i> ADMINISTRADOR
-                    </span>
-                    <button class="logout-btn" onclick="window.location.href='logout.php'">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </button>
-                </div>
+            <div class="logo-container">
+                <!-- Aquí se cargaría el logo.png -->
+                <img src="imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
             </div>
+            <h1 class="title">Secretaría de Minas y Energía</h1>
+            <p class="subtitle">Selecciona una de las opciones disponibles</p>
         </div>
         
-        <!-- Panel de Botones Principales -->
-        <div class="dashboard">
-            <!-- Botón 1: Parametrizar Sistema -->
-            <div class="card">
-                <div class="card-icon">
-                    <i class="fas fa-sliders-h"></i>
-                </div>
-                <h2 class="card-title">Parametrizar Sistema</h2>
-                <p class="card-description">
-                    Configure los parámetros generales del sistema, ajustes de seguridad, 
-                    plantillas de documentos y configuración institucional.
-                </p>
-                <button class="btn-admin" onclick="window.location.href='/manage/parametrizar_sistema.php'">
-                    <i class="fas fa-cog"></i> Acceder a Parametrización
-                </button>
+        <div class="menu-grid">
+            <!-- Fila 1 -->
+            <div class="menu-item">
+                <i class="fas fa-file-contract"></i>
+                <div class="menu-item-name">Gestión CPS</div>
+                <div class="menu-item-desc">Control de procesos y seguimiento</div>
+                <div class="status-indicator status-inactive">No disponible</div>
             </div>
             
-            <!-- Botón 2: Gestionar Contratistas -->
-            <div class="card">
-                <div class="card-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <h2 class="card-title">Gestionar Contratistas</h2>
-                <p class="card-description">
-                    Administre la información de contratistas, registre nuevos, 
-                    actualice datos y gestione el historial de contrataciones.
-                </p>
-                <button class="btn-admin" onclick="window.location.href='/manage/gestion_contratistas.php'">
-                    <i class="fas fa-users-cog"></i> Gestionar Contratistas
-                </button>
+            <div class="menu-item">
+                <i class="fas fa-folder-open"></i>
+                <div class="menu-item-name">Documentos</div>
+                <div class="menu-item-desc">Acceso a archivos y documentos</div>
+                <div class="status-indicator status-inactive">No disponible</div>
+            </div>
+            
+            <!-- Fila 2 -->
+            <div class="menu-item">
+                <i class="fas fa-envelope"></i>
+                <div class="menu-item-name">Correo</div>
+                <div class="menu-item-desc">Acceso al sistema de correo</div>
+                <div class="status-indicator status-active">Disponible</div>
+            </div>
+            
+            <div class="menu-item">
+                <i class="fas fa-hdd"></i>
+                <div class="menu-item-name">Drive SME</div>
+                <div class="menu-item-desc">Almacenamiento en la nube</div>
+                <div class="status-indicator status-inactive">No disponible</div>
+            </div>
+            
+            <!-- Fila 3 -->
+            <div class="menu-item">
+                <i class="fas fa-mobile-alt"></i>
+                <div class="menu-item-name">APP RAI</div>
+                <div class="menu-item-desc">Aplicación móvil RAI</div>
+                <div class="status-indicator status-active">Disponible</div>
+            </div>
+            
+            <div class="menu-item">
+                <i class="fas fa-video"></i>
+                <div class="menu-item-name">Reuniones Meet</div>
+                <div class="menu-item-desc">Videoconferencias y reuniones</div>
+                <div class="status-indicator status-inactive">No disponible</div>
+            </div>
+            
+            <!-- Fila 4 -->
+            <div class="menu-item">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="menu-item-name">Agenda</div>
+                <div class="menu-item-desc">Gestión de calendarios</div>
+                <div class="status-indicator status-inactive">No disponible</div>
+            </div>
+            
+            <div class="menu-item">
+                <i class="fas fa-map-marked-alt"></i>
+                <div class="menu-item-name">Mapas</div>
+                <div class="menu-item-desc">Sistemas de información geográfica</div>
+                <div class="status-indicator status-inactive">No disponible</div>
+            </div>
+            
+            <!-- Fila 5 - Solo un botón en esta fila -->
+            <div class="menu-item" style="grid-column: span 2;">
+                <i class="fas fa-tasks"></i>
+                <div class="menu-item-name">Tareas</div>
+                <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
+                <div class="status-indicator status-inactive">No disponible</div>
             </div>
         </div>
         
-        <!-- Información del Sistema -->
-        <div class="system-info">
-            <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">Usuario ID:</span>
-                    <span class="info-value">#<?php echo htmlspecialchars($_SESSION['usuario_id']); ?></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Último Acceso:</span>
-                    <span class="info-value"><?php echo date('d/m/Y H:i:s'); ?></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Versión Sistema:</span>
-                    <span class="info-value">SGEA v1.0</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Sesión Activa:</span>
-                    <span class="info-value" style="color: #27ae60;">
-                        <i class="fas fa-check-circle"></i> Activa
-                    </span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pie de Página -->
         <div class="footer">
-            <p>
-                <i class="fas fa-shield-alt"></i> Sistema SGEA - Gobernación
-                <br>
-                &copy; <?php echo date('Y'); ?> Sistema de Gestión y Enrutamiento Administrativo. Todos los derechos reservados.
-            </p>
-            <p style="font-size: 12px; margin-top: 10px; color: #95a5a6;">
-                <i class="fas fa-lock"></i> Sesión segura | 
-                <i class="fas fa-user-check"></i> Autenticado como administrador
-            </p>
+            <div class="programmer-info">Programador Ing. Rubén Darío González G.</div>
+            <div class="contact-info">
+                <span><i class="fas fa-phone-alt"></i> Cel. +57 (310) 631 0227</span>
+                <span><i class="fas fa-envelope"></i> Email: sisgonnet@gmail.com</span>
+            </div>
+            <div class="copyright">
+                Reconocidos todos los derechos de autor • <span class="copyright-year">Gobernación del Meta 2026</span>
+            </div>
         </div>
     </div>
-
+    
     <script>
-        // Animación suave para los botones
-        document.querySelectorAll('.btn-admin').forEach(button => {
-            button.addEventListener('click', function(e) {
-                // Agregar efecto de carga
-                const originalHTML = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
-                this.disabled = true;
-                
-                // Restaurar después de 1.5 segundos si no se redirige
-                setTimeout(() => {
-                    this.innerHTML = originalHTML;
-                    this.disabled = false;
-                }, 1500);
+        // Simulación de carga del logo real
+        document.addEventListener('DOMContentLoaded', function() {
+            // En una implementación real, aquí se cargaría el logo.png
+            // document.querySelector('.logo').src = 'logo.png';
+            
+            // Añadir funcionalidad a los botones del menú
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const itemName = this.querySelector('.menu-item-name').textContent;
+                    const status = this.querySelector('.status-indicator');
+                    
+                    if (status.classList.contains('status-active')) {
+                        alert(`Accediendo a: ${itemName}`);
+                        // Aquí iría la lógica para redirigir a la funcionalidad correspondiente
+                    } else {
+                        alert(`${itemName} no está disponible en este momento`);
+                    }
+                });
             });
         });
-        
-        // Actualizar hora en tiempo real
-        function actualizarHora() {
-            const ahora = new Date();
-            const opciones = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            document.getElementById('hora-actual').textContent = 
-                ahora.toLocaleDateString('es-ES', opciones);
-        }
-        
-        // Actualizar cada segundo
-        setInterval(actualizarHora, 1000);
-        actualizarHora();
-        
-        // Confirmar cierre de sesión
-        document.querySelector('.logout-btn').addEventListener('click', function(e) {
-            if (!confirm('¿Está seguro que desea cerrar sesión?')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Detectar inactividad (opcional)
-        let tiempoInactividad = 0;
-        const tiempoMaximoInactividad = 1800; // 30 minutos en segundos
-        
-        function resetearInactividad() {
-            tiempoInactividad = 0;
-        }
-        
-        function verificarInactividad() {
-            tiempoInactividad++;
-            if (tiempoInactividad >= tiempoMaximoInactividad) {
-                if (confirm('Su sesión está por expirar por inactividad. ¿Desea continuar?')) {
-                    resetearInactividad();
-                } else {
-                    window.location.href = 'logout.php?timeout=1';
-                }
-            }
-        }
-        
-        // Eventos que resetean la inactividad
-        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evento => {
-            document.addEventListener(evento, resetearInactividad);
-        });
-        
-        // Verificar inactividad cada minuto
-        setInterval(verificarInactividad, 60000);
     </script>
 </body>
 </html>
