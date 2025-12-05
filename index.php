@@ -429,22 +429,18 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     /* Mensaje de error profesional debajo del botón */
     .error-message {
-        text-align: center;
-        color: #ff6b6b;
-        margin-bottom: 20px;
-        font-size: 14px;
-        line-height: 1.4;
-        padding: 10px;
-        border: 1px solid #ff6b6b;
-        border-radius: 8px;
-        background: rgba(255, 107, 107, 0.1);
-    }
+    text-align: center;
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+}
 
-    .error-message strong {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 15px;
-    }
+.error-message strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
 
     .signup {
         text-align: center;
