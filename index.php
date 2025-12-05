@@ -200,7 +200,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             $ch = curl_init("https://api.brevo.com/v3/smtp/email");
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 "Accept: application/json",
-                "Content-Type": application/json",
+                "Content-Type: application/json",
                 "api-key: $apiKey"
             ]);
             curl_setopt($ch, CURLOPT_POST, true);
