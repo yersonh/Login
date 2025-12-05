@@ -40,7 +40,7 @@
         }
         
         .logo {
-            max-height: 140px; /* Logo más grande */
+            max-height: 200px;
             max-width: 100%;
         }
         
@@ -196,7 +196,7 @@
             }
             
             .logo {
-                max-height: 100px; /* Logo más grande en móviles */
+                max-height: 140px;
             }
             
             .menu-item {
