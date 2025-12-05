@@ -419,7 +419,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
@@ -438,13 +438,13 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         min-height: 500px;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        border-radius: 15px;
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .left {
-        background: rgba(59, 57, 57, 0.8);
+        background: rgba(59, 57, 57, 0.85);
         color: white;
         display: flex;
         flex-direction: column;
@@ -453,17 +453,18 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .left h1 {
-        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-size: clamp(1.8rem, 3vw, 2.2rem);
         margin-bottom: 20px;
         text-align: center;
+        font-weight: 500;
     }
 
     .left p {
         margin-bottom: 20px;
         color: #ddd;
-        line-height: 1.5;
+        line-height: 1.6;
         text-align: center;
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        font-size: clamp(0.9rem, 1.8vw, 1rem);
     }
 
     .icons {
@@ -473,7 +474,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     .icons i {
         margin: 0 10px;
         cursor: pointer;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         transition: color 0.3s;
     }
 
@@ -482,19 +483,20 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .right {
-        background: rgba(40, 38, 38, 0.85);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
         display: flex;
         flex-direction: column;
         justify-content: center;
         padding: 40px;
-        color: white;
+        color: #333;
     }
 
     .right h2 {
         text-align: center;
         margin-bottom: 30px;
-        font-size: clamp(1.5rem, 3vw, 1.8rem);
+        font-size: clamp(1.4rem, 2.5vw, 1.6rem);
+        color: #2c3e50;
+        font-weight: 500;
     }
 
     .input-box {
@@ -506,16 +508,16 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         width: 100%;
         padding: 14px 40px;
         border: none;
-        border-bottom: 2px solid #fff;
+        border-bottom: 2px solid #d0d7e0;
         background: transparent;
         outline: none;
-        color: white;
-        font-size: 16px;
+        color: #2c3e50;
+        font-size: 15px;
         transition: border-color 0.3s;
     }
 
     .input-box input.error-border {
-        border-bottom-color: #ff6b6b !important;
+        border-bottom-color: #e74c3c !important;
     }
 
     .input-box input:focus {
@@ -523,7 +525,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .input-box input::placeholder {
-        color: #ccc;
+        color: #95a5a6;
     }
 
     .input-box i {
@@ -531,12 +533,12 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         top: 50%;
         left: 10px;
         transform: translateY(-50%);
-        color: white;
+        color: #7f8c8d;
         z-index: 2;
     }
 
     .input-box i.error-icon {
-        color: #ff6b6b;
+        color: #e74c3c;
     }
 
     .toggle-password {
@@ -546,7 +548,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: #ccc;
+        color: #95a5a6;
         cursor: pointer;
         font-size: 16px;
         z-index: 2;
@@ -566,6 +568,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
+        color: #5a6c7d;
     }
 
     .options label {
@@ -573,6 +576,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         align-items: center;
         gap: 5px;
         white-space: nowrap;
+        cursor: pointer;
     }
 
     .options a {
@@ -584,6 +588,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .options a:hover {
         text-decoration: underline;
+        color: #1565c0;
     }
 
     .btn {
@@ -592,65 +597,102 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         padding: 14px;
         width: 100%;
         color: white;
-        font-size: 16px;
+        font-size: 15px;
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 6px;
         transition: all 0.3s;
-        font-weight: bold;
+        font-weight: 500;
         margin-bottom: 15px;
     }
 
     .btn:hover {
-        background: #1865c2;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30, 142, 233, 0.3);
+        background: #1565c0;
+        box-shadow: 0 4px 8px rgba(30, 142, 233, 0.2);
     }
 
     .btn:active {
         transform: translateY(0);
     }
 
-    /* Mensaje de error profesional debajo del botón */
+    /* Mensaje de error profesional */
     .error-message {
-    text-align: center;
-    color: #ff6b6b;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.4;
-}
+        text-align: center;
+        color: #e74c3c;
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 12px;
+        background: #fdf2f2;
+        border-radius: 4px;
+        border-left: 3px solid #e74c3c;
+    }
 
-.error-message strong {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 15px;
-}
+    .error-message strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
 
     .signup {
         text-align: center;
         margin-top: 20px;
         font-size: 14px;
+        color: #5a6c7d;
     }
 
     .signup a {
         color: #1e8ee9;
         text-decoration: none;
-        font-weight: bold;
+        font-weight: 500;
         transition: color 0.3s;
     }
 
     .signup a:hover {
         text-decoration: underline;
+        color: #1565c0;
     }
 
-    .alert-success {
-        background: rgba(76, 175, 80, 0.9);
-        color: white;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
+    /* NOTIFICACIÓN INSTITUCIONAL PROFESIONAL */
+    .notification-institutional {
+        background: #ffffff;
+        color: #2c3e50;
+        padding: 16px 20px;
+        border-radius: 4px;
+        margin-bottom: 25px;
         text-align: center;
-        border-left: 4px solid #4CAF50;
+        border: 1px solid #d0d7e0;
+        border-left: 4px solid #1e8ee9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        font-size: 14px;
+        line-height: 1.5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         display: <?php echo isset($mensaje_recuperacion) ? 'block' : 'none'; ?>;
+    }
+
+    .notification-institutional .notification-icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: #1e8ee9;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 20px;
+        font-size: 12px;
+        margin-right: 10px;
+    }
+
+    .notification-institutional .notification-title {
+        display: block;
+        font-weight: 500;
+        color: #1e8ee9;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+
+    .notification-institutional .notification-message {
+        display: block;
+        color: #5a6c7d;
     }
 
     .modal {
@@ -662,18 +704,19 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         width: 100%;
         height: 100%;
         background-color: rgba(0,0,0,0.5);
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(3px);
     }
 
     .modal-content {
-        background: rgba(40, 38, 38, 0.95);
+        background: rgba(255, 255, 255, 0.98);
         margin: 15% auto;
         padding: 30px;
-        border-radius: 15px;
+        border-radius: 8px;
         width: 90%;
         max-width: 400px;
-        color: white;
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        color: #333;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border: 1px solid #e0e0e0;
     }
 
     .modal-header {
@@ -686,10 +729,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     .modal-header h3 {
         margin: 0;
         color: #1e8ee9;
+        font-weight: 500;
     }
 
     .close {
-        color: #aaa;
+        color: #95a5a6;
         font-size: 24px;
         font-weight: bold;
         cursor: pointer;
@@ -697,19 +741,20 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .close:hover {
-        color: white;
+        color: #333;
     }
 
     .modal-text {
         margin-bottom: 20px;
-        color: #ddd;
+        color: #5a6c7d;
         line-height: 1.5;
+        font-size: 14px;
     }
 
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus {
-        -webkit-text-fill-color: white !important;
+        -webkit-text-fill-color: #2c3e50 !important;
         -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
         transition: background-color 5000s ease-in-out 0s !important;
     }
@@ -748,8 +793,9 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         }
 
         .modal-content {
-            margin: 20%;
+            margin: 20% auto;
             width: 95%;
+            padding: 25px;
         }
     }
 
@@ -760,7 +806,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
         .input-box input {
             padding: 12px 35px;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .btn {
@@ -776,8 +822,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1>Bienvenido!</h1>
-            <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
+            <h1>Bienvenido al Sistema SGEA</h1>
+            <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Plataforma de gestión integral para la Gobernación.</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
                 <i class="fab fa-twitter"></i>
@@ -789,7 +835,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             <h2>Iniciar Sesión</h2>
 
             <?php if (isset($mensaje_recuperacion)): ?>
-                <div class="alert-success"><?php echo $mensaje_recuperacion; ?></div>
+                <div class="notification-institutional">
+                    <span class="notification-icon">✓</span>
+                    <span class="notification-title">Solicitud Procesada</span>
+                    <span class="notification-message"><?php echo $mensaje_recuperacion; ?></span>
+                </div>
             <?php endif; ?>
 
             <form method="POST" action="" id="loginForm" autocomplete="on">
@@ -800,7 +850,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     <input
                         type="email"
                         name="email"
-                        placeholder="Email"
+                        placeholder="Correo electrónico"
                         required
                         value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
                         autocomplete="email"
@@ -827,22 +877,22 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
                 <div class="options">
                     <label>
-                        <input type="checkbox" name="remember"> Recuérdame
+                        <input type="checkbox" name="remember"> Recordar sesión
                     </label>
-                    <a id="openRecoveryModal">¿Olvidaste tu contraseña?</a>
+                    <a id="openRecoveryModal">¿Olvidó su contraseña?</a>
                 </div>
 
-                <button class="btn" type="submit">Ingresar</button>
+                <button class="btn" type="submit">Ingresar al Sistema</button>
 
                 <?php if ($has_login_error): ?>
                     <div class="error-message">
                         <strong>Credenciales incorrectas</strong>
-                        Comprueba tu correo y contraseña e inténtalo de nuevo.
+                        Verifique su correo y contraseña e inténtelo de nuevo.
                     </div>
                 <?php endif; ?>
 
                 <div class="signup">
-                    ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
+                    ¿No tiene cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrese aquí</a>
                 </div>
             </form>
         </div>
@@ -855,15 +905,15 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 <span class="close">&times;</span>
             </div>
             <div class="modal-text">
-                <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+                <p>Ingrese su correo electrónico y le enviaremos un enlace para restablecer su contraseña.</p>
             </div>
             <form method="POST" action="" id="recoveryForm">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <div class="input-box">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Tu correo electrónico" required autocomplete="email">
+                    <input type="email" name="email" placeholder="Correo electrónico" required autocomplete="email">
                 </div>
-                <button class="btn" type="submit">Enviar Enlace</button>
+                <button class="btn" type="submit">Enviar Enlace de Recuperación</button>
             </form>
         </div>
     </div>
@@ -875,14 +925,14 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
         if (!email || !password) {
             e.preventDefault();
-            alert('Por favor, completa todos los campos.');
+            alert('Por favor, complete todos los campos.');
             return false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             e.preventDefault();
-            alert('Por favor, ingresa un email válido.');
+            alert('Por favor, ingrese un correo electrónico válido.');
             return false;
         }
 
@@ -912,14 +962,14 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
         if (!email) {
             e.preventDefault();
-            alert('Por favor, ingresa tu correo electrónico.');
+            alert('Por favor, ingrese su correo electrónico.');
             return false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             e.preventDefault();
-            alert('Por favor, ingresa un email válido.');
+            alert('Por favor, ingrese un correo electrónico válido.');
             return false;
         }
 
