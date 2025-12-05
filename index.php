@@ -537,14 +537,16 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             </div>
             
             <div class="license-info">
-                <h4>SGEA - Sistema de Gestión y Enrutamiento Administrativo</h4>
+                <h4>Bienvenido(a) a SGEA</h4>
+                <p>Bienvenido al Sistema de Gestión y Enrutamiento Administrativo SGEA de la Secretaría de Minas y Energía de la Gobernación del Meta </p>
                 <div class="license-details">
                     <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
                     <p><strong>Tipo de Licencia:</strong> Prueba de Evaluación</p>
-                    <p><strong>Válida hasta:</strong> 31 de diciembre de 2026</p>
+                    <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
                     <p><strong>Desarrollado por:</strong> SisgonTech</p>
-                    <p><strong>Contacto:</strong> soporte@sisgontech.com</p>
-                    <p><strong>Soporte técnico:</strong> +57 XXX XXX XXXX</p>
+                    <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
+                    <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
+                    <p><strong>Telefono:</strong> (57-608 )6 818500</p>
                 </div>
             </div>
         </div>
