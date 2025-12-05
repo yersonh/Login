@@ -121,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $mostrarFormulario && $tokenData) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restablecer Contraseña - Ojo en la Vía</title>
-    <link rel="icon" href="/imagenes/fiveicon.png" type="image/png">
-    <link rel="shortcut icon" href="/imagenes/fiveicon.png" type="image/png">
+    <link rel="icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
 
     <style>
         * {
