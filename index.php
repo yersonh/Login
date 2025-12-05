@@ -413,7 +413,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
+    <title>SGEA Sistema de Gestión y Enrutamiento Administrativo</title>
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -805,7 +805,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1>Sistemas SGEA Sistema y enrutamiento administrativo</h1>
+            <h1>SSGEA Sistema de Gestión y Enrutamiento Administrativo</h1>
             <img src="imagenes/logo.png" alt="Imagen SGEA" class="sgea-img">
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
