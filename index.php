@@ -413,398 +413,16 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGEA Sistema de Gestión y Enrutamiento Administrativo</title>
+    <title>SGEA Sistema de Gestión y Enrutamiento Administrativo</title>
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
-
-    body {
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: url("<?php echo $base_url; ?>/imagenes/login3.jpg") no-repeat center center/cover;
-        padding: 20px;
-    }
-
-    .container {
-        width: 100%;
-        max-width: 1000px;
-        height: auto;
-        min-height: 500px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-    }
-
-    .left {
-        background: rgba(59, 57, 57, 0.8);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; /* Cambiado: empieza desde arriba */
-        padding: 60px 40px 40px 40px; /* Más padding arriba */
-        min-height: 500px;
-    }
-
-    .left h1 {
-        font-size: clamp(1.6rem, 2.5vw, 2rem);
-        margin: 40px 0; /* Más margen arriba y abajo */
-        text-align: center;
-        font-weight: 500;
-        line-height: 1.3;
-    }
-
-    .left p {
-        margin: 0 0 30px 0; /* Sin margen arriba, más abajo */
-        color: #ddd;
-        line-height: 1.5;
-        text-align: center;
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
-    }
-
-    .icons {
-        text-align: center;
-        margin-top: auto; /* Empuja los íconos hacia abajo */
-    }
-
-    .icons i {
-        margin: 0 10px;
-        cursor: pointer;
-        font-size: 1.5rem;
-        transition: color 0.3s;
-    }
-
-    .icons i:hover {
-        color: #1e8ee9;
-    }
-
-    .right {
-        background: rgba(40, 38, 38, 0.85);
-        backdrop-filter: blur(10px);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 40px;
-        color: white;
-    }
-
-    .right h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: clamp(1.5rem, 3vw, 1.8rem);
-    }
-
-    .input-box {
-        position: relative;
-        margin-bottom: 25px;
-    }
-
-    .input-box input {
-        width: 100%;
-        padding: 14px 40px;
-        border: none;
-        border-bottom: 2px solid #fff;
-        background: transparent;
-        outline: none;
-        color: white;
-        font-size: 16px;
-        transition: border-color 0.3s;
-    }
-
-    .input-box input.error-border {
-        border-bottom-color: #ff6b6b !important;
-    }
-
-    .input-box input:focus {
-        border-bottom-color: #1e8ee9;
-    }
-
-    .input-box input::placeholder {
-        color: #ccc;
-    }
-
-    .input-box i {
-        position: absolute;
-        top: 50%;
-        left: 10px;
-        transform: translateY(-50%);
-        color: white;
-        z-index: 2;
-    }
-
-    .input-box i.error-icon {
-        color: #ff6b6b;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #ccc;
-        cursor: pointer;
-        font-size: 16px;
-        z-index: 2;
-        padding: 5px;
-        transition: color 0.3s;
-    }
-
-    .toggle-password:hover {
-        color: #1e8ee9;
-    }
-
-    .options {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        margin-bottom: 25px;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .options label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        white-space: nowrap;
-    }
-
-    .options a {
-        color: #1e8ee9;
-        text-decoration: none;
-        transition: color 0.3s;
-        cursor: pointer;
-    }
-
-    .options a:hover {
-        text-decoration: underline;
-    }
-
-    .btn {
-        background: #1e8ee9;
-        border: none;
-        padding: 14px;
-        width: 100%;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.3s;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .btn:hover {
-        background: #1865c2;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30, 142, 233, 0.3);
-    }
-
-    .btn:active {
-        transform: translateY(0);
-    }
-
-    /* Mensaje de error profesional debajo del botón */
-    .error-message {
-    text-align: center;
-    color: #ff6b6b;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.error-message strong {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 15px;
-}
-
-    .signup {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-        margin-bottom: 15px;
-    }
-
-    .signup a {
-        color: #1e8ee9;
-        text-decoration: none;
-        font-weight: bold;
-        transition: color 0.3s;
-    }
-
-    .signup a:hover {
-        text-decoration: underline;
-    }
-
-    .sisgonTech {
-        text-align: center;
-        margin-top: 10px;
-        font-size: 12px;
-        color: #ccc;
-    }
-    .titulo-sgea {
-    font-size: 1.8rem;
-    line-height: 1.2; 
-    }
-
-    .alert-success {
-        background: rgba(76, 175, 80, 0.9);
-        color: white;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        text-align: center;
-        border-left: 4px solid #4CAF50;
-        display: <?php echo isset($mensaje_recuperacion) ? 'block' : 'none'; ?>;
-    }
-
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        backdrop-filter: blur(5px);
-    }
-
-    .modal-content {
-        background: rgba(40, 38, 38, 0.95);
-        margin: 15% auto;
-        padding: 30px;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 400px;
-        color: white;
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .modal-header h3 {
-        margin: 0;
-        color: #1e8ee9;
-    }
-
-    .close {
-        color: #aaa;
-        font-size: 24px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: color 0.3s;
-    }
-
-    .close:hover {
-        color: white;
-    }
-
-    .modal-text {
-        margin-bottom: 20px;
-        color: #ddd;
-        line-height: 1.5;
-    }
-
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus {
-        -webkit-text-fill-color: white !important;
-        -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-        transition: background-color 5000s ease-in-out 0s !important;
-    }
-
-    @media (max-width: 768px) {
-        body {
-            padding: 15px;
-            height: auto;
-            min-height: 100vh;
-            align-items: flex-start;
-            padding-top: 40px;
-        }
-
-        .container {
-            grid-template-columns: 1fr;
-            height: auto;
-            margin: 0;
-        }
-
-        .left, .right {
-            padding: 40px 25px;
-        }
-
-        .left {
-            order: 2;
-            padding: 40px 25px;
-        }
-
-        .right {
-            order: 1;
-        }
-
-        .left h1 {
-            margin: 30px 0;
-        }
-
-        .options {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .modal-content {
-            margin: 20%;
-            width: 95%;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .left, .right {
-            padding: 30px 20px;
-        }
-
-        .left {
-            padding: 30px 20px;
-        }
-
-        .input-box input {
-            padding: 12px 35px;
-            font-size: 16px;
-        }
-
-        .btn {
-            padding: 12px;
-        }
-
-        .modal-content {
-            padding: 20px;
-        }
-    }
-    </style>
+    <link rel="stylesheet" href="css/login-style.css">
 </head>
 <body>
     <div class="container">
         <div class="left">
-            <h1><span class="titulo-sgea">SSGEA Sistema de Gestión y Enrutamiento Administrativo</h1>
+            <h1><span class="titulo-sgea">SSGEA Sistema de Gestión y Enrutamiento Administrativo</span></h1>
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
@@ -874,7 +492,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 </div>
 
                 <div class="sisgonTech">
-                    <small>Desarrollado por SisgonTech 2026. Version Runtime</small>
+                    <small>Desarrollado por SisgonTech 2026. Version de prueba Runtime</small>
                 </div>
             </form>
         </div>
@@ -900,141 +518,46 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         </div>
     </div>
 
-    <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        const email = document.querySelector('#loginForm input[name="email"]').value;
-        const password = document.querySelector('#loginForm input[name="password"]').value;
+    <!-- Modal de Licencia -->
+    <div id="licenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-text">
+                <div id="licenseContent">
+                    <h4>SGEA - Sistema de Gestión y Enrutamiento Administrativo</h4>
+                    <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
+                    <p><strong>Tipo de Licencia:</strong> Prueba de Evaluación</p>
+                    <p><strong>Válida hasta:</strong> 31 de diciembre de 2026</p>
+                    <p><strong>Desarrollado por:</strong> SisgonTech</p>
+                    <p><strong>Contacto:</strong> soporte@sisgontech.com</p>
+                    <hr>
+                    <h5>Términos de Uso:</h5>
+                    <ul>
+                        <li>Uso exclusivo para evaluación interna</li>
+                        <li>No redistribuir sin autorización</li>
+                        <li>Soporte técnico incluido durante período de prueba</li>
+                        <li>Actualizaciones automáticas incluidas</li>
+                    </ul>
+                    <h5>Restricciones:</h5>
+                    <ul>
+                        <li>Máximo 50 usuarios simultáneos</li>
+                        <li>Límite de 1000 registros por módulo</li>
+                        <li>Sin acceso a API externas</li>
+                        <li>Reportes limitados a formato PDF</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="closeLicenseModal" style="background: #555; width: auto; padding: 10px 30px;">
+                    <i class="fa-solid fa-check"></i> Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
 
-        if (!email || !password) {
-            e.preventDefault();
-            alert('Por favor, completa todos los campos.');
-            return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            e.preventDefault();
-            alert('Por favor, ingresa un email válido.');
-            return false;
-        }
-
-        return true;
-    });
-
-    const modal = document.getElementById('recoveryModal');
-    const openBtn = document.getElementById('openRecoveryModal');
-    const closeBtn = document.querySelector('.close');
-
-    openBtn.addEventListener('click', function() {
-        modal.style.display = 'block';
-    });
-
-    closeBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    document.getElementById('recoveryForm').addEventListener('submit', function(e) {
-        const email = document.querySelector('#recoveryForm input[name="email"]').value;
-
-        if (!email) {
-            e.preventDefault();
-            alert('Por favor, ingresa tu correo electrónico.');
-            return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            e.preventDefault();
-            alert('Por favor, ingresa un email válido.');
-            return false;
-        }
-
-        return true;
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordField = document.getElementById('password-field');
-        const toggleIcon = togglePassword.querySelector('i');
-
-        togglePassword.addEventListener('click', function() {
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.className = 'fa-solid fa-eye-slash';
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.className = 'fa-solid fa-eye';
-            }
-        });
-
-        const loginForm = document.getElementById('loginForm');
-        let isSubmitting = false;
-
-        loginForm.addEventListener('submit', function(e) {
-            if (isSubmitting) {
-                e.preventDefault();
-                return;
-            }
-
-            isSubmitting = true;
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ingresando...';
-
-            setTimeout(() => {
-                isSubmitting = false;
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }, 5000);
-        });
-
-        const emailInput = document.querySelector('input[name="email"]');
-        const rememberCheckbox = document.querySelector('input[name="remember"]');
-
-        const savedEmail = localStorage.getItem('remembered_email');
-        if (savedEmail && emailInput.value === '') {
-            emailInput.value = savedEmail;
-            rememberCheckbox.checked = true;
-        }
-
-        rememberCheckbox.addEventListener('change', function() {
-            if (this.checked && emailInput.value) {
-                localStorage.setItem('remembered_email', emailInput.value);
-            } else {
-                localStorage.removeItem('remembered_email');
-            }
-        });
-
-        emailInput.addEventListener('input', function() {
-            if (this.value.length > 3) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (emailRegex.test(this.value)) {
-                    passwordField.focus();
-                }
-            }
-        });
-    });
-
-    document.getElementById('recoveryForm').addEventListener('submit', function(e) {
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-        setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        }, 5000);
-    });
-    </script>
+    <script src="js/login-script.js"></script>
 </body>
 </html>
