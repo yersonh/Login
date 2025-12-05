@@ -77,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         $_SESSION = [];
 
         echo "<script>
-            alert('Usuario registrado correctamente.');
             window.location.href = '../index.php';
         </script>";
         exit;
