@@ -546,7 +546,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                     <p><strong>Desarrollado por:</strong> SisgonTech</p>
                     <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
                     <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
-                    <p><strong>Telefono:</strong> (57-608 )6 818500</p>
+                    <p><strong>Telefono:</strong> (57 -608)6 818503</p>
                 </div>
             </div>
         </div>
