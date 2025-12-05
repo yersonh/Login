@@ -657,8 +657,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         color: #ccc;
     }
     .titulo-sgea {
-    font-size: 2.5rem;   /* ajusta a tu gusto */
-    font-weight: bold;   /* opcional */
+    font-size: 1.8rem;
+    line-height: 1.2; 
     }
 
     .alert-success {
@@ -804,7 +804,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1><span class="titulo-sgea">SSGEA</span> Sistema de Gestión y Enrutamiento Administrativo</h1>
+            <h1><span class="titulo-sgea">SSGEA Sistema de Gestión y Enrutamiento Administrativo</h1>
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
