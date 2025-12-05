@@ -448,20 +448,21 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         color: white;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding: 40px;
+        justify-content: flex-start; /* Cambiado: empieza desde arriba */
+        padding: 60px 40px 40px 40px; /* Más padding arriba */
+        min-height: 500px;
     }
 
     .left h1 {
-    font-size: clamp(1.6rem, 2.5vw, 2rem);
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: 500;
-    line-height: 1.3;
+        font-size: clamp(1.6rem, 2.5vw, 2rem);
+        margin: 40px 0; /* Más margen arriba y abajo */
+        text-align: center;
+        font-weight: 500;
+        line-height: 1.3;
     }
 
     .left p {
-        margin-bottom: 20px;
+        margin: 0 0 30px 0; /* Sin margen arriba, más abajo */
         color: #ddd;
         line-height: 1.5;
         text-align: center;
@@ -470,6 +471,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     .icons {
         text-align: center;
+        margin-top: auto; /* Empuja los íconos hacia abajo */
     }
 
     .icons i {
@@ -732,15 +734,20 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         }
 
         .left, .right {
-            padding: 30px 25px;
+            padding: 40px 25px;
         }
 
         .left {
             order: 2;
+            padding: 40px 25px;
         }
 
         .right {
             order: 1;
+        }
+
+        .left h1 {
+            margin: 30px 0;
         }
 
         .options {
@@ -757,7 +764,11 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 
     @media (max-width: 480px) {
         .left, .right {
-            padding: 25px 20px;
+            padding: 30px 20px;
+        }
+
+        .left {
+            padding: 30px 20px;
         }
 
         .input-box input {
