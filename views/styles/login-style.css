@@ -394,10 +394,9 @@ body {
 
 .license-details {
     text-align: left;
-    background: #f8f9fa;
+    background: white;
     padding: 20px;
     border-radius: 8px;
-    border-left: 4px solid #1e8ee9;
 }
 
 .license-details p {
