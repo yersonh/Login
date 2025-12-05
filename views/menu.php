@@ -40,7 +40,7 @@
         }
         
         .logo {
-            max-height: 120px;
+            max-height: 200px;
             max-width: 100%;
         }
         
@@ -268,10 +268,10 @@
         </div>
         
         <div class="footer">
-            <div class="programmer-info">Programador Ing. Rubén Darío González G.</div>
+            <div class="programmer-info">SisgonTech</div>
             <div class="contact-info">
-                <span><i class="fas fa-phone-alt"></i> Cel. +57 (310) 631 0227</span>
-                <span><i class="fas fa-envelope"></i> Email: sisgonnet@gmail.com</span>
+                <span><i class="fas fa-phone-alt"></i> Cel.  (57 -608) 6 818503</span>
+                <span><i class="fas fa-envelope"></i> Email: gobernaciondelmeta@meta.gov.co</span>
             </div>
             <div class="copyright">
                 Reconocidos todos los derechos de autor • <span class="copyright-year">Gobernación del Meta 2026</span>
