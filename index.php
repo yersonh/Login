@@ -536,7 +536,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
         <div class="modal-header">
-            <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
             <span class="close">&times;</span>
         </div>
         
