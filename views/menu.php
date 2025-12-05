@@ -380,7 +380,6 @@
                     
                     if (status.classList.contains('status-active')) {
                         alert(`Accediendo a: ${itemName}`);
-                        // Aquí iría la lógica para redirigir a la funcionalidad correspondiente
                     } else {
                         alert(`${itemName} no está disponible en este momento`);
                     }

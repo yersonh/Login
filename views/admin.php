@@ -368,7 +368,7 @@
         </div>
     </div>
     
-    <script>
+    <scripts>
         document.addEventListener('DOMContentLoaded', function() {
             // Añadir funcionalidad a los botones del menú
             const menuItems = document.querySelectorAll('.menu-item');
@@ -387,6 +387,6 @@
                 });
             });
         });
-    </script>
+    </scripts>
 </body>
 </html>
