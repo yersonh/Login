@@ -28,13 +28,14 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
         $stmt = $db->prepare("SELECT
                                 u.id_usuario,
                                 u.correo,
+                                u.tipo_usuario, // ← AÑADIR ESTA LÍNEA
                                 p.nombres,
                                 p.apellidos,
                                 p.telefono
-                              FROM usuario u
-                              INNER JOIN persona p ON u.id_persona = p.id_persona
-                              INNER JOIN remember_tokens rt ON u.id_usuario = rt.id_usuario
-                              WHERE rt.token = :token AND rt.expiracion > NOW()");
+                                FROM usuario u
+                                INNER JOIN persona p ON u.id_persona = p.id_persona
+                                INNER JOIN remember_tokens rt ON u.id_usuario = rt.id_usuario
+                                WHERE rt.token = :token AND rt.expiracion > NOW()");
         $stmt->bindParam(':token', $token);
         $stmt->execute();
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -45,6 +46,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['apellidos'] = $usuario['apellidos'];
             $_SESSION['telefono'] = $usuario['telefono'];
             $_SESSION['correo'] = $usuario['correo'];
+            $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; // ← AÑADIR ESTA LÍNEA
 
             header("Location: https://www.eltiempo.com/");
             exit();
@@ -75,43 +77,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
             $usuario = $sesionControlador->login($correo, $password);
 
             if ($usuario) {
-                $_SESSION['usuario_id'] = $usuario['id_usuario'];
-                $_SESSION['nombres'] = $usuario['nombres'] ?? '';
-                $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
-                $_SESSION['telefono'] = $usuario['telefono'] ?? '';
-                $_SESSION['correo'] = $usuario['correo'];
+    $_SESSION['usuario_id'] = $usuario['id_usuario'];
+    $_SESSION['nombres'] = $usuario['nombres'] ?? '';
+    $_SESSION['apellidos'] = $usuario['apellidos'] ?? '';
+    $_SESSION['telefono'] = $usuario['telefono'] ?? '';
+    $_SESSION['correo'] = $usuario['correo'];
+    $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; // ← AÑADIR ESTA LÍNEA
 
-                if ($remember) {
-                    try {
-                        $token = bin2hex(random_bytes(32));
-                        $expiracion = date("Y-m-d H:i:s", strtotime("+30 days"));
+    if ($remember) {
+        try {
+            $token = bin2hex(random_bytes(32));
+            $expiracion = date("Y-m-d H:i:s", strtotime("+30 days"));
 
-                        $stmt = $db->prepare("INSERT INTO remember_tokens (id_usuario, token, expiracion)
-                                            VALUES (:id_usuario, :token, :expiracion)");
-                        $stmt->bindParam(':id_usuario', $usuario['id_usuario']);
-                        $stmt->bindParam(':token', $token);
-                        $stmt->bindParam(':expiracion', $expiracion);
-                        $stmt->execute();
+            $stmt = $db->prepare("INSERT INTO remember_tokens (id_usuario, token, expiracion)
+                                VALUES (:id_usuario, :token, :expiracion)");
+            $stmt->bindParam(':id_usuario', $usuario['id_usuario']);
+            $stmt->bindParam(':token', $token);
+            $stmt->bindParam(':expiracion', $expiracion);
+            $stmt->execute();
 
-                        setcookie('remember_token', $token, [
-                            'expires' => time() + (30 * 24 * 60 * 60),
-                            'path' => '/',
-                            'domain' => $_SERVER['HTTP_HOST'],
-                            'secure' => ($protocol === 'https'),
-                            'httponly' => true,
-                            'samesite' => 'Strict'
-                        ]);
-                    } catch (PDOException $e) {
-                    }
-                }
+            setcookie('remember_token', $token, [
+                'expires' => time() + (30 * 24 * 60 * 60),
+                'path' => '/',
+                'domain' => $_SERVER['HTTP_HOST'],
+                'secure' => ($protocol === 'https'),
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+        } catch (PDOException $e) {
+        }
+    }
 
-                header("Location: https://www.eltiempo.com/");
-                exit();
-                
-            } else {
-                $has_login_error = true;
-                $error_message = "Credenciales incorrectas. Comprueba tu correo y contraseña e inténtalo de nuevo.";
-            }
+    header("Location: https://www.eltiempo.com/");
+    exit();
+    
+} else {
+    $has_login_error = true;
+    $error_message = "Credenciales incorrectas. Comprueba tu correo y contraseña e inténtalo de nuevo.";
+}
         } else {
             $correoRecuperacion = trim($_POST['email']);
             $mensaje_recuperacion = procesarRecuperacion($db, $correoRecuperacion, $base_url);

@@ -11,18 +11,16 @@ class SesionControlador {
         $this->usuarioModel = new Usuario($db);
     }
 
-    public function registrar($nombres, $apellidos, $correo, $telefono, $password) {
-        // Verificar si el correo ya existe
+    public function registrar($nombres, $apellidos, $correo, $telefono, $password, $tipo_usuario = 'usuario') {
+
         if ($this->usuarioModel->existeCorreo($correo)) {
             return false;
         }
 
-        // Insertar la persona primero
         $id_persona = $this->personaModel->insertar($nombres, $apellidos, $telefono);
 
         if ($id_persona) {
-            // Solo pasar id_persona, correo y password (sin id_rol ni id_estado)
-            return $this->usuarioModel->insertar($id_persona, $correo, $password);
+            return $this->usuarioModel->insertar($id_persona, $correo, $password, $tipo_usuario);
         }
 
         return false;
@@ -32,11 +30,29 @@ class SesionControlador {
         $usuario = $this->usuarioModel->obtenerPorCorreo($correo);
 
         if ($usuario && password_verify($password, $usuario['contrasena'])) {
-            // Ya no verificamos id_estado porque no existe
             return $usuario;
         }
 
         return false;
+    }
+
+
+    public function actualizarRolUsuario($id_usuario, $tipo_usuario) {
+        return $this->usuarioModel->actualizarTipoUsuario($id_usuario, $tipo_usuario);
+    }
+
+    public function obtenerUsuarios() {
+        return $this->usuarioModel->obtenerTodos();
+    }
+
+    public function esAdministrador($id_usuario) {
+        $sql = "SELECT tipo_usuario FROM usuario WHERE id_usuario = :id_usuario";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_usuario', $id_usuario);
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return ($resultado && $resultado['tipo_usuario'] === 'administrador');
     }
 }
 ?>
