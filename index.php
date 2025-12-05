@@ -656,12 +656,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         font-size: 12px;
         color: #ccc;
     }
-
-    .sgea-img {
-    width: 40px;
-    margin: 10px 5;
-    align-self: center;
-    }
     .alert-success {
         background: rgba(76, 175, 80, 0.9);
         color: white;
@@ -806,7 +800,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     <div class="container">
         <div class="left">
             <h1>SSGEA Sistema de Gestión y Enrutamiento Administrativo</h1>
-            <img src="imagenes/logo.png" alt="Imagen SGEA" class="sgea-img">
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
