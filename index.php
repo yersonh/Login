@@ -658,8 +658,8 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     }
 
     .sgea-img {
-    width: 80;
-    margin: 10px 0;
+    width: 40px;
+    margin: 10px 5;
     align-self: center;
     }
     .alert-success {
