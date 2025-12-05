@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         }
     }
 
-    header("Location: https://www.eltiempo.com/");
+    header("Location: views/menu.php");
     exit();
     
 } else {
