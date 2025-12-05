@@ -532,61 +532,26 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         </div>
     </div>
 
-<!-- Modal de Licencia -->
+<!-- Modal de Licencia compacto -->
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
-        </div>
         
-        <!-- Logo Institucional -->
+        <!-- Logo más cerca del título -->
         <div class="license-logo-container">
             <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
-                    alt="Logo Gobernación del Meta" 
+                    alt="Logo Gobernación" 
                     class="license-logo">
         </div>
         
-        <!-- Información del Sistema -->
+        <!-- Información pegada al logo -->
         <div class="license-details">
-            <p><strong>SGEA v:</strong> 1.0.0 (Runtime)</p>
+            <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
             <p><strong>Tipo de Licencia:</strong> Evaluación</p>
-            <p><strong>Vigente hasta:</strong> 31 de Marzo 2026</p>
+            <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
             <p><strong>Desarrollado por:</strong> SisgonTech</p>
-        </div>
-        
-        <!-- Sección de Ubicación con Google Maps -->
-        <div class="maps-section">
-            <h4><i class="fa-solid fa-location-dot"></i> Ubicación Institucional</h4>
-            
-            <div class="address-info">
-                <p class="institution-name"><i class="fa-solid fa-building-columns"></i> <strong>Gobernación del Meta</strong></p>
-                <p><i class="fa-solid fa-map-pin"></i> Carrera 33 # 38-45, Edificio Central</p>
-                <p>Plazoleta Los Libertadores, Villavicencio - Meta</p>
-                <p><i class="fa-solid fa-phone"></i> Teléfono: (608) 681 8503</p>
-                <p><i class="fa-solid fa-envelope"></i> Correo: gobernaciondelmeta@meta.gov.co</p>
-            </div>
-            
-            <div class="maps-container">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3981.090178178936!2d-73.6357467242246!3d4.141735395927483!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3e2f2b7b5b5b5b%3A0x5d5d5d5d5d5d5d5d!2sGobernaci%C3%B3n%20del%20Meta!5e0!3m2!1ses!2sco!4v1631234567890!5m2!1ses!2sco" 
-                    width="100%" 
-                    height="200" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy"
-                    title="Ubicación Oficial - Gobernación del Meta"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    class="google-maps-frame">
-                </iframe>
-                <div class="maps-note">
-                    <small><i class="fa-solid fa-map"></i> Visualización de ubicación oficial</small>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Nota Institucional -->
-        <div class="institutional-note">
-            <p><i class="fa-solid fa-circle-info"></i> Sistema desarrollado para la Gobernación del Meta - Secretaría de Minas y Energía</p>
+            <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
+            <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
+            <p><strong>Teléfono:</strong> (57 -608) 6 818503</p>
         </div>
     </div>
 </div>
