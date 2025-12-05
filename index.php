@@ -173,10 +173,12 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         if ($stmtToken->execute()) {
             $link = "{$base_url}/views/manage/nueva_contraseña.php?token={$token}";
             
+            // Obtener el nombre de la persona
             $nombrePersona = $usuario['nombres'] . ' ' . $usuario['apellidos'];
             $nombreSistema = "Sistema SGEA";
             $nombreCompletoSistema = "Sistema SGEA - Sistema de Gestión y Enrutamiento Administrativo";
             
+            // URL del logo
             $logo_url = $base_url . "/imagenes/logo.png";
 
             $payload = [
@@ -224,7 +226,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                             .logo {
                                 max-width: 180px;
                                 height: auto;
-                                margin-bottom: 15px;
+                                margin-top: 15px;
                             }
                             .content {
                                 padding: 30px;
@@ -243,6 +245,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                             }
                             .btn-primary:hover {
                                 background: #1565c0;
+                                color: white;
                             }
                             .footer {
                                 background: #f8f9fa;
@@ -293,16 +296,17 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                         <div class='container'>
                             <!-- ENCABEZADO CON LOGO INSTITUCIONAL -->
                             <div class='header'>
+                                <h2 style='color: #333; margin: 0 0 5px 0; font-size: 20px;'>
+                                    Sistema SGEA
+                                </h2>
+                                <p style='color: #666; margin: 0 0 15px 0; font-size: 14px;'>
+                                    Sistema de Gestión y Enrutamiento Administrativo
+                                </p>
+                                
                                 <img src='{$logo_url}' 
                                      alt='Logo Gobernación' 
                                      class='logo'
                                      style='max-width: 180px; height: auto;'>
-                                <h2 style='color: #333; margin: 10px 0 5px 0; font-size: 20px;'>
-                                    Sistema SGEA
-                                </h2>
-                                <p style='color: #666; margin: 0; font-size: 14px;'>
-                                    Sistema de Gestión y Enrutamiento Administrativo
-                                </p>
                             </div>
                             
                             <!-- CONTENIDO PRINCIPAL -->
@@ -355,15 +359,15 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                             <div class='footer'>
                                 <div style='margin-bottom: 15px;'>
                                     <img src='{$logo_url}' 
-                                        alt='Logo Gobernación' 
-                                        style='max-width: 80px; height: auto; opacity: 0.7;'>
+                                         alt='Logo Gobernación' 
+                                         style='max-width: 80px; height: auto; opacity: 0.7;'>
                                 </div>
                                 <p style='margin: 5px 0;'><strong>Sistema SGEA</strong></p>
                                 <p style='margin: 5px 0; font-size: 12px;'>Gobernación - Sistema de Gestión y Enrutamiento Administrativo</p>
                                 <p style='margin-top: 15px; font-size: 11px; color: #999;'>
                                     Este es un mensaje automático generado por el sistema.<br>
                                     Favor no responder a esta dirección de correo.<br>
-                                    © " . date('Y') . " Gobernación. Todos los derechos reservados.
+                                    &copy; " . date('Y') . " Gobernación. Todos los derechos reservados.
                                 </p>
                             </div>
                         </div>
