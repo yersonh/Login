@@ -428,7 +428,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
                 <i class="fab fa-facebook"></i>
                 <i class="fab fa-twitter"></i>
                 <i class="fab fa-instagram"></i>
-                <i class="fab fa-instagram"></i>
                 <a id="openLicenseModal" style="color: white; text-decoration: none; cursor: pointer; margin-left: 15px;" 
                 title="Ver información de licencia">
                     <i class="fa-solid fa-id-card"></i> Licencia
@@ -524,44 +523,38 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     </div>
 
     <!-- Modal de Licencia -->
-    <div id="licenseModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
-                <span class="close">&times;</span>
+<div id="licenseModal" class="modal">
+    <div class="modal-content license-modal">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="license-logo-container">
+                <img src="<?php echo $base_url; ?>/imagenes/logo-gobernacion.png" 
+                        alt="Logo Gobernación" 
+                        class="license-logo">
             </div>
-            <div class="modal-text">
-                <div id="licenseContent">
-                    <h4>SGEA - Sistema de Gestión y Enrutamiento Administrativo</h4>
+            
+            <div class="license-info">
+                <h4>SGEA - Sistema de Gestión y Enrutamiento Administrativo</h4>
+                <div class="license-details">
                     <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
                     <p><strong>Tipo de Licencia:</strong> Prueba de Evaluación</p>
                     <p><strong>Válida hasta:</strong> 31 de diciembre de 2026</p>
                     <p><strong>Desarrollado por:</strong> SisgonTech</p>
                     <p><strong>Contacto:</strong> soporte@sisgontech.com</p>
-                    <hr>
-                    <h5>Términos de Uso:</h5>
-                    <ul>
-                        <li>Uso exclusivo para evaluación interna</li>
-                        <li>No redistribuir sin autorización</li>
-                        <li>Soporte técnico incluido durante período de prueba</li>
-                        <li>Actualizaciones automáticas incluidas</li>
-                    </ul>
-                    <h5>Restricciones:</h5>
-                    <ul>
-                        <li>Máximo 50 usuarios simultáneos</li>
-                        <li>Límite de 1000 registros por módulo</li>
-                        <li>Sin acceso a API externas</li>
-                        <li>Reportes limitados a formato PDF</li>
-                    </ul>
+                    <p><strong>Soporte técnico:</strong> +57 XXX XXX XXXX</p>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" id="closeLicenseModal" style="background: #555; width: auto; padding: 10px 30px;">
-                    <i class="fa-solid fa-check"></i> Aceptar
-                </button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="closeLicenseModal">
+                <i class="fa-solid fa-check"></i> Aceptar
+            </button>
         </div>
     </div>
+</div>
 
     <script src="javascript/login-script.js"></script>
 </body>
