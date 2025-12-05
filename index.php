@@ -46,6 +46,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['telefono'] = $usuario['telefono'];
             $_SESSION['correo'] = $usuario['correo'];
 
+            // Redirigir a El Tiempo
             header("Location: https://www.eltiempo.com/");
             exit();
             
@@ -64,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     } else {
 
         if (isset($_POST['password'])) {
+
             $correo = trim($_POST['email']);
             $password = $_POST['password'];
             $remember = isset($_POST['remember']) && $_POST['remember'] == 'on';
@@ -105,14 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 exit();
                 
             } else {
-                // Mensaje profesional tipo Google/Instagram
-                $error_message = "<div class='error-message'>
-                                    <i class='fas fa-exclamation-circle'></i>
-                                    <div>
-                                        <strong>Credenciales incorrectas</strong>
-                                        <p>El correo electrónico o la contraseña que ingresaste no son correctos. Por favor, verifica e intenta de nuevo.</p>
-                                    </div>
-                                  </div>";
+                $error_message = "Credenciales incorrectas";
             }
         } else {
             $correoRecuperacion = trim($_POST['email']);
@@ -147,6 +142,7 @@ if (rand(1, 10) === 1) {
     try {
         limpiarTokensExpirados($db);
     } catch (Exception $e) {
+        // Silenciar error
     }
 }
 
@@ -211,57 +207,36 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             curl_close($ch);
 
             if ($httpCode >= 200 && $httpCode < 300) {
-                return "<div class='success-message'>
-                            <i class='fas fa-check-circle'></i>
-                            <div>
-                                <strong>Correo enviado</strong>
-                                <p>Hemos enviado un enlace de recuperación a <strong>$correoUsuario</strong>. Revisa tu bandeja de entrada.</p>
-                            </div>
-                        </div>";
-            } else {
-                return "<div class='error-message'>
-                            <i class='fas fa-exclamation-circle'></i>
-                            <div>
-                                <strong>Error al enviar</strong>
-                                <p>No pudimos enviar el correo en este momento. Por favor, intenta nuevamente más tarde.</p>
-                            </div>
-                        </div>";
+                return "Se ha enviado un enlace de recuperación a: $correoUsuario";
+            }
+            else {
+                return "Error al enviar el correo (Código: $httpCode).";
             }
         } else {
-            return "<div class='error-message'>
-                        <i class='fas fa-exclamation-circle'></i>
-                        <div>
-                            <strong>Error del sistema</strong>
-                            <p>Ocurrió un error al generar el enlace de recuperación. Intenta nuevamente.</p>
-                        </div>
-                    </div>";
+            return "Error al generar el enlace de recuperación.";
         }
     } else {
-        return "<div class='error-message'>
-                    <i class='fas fa-exclamation-circle'></i>
-                    <div>
-                        <strong>Correo no encontrado</strong>
-                        <p>El correo <strong>$correoUsuario</strong> no está registrado en nuestro sistema.</p>
-                    </div>
-                </div>";
+        return "El correo ingresado no está registrado en nuestro sistema.";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
+    <title> Sistema SGEA Sistema de Gestión y Enrutamiento Adminsitrativo</title>
     <link rel="icon" href="/imagenes/image.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/image.png" type="image/png">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-family: Arial, sans-serif;
     }
 
     body {
@@ -271,7 +246,6 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         align-items: center;
         background: url("<?php echo $base_url; ?>/imagenes/login3.jpg") no-repeat center center/cover;
         padding: 20px;
-        background-color: #f5f5f7;
     }
 
     .container {
@@ -281,333 +255,213 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         min-height: 500px;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        border-radius: 20px;
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-        background: white;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
     }
 
     /* Lado izquierdo */
     .left {
-        background: linear-gradient(135deg, #1e8ee9 0%, #1865c2 100%);
+        background: rgba(59, 57, 57, 0.8);
         color: white;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 50px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .left::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-        background-size: 30px 30px;
-        opacity: 0.1;
+        padding: 40px;
     }
 
     .left h1 {
-        font-size: 2.2rem;
+        font-size: clamp(2rem, 4vw, 2.5rem);
         margin-bottom: 20px;
-        font-weight: 700;
-        position: relative;
-        z-index: 1;
+        text-align: center;
     }
 
     .left p {
-        margin-bottom: 30px;
-        color: rgba(255,255,255,0.9);
-        line-height: 1.6;
-        font-size: 1.05rem;
-        position: relative;
-        z-index: 1;
+        margin-bottom: 20px;
+        color: #ddd;
+        line-height: 1.5;
+        text-align: center;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
     }
 
-    .features {
-        margin-top: 30px;
-        position: relative;
-        z-index: 1;
+    .icons {
+        text-align: center;
     }
 
-    .feature {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        color: rgba(255,255,255,0.9);
+    .icons i {
+        margin: 0 10px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: color 0.3s;
     }
 
-    .feature i {
-        margin-right: 12px;
-        font-size: 1.1rem;
-        color: rgba(255,255,255,0.8);
+    .icons i:hover {
+        color: #1e8ee9;
     }
 
     /* Lado derecho */
     .right {
+        background: rgba(40, 38, 38, 0.85);
+        backdrop-filter: blur(10px);
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 50px;
-        background: white;
+        padding: 40px;
+        color: white;
     }
 
     .right h2 {
         text-align: center;
-        margin-bottom: 40px;
-        font-size: 1.8rem;
-        color: #1a1a1a;
-        font-weight: 600;
+        margin-bottom: 30px;
+        font-size: clamp(1.5rem, 3vw, 1.8rem);
     }
 
-    /* Mensajes de error/success - Estilo profesional */
-    .error-message {
-        background: #fee;
-        border: 1px solid #ffcdd2;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        animation: slideIn 0.3s ease;
-    }
-
-    .error-message i {
-        color: #f44336;
-        font-size: 1.2rem;
-        margin-top: 2px;
-        flex-shrink: 0;
-    }
-
-    .error-message strong {
-        color: #d32f2f;
-        font-size: 0.95rem;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 4px;
-    }
-
-    .error-message p {
-        color: #666;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        margin: 0;
-    }
-
-    .success-message {
-        background: #f0f9ff;
-        border: 1px solid #bbdefb;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        animation: slideIn 0.3s ease;
-    }
-
-    .success-message i {
-        color: #4CAF50;
-        font-size: 1.2rem;
-        margin-top: 2px;
-        flex-shrink: 0;
-    }
-
-    .success-message strong {
-        color: #2e7d32;
-        font-size: 0.95rem;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 4px;
-    }
-
-    .success-message p {
-        color: #666;
-        font-size: 0.9rem;
-        line-height: 1.4;
-        margin: 0;
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Formulario */
-    .form-group {
-        margin-bottom: 25px;
+    .input-box {
         position: relative;
+        margin-bottom: 25px;
     }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: #555;
-        font-size: 0.9rem;
-        font-weight: 500;
+    .input-box input {
+        width: 100%;
+        padding: 14px 40px;
+        border: none;
+        border-bottom: 2px solid #fff;
+        background: transparent;
+        outline: none;
+        color: white;
+        font-size: 16px;
+        transition: border-color 0.3s;
     }
 
-    .input-with-icon {
-        position: relative;
+    .input-box input:focus {
+        border-bottom-color: #1e8ee9;
     }
 
-    .input-with-icon i {
+    .input-box input::placeholder {
+        color: #ccc;
+    }
+
+    .input-box i {
         position: absolute;
-        left: 16px;
         top: 50%;
+        left: 10px;
         transform: translateY(-50%);
-        color: #666;
-        font-size: 1.1rem;
+        color: white;
         z-index: 2;
     }
 
-    .input-with-icon input {
-        width: 100%;
-        padding: 14px 16px 14px 48px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: #fafafa;
-        font-size: 1rem;
-        color: #333;
-        transition: all 0.2s ease;
-        outline: none;
-    }
-
-    .input-with-icon input:focus {
-        border-color: #1e8ee9;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(30, 142, 233, 0.1);
-    }
-
-    .input-with-icon input.error {
-        border-color: #f44336;
-        background: #fffafa;
-    }
-
-    .input-with-icon input.success {
-        border-color: #4CAF50;
-    }
-
-    .password-toggle {
+    /* Botón para mostrar/ocultar contraseña */
+    .toggle-password {
         position: absolute;
-        right: 16px;
+        right: 10px;
         top: 50%;
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: #666;
+        color: #ccc;
         cursor: pointer;
-        font-size: 1.1rem;
+        font-size: 16px;
         z-index: 2;
         padding: 5px;
-        transition: color 0.2s;
+        transition: color 0.3s;
     }
 
-    .password-toggle:hover {
+    .toggle-password:hover {
         color: #1e8ee9;
     }
 
-    /* Opciones */
-    .form-options {
+    .options {
         display: flex;
         justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 25px;
         align-items: center;
-        margin-bottom: 30px;
-        font-size: 0.9rem;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .remember-checkbox {
+    .options label {
         display: flex;
         align-items: center;
-        gap: 8px;
-        color: #555;
-        cursor: pointer;
+        gap: 5px;
+        white-space: nowrap;
     }
 
-    .remember-checkbox input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: #1e8ee9;
-        cursor: pointer;
-    }
-
-    .forgot-link {
+    .options a {
         color: #1e8ee9;
         text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
+        transition: color 0.3s;
         cursor: pointer;
     }
 
-    .forgot-link:hover {
-        color: #1865c2;
+    .options a:hover {
         text-decoration: underline;
     }
 
-    /* Botón */
-    .submit-btn {
+    .btn {
         background: #1e8ee9;
         border: none;
-        padding: 16px;
+        padding: 14px;
         width: 100%;
         color: white;
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 16px;
         cursor: pointer;
-        border-radius: 10px;
-        transition: all 0.2s ease;
-        margin-bottom: 25px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        font-weight: bold;
     }
 
-    .submit-btn:hover {
+    .btn:hover {
         background: #1865c2;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(30, 142, 233, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 142, 233, 0.3);
     }
 
-    .submit-btn:active {
+    .btn:active {
         transform: translateY(0);
     }
 
-    .submit-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-
-    /* Registro */
-    .signup-link {
+    .signup {
         text-align: center;
-        color: #666;
-        font-size: 0.95rem;
+        margin-top: 20px;
+        font-size: 14px;
     }
 
-    .signup-link a {
+    .signup a {
         color: #1e8ee9;
         text-decoration: none;
-        font-weight: 600;
-        margin-left: 5px;
-        transition: color 0.2s;
+        font-weight: bold;
+        transition: color 0.3s;
     }
 
-    .signup-link a:hover {
-        color: #1865c2;
+    .signup a:hover {
         text-decoration: underline;
     }
 
-    /* Modal */
+    /* Mensajes */
+    .alert-error {
+        background: rgba(255, 68, 68, 0.9);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        display: <?php echo isset($error_message) ? 'block' : 'none'; ?>;
+        border-left: 4px solid #ff4444;
+    }
+
+    .alert-success {
+        background: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        border-left: 4px solid #4CAF50;
+        display: <?php echo isset($mensaje_recuperacion) ? 'block' : 'none'; ?>;
+    }
+
+    /* Modal de recuperación */
     .modal {
         display: none;
         position: fixed;
@@ -617,73 +471,57 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         width: 100%;
         height: 100%;
         background-color: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(5px);
     }
 
     .modal-content {
-        background: white;
+        background: rgba(40, 38, 38, 0.95);
         margin: 15% auto;
-        padding: 40px;
-        border-radius: 20px;
+        padding: 30px;
+        border-radius: 15px;
         width: 90%;
-        max-width: 450px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        animation: modalSlideIn 0.3s ease;
-    }
-
-    @keyframes modalSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        max-width: 400px;
+        color: white;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
     }
 
     .modal-header {
-        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
     }
 
     .modal-header h3 {
-        color: #1a1a1a;
-        font-size: 1.4rem;
-        font-weight: 600;
         margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        color: #1e8ee9;
     }
 
-    .modal-close {
-        position: absolute;
-        right: 25px;
-        top: 25px;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: #999;
+    .close {
+        color: #aaa;
+        font-size: 24px;
+        font-weight: bold;
         cursor: pointer;
-        transition: color 0.2s;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
+        transition: color 0.3s;
     }
 
-    .modal-close:hover {
-        color: #333;
-        background: #f5f5f5;
+    .close:hover {
+        color: white;
     }
 
     .modal-text {
-        color: #666;
+        margin-bottom: 20px;
+        color: #ddd;
         line-height: 1.5;
-        margin-bottom: 25px;
-        font-size: 0.95rem;
+    }
+
+    /* Mejorar el autocompletar del navegador */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: white !important;
+        -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+        transition: background-color 5000s ease-in-out 0s !important;
     }
 
     /* Responsive */
@@ -703,7 +541,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         }
 
         .left, .right {
-            padding: 40px 30px;
+            padding: 30px 25px;
         }
 
         .left {
@@ -714,184 +552,265 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
             order: 1;
         }
 
-        .form-options {
+        .options {
             flex-direction: column;
             align-items: flex-start;
             gap: 15px;
         }
 
         .modal-content {
-            margin: 20% auto;
-            padding: 30px;
+            margin: 20%;
+            width: 95%;
         }
-    }
+        }
 
-    @media (max-width: 480px) {
+        @media (max-width: 480px) {
         .left, .right {
-            padding: 30px 25px;
+            padding: 25px 20px;
         }
 
-        .left h1 {
-            font-size: 1.8rem;
+        .input-box input {
+            padding: 12px 35px;
+            font-size: 16px;
         }
 
-        .right h2 {
-            font-size: 1.5rem;
+        .btn {
+            padding: 12px;
         }
 
         .modal-content {
-            padding: 25px;
-            margin: 10% auto;
+            padding: 20px;
         }
-    }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Lado izquierdo -->
+    <!-- Lado izquierdo -->
         <div class="left">
-            <h1>Bienvenido a SGEA</h1>
-            <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!</p>
-            <div class="features">
-                <div class="feature">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Seguridad garantizada</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-rocket"></i>
-                    <span>Acceso rápido y eficiente</span>
-                </div>
-                <div class="feature">
-                    <i class="fas fa-headset"></i>
-                    <span>Soporte 24/7</span>
-                </div>
-            </div>
+        <h1>Bienvenido!</h1>
+        <p> Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
+        <div class="icons">
+            <i class="fab fa-facebook"></i>
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-instagram"></i>
+        </div>
         </div>
 
         <!-- Lado derecho -->
         <div class="right">
-            <h2>Iniciar Sesión</h2>
+        <h2>Iniciar Sesión</h2>
 
-            <?php if (isset($error_message)) echo $error_message; ?>
-            <?php if (isset($mensaje_recuperacion)) echo $mensaje_recuperacion; ?>
+        <?php if (isset($error_message)): ?>
+            <div class="alert-error"><?php echo $error_message; ?></div>
+        <?php endif; ?>
 
-            <form method="POST" action="" id="loginForm" autocomplete="on">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        <?php if (isset($mensaje_recuperacion)): ?>
+            <div class="alert-success"><?php echo $mensaje_recuperacion; ?></div>
+        <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="email">Correo electrónico</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
-                            placeholder="ejemplo@correo.com"
-                            required
-                            value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
-                            autocomplete="email"
-                        >
-                    </div>
-                </div>
+        <form method="POST" action="" id="loginForm" autocomplete="on">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            placeholder="Ingresa tu contraseña"
-                            required
-                            autocomplete="current-password"
-                        >
-                        <button type="button" class="password-toggle" id="togglePassword">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="input-box">
+                <i class="fa-solid fa-envelope"></i>
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                    value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
+                    autocomplete="email"
+                    id="email-field"
+                >
+            </div>
 
-                <div class="form-options">
-                    <label class="remember-checkbox">
-                        <input type="checkbox" name="remember">
-                        <span>Recordarme</span>
-                    </label>
-                    <a class="forgot-link" id="openRecoveryModal">¿Olvidaste tu contraseña?</a>
-                </div>
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Contraseña"
+                    required
+                    autocomplete="current-password"
+                    id="password-field"
+                >
+                <button type="button" class="toggle-password" id="togglePassword">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
 
-                <button class="submit-btn" type="submit">Iniciar Sesión</button>
+            <div class="options">
+            <label>
+                <input type="checkbox" name="remember"> Recuérdame
+            </label>
+            <a id="openRecoveryModal">¿Olvidaste tu contraseña?</a>
+            </div>
 
-                <div class="signup-link">
-                    ¿No tienes cuenta? 
-                    <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Crear una cuenta</a>
-                </div>
-            </form>
+            <button class="btn" type="submit">Ingresar</button>
+
+            <div class="signup">
+            ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
+            </div>
+        </form>
         </div>
     </div>
 
-    <!-- Modal de recuperación -->
+    <!-- Modal de recuperación de contraseña -->
     <div id="recoveryModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" id="closeModal">&times;</button>
-            <div class="modal-header">
-                <h3><i class="fas fa-key"></i> Recuperar Contraseña</h3>
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-key"></i> Recuperar Contraseña</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-text">
+            <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+        </div>
+        <form method="POST" action="" id="recoveryForm">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <div class="input-box">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" name="email" placeholder="Tu correo electrónico" required autocomplete="email">
             </div>
-            <div class="modal-text">
-                <p>Ingresa tu correo electrónico registrado y te enviaremos un enlace para restablecer tu contraseña.</p>
-            </div>
-            <form method="POST" action="" id="recoveryForm">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                <div class="form-group">
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" name="email" placeholder="Correo electrónico" required autocomplete="email">
-                    </div>
-                </div>
-                <button class="submit-btn" type="submit">Enviar enlace de recuperación</button>
-            </form>
+            <button class="btn" type="submit">Enviar Enlace</button>
+        </form>
         </div>
     </div>
 
     <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const email = document.querySelector('#loginForm input[name="email"]').value;
+        const password = document.querySelector('#loginForm input[name="password"]').value;
+
+        if (!email || !password) {
+            e.preventDefault();
+            alert('Por favor, completa todos los campos.');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Por favor, ingresa un email válido.');
+            return false;
+        }
+
+        return true;
+    });
+
+    const modal = document.getElementById('recoveryModal');
+    const openBtn = document.getElementById('openRecoveryModal');
+    const closeBtn = document.querySelector('.close');
+
+    openBtn.addEventListener('click', function() {
+        modal.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    document.getElementById('recoveryForm').addEventListener('submit', function(e) {
+        const email = document.querySelector('#recoveryForm input[name="email"]').value;
+
+        if (!email) {
+            e.preventDefault();
+            alert('Por favor, ingresa tu correo electrónico.');
+            return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Por favor, ingresa un email válido.');
+            return false;
+        }
+
+        return true;
+    });
     document.addEventListener('DOMContentLoaded', function() {
+        // Función para mostrar/ocultar contraseña
         const togglePassword = document.getElementById('togglePassword');
-        const passwordField = document.getElementById('password');
+        const passwordField = document.getElementById('password-field');
         const toggleIcon = togglePassword.querySelector('i');
 
         togglePassword.addEventListener('click', function() {
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                toggleIcon.className = 'fas fa-eye-slash';
+                toggleIcon.className = 'fa-solid fa-eye-slash';
             } else {
                 passwordField.type = 'password';
-                toggleIcon.className = 'fas fa-eye';
+                toggleIcon.className = 'fa-solid fa-eye';
             }
         });
 
-        const modal = document.getElementById('recoveryModal');
-        const openBtn = document.getElementById('openRecoveryModal');
-        const closeBtn = document.getElementById('closeModal');
-
-        openBtn.addEventListener('click', () => modal.style.display = 'block');
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
-        window.addEventListener('click', (e) => e.target === modal && (modal.style.display = 'none'));
-
         const loginForm = document.getElementById('loginForm');
-        const submitBtn = loginForm.querySelector('.submit-btn');
+        let isSubmitting = false;
 
         loginForm.addEventListener('submit', function(e) {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
+            if (isSubmitting) {
                 e.preventDefault();
                 return;
             }
 
+            isSubmitting = true;
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ingresando...';
+
+            setTimeout(() => {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }, 5000);
         });
+
+        const emailInput = document.querySelector('input[name="email"]');
+        const rememberCheckbox = document.querySelector('input[name="remember"]');
+
+        const savedEmail = localStorage.getItem('remembered_email');
+        if (savedEmail && emailInput.value === '') {
+            emailInput.value = savedEmail;
+            rememberCheckbox.checked = true;
+        }
+
+        rememberCheckbox.addEventListener('change', function() {
+            if (this.checked && emailInput.value) {
+                localStorage.setItem('remembered_email', emailInput.value);
+            } else {
+                localStorage.removeItem('remembered_email');
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            if (this.value.length > 3) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (emailRegex.test(this.value)) {
+                    passwordField.focus();
+                }
+            }
+        });
+    });
+
+    document.getElementById('recoveryForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }, 5000);
     });
     </script>
 </body>
