@@ -531,7 +531,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         </div>
         <div class="modal-body">
             <div class="license-logo-container">
-                <img src="<?php echo $base_url; ?>/imagenes/logo-gobernacion.png" 
+                <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
                         alt="Logo Gobernación" 
                         class="license-logo">
             </div>
