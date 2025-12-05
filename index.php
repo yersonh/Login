@@ -532,33 +532,31 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         </div>
     </div>
 
-    <!-- Modal de Licencia -->
+<!-- Modal de Licencia compacto -->
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
         <div class="modal-header">
             <h3><i class="fa-solid fa-id-card"></i> Información de Licencia</h3>
             <span class="close">&times;</span>
         </div>
-        <div class="modal-body">
-            <div class="license-logo-container">
-                <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
-                        alt="Logo Gobernación" 
-                        class="license-logo">
-            </div>
-            
-            <div class="license-info">
-                <div class="license-details">
-                    <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
-                    <p><strong>Tipo de Licencia:</strong>Evaluación</p>
-                    <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
-                    <p><strong>Desarrollado por:</strong> SisgonTech</p>
-                    <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
-                    <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
-                    <p><strong>Telefono:</strong> (57 -608)6 818503</p>
-                </div>
-            </div>
+        
+        <!-- Logo más cerca del título -->
+        <div class="license-logo-container">
+            <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
+                    alt="Logo Gobernación" 
+                    class="license-logo">
         </div>
         
+        <!-- Información pegada al logo -->
+        <div class="license-details">
+            <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
+            <p><strong>Tipo de Licencia:</strong> Evaluación</p>
+            <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
+            <p><strong>Desarrollado por:</strong> SisgonTech</p>
+            <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
+            <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
+            <p><strong>Teléfono:</strong> (57 -608) 6 818503</p>
+        </div>
     </div>
 </div>
 
