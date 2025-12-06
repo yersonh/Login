@@ -1,3 +1,25 @@
+<?php
+// Iniciar sesión (ya debería estar iniciada desde el login)
+session_start();
+
+// Verificar si el usuario está logueado
+if (!isset($_SESSION['usuario_id'])) {
+    // Redirigir al login si no hay sesión
+    header("Location: ../index.php");
+    exit();
+}
+
+$nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
+$apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+
+// Combinar nombre completo
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
+// Si no hay nombre, usar un valor por defecto
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
