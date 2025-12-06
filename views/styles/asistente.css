@@ -317,7 +317,6 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
 }
 
 .modal-header::after {
