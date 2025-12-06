@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Servicios - Secretaría de Minas y Energía</title>
+    <link rel="icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -363,7 +365,7 @@
             }
         }
         
-        /* Móviles pequeños - Ajustes adicionales */
+        /* Móviles pequeños - FOOTER REORGANIZADO */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
                 padding: 20px 15px;
@@ -395,26 +397,70 @@
                 padding: 15px;
             }
             
+            /* FOOTER REORGANIZADO - Logo y texto en línea */
+            .app-footer {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px 15px;
+            }
+            
+            .footer-left {
+                flex-direction: row;
+                gap: 15px;
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .footer-logo-container {
+                flex-direction: row;
+                gap: 15px;
+                text-align: left;
+                align-items: center;
+            }
+            
             .footer-logo {
                 height: 60px;
+                min-width: 60px;
             }
             
             .developer-info {
                 font-size: 13px;
+                text-align: left;
+            }
+            
+            .developer-name {
+                margin-bottom: 3px;
+            }
+            
+            .footer-right {
+                width: 100%;
+                text-align: left;
             }
             
             .contact-info {
                 font-size: 13px;
             }
             
+            /* Iconos de contacto alineados horizontalmente con texto */
             .contact-info div {
-                flex-direction: column;
-                gap: 5px;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 8px;
+                margin-bottom: 10px;
+                text-align: left;
+            }
+            
+            .contact-info i {
+                min-width: 20px;
                 text-align: center;
             }
             
             .copyright {
                 font-size: 11px;
+                text-align: left;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #eee;
             }
         }
         
@@ -443,9 +489,10 @@
                 padding: 15px;
             }
             
+            /* Ajustes adicionales para footer en móviles muy pequeños */
             .app-footer {
-                padding: 20px 15px;
-                gap: 20px;
+                gap: 15px;
+                padding: 15px;
             }
             
             .footer-logo-container {
@@ -454,6 +501,19 @@
             
             .footer-logo {
                 height: 50px;
+                min-width: 50px;
+            }
+            
+            .developer-info {
+                font-size: 12px;
+            }
+            
+            .contact-info {
+                font-size: 12px;
+            }
+            
+            .contact-info div {
+                margin-bottom: 8px;
             }
         }
         
@@ -626,16 +686,24 @@
                     <!-- LOGO AQUÍ EN EL FOOTER -->
                     <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
-                        <div class="developer-name">SisgonTech Solutions</div>
-                        <div>Desarrollado por Ing. Rubén Darío González G.</div>
+                        <div class="developer-name">SisgonTech</div>
                     </div>
                 </div>
             </div>
             <div class="footer-right">
                 <div class="contact-info">
-                    <div><i class="fas fa-phone-alt"></i> Cel. (57 -608) 6 818503</div>
-                    <div><i class="fas fa-envelope"></i> gobernaciondelmeta@meta.gov.co</div>
-                    <div><i class="fas fa-mobile-alt"></i> +57 (310) 631 0227</div>
+                    <div>
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Cel. (57 -608) 6 818503</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope"></i>
+                        <span>gobernaciondelmeta@meta.gov.co</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>+57 (310) 631 0227</span>
+                    </div>
                 </div>
                 <div class="copyright">
                     © 2026 Gobernación del Meta • Todos los derechos reservados
