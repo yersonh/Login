@@ -1,5 +1,38 @@
 <?php
+session_start();
 
+// Verificar autenticación y rol
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// Solo administradores pueden acceder
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'administrador') {
+    // Redirigir según rol
+    if (isset($_SESSION['tipo_usuario'])) {
+        if ($_SESSION['tipo_usuario'] === 'asistente') {
+            header("Location: menuAsistente.php");
+        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+            header("Location: menu.php");
+        } else {
+            header("Location: ../index.php");
+        }
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+// Datos del usuario
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Administrador del Sistema';
+}
+
+$correoUsuario = $_SESSION['correo'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
