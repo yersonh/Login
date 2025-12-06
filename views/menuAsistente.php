@@ -171,7 +171,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
-                    <div class="service-name">Gestioón del Sistema</div>
+                    <div class="service-name">Gestión del Sistema</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
