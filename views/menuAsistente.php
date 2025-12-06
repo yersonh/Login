@@ -1,10 +1,7 @@
 <?php
-// Iniciar sesión (ya debería estar iniciada desde el login)
 session_start();
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['usuario_id'])) {
-    // Redirigir al login si no hay sesión
     header("Location: ../index.php");
     exit();
 }
@@ -12,7 +9,6 @@ if (!isset($_SESSION['usuario_id'])) {
 $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
 $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
 
-// Combinar nombre completo
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 
 // Si no hay nombre, usar un valor por defecto
@@ -101,10 +97,6 @@ if (empty($nombreCompleto)) {
         
         .user-profile {
             text-align: right;
-        }
-        
-        .user-profile > div {
-            display: inline-block;
         }
         
         .welcome-user {
@@ -296,6 +288,20 @@ if (empty($nombreCompleto)) {
             margin-top: 10px;
         }
         
+        /* Estilos especiales para la tarjeta de parametrización */
+        .service-card.parametrizacion {
+            border: 2px solid var(--primary-color);
+        }
+        
+        .service-card.parametrizacion .service-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .service-card.parametrizacion:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 40px rgba(0, 74, 141, 0.2);
+        }
+        
         /* ========== RESPONSIVE ========== */
         
         /* Tablets */
@@ -343,40 +349,21 @@ if (empty($nombreCompleto)) {
             }
             
             .app-header {
-                padding: 15px 20px; /* Reducido un poco más */
+                padding: 20px;
             }
             
             .header-content {
                 flex-direction: column;
                 text-align: center;
-                gap: 10px; /* Reducido de 15px a 10px */
+                gap: 15px;
             }
             
             .user-profile {
                 text-align: center;
-                width: 100%;
-            }
-            
-            /* BIENVENIDA Y ROL EN UNA SOLA LÍNEA EN MÓVILES */
-            .user-profile > div {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 8px;
             }
             
             .welcome-user {
                 justify-content: center;
-                margin-bottom: 0; /* Eliminamos el margen inferior */
-                font-size: 16px; /* Ligeramente más pequeño */
-            }
-            
-            .user-role {
-                margin-left: 0; /* Quitamos el margin-left para usar gap del contenedor */
-                font-size: 13px; /* Un poco más pequeño */
-                padding: 3px 10px; /* Padding ajustado */
-                vertical-align: middle; /* Alineación vertical */
             }
             
             .app-main {
@@ -436,38 +423,28 @@ if (empty($nombreCompleto)) {
         /* Móviles pequeños - FOOTER REORGANIZADO */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
-                padding: 15px;
-            }
-            
-            .app-header {
-                padding: 12px 15px; /* Más compacto */
+                padding: 15px; /* REDUCIDO: de 20px 15px a 15px */
             }
             
             .department-info h1 {
-                font-size: 18px; /* Un poco más pequeño */
+                font-size: 20px;
             }
             
             .department-info h2 {
-                font-size: 16px; /* Un poco más pequeño */
+                font-size: 18px;
             }
             
-            /* Ajuste para móviles pequeños */
             .welcome-user {
-                font-size: 15px;
-            }
-            
-            .user-role {
-                font-size: 12px;
-                padding: 2px 8px;
+                font-size: 16px;
             }
             
             .welcome-section {
-                margin-bottom: 18px;
+                margin-bottom: 18px; /* AJUSTADO para móviles pequeños */
             }
             
             .welcome-section h3 {
                 font-size: 22px;
-                margin-bottom: 8px;
+                margin-bottom: 8px; /* REDUCIDO: de 12px a 8px */
             }
             
             .welcome-section p {
@@ -553,30 +530,24 @@ if (empty($nombreCompleto)) {
         /* Móviles muy pequeños - Cambiar a 1 columna */
         @media (max-width: 375px) {
             .department-info h1 {
-                font-size: 16px; /* Más pequeño */
+                font-size: 18px;
             }
             
             .department-info h2 {
-                font-size: 14px; /* Más pequeño */
+                font-size: 16px;
             }
             
-            /* Ajuste para pantallas muy pequeñas */
             .welcome-user {
-                font-size: 14px;
-            }
-            
-            .user-role {
-                font-size: 11px;
-                padding: 2px 6px;
+                font-size: 15px;
             }
             
             .welcome-section {
-                margin-bottom: 15px;
+                margin-bottom: 15px; /* AJUSTADO para móviles muy pequeños */
             }
             
             .welcome-section h3 {
                 font-size: 20px;
-                margin-bottom: 6px;
+                margin-bottom: 6px; /* REDUCIDO: de 10px a 6px */
             }
             
             /* Para pantallas muy pequeñas, 1 columna */
@@ -673,14 +644,12 @@ if (empty($nombreCompleto)) {
                     <h2>Secretaría de Minas y Energía</h2>
                 </div>
                 <div class="user-profile">
-                    <!-- Contenedor para alinear bienvenida y rol en una línea (móviles) -->
-                    <div>
-                        <div class="welcome-user">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
-                        </div>
-                        <div class="user-role">Asistente</div>
+                    <!-- Mensaje personalizado de bienvenida con PHP -->
+                    <div class="welcome-user">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
                     </div>
+                    <div class="user-role">Asistente</div>
                 </div>
             </div>
         </header>
@@ -785,13 +754,13 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Servicio 10: PARAMETRIZACIÓN -->
-                <div class="service-card">
+                <div class="service-card parametrizacion">
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
             </div>
         </main>
@@ -838,6 +807,12 @@ if (empty($nombreCompleto)) {
                 card.addEventListener('click', function() {
                     const serviceName = this.querySelector('.service-name').textContent;
                     const statusElement = this.querySelector('.service-status');
+                    
+                    // CASO ESPECIAL: Parametrización - Redirigir siempre a la vista de parametrización
+                    if (serviceName === "Parametrización") {
+                        window.location.href = "parametrizacion.php";
+                        return; // Salir de la función para no ejecutar el resto
+                    }
                     
                     if (statusElement.classList.contains('status-available')) {
                         // Aquí iría la lógica para redirigir al servicio
