@@ -58,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
             // Aquí iría la redirección a otros servicios
-            // Por ejemplo: window.location.href = `servicio-${serviceName.toLowerCase().replace(/\s+/g, '-')}.php`;
         } else {
             showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
         }
@@ -98,23 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (errorMessage.classList.contains('show')) {
                 errorMessage.classList.remove('show');
                 errorMessage.textContent = '';
-            }
-        });
-        
-        // Mostrar/ocultar contraseña
-        inputClave.addEventListener('keydown', function(e) {
-            // Permitir teclas de control
-            if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift' || 
-                e.key === 'Tab' || e.key === 'CapsLock') {
-                return;
-            }
-            
-            // Efecto visual al presionar teclas
-            if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 100);
             }
         });
     }
@@ -158,42 +140,67 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Mostrar carga
+        // Validar formato básico (opcional)
+        if (clave.length < 4) {
+            mostrarError('La clave debe tener al menos 4 caracteres.');
+            inputClave.focus();
+            return;
+        }
+        
+        // Mostrar estado de carga
         btnIngresar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
         btnIngresar.disabled = true;
         
-        // Simular verificación (en producción sería una petición AJAX)
-        setTimeout(() => {
-            validarClave(clave);
-        }, 800);
+        // Verificar clave de administrador via AJAX
+        verificarClaveAdministrador(clave);
     }
     
     /**
-     * Valida la clave ingresada
-     * @param {string} clave - Clave a validar
+     * Verifica la clave de administrador con el servidor
+     * @param {string} clave - Clave a verificar
      */
-    function validarClave(clave) {
-        // En una implementación real, esto sería una petición AJAX al servidor
-        const claveCorrecta = 'admin123'; // Clave de ejemplo
+    function verificarClaveAdministrador(clave) {
+        // Crear FormData para enviar la clave
+        const formData = new FormData();
+        formData.append('clave', clave);
+        formData.append('tipo_verificacion', 'clave_admin_parametrizacion');
         
-        if (clave === claveCorrecta) {
-            // Clave correcta
-            claveCorrectaHandler();
-        } else {
-            // Clave incorrecta
-            claveIncorrectaHandler();
-        }
-        
-        // Restaurar botón
-        btnIngresar.innerHTML = 'Ingresar';
-        btnIngresar.disabled = false;
+        // Hacer petición AJAX al servidor
+        fetch('../ajax/verificar_clave.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Restaurar botón
+            btnIngresar.innerHTML = 'Ingresar';
+            btnIngresar.disabled = false;
+            
+            if (data.success) {
+                // Clave correcta
+                claveCorrectaHandler();
+            } else {
+                // Clave incorrecta
+                claveIncorrectaHandler(data.message || 'Clave incorrecta.');
+            }
+        })
+        .catch(error => {
+            // Error en la petición
+            console.error('Error:', error);
+            btnIngresar.innerHTML = 'Ingresar';
+            btnIngresar.disabled = false;
+            mostrarError('Error de conexión. Intente nuevamente.');
+        });
     }
     
     /**
      * Maneja la respuesta cuando la clave es correcta
      */
     function claveCorrectaHandler() {
-        showNotification('✓ Clave correcta. Redirigiendo...', 'success');
+        showNotification('✓ Clave de administrador verificada. Redirigiendo...', 'success');
         
         // Efecto visual de éxito
         inputClave.style.borderColor = '#10b981';
@@ -202,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             cerrarModalClave();
             
-            // Redirigir
+            // Redirigir a parametrizacion.php
             setTimeout(() => {
                 window.location.href = '../manage/parametrizacion.php';
             }, 500);
@@ -211,9 +218,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     /**
      * Maneja la respuesta cuando la clave es incorrecta
+     * @param {string} mensajeError - Mensaje de error específico
      */
-    function claveIncorrectaHandler() {
-        mostrarError('❌ Clave incorrecta. Por favor intente nuevamente.');
+    function claveIncorrectaHandler(mensajeError = 'Clave incorrecta.') {
+        mostrarError(`❌ ${mensajeError}`);
         inputClave.select();
         inputClave.focus();
         
