@@ -591,7 +591,7 @@
             <div class="footer-left">
                 <div class="footer-logo-container">
                     <!-- LOGO AQUÍ EN EL FOOTER -->
-                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="</../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
                         <div class="developer-name">SisgonTech Solutions</div>
                         <div>Desarrollado por Ing. Rubén Darío González G.</div>
