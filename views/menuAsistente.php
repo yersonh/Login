@@ -138,14 +138,14 @@ if (empty($nombreCompleto)) {
         
         .welcome-section h3 {
             font-size: 28px;
-            color: var(--primary-color);
+            color: #000000;;
             margin-bottom: 15px;
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .welcome-section p {
             font-size: 18px;
-            color: var(--gray-color);
+            color: #000000;;
             max-width: 800px;
             margin: 0 auto;
         }
