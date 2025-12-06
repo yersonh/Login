@@ -1,15 +1,16 @@
 <?php
 session_start();
 
+// Verificar autenticación
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../../index.php");
     exit();
 }
 
+// Obtener datos de usuario
 $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
 $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
-
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario del Sistema';
 }
@@ -17,47 +18,77 @@ if (empty($nombreCompleto)) {
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? 'Desconocido';
 
-// ========== NUEVA LÓGICA DE ACCESO ==========
-// Permite acceso a:
-// 1. Administradores directamente
-// 2. Asistentes que fueron verificados por administrador
-
+// ========== CONTROL DE ACCESO MEJORADO ==========
 $accesoPermitido = false;
-$razonAcceso = '';
+$mensajeAcceso = '';
 
 if ($tipoUsuario === 'administrador') {
     $accesoPermitido = true;
-    $razonAcceso = 'Acceso directo como administrador';
-} 
-elseif ($tipoUsuario === 'asistente') {
+    $mensajeAcceso = 'Acceso directo como administrador';
+    
+    // Log de acceso de administrador
+    error_log("ACCESO ADMIN - " . $correoUsuario . 
+             " accedió a parametrización - IP: " . $_SERVER['REMOTE_ADDR']);
+    
+} elseif ($tipoUsuario === 'asistente') {
     // Verificar si fue autorizado por administrador
     if (isset($_SESSION['verificado_por_admin']) && $_SESSION['verificado_por_admin'] === true) {
-        $accesoPermitido = true;
-        $razonAcceso = 'Acceso autorizado por administrador';
         
-        // Registrar información del administrador que autorizó
-        $adminVerificador = $_SESSION['admin_verificador_nombre'] ?? 'Administrador no identificado';
-        $adminVerificadorId = $_SESSION['admin_verificador_id'] ?? 0;
+        // Verificar expiración (30 minutos)
+        $tiempoLimite = 30 * 60; // 30 minutos en segundos
+        if (isset($_SESSION['verificacion_timestamp'])) {
+            $tiempoTranscurrido = time() - $_SESSION['verificacion_timestamp'];
+            
+            if ($tiempoTranscurrido <= $tiempoLimite) {
+                $accesoPermitido = true;
+                $mensajeAcceso = 'Acceso autorizado por administrador';
+                
+                // Log de acceso autorizado
+                error_log("ACCESO ASISTENTE AUTORIZADO - " . $correoUsuario . 
+                         " autorizado por Admin: " . ($_SESSION['admin_verificador_correo'] ?? 'Desconocido') . 
+                         " - Tiempo restante: " . ($tiempoLimite - $tiempoTranscurrido) . "s" .
+                         " - IP: " . $_SERVER['REMOTE_ADDR']);
+                
+            } else {
+                // Verificación expirada
+                $accesoPermitido = false;
+                $mensajeAcceso = 'Autorización expirada';
+                
+                // Limpiar sesión
+                unset($_SESSION['verificado_por_admin']);
+                unset($_SESSION['admin_verificador_id']);
+                unset($_SESSION['admin_verificador_nombre']);
+                unset($_SESSION['admin_verificador_correo']);
+                unset($_SESSION['verificacion_timestamp']);
+                
+                error_log("AUTORIZACIÓN EXPIRADA - Asistente: " . $correoUsuario . 
+                         " - Tiempo transcurrido: " . $tiempoTranscurrido . "s");
+            }
+        } else {
+            $accesoPermitido = false;
+            $mensajeAcceso = 'Sesión de verificación no válida';
+        }
         
-        // Puedes usar esta información para auditoría
-        error_log("ACCESO AUTORIZADO - Asistente: " . $correoUsuario . 
-                 " autorizado por Admin ID: " . $adminVerificadorId . 
-                 " (" . $adminVerificador . ") - IP: " . $_SERVER['REMOTE_ADDR']);
     } else {
-        // Asistente no autorizado - redirigir a su menú
-        error_log("ACCESO DENEGADO - Asistente no autorizado: " . $correoUsuario . 
-                 " - IP: " . $_SERVER['REMOTE_ADDR']);
-        
-        header("Location: ../views/menuAsistente.php");
-        exit();
+        $accesoPermitido = false;
+        $mensajeAcceso = 'No autorizado para parametrización';
     }
-} 
-else {
-    // Otros roles (usuario, etc.) - redirigir según corresponda
-    error_log("ACCESO DENEGADO - Rol no permitido: " . $correoUsuario . 
-             " (Rol: " . $tipoUsuario . ") - IP: " . $_SERVER['REMOTE_ADDR']);
     
-    if ($tipoUsuario === 'usuario') {
+} else {
+    // Otros roles
+    $accesoPermitido = false;
+    $mensajeAcceso = 'Rol no permitido: ' . $tipoUsuario;
+}
+
+// Si acceso denegado, registrar y redirigir
+if (!$accesoPermitido) {
+    error_log("ACCESO DENEGADO a Parametrizacion - Usuario: " . $correoUsuario . 
+             " - Razón: " . $mensajeAcceso . 
+             " - IP: " . $_SERVER['REMOTE_ADDR']);
+    
+    if ($tipoUsuario === 'asistente') {
+        header("Location: ../views/menuAsistente.php");
+    } elseif ($tipoUsuario === 'usuario') {
         header("Location: ../menu.php");
     } else {
         header("Location: ../../index.php");
@@ -65,39 +96,8 @@ else {
     exit();
 }
 
-// Si llegamos aquí, el acceso está permitido
-error_log("ACCESO CONCEDIDO a Parametrizacion - Usuario: " . $correoUsuario . 
-         " (Rol: " . $tipoUsuario . ") - Razón: " . $razonAcceso . 
-         " - IP: " . $_SERVER['REMOTE_ADDR']);
-
-// ========== OPCIONAL: Limpiar verificación después de uso ==========
-// Si quieres que la verificación sea de un solo uso, puedes limpiarla aquí:
-// unset($_SESSION['verificado_por_admin']);
-// unset($_SESSION['admin_verificador_id']);
-// unset($_SESSION['admin_verificador_nombre']);
-
-// ========== OPCIONAL: Configurar tiempo de expiración ==========
-// Si quieres que la verificación expire después de X tiempo:
-if ($tipoUsuario === 'asistente') {
-    if (!isset($_SESSION['verificacion_timestamp'])) {
-        $_SESSION['verificacion_timestamp'] = time();
-    } else {
-        // Verificar si pasaron más de 30 minutos (1800 segundos)
-        $tiempoTranscurrido = time() - $_SESSION['verificacion_timestamp'];
-        if ($tiempoTranscurrido > 1800) { // 30 minutos
-            // Limpiar verificación y redirigir
-            unset($_SESSION['verificado_por_admin']);
-            unset($_SESSION['admin_verificador_id']);
-            unset($_SESSION['admin_verificador_nombre']);
-            unset($_SESSION['verificacion_timestamp']);
-            
-            error_log("VERIFICACIÓN EXPIRADA - Asistente: " . $correoUsuario . 
-                     " - Tiempo transcurrido: " . $tiempoTranscurrido . " segundos");
-            
-            header("Location: ../views/menuAsistente.php");
-            exit();
-        }
-    }
+if (isset($_SESSION['intentos_fallidos'])) {
+    unset($_SESSION['intentos_fallidos']);
 }
 ?>
 <!DOCTYPE html>

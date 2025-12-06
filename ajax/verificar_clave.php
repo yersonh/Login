@@ -9,7 +9,7 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQ
     exit();
 }
 
-// Verificar que el usuario esté logueado (aunque sea asistente)
+// Verificar que el usuario esté logueado
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['tipo_usuario'])) {
     echo json_encode(['success' => false, 'message' => 'Sesión no válida']);
     exit();
@@ -21,54 +21,94 @@ if (!isset($_POST['clave']) || empty(trim($_POST['clave']))) {
     exit();
 }
 
-$clave = trim($_POST['clave']);
+$claveIngresada = trim($_POST['clave']);
 
-// Conectar a la base de datos (ajusta estas credenciales)
+// Conectar a la base de datos
 require_once '../config/database.php';
 
 try {
-    // Preparar consulta para buscar un administrador con esa contraseña
-    $sql = "SELECT id, nombres, apellidos, correo FROM usuarios 
+    // OBTENER TODOS LOS ADMINISTRADORES ACTIVOS
+    $sql = "SELECT id, nombres, apellidos, correo, contrasena 
+            FROM usuarios 
             WHERE tipo_usuario = 'administrador' 
-            AND contrasena = :contrasena 
-            AND estado = 'activo' 
-            LIMIT 1";
+            AND estado = 'activo'";
     
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':contrasena', $clave);
     $stmt->execute();
     
-    $administrador = $stmt->fetch(PDO::FETCH_ASSOC);
+    $administradores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    if ($administrador) {
-        // Clave válida de administrador
-        // Opcional: Guardar en sesión que fue verificado por administrador
+    $claveValida = false;
+    $adminEncontrado = null;
+    
+    // VERIFICAR CONTRASEÑA CONTRA CADA ADMINISTRADOR USANDO password_verify()
+    foreach ($administradores as $admin) {
+        // password_verify() es para contraseñas hasheadas con password_hash()
+        if (password_verify($claveIngresada, $admin['contrasena'])) {
+            $claveValida = true;
+            $adminEncontrado = $admin;
+            
+            // Log detallado (opcional)
+            error_log("CLAVE VERIFICADA - Hash encontrado: " . substr($admin['contrasena'], 0, 20) . "...");
+            break;
+        }
+    }
+    
+    if ($claveValida && $adminEncontrado) {
+        // Clave válida - Guardar en sesión
         $_SESSION['verificado_por_admin'] = true;
-        $_SESSION['admin_verificador_id'] = $administrador['id'];
-        $_SESSION['admin_verificador_nombre'] = $administrador['nombres'] . ' ' . $administrador['apellidos'];
+        $_SESSION['admin_verificador_id'] = $adminEncontrado['id'];
+        $_SESSION['admin_verificador_nombre'] = $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos'];
+        $_SESSION['admin_verificador_correo'] = $adminEncontrado['correo'];
+        $_SESSION['verificacion_timestamp'] = time();
+        
+        // Registrar en log para auditoría
+        error_log("ACCESO AUTORIZADO - Asistente: " . ($_SESSION['correo'] ?? 'Desconocido') . 
+                 " fue autorizado por Admin: " . $adminEncontrado['correo'] . 
+                 " (" . $adminEncontrado['nombres'] . " " . $adminEncontrado['apellidos'] . ")" .
+                 " - IP: " . $_SERVER['REMOTE_ADDR'] . 
+                 " - Hora: " . date('Y-m-d H:i:s'));
         
         echo json_encode([
-            'success' => true,
-            'message' => 'Clave de administrador verificada',
-            'administrador' => [
-                'nombre' => $administrador['nombres'] . ' ' . $administrador['apellidos'],
-                'correo' => $administrador['correo']
-            ]
+            'success' => true, 
+            'message' => 'Clave de administrador verificada correctamente',
+            'administrador' => $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos']
         ]);
+        
     } else {
-        // Clave incorrecta o no es de administrador
-        echo json_encode([
-            'success' => false, 
-            'message' => 'Clave de administrador incorrecta o no autorizada'
-        ]);
+        // Registrar intento fallido para seguridad
+        $intentosFallidos = $_SESSION['intentos_fallidos'] ?? 0;
+        $intentosFallidos++;
+        $_SESSION['intentos_fallidos'] = $intentosFallidos;
+        
+        error_log("INTENTO FALLIDO #{$intentosFallidos} - Asistente: " . ($_SESSION['correo'] ?? 'Desconocido') . 
+                 " - Clave intentada: '" . substr($claveIngresada, 0, 3) . "***'" . 
+                 " - IP: " . $_SERVER['REMOTE_ADDR'] . 
+                 " - Hora: " . date('Y-m-d H:i:s'));
+        
+        // Bloquear después de 5 intentos fallidos
+        if ($intentosFallidos >= 5) {
+            error_log("BLOQUEO TEMPORAL - Demasiados intentos fallidos desde IP: " . $_SERVER['REMOTE_ADDR']);
+            
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Demasiados intentos fallidos. Espere 15 minutos.'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Clave de administrador incorrecta'
+            ]);
+        }
     }
     
 } catch (PDOException $e) {
-    // Log del error (en producción)
-    error_log("Error en verificación de clave: " . $e->getMessage());
+    // Log del error sin exponer detalles
+    error_log("ERROR DB en verificar_clave: " . $e->getMessage() . " - IP: " . $_SERVER['REMOTE_ADDR']);
     
     echo json_encode([
         'success' => false, 
         'message' => 'Error en el servidor. Intente nuevamente.'
     ]);
 }
+?>
