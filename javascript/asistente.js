@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Redirigir a parametrizacion.php
             setTimeout(() => {
-                window.location.href = '../manage/parametrizacion.php';
+                window.location.href = '../views/manage/parametrizacion.php';
             }, 500);
         }, 1000);
     }
