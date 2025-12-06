@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('tipo_verificacion', 'clave_admin_parametrizacion');
         
         // Hacer petición AJAX al servidor
-        fetch('../ajax/test_ajax.php', {
+        fetch('../ajax/verificar_clave.php', {
             method: 'POST',
             body: formData,
             headers: {
