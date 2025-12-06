@@ -48,7 +48,7 @@
             flex-direction: column;
         }
         
-        /* Header moderno */
+        /* Header moderno SIN LOGO */
         .app-header {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
@@ -190,7 +190,7 @@
             color: var(--gray-color);
         }
         
-        /* Footer con logo e información */
+        /* Footer CON LOGO - Fondo blanco */
         .app-footer {
             background-color: white;
             border-top: 1px solid rgba(0, 0, 0, 0.08);
@@ -204,11 +204,20 @@
             display: flex;
             align-items: center;
             gap: 25px;
+            flex: 1;
+        }
+        
+        .footer-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
         }
         
         .footer-logo {
             height: 80px;
             width: auto;
+            max-width: 200px;
+            object-fit: contain;
         }
         
         .developer-info {
@@ -224,6 +233,7 @@
         
         .footer-right {
             text-align: right;
+            flex: 1;
         }
         
         .contact-info {
@@ -245,7 +255,9 @@
             margin-top: 10px;
         }
         
-        /* Responsive */
+        /* ========== RESPONSIVE ========== */
+        
+        /* Tablets */
         @media (max-width: 992px) {
             .services-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -265,9 +277,29 @@
             .contact-info div {
                 justify-content: center;
             }
+            
+            .footer-left {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .footer-logo-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
         }
         
+        /* Tablets pequeñas y móviles grandes */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-container {
+                min-height: auto;
+            }
+            
             .app-header {
                 padding: 20px;
             }
@@ -286,6 +318,14 @@
                 padding: 25px;
             }
             
+            .welcome-section h3 {
+                font-size: 24px;
+            }
+            
+            .welcome-section p {
+                font-size: 16px;
+            }
+            
             .services-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
@@ -295,15 +335,15 @@
                 padding: 20px;
             }
             
-            .footer-left {
-                flex-direction: column;
-                text-align: center;
+            .app-footer {
+                padding: 25px;
             }
         }
         
-        @media (max-width: 480px) {
+        /* Móviles */
+        @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
-                padding: 20px;
+                padding: 20px 15px;
             }
             
             .department-info h1 {
@@ -315,11 +355,80 @@
             }
             
             .welcome-section h3 {
-                font-size: 24px;
+                font-size: 22px;
             }
             
             .welcome-section p {
+                font-size: 15px;
+            }
+            
+            .service-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .service-name {
                 font-size: 16px;
+            }
+            
+            .service-desc {
+                font-size: 13px;
+            }
+            
+            .footer-logo {
+                height: 60px;
+            }
+            
+            .developer-info {
+                font-size: 13px;
+            }
+            
+            .contact-info {
+                font-size: 13px;
+            }
+            
+            .contact-info div {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+            
+            .copyright {
+                font-size: 11px;
+            }
+        }
+        
+        /* Móviles muy pequeños */
+        @media (max-width: 375px) {
+            .department-info h1 {
+                font-size: 18px;
+            }
+            
+            .department-info h2 {
+                font-size: 16px;
+            }
+            
+            .welcome-section h3 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .service-card {
+                padding: 15px;
+            }
+            
+            .app-footer {
+                padding: 20px 15px;
+                gap: 20px;
+            }
+            
+            .footer-logo-container {
+                gap: 10px;
+            }
+            
+            .footer-logo {
+                height: 50px;
             }
         }
         
@@ -351,11 +460,18 @@
         .service-card:hover .service-icon {
             animation: float 1.5s ease-in-out infinite;
         }
+        
+        /* Para centrar el último botón en 2 columnas en móviles */
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Cabecera con información institucional -->
+        <!-- Cabecera SIN LOGO -->
         <header class="app-header">
             <div class="header-content">
                 <div class="department-info">
@@ -363,8 +479,8 @@
                     <h2>Secretaría de Minas y Energía</h2>
                 </div>
                 <div class="user-profile">
-                    <div class="user-name">Usuario del Sistema</div>
-                    <div class="user-role">Portal de Servicios Digitales</div>
+                    <div class="user-name">Portal de Servicios</div>
+                    <div class="user-role">Acceso a sistemas institucionales</div>
                 </div>
             </div>
         </header>
@@ -470,13 +586,16 @@
             </div>
         </main>
         
-        <!-- Footer con logo e información -->
+        <!-- Footer CON LOGO e información - FONDO BLANCO -->
         <footer class="app-footer">
             <div class="footer-left">
-                <img src="/../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
-                <div class="developer-info">
-                    <div class="developer-name">SisgonTech Solutions</div>
-                    <div>Desarrollado por Ing. Rubén Darío González G.</div>
+                <div class="footer-logo-container">
+                    <!-- LOGO AQUÍ EN EL FOOTER -->
+                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <div class="developer-info">
+                        <div class="developer-name">SisgonTech Solutions</div>
+                        <div>Desarrollado por Ing. Rubén Darío González G.</div>
+                    </div>
                 </div>
             </div>
             <div class="footer-right">
@@ -521,6 +640,8 @@
                             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                             z-index: 1000;
                             animation: slideIn 0.3s ease;
+                            max-width: 90%;
+                            font-size: 14px;
                         `;
                         
                         document.body.appendChild(unavailableMsg);
@@ -547,8 +668,27 @@
                     from { transform: translateX(0); opacity: 1; }
                     to { transform: translateX(100%); opacity: 0; }
                 }
+                
+                @media (max-width: 768px) {
+                    .unavailable-message {
+                        top: 10px;
+                        right: 10px;
+                        left: 10px;
+                        max-width: calc(100% - 20px);
+                        text-align: center;
+                    }
+                }
             `;
             document.head.appendChild(style);
+            
+            // Mejorar el responsive del logo
+            const logo = document.querySelector('.footer-logo');
+            if (logo) {
+                logo.onerror = function() {
+                    this.src = 'https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta';
+                    this.alt = 'Logo Gobernación del Meta (placeholder)';
+                };
+            }
         });
     </script>
 </body>
