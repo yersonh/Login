@@ -807,7 +807,7 @@ if (empty($nombreCompleto)) {
                     // Verificar si es la tarjeta de Parametrización
                     if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
                         // Redirigir específicamente a manage/parametrizacion.php
-                        window.location.href = 'manage/parametrizacion.php';
+                        window.location.href = '../manage/parametrizacion.php';
                         return;
                     }
                     
