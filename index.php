@@ -49,7 +49,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
 
             if($_SESSION['tipo_usuario'] === 'administrador') {
-                header("Location: /views/admin.php");
+                header("Location: /views/menuAsistente.php");
             } else {
                 header("Location: /views/menu.php");
             }
@@ -538,9 +538,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         <span class="close">&times;</span>
         <!-- Logo más cerca del título -->
         <div class="license-logo-container">
-            <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
-                    alt="Logo Gobernación" 
-                    class="license-logo">
+            <img src="<?php echo $base_url; ?>/imagenes/logo.png" alt="Logo Gobernación" class="license-logo">
         </div>
         
         <!-- Información pegada al logo -->
