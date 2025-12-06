@@ -810,7 +810,7 @@ if (empty($nombreCompleto)) {
                     
                     // CASO ESPECIAL: Parametrización - Redirigir siempre a la vista de parametrización
                     if (serviceName === "Parametrización") {
-                        window.location.href = "parametrizacion.php";
+                        window.location.href = "/manage/parametrizacion.php";
                         return; // Salir de la función para no ejecutar el resto
                     }
                     
