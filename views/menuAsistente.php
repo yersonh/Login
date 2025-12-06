@@ -81,14 +81,26 @@
             text-align: right;
         }
         
-        .user-name {
+        .welcome-user {
+            font-size: 18px;
             font-weight: 500;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .welcome-user i {
+            color: #ffd700; /* Color dorado para el ícono */
         }
         
         .user-role {
             font-size: 14px;
             opacity: 0.8;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
         }
         
         /* Contenido principal */
@@ -317,6 +329,10 @@
                 text-align: center;
             }
             
+            .welcome-user {
+                justify-content: center;
+            }
+            
             .app-main {
                 padding: 25px;
             }
@@ -378,6 +394,10 @@
             
             .department-info h2 {
                 font-size: 18px;
+            }
+            
+            .welcome-user {
+                font-size: 16px;
             }
             
             .welcome-section h3 {
@@ -475,6 +495,10 @@
                 font-size: 16px;
             }
             
+            .welcome-user {
+                font-size: 15px;
+            }
+            
             .welcome-section h3 {
                 font-size: 20px;
                 margin-bottom: 10px;
@@ -564,8 +588,32 @@
     </style>
 </head>
 <body>
+    <?php
+    // Iniciar sesión (ya debería estar iniciada desde el login)
+    session_start();
+    
+    // Verificar si el usuario está logueado
+    if (!isset($_SESSION['usuario_id'])) {
+        // Redirigir al login si no hay sesión
+        header("Location: ../index.php");
+        exit();
+    }
+    
+    // Obtener el nombre del usuario de la sesión
+    $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
+    $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+    
+    // Combinar nombre completo
+    $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+    
+    // Si no hay nombre, usar un valor por defecto
+    if (empty($nombreCompleto)) {
+        $nombreCompleto = 'Usuario del Sistema';
+    }
+    ?>
+    
     <div class="app-container">
-        <!-- Cabecera SIN LOGO -->
+        <!-- Cabecera SIN LOGO CON BIENVENIDA PERSONALIZADA -->
         <header class="app-header">
             <div class="header-content">
                 <div class="department-info">
@@ -573,8 +621,12 @@
                     <h2>Secretaría de Minas y Energía</h2>
                 </div>
                 <div class="user-profile">
-                    <div class="user-name">Portal de Servicios</div>
-                    <div class="user-role">Acceso a sistemas institucionales</div>
+                    <!-- Mensaje personalizado de bienvenida con PHP -->
+                    <div class="welcome-user">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
+                    </div>
+                    <div class="user-role">Asistente</div>
                 </div>
             </div>
         </header>
@@ -586,7 +638,7 @@
                 <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
             </div>
             
-            <!-- Grid de servicios - AHORA CON PARAMETRIZACIÓN -->
+            <!-- Grid de servicios -->
             <div class="services-grid">
                 <!-- Servicio 1 -->
                 <div class="service-card">
@@ -678,7 +730,7 @@
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- NUEVO SERVICIO 10: PARAMETRIZACIÓN -->
+                <!-- Servicio 10: PARAMETRIZACIÓN -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
