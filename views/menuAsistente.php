@@ -743,14 +743,14 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 10: PARAMETRIZACIÓN -->
+                <!-- Servicio 10: PARAMETRIZACIÓN - MODIFICADO PARA REDIRIGIR -->
                 <div class="service-card" id="parametrizacion-card">
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
-                    <div class="service-status status-unavailable">Disponible</div>
+                    <div class="service-status status-available">Disponible</div> <!-- Cambiado a disponible -->
                 </div>
             </div>
         </main>
@@ -788,92 +788,92 @@ if (empty($nombreCompleto)) {
         </footer>
     </div>
     
-   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Añadir funcionalidad a las tarjetas de servicio
-        const serviceCards = document.querySelectorAll('.service-card');
-        
-        serviceCards.forEach(card => {
-            card.addEventListener('click', function() {
-                const serviceName = this.querySelector('.service-name').textContent;
-                const statusElement = this.querySelector('.service-status');
-                
-                // Verificar si es la tarjeta de Parametrización
-                if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
-                    // Redirigir específicamente a manage/parametrizacion.php
-                    window.location.href = 'manage/parametrizacion.php';
-                    return;
-                }
-                
-                if (statusElement.classList.contains('status-available')) {
-                    // Aquí iría la lógica para redirigir a otros servicios disponibles
-                    alert(`Accediendo a: ${serviceName}`);
-                } else {
-                    // Mostrar mensaje de servicio no disponible
-                    const unavailableMsg = document.createElement('div');
-                    unavailableMsg.className = 'unavailable-message';
-                    unavailableMsg.textContent = `El servicio "${serviceName}" se encuentra en mantenimiento.`;
-                    unavailableMsg.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: #dc3545;
-                        color: white;
-                        padding: 15px 20px;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                        z-index: 1000;
-                        animation: slideIn 0.3s ease;
-                        max-width: 90%;
-                        font-size: 14px;
-                    `;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Añadir funcionalidad a las tarjetas de servicio
+            const serviceCards = document.querySelectorAll('.service-card');
+            
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const serviceName = this.querySelector('.service-name').textContent;
+                    const statusElement = this.querySelector('.service-status');
                     
-                    document.body.appendChild(unavailableMsg);
+                    // Verificar si es la tarjeta de Parametrización
+                    if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
+                        // Redirigir específicamente a manage/parametrizacion.php
+                        window.location.href = 'manage/parametrizacion.php';
+                        return;
+                    }
                     
-                    setTimeout(() => {
-                        unavailableMsg.style.animation = 'slideOut 0.3s ease';
+                    if (statusElement.classList.contains('status-available')) {
+                        // Aquí iría la lógica para redirigir a otros servicios disponibles
+                        alert(`Accediendo a: ${serviceName}`);
+                    } else {
+                        // Mostrar mensaje de servicio no disponible
+                        const unavailableMsg = document.createElement('div');
+                        unavailableMsg.className = 'unavailable-message';
+                        unavailableMsg.textContent = `El servicio "${serviceName}" se encuentra en mantenimiento.`;
+                        unavailableMsg.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #dc3545;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                            z-index: 1000;
+                            animation: slideIn 0.3s ease;
+                            max-width: 90%;
+                            font-size: 14px;
+                        `;
+                        
+                        document.body.appendChild(unavailableMsg);
+                        
                         setTimeout(() => {
-                            document.body.removeChild(unavailableMsg);
-                        }, 300);
-                    }, 3000);
-                }
+                            unavailableMsg.style.animation = 'slideOut 0.3s ease';
+                            setTimeout(() => {
+                                document.body.removeChild(unavailableMsg);
+                            }, 300);
+                        }, 3000);
+                    }
+                });
             });
-        });
-        
-        // Añadir estilos CSS para animaciones
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
             
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            
-            @media (max-width: 768px) {
-                .unavailable-message {
-                    top: 10px;
-                    right: 10px;
-                    left: 10px;
-                    max-width: calc(100% - 20px);
-                    text-align: center;
+            // Añadir estilos CSS para animaciones
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
                 }
+                
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                @media (max-width: 768px) {
+                    .unavailable-message {
+                        top: 10px;
+                        right: 10px;
+                        left: 10px;
+                        max-width: calc(100% - 20px);
+                        text-align: center;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Mejorar el responsive del logo
+            const logo = document.querySelector('.footer-logo');
+            if (logo) {
+                logo.onerror = function() {
+                    this.src = 'https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta';
+                    this.alt = 'Logo Gobernación del Meta (placeholder)';
+                };
             }
-        `;
-        document.head.appendChild(style);
-        
-        // Mejorar el responsive del logo
-        const logo = document.querySelector('.footer-logo');
-        if (logo) {
-            logo.onerror = function() {
-                this.src = 'https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta';
-                this.alt = 'Logo Gobernación del Meta (placeholder)';
-            };
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
