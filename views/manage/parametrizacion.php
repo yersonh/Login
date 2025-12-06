@@ -1,104 +1,48 @@
 <?php
 session_start();
 
-// Verificar autenticación
+// 1. Verificar que esté logueado
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../../index.php");
     exit();
 }
 
-// Obtener datos de usuario
-$nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
-$apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+// 2. Obtener datos del usuario (ASISTENTE)
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 if (empty($nombreCompleto)) {
-    $nombreCompleto = 'Usuario del Sistema';
+    $nombreCompleto = 'Asistente del Sistema';
 }
 
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
-$correoUsuario = $_SESSION['correo'] ?? 'Desconocido';
+$correoUsuario = $_SESSION['correo'] ?? '';
 
-// ========== CONTROL DE ACCESO MEJORADO ==========
+// 3. Control de acceso SIMPLIFICADO
 $accesoPermitido = false;
-$mensajeAcceso = '';
 
 if ($tipoUsuario === 'administrador') {
+    // Admin accede directamente
     $accesoPermitido = true;
-    $mensajeAcceso = 'Acceso directo como administrador';
-    
-    // Log de acceso de administrador
-    error_log("ACCESO ADMIN - " . $correoUsuario . 
-             " accedió a parametrización - IP: " . $_SERVER['REMOTE_ADDR']);
     
 } elseif ($tipoUsuario === 'asistente') {
-    // Verificar si fue autorizado por administrador
+    // Asistente necesita verificación de admin
     if (isset($_SESSION['verificado_por_admin']) && $_SESSION['verificado_por_admin'] === true) {
-        
-        // Verificar expiración (30 minutos)
-        $tiempoLimite = 30 * 60; // 30 minutos en segundos
-        if (isset($_SESSION['verificacion_timestamp'])) {
-            $tiempoTranscurrido = time() - $_SESSION['verificacion_timestamp'];
-            
-            if ($tiempoTranscurrido <= $tiempoLimite) {
-                $accesoPermitido = true;
-                $mensajeAcceso = 'Acceso autorizado por administrador';
-                
-                // Log de acceso autorizado
-                error_log("ACCESO ASISTENTE AUTORIZADO - " . $correoUsuario . 
-                         " autorizado por Admin: " . ($_SESSION['admin_verificador_correo'] ?? 'Desconocido') . 
-                         " - Tiempo restante: " . ($tiempoLimite - $tiempoTranscurrido) . "s" .
-                         " - IP: " . $_SERVER['REMOTE_ADDR']);
-                
-            } else {
-                // Verificación expirada
-                $accesoPermitido = false;
-                $mensajeAcceso = 'Autorización expirada';
-                
-                // Limpiar sesión
-                unset($_SESSION['verificado_por_admin']);
-                unset($_SESSION['admin_verificador_id']);
-                unset($_SESSION['admin_verificador_nombre']);
-                unset($_SESSION['admin_verificador_correo']);
-                unset($_SESSION['verificacion_timestamp']);
-                
-                error_log("AUTORIZACIÓN EXPIRADA - Asistente: " . $correoUsuario . 
-                         " - Tiempo transcurrido: " . $tiempoTranscurrido . "s");
-            }
-        } else {
-            $accesoPermitido = false;
-            $mensajeAcceso = 'Sesión de verificación no válida';
-        }
-        
+        $accesoPermitido = true;
     } else {
-        $accesoPermitido = false;
-        $mensajeAcceso = 'No autorizado para parametrización';
+        // No verificado - redirigir a su menú
+        header("Location: ../views/menuAsistente.php");
+        exit();
     }
     
 } else {
-    // Otros roles
-    $accesoPermitido = false;
-    $mensajeAcceso = 'Rol no permitido: ' . $tipoUsuario;
-}
-
-// Si acceso denegado, registrar y redirigir
-if (!$accesoPermitido) {
-    error_log("ACCESO DENEGADO a Parametrizacion - Usuario: " . $correoUsuario . 
-             " - Razón: " . $mensajeAcceso . 
-             " - IP: " . $_SERVER['REMOTE_ADDR']);
-    
-    if ($tipoUsuario === 'asistente') {
-        header("Location: ../views/menuAsistente.php");
-    } elseif ($tipoUsuario === 'usuario') {
-        header("Location: ../menu.php");
-    } else {
-        header("Location: ../../index.php");
-    }
+    // Otros roles no permitidos
+    header("Location: ../menu.php");
     exit();
 }
 
-if (isset($_SESSION['intentos_fallidos'])) {
-    unset($_SESSION['intentos_fallidos']);
-}
+// 4. Si llegamos aquí, acceso PERMITIDO
+// El asistente mantiene su rol, solo usó la clave como permiso
 ?>
 <!DOCTYPE html>
 <html lang="es">
