@@ -116,18 +116,18 @@
             margin: 0 auto;
         }
         
-        /* Grid de servicios moderno */
+        /* Grid de servicios moderno - 4 columnas para escritorio */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
             margin-bottom: 40px;
         }
         
         .service-card {
             background: white;
             border-radius: var(--border-radius);
-            padding: 25px;
+            padding: 20px;
             box-shadow: var(--shadow);
             transition: var(--transition);
             border: 1px solid rgba(0, 0, 0, 0.05);
@@ -143,16 +143,16 @@
         }
         
         .service-icon {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: white;
-            font-size: 24px;
+            font-size: 22px;
         }
         
         .service-card:hover .service-icon {
@@ -160,23 +160,23 @@
         }
         
         .service-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--dark-color);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .service-desc {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--gray-color);
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
         
         .service-status {
             display: inline-block;
-            font-size: 12px;
-            padding: 5px 15px;
+            font-size: 11px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-weight: 500;
             letter-spacing: 0.5px;
@@ -262,7 +262,8 @@
         /* Tablets */
         @media (max-width: 992px) {
             .services-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
             }
             
             .app-footer {
@@ -328,7 +329,7 @@
                 font-size: 16px;
             }
             
-            /* CAMBIO IMPORTANTE: 2 columnas en móviles */
+            /* 2 columnas en móviles */
             .services-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
@@ -346,18 +347,18 @@
             }
             
             .service-name {
-                font-size: 16px;
+                font-size: 15px;
                 margin-bottom: 8px;
             }
             
             .service-desc {
                 font-size: 12px;
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
             
             .service-status {
-                font-size: 11px;
-                padding: 4px 12px;
+                font-size: 10px;
+                padding: 3px 10px;
             }
             
             .app-footer {
@@ -552,12 +553,12 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            /* Centrar el noveno botón (último) en móviles */
-            .service-card:nth-child(9) {
+            /* Si hay número impar de tarjetas, centrar la última */
+            .service-card:last-child:nth-child(odd) {
                 grid-column: span 2;
                 justify-self: center;
                 width: 50%;
-                min-width: 250px;
+                min-width: 200px;
             }
         }
     </style>
@@ -585,7 +586,7 @@
                 <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
             </div>
             
-            <!-- Grid de servicios -->
+            <!-- Grid de servicios - AHORA CON PARAMETRIZACIÓN -->
             <div class="services-grid">
                 <!-- Servicio 1 -->
                 <div class="service-card">
@@ -667,13 +668,23 @@
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 9 - Último botón se centrará en móviles -->
+                <!-- Servicio 9 -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-tasks"></i>
                     </div>
                     <div class="service-name">Gestor de Tareas</div>
                     <div class="service-desc">Seguimiento de actividades</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- NUEVO SERVICIO 10: PARAMETRIZACIÓN -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <div class="service-name">Parametrización</div>
+                    <div class="service-desc">Configuración del sistema y parámetros</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
             </div>
