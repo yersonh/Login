@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos DOM
     const serviceCards = document.querySelectorAll('.service-card');
-    const parametrizacionCard = document.getElementById('parametrizacion-card');
+    const adminCard = document.getElementById('admin-card');
     const modalClave = document.getElementById('modalClave');
     const inputClave = document.getElementById('inputClave');
     const btnIngresar = document.getElementById('btnIngresarClave');
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusElement = card.querySelector('.service-status');
         
         // Si es la tarjeta de Parametrización
-        if (card === parametrizacionCard && statusElement.classList.contains('status-available')) {
+        if (card === adminCard && statusElement.classList.contains('status-available')) {
             abrirModalClave();
             return;
         }

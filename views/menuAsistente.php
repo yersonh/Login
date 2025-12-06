@@ -165,13 +165,13 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 10: PARAMETRIZACIÓN -->
+                <!-- Servicio 10: Gestion del sistema -->
                 <div class="service-card admin-card" id="admin-card">
                     <div class="admin-only-badge">ADMIN</div>
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
-                    <div class="service-name">Gestión del Sistema</div>
+                    <div class="service-name">Gestioón del Sistema</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
