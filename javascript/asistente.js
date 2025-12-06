@@ -28,6 +28,15 @@ document.addEventListener('DOMContentLoaded', function() {
             card.addEventListener('click', function() {
                 handleServiceClick(this);
             });
+            
+            // Efecto hover mejorado
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
         });
     }
     
@@ -73,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Permitir enviar con Enter
             if (e.key === 'Enter' && modalClave.classList.contains('active')) {
-                btnIngresar.click();
+                handleClaveSubmit();
             }
         });
         
@@ -83,6 +92,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 cerrarModalClave();
             }
         });
+        
+        // Limpiar error al empezar a escribir
+        inputClave.addEventListener('input', function() {
+            if (errorMessage.classList.contains('show')) {
+                errorMessage.classList.remove('show');
+                errorMessage.textContent = '';
+            }
+        });
+        
+        // Mostrar/ocultar contraseña
+        inputClave.addEventListener('keydown', function(e) {
+            // Permitir teclas de control
+            if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift' || 
+                e.key === 'Tab' || e.key === 'CapsLock') {
+                return;
+            }
+            
+            // Efecto visual al presionar teclas
+            if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            }
+        });
     }
     
     /**
@@ -90,9 +124,13 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function abrirModalClave() {
         modalClave.classList.add('active');
+        inputClave.value = '';
         inputClave.focus();
         errorMessage.classList.remove('show');
         errorMessage.textContent = '';
+        
+        // Efecto de entrada
+        document.body.style.overflow = 'hidden';
     }
     
     /**
@@ -103,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
         inputClave.value = '';
         errorMessage.classList.remove('show');
         errorMessage.textContent = '';
+        
+        // Restaurar scroll
+        document.body.style.overflow = '';
     }
     
     /**
@@ -117,8 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validar la clave
-        validarClave(clave);
+        // Mostrar carga
+        btnIngresar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        btnIngresar.disabled = true;
+        
+        // Simular verificación (en producción sería una petición AJAX)
+        setTimeout(() => {
+            validarClave(clave);
+        }, 800);
     }
     
     /**
@@ -127,8 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function validarClave(clave) {
         // En una implementación real, esto sería una petición AJAX al servidor
-        // Por ahora, usamos una clave de ejemplo
-        const claveCorrecta = 'admin123';
+        const claveCorrecta = 'admin123'; // Clave de ejemplo
         
         if (clave === claveCorrecta) {
             // Clave correcta
@@ -137,18 +183,29 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clave incorrecta
             claveIncorrectaHandler();
         }
+        
+        // Restaurar botón
+        btnIngresar.innerHTML = 'Ingresar';
+        btnIngresar.disabled = false;
     }
     
     /**
      * Maneja la respuesta cuando la clave es correcta
      */
     function claveCorrectaHandler() {
-        showNotification('Clave correcta. Redirigiendo...', 'success');
-        cerrarModalClave();
+        showNotification('✓ Clave correcta. Redirigiendo...', 'success');
         
-        // Redirigir después de un breve momento
+        // Efecto visual de éxito
+        inputClave.style.borderColor = '#10b981';
+        inputClave.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+        
         setTimeout(() => {
-            window.location.href = '../manage/parametrizacion.php';
+            cerrarModalClave();
+            
+            // Redirigir
+            setTimeout(() => {
+                window.location.href = '../manage/parametrizacion.php';
+            }, 500);
         }, 1000);
     }
     
@@ -156,14 +213,19 @@ document.addEventListener('DOMContentLoaded', function() {
      * Maneja la respuesta cuando la clave es incorrecta
      */
     function claveIncorrectaHandler() {
-        mostrarError('Clave incorrecta. Por favor intente nuevamente.');
+        mostrarError('❌ Clave incorrecta. Por favor intente nuevamente.');
         inputClave.select();
         inputClave.focus();
         
-        // Efecto de vibración en el input
+        // Efecto de error en el input
+        inputClave.style.borderColor = '#ef4444';
+        inputClave.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
         inputClave.style.animation = 'shake 0.5s';
+        
         setTimeout(() => {
             inputClave.style.animation = '';
+            inputClave.style.borderColor = '#e2e8f0';
+            inputClave.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
         }, 500);
     }
     
@@ -174,6 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function mostrarError(mensaje) {
         errorMessage.textContent = mensaje;
         errorMessage.classList.add('show');
+        
+        // Scroll al mensaje de error
+        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     
     /**
@@ -183,9 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function showNotification(message, type = 'info') {
         const colors = {
-            'error': '#dc3545',
-            'success': '#28a745',
-            'info': '#17a2b8'
+            'error': '#ef4444',
+            'success': '#10b981',
+            'info': '#3b82f6'
         };
         
         const icons = {
@@ -196,28 +261,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Eliminar notificaciones anteriores
         const oldNotifications = document.querySelectorAll('.notification');
-        oldNotifications.forEach(notification => notification.remove());
+        oldNotifications.forEach(notification => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        });
         
         // Crear la notificación
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${colors[type] || colors.info};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            max-width: 90%;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        `;
         
         // Agregar ícono
         const icon = document.createElement('i');
@@ -229,17 +284,29 @@ document.addEventListener('DOMContentLoaded', function() {
         text.textContent = message;
         notification.appendChild(text);
         
+        // Estilos
+        notification.style.cssText = `
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: ${colors[type] || colors.info};
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 350px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid ${type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#2563eb'};
+        `;
+        
         document.body.appendChild(notification);
         
-        // Auto-eliminar después de 3 segundos
-        removeNotificationAfterDelay(notification);
-    }
-    
-    /**
-     * Elimina la notificación después de un tiempo
-     * @param {HTMLElement} notification - Elemento de notificación
-     */
-    function removeNotificationAfterDelay(notification) {
+        // Auto-eliminar después de 4 segundos
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => {
@@ -247,6 +314,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, 4000);
+        
+        // Cerrar al hacer clic
+        notification.addEventListener('click', () => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        });
     }
 });
