@@ -50,8 +50,9 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['correo'] = $usuario['correo'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
             
-            // Cargar permisos según rol
-            cargarPermisos($_SESSION['tipo_usuario']);
+            // NOTA: Por ahora mantenemos simple con solo tipo_usuario
+            // Si en el futuro necesitamos permisos granulares, descomentar:
+            // cargarPermisos($_SESSION['tipo_usuario']);
 
             // Redirigir según rol (usar rutas relativas)
             if ($_SESSION['tipo_usuario'] === 'asistente') {
@@ -102,13 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 $_SESSION['correo'] = $usuario['correo'];
                 $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
                 
-                // Cargar permisos según rol
-                cargarPermisos($_SESSION['tipo_usuario']);
+                // NOTA: Por ahora mantenemos simple con solo tipo_usuario
+                // Si en el futuro necesitamos permisos granulares, descomentar:
+                // cargarPermisos($_SESSION['tipo_usuario']);
                 
                 // Log de login exitoso
                 error_log("LOGIN EXITOSO - Usuario: " . $usuario['correo'] . 
-                         " - Rol: " . $_SESSION['tipo_usuario'] . 
-                         " - IP: " . $_SERVER['REMOTE_ADDR']);
+                        " - Rol: " . $_SESSION['tipo_usuario'] . 
+                        " - IP: " . $_SERVER['REMOTE_ADDR']);
 
                 // Recordar usuario si seleccionó la opción
                 if ($remember) {
@@ -187,9 +189,9 @@ if (rand(1, 10) === 1) {
     }
 }
 
-/**
- * Función para cargar permisos según rol
- */
+/* 
+ * FUNCIÓN COMENTADA - Para uso futuro si necesitamos permisos granulares
+ * 
 function cargarPermisos($tipoUsuario) {
     switch ($tipoUsuario) {
         case 'administrador':
@@ -218,6 +220,7 @@ function cargarPermisos($tipoUsuario) {
             break;
     }
 }
+*/
 
 /**
  * Limpiar tokens de recordar expirados
