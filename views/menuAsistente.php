@@ -627,11 +627,6 @@ if (empty($nombreCompleto)) {
             }
         }
         
-        /* Estilos para ocultar/mostrar botón de parametrización según rol */
-        .parametrizacion-card {
-            display: none;
-        }
-        
         /* Estilos para verificación de permisos */
         .permission-checking {
             position: absolute;
@@ -639,7 +634,7 @@ if (empty($nombreCompleto)) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -647,6 +642,7 @@ if (empty($nombreCompleto)) {
             border-radius: var(--border-radius);
             z-index: 10;
             display: none;
+            backdrop-filter: blur(2px);
         }
         
         .permission-checking i {
@@ -659,6 +655,24 @@ if (empty($nombreCompleto)) {
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Estilo especial para botón de parametrización */
+        .parametrizacion-card {
+            position: relative;
+        }
+        
+        .admin-only-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            color: #856404;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 5;
         }
     </style>
 </head>
@@ -782,15 +796,15 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 10: PARAMETRIZACIÓN - SOLO ADMINISTRADORES -->
-                <!-- Este botón está oculto para asistentes -->
+                <!-- Servicio 10: PARAMETRIZACIÓN - VISIBLE PARA TODOS PERO CON VERIFICACIÓN -->
                 <div class="service-card parametrizacion-card" id="parametrizacion-card">
+                    <div class="admin-only-badge">ADMIN</div>
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
-                    <div class="service-desc">Configuración del sistema y parámetros (Solo administradores)</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-desc">Configuración del sistema y parámetros</div>
+                    <div class="service-status status-available">Disponible</div>
                     <div class="permission-checking">
                         <i class="fas fa-spinner"></i>
                         <p>Verificando permisos...</p>
@@ -834,16 +848,28 @@ if (empty($nombreCompleto)) {
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar si el usuario actual es administrador
-            checkUserRole();
-            
-            // Añadir funcionalidad a las tarjetas de servicio
-            const serviceCards = document.querySelectorAll('.service-card:not(.parametrizacion-card)');
+            // Añadir funcionalidad a TODAS las tarjetas de servicio (incluyendo parametrización)
+            const serviceCards = document.querySelectorAll('.service-card');
             
             serviceCards.forEach(card => {
                 card.addEventListener('click', function() {
                     const serviceName = this.querySelector('.service-name').textContent;
                     const statusElement = this.querySelector('.service-status');
+                    
+                    // Verificar si es la tarjeta de Parametrización
+                    if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
+                        // Mostrar mensaje de verificación
+                        const checkingDiv = this.querySelector('.permission-checking');
+                        if (checkingDiv) {
+                            checkingDiv.style.display = 'flex';
+                        }
+                        
+                        // Verificar si es administrador antes de redirigir
+                        setTimeout(() => {
+                            verificarPermisosParametrizacion(this);
+                        }, 500);
+                        return;
+                    }
                     
                     if (statusElement.classList.contains('status-available')) {
                         // Aquí iría la lógica para redirigir a otros servicios disponibles
@@ -855,18 +881,41 @@ if (empty($nombreCompleto)) {
                 });
             });
             
-            // Función para verificar el rol del usuario
-            function checkUserRole() {
-                // Si por alguna razón un asistente ve el botón de parametrización,
-                // lo ocultamos completamente
-                const parametrizacionCard = document.getElementById('parametrizacion-card');
-                if (parametrizacionCard) {
-                    parametrizacionCard.style.display = 'none';
+            // Función para verificar permisos de parametrización
+            function verificarPermisosParametrizacion(cardElement) {
+                // Ocultar mensaje de verificación
+                const checkingDiv = cardElement.querySelector('.permission-checking');
+                if (checkingDiv) {
+                    checkingDiv.style.display = 'none';
+                }
+                
+                // Verificar rol del usuario actual
+                const userRole = '<?php echo $_SESSION["tipo_usuario"] ?? ""; ?>';
+                
+                if (userRole === 'administrador') {
+                    // Si es administrador, redirigir
+                    showNotification('Redirigiendo a parametrización...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '../manage/parametrizacion.php';
+                    }, 1000);
+                } else {
+                    // Si no es administrador, mostrar error
+                    showNotification('Solo los administradores pueden acceder a la parametrización.', 'error');
+                    
+                    // Opcional: agregar efecto visual de denegado
+                    cardElement.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        cardElement.style.animation = '';
+                    }, 500);
                 }
             }
             
             // Función para mostrar notificaciones
             function showNotification(message, type = 'error') {
+                // Eliminar notificaciones anteriores
+                const oldNotifications = document.querySelectorAll('.notification');
+                oldNotifications.forEach(notification => notification.remove());
+                
                 const notification = document.createElement('div');
                 notification.className = 'notification';
                 notification.textContent = message;
@@ -883,14 +932,24 @@ if (empty($nombreCompleto)) {
                     animation: slideIn 0.3s ease;
                     max-width: 90%;
                     font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
                 `;
+                
+                // Agregar ícono según tipo
+                const icon = document.createElement('i');
+                icon.className = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+                notification.prepend(icon);
                 
                 document.body.appendChild(notification);
                 
                 setTimeout(() => {
                     notification.style.animation = 'slideOut 0.3s ease';
                     setTimeout(() => {
-                        document.body.removeChild(notification);
+                        if (notification.parentNode) {
+                            document.body.removeChild(notification);
+                        }
                     }, 300);
                 }, 3000);
             }
@@ -906,6 +965,14 @@ if (empty($nombreCompleto)) {
                 @keyframes slideOut {
                     from { transform: translateX(0); opacity: 1; }
                     to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                @keyframes shake {
+                    0% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    50% { transform: translateX(5px); }
+                    75% { transform: translateX(-5px); }
+                    100% { transform: translateX(0); }
                 }
                 
                 @media (max-width: 768px) {
@@ -932,6 +999,7 @@ if (empty($nombreCompleto)) {
             // Mostrar información de depuración en consola (solo desarrollo)
             console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
             console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
+            console.log('Estado Parametrización:', '<?php echo ($_SESSION["tipo_usuario"] ?? "") === "administrador" ? "Acceso permitido" : "Acceso denegado"; ?>');
         });
     </script>
 </body>
