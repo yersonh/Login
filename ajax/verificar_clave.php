@@ -47,7 +47,7 @@ try {
                 u.contrasena,
                 p.nombres,
                 p.apellidos
-            FROM usuarios u
+            FROM usuario u
             INNER JOIN persona p ON u.id_persona = p.id_persona
             WHERE u.tipo_usuario = 'administrador'";
     
