@@ -3,414 +3,692 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal - Secretaría de Minas y Energía</title>
+    <title>Portal de Servicios - Secretaría de Minas y Energía</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #004a8d;
+            --secondary-color: #003366;
+            --accent-color: #28a745;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
         }
         
         body {
-            background-color: #FFFFFF;
-            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark-color);
             line-height: 1.6;
-            padding: 20px;
             min-height: 100vh;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         
-        .container {
+        .app-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header moderno SIN LOGO */
+        .app-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 40px;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .department-info h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .department-info h2 {
+            font-size: 20px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        
+        .user-profile {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .user-role {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* Contenido principal */
+        .app-main {
+            flex: 1;
+            padding: 40px;
+        }
+        
+        .welcome-section {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .welcome-section h3 {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .welcome-section p {
+            font-size: 18px;
+            color: var(--gray-color);
+            max-width: 800px;
             margin: 0 auto;
         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .logo-container {
-            margin-bottom: 25px;
-        }
-        
-        .logo {
-            max-height: 200px;
-            max-width: 100%;
-        }
-        
-        .title {
-            color: #000000;
-            margin-bottom: 10px;
-            font-size: 32px;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        
-        .menu-grid {
+        /* Grid de servicios moderno */
+        .services-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 25px;
             margin-bottom: 40px;
         }
         
-        .menu-item {
-            background-color: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
             cursor: pointer;
-            border-left: 5px solid #004a8d;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-color);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
-            height: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 24px;
         }
         
-        .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        .service-card:hover .service-icon {
+            transform: scale(1.1);
         }
         
-        .menu-item i {
-            font-size: 32px;
-            margin-bottom: 12px;
-            color: #004a8d;
-        }
-        
-        .menu-item-name {
+        .service-name {
+            font-size: 18px;
             font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: #333;
-        }
-        
-        .menu-item-desc {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .status-indicator {
-            margin-top: 5px;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        .status-active {
-            background-color: #e6f7e9;
-            color: #2e7d32;
-        }
-        
-        .status-inactive {
-            background-color: #f5f5f5;
-            color: #757575;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .programmer-info {
+            color: var(--dark-color);
             margin-bottom: 10px;
+        }
+        
+        .service-desc {
+            font-size: 14px;
+            color: var(--gray-color);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .service-status {
+            display: inline-block;
+            font-size: 12px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-available {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .status-unavailable {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--gray-color);
+        }
+        
+        /* Footer CON LOGO - Fondo blanco */
+        .app-footer {
+            background-color: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 30px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex: 1;
+        }
+        
+        .footer-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .footer-logo {
+            height: 80px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
+        }
+        
+        .developer-info {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+        
+        .developer-name {
             font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .footer-right {
+            text-align: right;
+            flex: 1;
         }
         
         .contact-info {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+        
+        .contact-info div {
+            margin-bottom: 8px;
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
         }
         
         .copyright {
-            font-size: 13px;
-            color: #888;
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 10px;
         }
         
-        .copyright-year {
-            color: #004a8d;
-            font-weight: bold;
-        }
+        /* ========== RESPONSIVE ========== */
         
-        /* Tablet y pantallas medianas */
+        /* Tablets */
         @media (max-width: 992px) {
-            .container {
-                max-width: 95%;
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+            .app-footer {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
             }
             
-            .title {
-                font-size: 28px;
+            .footer-left, .footer-right {
+                width: 100%;
+                justify-content: center;
             }
             
-            .logo {
-                max-height: 120px;
+            .contact-info div {
+                justify-content: center;
+            }
+            
+            .footer-left {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .footer-logo-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+        
+        /* Tablets pequeñas y móviles grandes */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-container {
+                min-height: auto;
+            }
+            
+            .app-header {
+                padding: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .user-profile {
+                text-align: center;
+            }
+            
+            .app-main {
+                padding: 25px;
+            }
+            
+            .welcome-section h3 {
+                font-size: 24px;
+            }
+            
+            .welcome-section p {
+                font-size: 16px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .service-card {
+                padding: 20px;
+            }
+            
+            .app-footer {
+                padding: 25px;
             }
         }
         
         /* Móviles */
-        @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
-                gap: 12px;
+        @media (max-width: 576px) {
+            .app-header, .app-main, .app-footer {
+                padding: 20px 15px;
             }
             
-            /* SOLO para móviles - Centrar el último botón */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: center;
-                width: 50%; /* Ocupa solo la mitad del ancho para verse centrado */
-                max-width: 250px; /* Ancho máximo */
+            .department-info h1 {
+                font-size: 20px;
             }
             
-            .title {
-                font-size: 26px;
+            .department-info h2 {
+                font-size: 18px;
             }
             
-            .subtitle {
-                font-size: 16px;
+            .welcome-section h3 {
+                font-size: 22px;
             }
             
-            .logo {
-                max-height: 150px;
-            }
-            
-            .menu-item {
-                padding: 15px 12px;
-            }
-            
-            .menu-item i {
-                font-size: 28px;
-            }
-            
-            .menu-item-name {
+            .welcome-section p {
                 font-size: 15px;
             }
             
-            .menu-item-desc {
-                font-size: 12px;
+            .service-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .service-name {
+                font-size: 16px;
+            }
+            
+            .service-desc {
+                font-size: 13px;
+            }
+            
+            .footer-logo {
+                height: 60px;
+            }
+            
+            .developer-info {
+                font-size: 13px;
+            }
+            
+            .contact-info {
+                font-size: 13px;
+            }
+            
+            .contact-info div {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+            
+            .copyright {
+                font-size: 11px;
             }
         }
         
         /* Móviles muy pequeños */
-        @media (max-width: 480px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* Mantenemos 2 columnas */
-                gap: 10px;
+        @media (max-width: 375px) {
+            .department-info h1 {
+                font-size: 18px;
             }
             
-            /* SOLO para móviles pequeños - Centrar el último botón */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: center;
-                width: 80%; /* Un poco más ancho en móviles pequeños */
-                max-width: 280px;
+            .department-info h2 {
+                font-size: 16px;
             }
             
-            .title {
-                font-size: 24px;
+            .welcome-section h3 {
+                font-size: 20px;
+                margin-bottom: 10px;
             }
             
-            .subtitle {
-                font-size: 15px;
-                margin-bottom: 25px;
-            }
-            
-            .logo {
-                max-height: 150px; /* Logo ajustado para pantallas muy pequeñas */
-            }
-            
-            .menu-item {
-                padding: 12px 10px;
-                border-left-width: 4px;
-            }
-            
-            .menu-item i {
-                font-size: 26px;
-                margin-bottom: 8px;
-            }
-            
-            .menu-item-name {
-                font-size: 14px;
-            }
-            
-            .menu-item-desc {
-                font-size: 11px;
-            }
-            
-            .contact-info {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .footer {
-                margin-top: 30px;
-                padding-top: 15px;
-            }
-        }
-        
-        /* Móviles extremadamente pequeños */
-        @media (max-width: 360px) {
-            body {
+            .service-card {
                 padding: 15px;
             }
             
-            .menu-grid {
-                grid-template-columns: 1fr; /* 1 columna solo en pantallas muy pequeñas */
+            .app-footer {
+                padding: 20px 15px;
+                gap: 20px;
             }
             
-            /* En una columna no necesitamos centrar */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: stretch;
-                width: 100%;
-                max-width: none;
+            .footer-logo-container {
+                gap: 10px;
             }
             
-            .logo {
-                max-height: 150px;
+            .footer-logo {
+                height: 50px;
             }
-            
-            .title {
-                font-size: 22px;
+        }
+        
+        /* Efecto de onda en hover para tarjetas */
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        /* Animación para íconos */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .service-card:hover .service-icon {
+            animation: float 1.5s ease-in-out infinite;
+        }
+        
+        /* Para centrar el último botón en 2 columnas en móviles */
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <!-- Logo de la Gobernación del Meta -->
-                <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
+    <div class="app-container">
+        <!-- Cabecera SIN LOGO -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="department-info">
+                    <h1>GOBERNACIÓN DEL META</h1>
+                    <h2>Secretaría de Minas y Energía</h2>
+                </div>
+                <div class="user-profile">
+                    <div class="user-name">Portal de Servicios</div>
+                    <div class="user-role">Acceso a sistemas institucionales</div>
+                </div>
             </div>
-            <h1 class="title">Secretaría de Minas y Energía</h1>
-            <p class="subtitle">Selecciona una de las opciones disponibles</p>
-        </div>
+        </header>
         
-        <div class="menu-grid">
-            <!-- Fila 1 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-file-contract"></i>
-                <div class="menu-item-name">Gestión CPS</div>
-                <div class="menu-item-desc">Control de procesos y seguimiento</div>
-                <div class="status-indicator status-inactive">No disponible</div>
+        <!-- Contenido principal -->
+        <main class="app-main">
+            <div class="welcome-section">
+                <h3>Portal de Servicios Digitales</h3>
+                <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
             </div>
             
-            <div class="menu-item">
-                <i class="fas fa-folder-open"></i>
-                <div class="menu-item-name">Documentos</div>
-                <div class="menu-item-desc">Acceso a archivos y documentos</div>
-                <div class="status-indicator status-inactive">No disponible</div>
+            <!-- Grid de servicios -->
+            <div class="services-grid">
+                <!-- Servicio 1 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="service-name">Gestión CPS</div>
+                    <div class="service-desc">Sistema de Control de Procesos y Seguimiento de trámites y actividades</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 2 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="service-name">Gestión Documental</div>
+                    <div class="service-desc">Repositorio digital de archivos y documentos institucionales</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 3 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="service-name">Correo Institucional</div>
+                    <div class="service-desc">Acceso al sistema de correo electrónico corporativo</div>
+                    <div class="service-status status-available">Disponible</div>
+                </div>
+                
+                <!-- Servicio 4 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <div class="service-name">Drive SME</div>
+                    <div class="service-desc">Almacenamiento en la nube para documentos y recursos compartidos</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 5 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="service-name">APP RAI</div>
+                    <div class="service-desc">Aplicación móvil para Reportes y Alertas Institucionales</div>
+                    <div class="service-status status-available">Disponible</div>
+                </div>
+                
+                <!-- Servicio 6 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="service-name">Reuniones Virtuales</div>
+                    <div class="service-desc">Plataforma para videoconferencias y reuniones colaborativas</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 7 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="service-name">Agenda Digital</div>
+                    <div class="service-desc">Gestión de calendarios, eventos y actividades institucionales</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 8 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="service-name">Sistema de Mapas</div>
+                    <div class="service-desc">Herramientas de información geográfica y cartografía digital</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
+                
+                <!-- Servicio 9 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="service-name">Gestor de Tareas</div>
+                    <div class="service-desc">Sistema de seguimiento y asignación de actividades</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                </div>
             </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-envelope"></i>
-                <div class="menu-item-name">Correo</div>
-                <div class="menu-item-desc">Acceso al sistema de correo</div>
-                <div class="status-indicator status-active">Disponible</div>
-            </div>
-            
-            <!-- Fila 2 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-hdd"></i>
-                <div class="menu-item-name">Drive SME</div>
-                <div class="menu-item-desc">Almacenamiento en la nube</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-mobile-alt"></i>
-                <div class="menu-item-name">APP RAI</div>
-                <div class="menu-item-desc">Aplicación móvil RAI</div>
-                <div class="status-indicator status-active">Disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-video"></i>
-                <div class="menu-item-name">Reuniones Meet</div>
-                <div class="menu-item-desc">Videoconferencias y reuniones</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <!-- Fila 3 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-calendar-alt"></i>
-                <div class="menu-item-name">Agenda</div>
-                <div class="menu-item-desc">Gestión de calendarios</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-map-marked-alt"></i>
-                <div class="menu-item-name">Mapas</div>
-                <div class="menu-item-desc">Sistemas de información geográfica</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <!-- Último botón - Solo se centrará en móviles -->
-            <div class="menu-item">
-                <i class="fas fa-tasks"></i>
-                <div class="menu-item-name">Tareas</div>
-                <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-        </div>
+        </main>
         
-        <div class="footer">
-            <div class="programmer-info">SisgonTech</div>
-            <div class="contact-info">
-                <span><i class="fas fa-phone-alt"></i> Cel. (57 -608) 6 818503</span>
-                <span><i class="fas fa-envelope"></i> Email: gobernaciondelmeta@meta.gov.co</span>
+        <!-- Footer CON LOGO e información - FONDO BLANCO -->
+        <footer class="app-footer">
+            <div class="footer-left">
+                <div class="footer-logo-container">
+                    <!-- LOGO AQUÍ EN EL FOOTER -->
+                    <img src="/../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <div class="developer-info">
+                        <div class="developer-name">SisgonTech Solutions</div>
+                        <div>Desarrollado por Ing. Rubén Darío González G.</div>
+                    </div>
+                </div>
             </div>
-            <div class="copyright">
-                Reconocidos todos los derechos de autor • <span class="copyright-year">Gobernación del Meta 2026</span>
+            <div class="footer-right">
+                <div class="contact-info">
+                    <div><i class="fas fa-phone-alt"></i> Cel. (57 -608) 6 818503</div>
+                    <div><i class="fas fa-envelope"></i> gobernaciondelmeta@meta.gov.co</div>
+                    <div><i class="fas fa-mobile-alt"></i> +57 (310) 631 0227</div>
+                </div>
+                <div class="copyright">
+                    © 2026 Gobernación del Meta • Todos los derechos reservados
+                </div>
             </div>
-        </div>
+        </footer>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Añadir funcionalidad a los botones del menú
-            const menuItems = document.querySelectorAll('.menu-item');
+            // Añadir funcionalidad a las tarjetas de servicio
+            const serviceCards = document.querySelectorAll('.service-card');
             
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const itemName = this.querySelector('.menu-item-name').textContent;
-                    const status = this.querySelector('.status-indicator');
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const serviceName = this.querySelector('.service-name').textContent;
+                    const statusElement = this.querySelector('.service-status');
                     
-                    if (status.classList.contains('status-active')) {
-                        alert(`Accediendo a: ${itemName}`);
-                        // Aquí iría la lógica para redirigir a la funcionalidad correspondiente
+                    if (statusElement.classList.contains('status-available')) {
+                        // Aquí iría la lógica para redirigir al servicio
+                        alert(`Accediendo a: ${serviceName}`);
                     } else {
-                        alert(`${itemName} no está disponible en este momento`);
+                        // Mostrar mensaje de servicio no disponible
+                        const unavailableMsg = document.createElement('div');
+                        unavailableMsg.className = 'unavailable-message';
+                        unavailableMsg.textContent = `El servicio "${serviceName}" se encuentra en mantenimiento.`;
+                        unavailableMsg.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: #dc3545;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                            z-index: 1000;
+                            animation: slideIn 0.3s ease;
+                            max-width: 90%;
+                            font-size: 14px;
+                        `;
+                        
+                        document.body.appendChild(unavailableMsg);
+                        
+                        setTimeout(() => {
+                            unavailableMsg.style.animation = 'slideOut 0.3s ease';
+                            setTimeout(() => {
+                                document.body.removeChild(unavailableMsg);
+                            }, 300);
+                        }, 3000);
                     }
                 });
             });
+            
+            // Añadir estilos CSS para animaciones
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                @media (max-width: 768px) {
+                    .unavailable-message {
+                        top: 10px;
+                        right: 10px;
+                        left: 10px;
+                        max-width: calc(100% - 20px);
+                        text-align: center;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Mejorar el responsive del logo
+            const logo = document.querySelector('.footer-logo');
+            if (logo) {
+                logo.onerror = function() {
+                    this.src = 'https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta';
+                    this.alt = 'Logo Gobernación del Meta (placeholder)';
+                };
+            }
         });
     </script>
 </body>
