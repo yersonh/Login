@@ -288,17 +288,9 @@ if (empty($nombreCompleto)) {
             margin-top: 10px;
         }
         
-        /* Estilos especiales para la tarjeta de parametrización */
-        .service-card.parametrizacion {
-            border: 2px solid var(--primary-color);
-        }
-        
-        .service-card.parametrizacion .service-icon {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-        
+        /* Estilos especiales para la tarjeta de parametrización - SOLO EN HOVER */
         .service-card.parametrizacion:hover {
-            border-color: var(--accent-color);
+            border: 2px solid var(--accent-color);
             box-shadow: 0 15px 40px rgba(0, 74, 141, 0.2);
         }
         
