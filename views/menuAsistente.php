@@ -103,6 +103,10 @@ if (empty($nombreCompleto)) {
             text-align: right;
         }
         
+        .user-profile > div {
+            display: inline-block;
+        }
+        
         .welcome-user {
             font-size: 18px;
             font-weight: 500;
@@ -339,21 +343,40 @@ if (empty($nombreCompleto)) {
             }
             
             .app-header {
-                padding: 20px;
+                padding: 15px 20px; /* Reducido un poco más */
             }
             
             .header-content {
                 flex-direction: column;
                 text-align: center;
-                gap: 15px;
+                gap: 10px; /* Reducido de 15px a 10px */
             }
             
             .user-profile {
                 text-align: center;
+                width: 100%;
+            }
+            
+            /* BIENVENIDA Y ROL EN UNA SOLA LÍNEA EN MÓVILES */
+            .user-profile > div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
             }
             
             .welcome-user {
                 justify-content: center;
+                margin-bottom: 0; /* Eliminamos el margen inferior */
+                font-size: 16px; /* Ligeramente más pequeño */
+            }
+            
+            .user-role {
+                margin-left: 0; /* Quitamos el margin-left para usar gap del contenedor */
+                font-size: 13px; /* Un poco más pequeño */
+                padding: 3px 10px; /* Padding ajustado */
+                vertical-align: middle; /* Alineación vertical */
             }
             
             .app-main {
@@ -413,28 +436,38 @@ if (empty($nombreCompleto)) {
         /* Móviles pequeños - FOOTER REORGANIZADO */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
-                padding: 15px; /* REDUCIDO: de 20px 15px a 15px */
+                padding: 15px;
+            }
+            
+            .app-header {
+                padding: 12px 15px; /* Más compacto */
             }
             
             .department-info h1 {
-                font-size: 20px;
+                font-size: 18px; /* Un poco más pequeño */
             }
             
             .department-info h2 {
-                font-size: 18px;
+                font-size: 16px; /* Un poco más pequeño */
             }
             
+            /* Ajuste para móviles pequeños */
             .welcome-user {
-                font-size: 16px;
+                font-size: 15px;
+            }
+            
+            .user-role {
+                font-size: 12px;
+                padding: 2px 8px;
             }
             
             .welcome-section {
-                margin-bottom: 18px; /* AJUSTADO para móviles pequeños */
+                margin-bottom: 18px;
             }
             
             .welcome-section h3 {
                 font-size: 22px;
-                margin-bottom: 8px; /* REDUCIDO: de 12px a 8px */
+                margin-bottom: 8px;
             }
             
             .welcome-section p {
@@ -520,24 +553,30 @@ if (empty($nombreCompleto)) {
         /* Móviles muy pequeños - Cambiar a 1 columna */
         @media (max-width: 375px) {
             .department-info h1 {
-                font-size: 18px;
+                font-size: 16px; /* Más pequeño */
             }
             
             .department-info h2 {
-                font-size: 16px;
+                font-size: 14px; /* Más pequeño */
             }
             
+            /* Ajuste para pantallas muy pequeñas */
             .welcome-user {
-                font-size: 15px;
+                font-size: 14px;
+            }
+            
+            .user-role {
+                font-size: 11px;
+                padding: 2px 6px;
             }
             
             .welcome-section {
-                margin-bottom: 15px; /* AJUSTADO para móviles muy pequeños */
+                margin-bottom: 15px;
             }
             
             .welcome-section h3 {
                 font-size: 20px;
-                margin-bottom: 6px; /* REDUCIDO: de 10px a 6px */
+                margin-bottom: 6px;
             }
             
             /* Para pantallas muy pequeñas, 1 columna */
@@ -634,12 +673,14 @@ if (empty($nombreCompleto)) {
                     <h2>Secretaría de Minas y Energía</h2>
                 </div>
                 <div class="user-profile">
-                    <!-- Mensaje personalizado de bienvenida con PHP -->
-                    <div class="welcome-user">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
+                    <!-- Contenedor para alinear bienvenida y rol en una línea (móviles) -->
+                    <div>
+                        <div class="welcome-user">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
+                        </div>
+                        <div class="user-role">Asistente</div>
                     </div>
-                    <div class="user-role">Asistente</div>
                 </div>
             </div>
         </header>
