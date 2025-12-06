@@ -1,48 +1,21 @@
 <?php
 session_start();
 
-// 1. Verificar que esté logueado
+// SOLO verificar lo esencial
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../../index.php");
-    exit();
-}
-
-// 2. Obtener datos del usuario (ASISTENTE)
-$nombreUsuario = $_SESSION['nombres'] ?? '';
-$apellidoUsuario = $_SESSION['apellidos'] ?? '';
-$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
-if (empty($nombreCompleto)) {
-    $nombreCompleto = 'Asistente del Sistema';
+    die('No estás logueado');
 }
 
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
-$correoUsuario = $_SESSION['correo'] ?? '';
 
-// 3. Control de acceso SIMPLIFICADO
-$accesoPermitido = false;
-
-if ($tipoUsuario === 'administrador') {
-    // Admin accede directamente
-    $accesoPermitido = true;
-    
-} elseif ($tipoUsuario === 'asistente') {
-    // Asistente necesita verificación de admin
-    if (isset($_SESSION['verificado_por_admin']) && $_SESSION['verificado_por_admin'] === true) {
-        $accesoPermitido = true;
-    } else {
-        // No verificado - redirigir a su menú
-        header("Location: ../views/menuAsistente.php");
-        exit();
+// Para asistente: verificar clave de admin
+if ($tipoUsuario === 'asistente') {
+    if (!isset($_SESSION['verificado_por_admin']) || $_SESSION['verificado_por_admin'] !== true) {
+        die('No estás autorizado para acceder a parametrización');
     }
-    
-} else {
-    // Otros roles no permitidos
-    header("Location: ../menu.php");
-    exit();
 }
 
-// 4. Si llegamos aquí, acceso PERMITIDO
-// El asistente mantiene su rol, solo usó la clave como permiso
+// Si llegamos aquí, acceso PERMITIDO
 ?>
 <!DOCTYPE html>
 <html lang="es">
