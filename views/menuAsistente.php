@@ -290,7 +290,7 @@
             }
         }
         
-        /* Tablets pequeñas y móviles grandes */
+        /* MÓVILES - 2 BOTONES POR FILA */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -326,13 +326,36 @@
                 font-size: 16px;
             }
             
+            /* CAMBIO IMPORTANTE: 2 columnas en móviles */
             .services-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
             }
             
             .service-card {
-                padding: 20px;
+                padding: 18px;
+            }
+            
+            .service-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .service-name {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .service-desc {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .service-status {
+                font-size: 11px;
+                padding: 4px 12px;
             }
             
             .app-footer {
@@ -340,7 +363,7 @@
             }
         }
         
-        /* Móviles */
+        /* Móviles pequeños - Ajustes adicionales */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
                 padding: 20px 15px;
@@ -356,24 +379,20 @@
             
             .welcome-section h3 {
                 font-size: 22px;
+                margin-bottom: 12px;
             }
             
             .welcome-section p {
                 font-size: 15px;
             }
             
-            .service-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+            /* Mantenemos 2 columnas pero ajustamos espacio */
+            .services-grid {
+                gap: 12px;
             }
             
-            .service-name {
-                font-size: 16px;
-            }
-            
-            .service-desc {
-                font-size: 13px;
+            .service-card {
+                padding: 15px;
             }
             
             .footer-logo {
@@ -399,7 +418,7 @@
             }
         }
         
-        /* Móviles muy pequeños */
+        /* Móviles muy pequeños - Cambiar a 1 columna */
         @media (max-width: 375px) {
             .department-info h1 {
                 font-size: 18px;
@@ -412,6 +431,12 @@
             .welcome-section h3 {
                 font-size: 20px;
                 margin-bottom: 10px;
+            }
+            
+            /* Para pantallas muy pequeñas, 1 columna */
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
             
             .service-card {
@@ -461,10 +486,18 @@
             animation: float 1.5s ease-in-out infinite;
         }
         
-        /* Para centrar el último botón en 2 columnas en móviles */
-        @media (max-width: 768px) {
+        /* Para centrar el último botón cuando haya número impar en 2 columnas */
+        @media (max-width: 768px) and (min-width: 376px) {
             .services-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            /* Centrar el noveno botón (último) en móviles */
+            .service-card:nth-child(9) {
+                grid-column: span 2;
+                justify-self: center;
+                width: 50%;
+                min-width: 250px;
             }
         }
     </style>
@@ -500,7 +533,7 @@
                         <i class="fas fa-file-contract"></i>
                     </div>
                     <div class="service-name">Gestión CPS</div>
-                    <div class="service-desc">Sistema de Control de Procesos y Seguimiento de trámites y actividades</div>
+                    <div class="service-desc">Sistema de Control de Procesos y Seguimiento</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
@@ -510,7 +543,7 @@
                         <i class="fas fa-folder-open"></i>
                     </div>
                     <div class="service-name">Gestión Documental</div>
-                    <div class="service-desc">Repositorio digital de archivos y documentos institucionales</div>
+                    <div class="service-desc">Repositorio digital de archivos</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
@@ -520,7 +553,7 @@
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="service-name">Correo Institucional</div>
-                    <div class="service-desc">Acceso al sistema de correo electrónico corporativo</div>
+                    <div class="service-desc">Correo electrónico corporativo</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
@@ -530,7 +563,7 @@
                         <i class="fas fa-hdd"></i>
                     </div>
                     <div class="service-name">Drive SME</div>
-                    <div class="service-desc">Almacenamiento en la nube para documentos y recursos compartidos</div>
+                    <div class="service-desc">Almacenamiento en la nube</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
@@ -540,7 +573,7 @@
                         <i class="fas fa-mobile-alt"></i>
                     </div>
                     <div class="service-name">APP RAI</div>
-                    <div class="service-desc">Aplicación móvil para Reportes y Alertas Institucionales</div>
+                    <div class="service-desc">Aplicación móvil para Reportes</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
@@ -550,7 +583,7 @@
                         <i class="fas fa-video"></i>
                     </div>
                     <div class="service-name">Reuniones Virtuales</div>
-                    <div class="service-desc">Plataforma para videoconferencias y reuniones colaborativas</div>
+                    <div class="service-desc">Videoconferencias colaborativas</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
@@ -560,7 +593,7 @@
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                     <div class="service-name">Agenda Digital</div>
-                    <div class="service-desc">Gestión de calendarios, eventos y actividades institucionales</div>
+                    <div class="service-desc">Calendarios y eventos</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
@@ -570,17 +603,17 @@
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
                     <div class="service-name">Sistema de Mapas</div>
-                    <div class="service-desc">Herramientas de información geográfica y cartografía digital</div>
+                    <div class="service-desc">Información geográfica</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 9 -->
+                <!-- Servicio 9 - Último botón se centrará en móviles -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-tasks"></i>
                     </div>
                     <div class="service-name">Gestor de Tareas</div>
-                    <div class="service-desc">Sistema de seguimiento y asignación de actividades</div>
+                    <div class="service-desc">Seguimiento de actividades</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
             </div>
@@ -591,7 +624,7 @@
             <div class="footer-left">
                 <div class="footer-logo-container">
                     <!-- LOGO AQUÍ EN EL FOOTER -->
-                    <img src="/../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
                         <div class="developer-name">SisgonTech Solutions</div>
                         <div>Desarrollado por Ing. Rubén Darío González G.</div>
