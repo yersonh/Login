@@ -535,10 +535,9 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
 <!-- Modal de Licencia compacto -->
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
-        
+        <span class="close">&times;</span>
         <!-- Logo más cerca del título -->
         <div class="license-logo-container">
-            <span class="close">&times;</span>
             <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
                     alt="Logo Gobernación" 
                     class="license-logo">
