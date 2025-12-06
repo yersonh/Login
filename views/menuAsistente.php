@@ -610,29 +610,8 @@ if (empty($nombreCompleto)) {
     </style>
 </head>
 <body>
-    <?php
-    // Iniciar sesión (ya debería estar iniciada desde el login)
-    session_start();
-    
-    // Verificar si el usuario está logueado
-    if (!isset($_SESSION['usuario_id'])) {
-        // Redirigir al login si no hay sesión
-        header("Location: ../index.php");
-        exit();
-    }
-    
-    // Obtener el nombre del usuario de la sesión
-    $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
-    $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
-    
-    // Combinar nombre completo
-    $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
-    
-    // Si no hay nombre, usar un valor por defecto
-    if (empty($nombreCompleto)) {
-        $nombreCompleto = 'Usuario del Sistema';
-    }
-    ?>
+    <!-- ELIMINÉ EL SEGUNDO BLOQUE DE CÓDIGO PHP QUE ESTABA AQUÍ -->
+    <!-- Las variables PHP ya están definidas arriba -->
     
     <div class="app-container">
         <!-- Cabecera SIN LOGO CON BIENVENIDA PERSONALIZADA -->
