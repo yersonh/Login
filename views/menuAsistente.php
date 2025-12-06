@@ -1,7 +1,10 @@
 <?php
+// Iniciar sesión (ya debería estar iniciada desde el login)
 session_start();
 
+// Verificar si el usuario está logueado
 if (!isset($_SESSION['usuario_id'])) {
+    // Redirigir al login si no hay sesión
     header("Location: ../index.php");
     exit();
 }
@@ -9,6 +12,7 @@ if (!isset($_SESSION['usuario_id'])) {
 $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
 $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
 
+// Combinar nombre completo
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 
 // Si no hay nombre, usar un valor por defecto
@@ -286,12 +290,6 @@ if (empty($nombreCompleto)) {
             font-size: 12px;
             color: #adb5bd;
             margin-top: 10px;
-        }
-        
-        /* Estilos especiales para la tarjeta de parametrización - SOLO EN HOVER */
-        .service-card.parametrizacion:hover {
-            border: 2px solid var(--accent-color);
-            box-shadow: 0 15px 40px rgba(0, 74, 141, 0.2);
         }
         
         /* ========== RESPONSIVE ========== */
@@ -746,13 +744,13 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Servicio 10: PARAMETRIZACIÓN -->
-                <div class="service-card parametrizacion">
+                <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">No disponible</div>
                 </div>
             </div>
         </main>
@@ -799,12 +797,6 @@ if (empty($nombreCompleto)) {
                 card.addEventListener('click', function() {
                     const serviceName = this.querySelector('.service-name').textContent;
                     const statusElement = this.querySelector('.service-status');
-                    
-                    // CASO ESPECIAL: Parametrización - Redirigir siempre a la vista de parametrización
-                    if (serviceName === "Parametrización") {
-                        window.location.href = "/manage/parametrizacion.php";
-                        return; // Salir de la función para no ejecutar el resto
-                    }
                     
                     if (statusElement.classList.contains('status-available')) {
                         // Aquí iría la lógica para redirigir al servicio
