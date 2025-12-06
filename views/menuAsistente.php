@@ -216,12 +216,10 @@ if (empty($nombreCompleto)) {
         <div class="modal-clave">
             <div class="modal-header">
                 <h3>Accesso restringido</h3>
-                <p>Verificación de seguridad requerida</p>
             </div>
             <div class="modal-body">
-                <p>Ingrese la clave autorizada para crear un contratista nuevo / CPS:</p>
+                <p>Ingrese la clave autorizada para parametrizar:</p>
                 <div class="input-group">
-                    <label for="inputClave">Clave de autorización:</label>
                     <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
                 </div>
                 <div class="error-message" id="errorMessage"></div>
