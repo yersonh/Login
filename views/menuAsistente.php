@@ -6,11 +6,18 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-// Verificar que sea asistente
+// CORREGIDO: Verificar que sea SOLO asistente
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
     // Si no es asistente, redirigir según su rol
-    if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'usuario') {
-        header("Location: menu.php");
+    if (isset($_SESSION['tipo_usuario'])) {
+        if ($_SESSION['tipo_usuario'] === 'administrador') {
+            header("Location: menu.php");
+        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+            header("Location: menu.php");
+        } else {
+            // Rol desconocido
+            header("Location: ../index.php");
+        }
     } else {
         header("Location: ../index.php");
     }
@@ -119,7 +126,7 @@ if (empty($nombreCompleto)) {
         }
         
         .welcome-user i {
-            color: #ffd700; /* Color dorado para el ícono */
+            color: #ffd700;
         }
         
         .user-role {
@@ -134,18 +141,18 @@ if (empty($nombreCompleto)) {
         /* Contenido principal - ESPACIOS REDUCIDOS */
         .app-main {
             flex: 1;
-            padding: 25px 40px; /* REDUCIDO: 25px arriba/abajo, 40px lados */
+            padding: 25px 40px;
         }
         
         .welcome-section {
-            margin-bottom: 25px; /* REDUCIDO: de 40px a 25px */
+            margin-bottom: 25px;
             text-align: center;
         }
         
         .welcome-section h3 {
             font-size: 28px;
             color: #000000;
-            margin-bottom: 12px; /* REDUCIDO: de 15px a 12px */
+            margin-bottom: 12px;
             font-weight: 700;
         }
         
@@ -363,16 +370,16 @@ if (empty($nombreCompleto)) {
             }
             
             .app-main {
-                padding: 20px; /* REDUCIDO: de 25px a 20px */
+                padding: 20px;
             }
             
             .welcome-section {
-                margin-bottom: 20px; /* REDUCIDO para móviles */
+                margin-bottom: 20px;
             }
             
             .welcome-section h3 {
                 font-size: 24px;
-                margin-bottom: 10px; /* REDUCIDO: de 12px a 10px */
+                margin-bottom: 10px;
             }
             
             .welcome-section p {
@@ -416,10 +423,9 @@ if (empty($nombreCompleto)) {
             }
         }
         
-        /* Móviles pequeños - FOOTER REORGANIZADO */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
-                padding: 15px; /* REDUCIDO: de 20px 15px a 15px */
+                padding: 15px;
             }
             
             .department-info h1 {
@@ -435,19 +441,18 @@ if (empty($nombreCompleto)) {
             }
             
             .welcome-section {
-                margin-bottom: 18px; /* AJUSTADO para móviles pequeños */
+                margin-bottom: 18px;
             }
             
             .welcome-section h3 {
                 font-size: 22px;
-                margin-bottom: 8px; /* REDUCIDO: de 12px a 8px */
+                margin-bottom: 8px;
             }
             
             .welcome-section p {
                 font-size: 15px;
             }
             
-            /* Mantenemos 2 columnas pero ajustamos espacio */
             .services-grid {
                 gap: 12px;
             }
@@ -456,7 +461,6 @@ if (empty($nombreCompleto)) {
                 padding: 15px;
             }
             
-            /* FOOTER REORGANIZADO - Logo y texto en línea */
             .app-footer {
                 flex-direction: column;
                 gap: 20px;
@@ -500,7 +504,6 @@ if (empty($nombreCompleto)) {
                 font-size: 13px;
             }
             
-            /* Iconos de contacto alineados horizontalmente con texto */
             .contact-info div {
                 flex-direction: row;
                 justify-content: flex-start;
@@ -523,7 +526,6 @@ if (empty($nombreCompleto)) {
             }
         }
         
-        /* Móviles muy pequeños - Cambiar a 1 columna */
         @media (max-width: 375px) {
             .department-info h1 {
                 font-size: 18px;
@@ -538,15 +540,14 @@ if (empty($nombreCompleto)) {
             }
             
             .welcome-section {
-                margin-bottom: 15px; /* AJUSTADO para móviles muy pequeños */
+                margin-bottom: 15px;
             }
             
             .welcome-section h3 {
                 font-size: 20px;
-                margin-bottom: 6px; /* REDUCIDO: de 10px a 6px */
+                margin-bottom: 6px;
             }
             
-            /* Para pantallas muy pequeñas, 1 columna */
             .services-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
@@ -556,7 +557,6 @@ if (empty($nombreCompleto)) {
                 padding: 15px;
             }
             
-            /* Ajustes adicionales para footer en móviles muy pequeños */
             .app-footer {
                 gap: 15px;
                 padding: 15px;
@@ -619,13 +619,46 @@ if (empty($nombreCompleto)) {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            /* Si hay número impar de tarjetas, centrar la última */
             .service-card:last-child:nth-child(odd) {
                 grid-column: span 2;
                 justify-self: center;
                 width: 50%;
                 min-width: 200px;
             }
+        }
+        
+        /* Estilos para ocultar/mostrar botón de parametrización según rol */
+        .parametrizacion-card {
+            display: none;
+        }
+        
+        /* Estilos para verificación de permisos */
+        .permission-checking {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: var(--border-radius);
+            z-index: 10;
+            display: none;
+        }
+        
+        .permission-checking i {
+            font-size: 30px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -749,14 +782,19 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 10: PARAMETRIZACIÓN - MODIFICADO PARA REDIRIGIR -->
-                <div class="service-card" id="parametrizacion-card">
+                <!-- Servicio 10: PARAMETRIZACIÓN - SOLO ADMINISTRADORES -->
+                <!-- Este botón está oculto para asistentes -->
+                <div class="service-card parametrizacion-card" id="parametrizacion-card">
                     <div class="service-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
-                    <div class="service-desc">Configuración del sistema y parámetros</div>
-                    <div class="service-status status-available">Disponible</div> <!-- Cambiado a disponible -->
+                    <div class="service-desc">Configuración del sistema y parámetros (Solo administradores)</div>
+                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="permission-checking">
+                        <i class="fas fa-spinner"></i>
+                        <p>Verificando permisos...</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -788,7 +826,7 @@ if (empty($nombreCompleto)) {
                     </div>
                 </div>
                 <div class="copyright">
-                    © 2026 Gobernación del Meta • Todos los derechos reservados
+                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
                 </div>
             </div>
         </footer>
@@ -796,55 +834,66 @@ if (empty($nombreCompleto)) {
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario actual es administrador
+            checkUserRole();
+            
             // Añadir funcionalidad a las tarjetas de servicio
-            const serviceCards = document.querySelectorAll('.service-card');
+            const serviceCards = document.querySelectorAll('.service-card:not(.parametrizacion-card)');
             
             serviceCards.forEach(card => {
                 card.addEventListener('click', function() {
                     const serviceName = this.querySelector('.service-name').textContent;
                     const statusElement = this.querySelector('.service-status');
                     
-                    // Verificar si es la tarjeta de Parametrización
-                    if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
-                        // Redirigir específicamente a manage/parametrizacion.php
-                        window.location.href = '../manage/parametrizacion.php';
-                        return;
-                    }
-                    
                     if (statusElement.classList.contains('status-available')) {
                         // Aquí iría la lógica para redirigir a otros servicios disponibles
                         alert(`Accediendo a: ${serviceName}`);
                     } else {
                         // Mostrar mensaje de servicio no disponible
-                        const unavailableMsg = document.createElement('div');
-                        unavailableMsg.className = 'unavailable-message';
-                        unavailableMsg.textContent = `El servicio "${serviceName}" se encuentra en mantenimiento.`;
-                        unavailableMsg.style.cssText = `
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            background: #dc3545;
-                            color: white;
-                            padding: 15px 20px;
-                            border-radius: 8px;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                            z-index: 1000;
-                            animation: slideIn 0.3s ease;
-                            max-width: 90%;
-                            font-size: 14px;
-                        `;
-                        
-                        document.body.appendChild(unavailableMsg);
-                        
-                        setTimeout(() => {
-                            unavailableMsg.style.animation = 'slideOut 0.3s ease';
-                            setTimeout(() => {
-                                document.body.removeChild(unavailableMsg);
-                            }, 300);
-                        }, 3000);
+                        showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
                     }
                 });
             });
+            
+            // Función para verificar el rol del usuario
+            function checkUserRole() {
+                // Si por alguna razón un asistente ve el botón de parametrización,
+                // lo ocultamos completamente
+                const parametrizacionCard = document.getElementById('parametrizacion-card');
+                if (parametrizacionCard) {
+                    parametrizacionCard.style.display = 'none';
+                }
+            }
+            
+            // Función para mostrar notificaciones
+            function showNotification(message, type = 'error') {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#dc3545' : '#28a745'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 90%;
+                    font-size: 14px;
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
             
             // Añadir estilos CSS para animaciones
             const style = document.createElement('style');
@@ -860,7 +909,7 @@ if (empty($nombreCompleto)) {
                 }
                 
                 @media (max-width: 768px) {
-                    .unavailable-message {
+                    .notification {
                         top: 10px;
                         right: 10px;
                         left: 10px;
@@ -879,6 +928,10 @@ if (empty($nombreCompleto)) {
                     this.alt = 'Logo Gobernación del Meta (placeholder)';
                 };
             }
+            
+            // Mostrar información de depuración en consola (solo desarrollo)
+            console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
+            console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
         });
     </script>
 </body>

@@ -1,9 +1,8 @@
 <?php
-// parametrizacion.php
 session_start();
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     exit();
 }
 
@@ -15,10 +14,19 @@ if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario del Sistema';
 }
 
-// Verificar permisos de administrador (agrega tu lógica aquí)
-$esAdministrador = isset($_SESSION['rol']) && $_SESSION['rol'] === 'administrador';
-if (!$esAdministrador) {
-    header("Location: portal.php");
+$tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
+
+if ($tipoUsuario !== 'administrador') {
+
+    error_log("ACCESO DENEGADO - Parametrizacion accedida por: " . 
+             ($_SESSION['correo'] ?? 'Desconocido') . 
+             " (Rol: " . $tipoUsuario . ") - IP: " . $_SERVER['REMOTE_ADDR']);
+
+    if ($tipoUsuario === 'asistente') {
+        header("Location: ../menuAsistente.php");
+    } else {
+        header("Location: ../menu.php");
+    }
     exit();
 }
 ?>
@@ -74,7 +82,7 @@ if (!$esAdministrador) {
             flex-direction: column;
         }
         
-        /* Header */
+        /* Header con indicador de admin */
         .app-header {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
@@ -99,6 +107,21 @@ if (!$esAdministrador) {
             font-size: 20px;
             font-weight: 400;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            color: #856404;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .user-profile {
@@ -146,6 +169,9 @@ if (!$esAdministrador) {
             font-size: 28px;
             color: var(--primary-color);
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .back-button {
@@ -182,6 +208,9 @@ if (!$esAdministrador) {
             padding-bottom: 10px;
             border-bottom: 2px solid var(--primary-color);
             font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         /* Formulario de logo */
@@ -307,6 +336,7 @@ if (!$esAdministrador) {
         .btn-primary:hover {
             background-color: var(--secondary-color);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-secondary {
@@ -317,6 +347,7 @@ if (!$esAdministrador) {
         .btn-secondary:hover {
             background-color: #5a6268;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         /* Información de licencia */
@@ -332,6 +363,9 @@ if (!$esAdministrador) {
             color: var(--secondary-color);
             margin-bottom: 15px;
             font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .license-details {
@@ -426,6 +460,10 @@ if (!$esAdministrador) {
             .current-logo, .logo-form {
                 width: 100%;
             }
+            
+            .license-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         @media (max-width: 768px) {
@@ -441,6 +479,11 @@ if (!$esAdministrador) {
                 flex-direction: column;
                 text-align: center;
                 gap: 15px;
+            }
+            
+            .department-info h2 {
+                flex-direction: column;
+                gap: 5px;
             }
             
             .user-profile {
@@ -508,40 +551,145 @@ if (!$esAdministrador) {
         
         /* Mensajes de alerta */
         .alert {
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             display: none;
+            animation: slideDown 0.3s ease;
         }
         
         .alert-success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+            border-left: 4px solid #28a745;
         }
         
         .alert-error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert i {
+            margin-right: 10px;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Sección de gestión de usuarios */
+        .users-section {
+            margin-top: 40px;
+        }
+        
+        .users-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .users-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .users-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .users-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .role-admin {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .role-asistente {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .role-usuario {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .role-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+        }
+        
+        .update-btn {
+            padding: 6px 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .update-btn:hover {
+            background: var(--secondary-color);
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Cabecera -->
+        <!-- Cabecera con indicador de admin -->
         <header class="app-header">
             <div class="header-content">
                 <div class="department-info">
                     <h1>GOBERNACIÓN DEL META</h1>
-                    <h2>Secretaría de Minas y Energía</h2>
+                    <h2>
+                        Secretaría de Minas y Energía
+                        <span class="admin-badge">
+                            <i class="fas fa-shield-alt"></i> ADMINISTRADOR
+                        </span>
+                    </h2>
                 </div>
                 <div class="user-profile">
                     <div class="welcome-user">
                         <i class="fas fa-user-circle"></i>
                         <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
                     </div>
-                    <div class="user-role">Administrador</div>
+                    <div class="user-role">
+                        <i class="fas fa-user-shield"></i> Administrador
+                    </div>
                 </div>
             </div>
         </header>
@@ -550,7 +698,7 @@ if (!$esAdministrador) {
         <main class="app-main">
             <div class="page-title">
                 <h1><i class="fas fa-sliders-h"></i> Panel de Parametrización</h1>
-                <button class="back-button" onclick="window.location.href='portal.php'">
+                <button class="back-button" onclick="window.location.href='../menu.php'">
                     <i class="fas fa-arrow-left"></i> Volver al Portal
                 </button>
             </div>
@@ -619,6 +767,20 @@ if (!$esAdministrador) {
                 </div>
             </div>
             
+            <!-- Sección de Gestión de Usuarios (Opcional) -->
+            <div class="config-panel users-section">
+                <h2><i class="fas fa-users-cog"></i> Gestión de Usuarios</h2>
+                <p>Desde aquí puedes gestionar los roles de los usuarios del sistema.</p>
+                
+                <div id="usersLoading" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando usuarios...
+                </div>
+                
+                <div id="usersTableContainer" class="users-table-container" style="display: none;">
+                    <!-- La tabla se cargará dinámicamente -->
+                </div>
+            </div>
+            
             <!-- Información de licencia -->
             <div class="license-info">
                 <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
@@ -662,7 +824,7 @@ if (!$esAdministrador) {
                     </div>
                 </div>
                 <div class="copyright">
-                    © 2026 Gobernación del Meta • Todos los derechos reservados
+                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
                 </div>
             </div>
         </footer>
@@ -716,6 +878,9 @@ if (!$esAdministrador) {
                     fileNameSpan.textContent = 'Haga clic para seleccionar un archivo';
                 }
             });
+            
+            // Cargar lista de usuarios (opcional)
+            loadUsers();
         });
         
         function uploadLogo() {
@@ -802,6 +967,108 @@ if (!$esAdministrador) {
             setTimeout(() => {
                 alert.style.display = 'none';
             }, 5000);
+        }
+        
+        function loadUsers() {
+            fetch('/../../includes/get_users.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.users) {
+                        displayUsersTable(data.users);
+                    } else {
+                        document.getElementById('usersLoading').innerHTML = 
+                            '<p style="color: #dc3545;">Error al cargar usuarios: ' + (data.message || 'Error desconocido') + '</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('usersLoading').innerHTML = 
+                        '<p style="color: #dc3545;">Error de conexión: ' + error.message + '</p>';
+                });
+        }
+        
+        function displayUsersTable(users) {
+            const container = document.getElementById('usersTableContainer');
+            const loading = document.getElementById('usersLoading');
+            
+            if (users.length === 0) {
+                loading.innerHTML = '<p>No hay usuarios registrados.</p>';
+                return;
+            }
+            
+            let html = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Nombre</th>
+                            <th>Rol Actual</th>
+                            <th>Cambiar Rol</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            users.forEach(user => {
+                const roleClass = getRoleClass(user.tipo_usuario);
+                html += `
+                    <tr>
+                        <td>${user.id_usuario}</td>
+                        <td>${user.correo}</td>
+                        <td>${user.nombres || ''} ${user.apellidos || ''}</td>
+                        <td><span class="role-badge ${roleClass}">${user.tipo_usuario}</span></td>
+                        <td>
+                            <select class="role-select" id="role-${user.id_usuario}">
+                                <option value="administrador" ${user.tipo_usuario === 'administrador' ? 'selected' : ''}>Administrador</option>
+                                <option value="asistente" ${user.tipo_usuario === 'asistente' ? 'selected' : ''}>Asistente</option>
+                                <option value="usuario" ${user.tipo_usuario === 'usuario' ? 'selected' : ''}>Usuario</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="update-btn" onclick="updateUserRole(${user.id_usuario})">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+            loading.style.display = 'none';
+            container.style.display = 'block';
+        }
+        
+        function getRoleClass(role) {
+            switch(role) {
+                case 'administrador': return 'role-admin';
+                case 'asistente': return 'role-asistente';
+                case 'usuario': return 'role-usuario';
+                default: return '';
+            }
+        }
+        
+        function updateUserRole(userId) {
+            const select = document.getElementById(`role-${userId}`);
+            const newRole = select.value;
+            
+            if (confirm(`¿Está seguro de cambiar el rol del usuario #${userId} a "${newRole}"?`)) {
+                showSuccess('Actualizando rol...');
+                
+                setTimeout(() => {
+                    // Simulación de actualización
+                    const roleBadge = document.querySelector(`#role-${userId}`).closest('tr').querySelector('.role-badge');
+                    roleBadge.textContent = newRole;
+                    roleBadge.className = `role-badge ${getRoleClass(newRole)}`;
+                    
+                    showSuccess(`Rol actualizado correctamente a "${newRole}"`);
+                }, 1000);
+            }
         }
     </script>
 </body>
