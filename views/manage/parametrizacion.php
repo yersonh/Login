@@ -1,21 +1,5 @@
 <?php
-session_start();
 
-// SOLO verificar lo esencial
-if (!isset($_SESSION['usuario_id'])) {
-    die('No estás logueado');
-}
-
-$tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
-
-// Para asistente: verificar clave de admin
-if ($tipoUsuario === 'asistente') {
-    if (!isset($_SESSION['verificado_por_admin']) || $_SESSION['verificado_por_admin'] !== true) {
-        die('No estás autorizado para acceder a parametrización');
-    }
-}
-
-// Si llegamos aquí, acceso PERMITIDO
 ?>
 <!DOCTYPE html>
 <html lang="es">
