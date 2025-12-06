@@ -538,6 +538,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         
         <!-- Logo más cerca del título -->
         <div class="license-logo-container">
+            <span class="close">&times;</span>
             <img src="<?php echo $base_url; ?>/imagenes/logo.png" 
                     alt="Logo Gobernación" 
                     class="license-logo">
