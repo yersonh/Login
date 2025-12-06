@@ -125,29 +125,30 @@ if (empty($nombreCompleto)) {
             display: inline-block;
         }
         
-        /* Contenido principal */
+        /* Contenido principal - ESPACIOS REDUCIDOS */
         .app-main {
             flex: 1;
-            padding: 40px;
+            padding: 25px 40px; /* REDUCIDO: 25px arriba/abajo, 40px lados */
         }
         
         .welcome-section {
-            margin-bottom: 40px;
+            margin-bottom: 25px; /* REDUCIDO: de 40px a 25px */
             text-align: center;
         }
         
         .welcome-section h3 {
             font-size: 28px;
-            color: #000000;;
-            margin-bottom: 15px;
+            color: #000000;
+            margin-bottom: 12px; /* REDUCIDO: de 15px a 12px */
             font-weight: 700;
         }
         
         .welcome-section p {
             font-size: 18px;
-            color: #000000;;
+            color: #000000;
             max-width: 800px;
             margin: 0 auto;
+            font-weight: 500;
         }
         
         /* Grid de servicios moderno - 4 columnas para escritorio */
@@ -356,11 +357,16 @@ if (empty($nombreCompleto)) {
             }
             
             .app-main {
-                padding: 25px;
+                padding: 20px; /* REDUCIDO: de 25px a 20px */
+            }
+            
+            .welcome-section {
+                margin-bottom: 20px; /* REDUCIDO para móviles */
             }
             
             .welcome-section h3 {
                 font-size: 24px;
+                margin-bottom: 10px; /* REDUCIDO: de 12px a 10px */
             }
             
             .welcome-section p {
@@ -407,7 +413,7 @@ if (empty($nombreCompleto)) {
         /* Móviles pequeños - FOOTER REORGANIZADO */
         @media (max-width: 576px) {
             .app-header, .app-main, .app-footer {
-                padding: 20px 15px;
+                padding: 15px; /* REDUCIDO: de 20px 15px a 15px */
             }
             
             .department-info h1 {
@@ -422,9 +428,13 @@ if (empty($nombreCompleto)) {
                 font-size: 16px;
             }
             
+            .welcome-section {
+                margin-bottom: 18px; /* AJUSTADO para móviles pequeños */
+            }
+            
             .welcome-section h3 {
                 font-size: 22px;
-                margin-bottom: 12px;
+                margin-bottom: 8px; /* REDUCIDO: de 12px a 8px */
             }
             
             .welcome-section p {
@@ -521,9 +531,13 @@ if (empty($nombreCompleto)) {
                 font-size: 15px;
             }
             
+            .welcome-section {
+                margin-bottom: 15px; /* AJUSTADO para móviles muy pequeños */
+            }
+            
             .welcome-section h3 {
                 font-size: 20px;
-                margin-bottom: 10px;
+                margin-bottom: 6px; /* REDUCIDO: de 10px a 6px */
             }
             
             /* Para pantallas muy pequeñas, 1 columna */
@@ -610,8 +624,6 @@ if (empty($nombreCompleto)) {
     </style>
 </head>
 <body>
-    <!-- ELIMINÉ EL SEGUNDO BLOQUE DE CÓDIGO PHP QUE ESTABA AQUÍ -->
-    <!-- Las variables PHP ya están definidas arriba -->
     
     <div class="app-container">
         <!-- Cabecera SIN LOGO CON BIENVENIDA PERSONALIZADA -->
