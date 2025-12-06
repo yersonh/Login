@@ -166,10 +166,10 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Servicio 10: PARAMETRIZACIÓN -->
-                <div class="service-card parametrizacion-card" id="parametrizacion-card">
+                <div class="service-card admin-card" id="admin-card">
                     <div class="admin-only-badge">ADMIN</div>
                     <div class="service-icon">
-                        
+                        <i class="fas fa-sliders-h"></i>
                     </div>
                     <div class="service-name">Parametrización</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
