@@ -1,21 +1,27 @@
 <?php
-// Iniciar sesión (ya debería estar iniciada desde el login)
 session_start();
 
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['usuario_id'])) {
-    // Redirigir al login si no hay sesión
     header("Location: ../index.php");
+    exit();
+}
+
+// Verificar que sea asistente
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
+    // Si no es asistente, redirigir según su rol
+    if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'usuario') {
+        header("Location: menu.php");
+    } else {
+        header("Location: ../index.php");
+    }
     exit();
 }
 
 $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
 $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
 
-// Combinar nombre completo
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 
-// Si no hay nombre, usar un valor por defecto
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario del Sistema';
 }

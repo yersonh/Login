@@ -48,7 +48,7 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             $_SESSION['correo'] = $usuario['correo'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
 
-            if($_SESSION['tipo_usuario'] === 'administrador') {
+            if($_SESSION['tipo_usuario'] === 'asistente') {
                 header("Location: /views/menuAsistente.php");
             } else {
                 header("Location: /views/menu.php");
@@ -88,8 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     $_SESSION['correo'] = $usuario['correo'];
     $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario'; 
 
-    
-
     if ($remember) {
         try {
             $token = bin2hex(random_bytes(32));
@@ -114,10 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         }
     }
 
-    if ($_SESSION['tipo_usuario'] === 'administrador') {
-        header("Location: views/menuAsistente.php");
+    if ($_SESSION['tipo_usuario'] === 'asistente') {
+        header("Location: /views/menuAsistente.php");
     } else {
-        header("Location: views/menu.php");
+        header("Location: /views/menu.php");
     }
     exit();
     
@@ -427,7 +425,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="views/styles/login-style.css">
+    <link rel="stylesheet" href="/views/styles/login-style.css">
 </head>
 <body>
     <div class="container">
