@@ -305,6 +305,156 @@ if (empty($nombreCompleto)) {
             margin-top: 10px;
         }
         
+        /* ========== MODAL DE CLAVE ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-clave {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(-20px);
+            transition: transform 0.4s ease;
+        }
+        
+        .modal-overlay.active .modal-clave {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .modal-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-body p {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .clave-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+        
+        .clave-input:focus {
+            border-color: var(--primary-color);
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn-modal {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 140px;
+        }
+        
+        .btn-ingresar {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .btn-ingresar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 74, 141, 0.3);
+        }
+        
+        .btn-cancelar {
+            background: #f8f9fa;
+            color: var(--gray-color);
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-cancelar:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+        }
+        
         /* ========== RESPONSIVE ========== */
         
         /* Tablets */
@@ -421,6 +571,34 @@ if (empty($nombreCompleto)) {
             .app-footer {
                 padding: 25px;
             }
+            
+            /* Responsive para modal */
+            .modal-clave {
+                width: 95%;
+                max-width: 400px;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .modal-header h3 {
+                font-size: 22px;
+            }
+            
+            .modal-body {
+                padding: 25px 20px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn-modal {
+                width: 100%;
+                min-width: auto;
+            }
         }
         
         @media (max-width: 576px) {
@@ -523,6 +701,20 @@ if (empty($nombreCompleto)) {
                 margin-top: 15px;
                 padding-top: 15px;
                 border-top: 1px solid #eee;
+            }
+            
+            /* Modal responsive móvil */
+            .modal-header h3 {
+                font-size: 20px;
+            }
+            
+            .modal-body p {
+                font-size: 15px;
+            }
+            
+            .clave-input {
+                padding: 12px;
+                font-size: 16px;
             }
         }
         
@@ -674,6 +866,25 @@ if (empty($nombreCompleto)) {
             font-weight: bold;
             z-index: 5;
         }
+        
+        /* Animaciones de notificación */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -796,7 +1007,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 10: PARAMETRIZACIÓN - VISIBLE PARA TODOS PERO CON VERIFICACIÓN -->
+                <!-- Servicio 10: PARAMETRIZACIÓN -->
                 <div class="service-card parametrizacion-card" id="parametrizacion-card">
                     <div class="admin-only-badge">ADMIN</div>
                     <div class="service-icon">
@@ -805,10 +1016,6 @@ if (empty($nombreCompleto)) {
                     <div class="service-name">Parametrización</div>
                     <div class="service-desc">Configuración del sistema y parámetros</div>
                     <div class="service-status status-available">Disponible</div>
-                    <div class="permission-checking">
-                        <i class="fas fa-spinner"></i>
-                        <p>Verificando permisos...</p>
-                    </div>
                 </div>
             </div>
         </main>
@@ -846,84 +1053,164 @@ if (empty($nombreCompleto)) {
         </footer>
     </div>
     
+    <!-- MODAL PARA INGRESAR CLAVE -->
+    <div class="modal-overlay" id="modalClave">
+        <div class="modal-clave">
+            <div class="modal-header">
+                <h3>Accesso restringido</h3>
+                <p>Verificación de seguridad requerida</p>
+            </div>
+            <div class="modal-body">
+                <p>Ingrese la clave autorizada para crear un contratista nuevo / CPS:</p>
+                <div class="input-group">
+                    <label for="inputClave">Clave de autorización:</label>
+                    <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="modal-buttons">
+                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">Ingresar</button>
+                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Añadir funcionalidad a TODAS las tarjetas de servicio (incluyendo parametrización)
+            // Añadir funcionalidad a TODAS las tarjetas de servicio
             const serviceCards = document.querySelectorAll('.service-card');
+            const parametrizacionCard = document.getElementById('parametrizacion-card');
+            const modalClave = document.getElementById('modalClave');
+            const inputClave = document.getElementById('inputClave');
+            const btnIngresar = document.getElementById('btnIngresarClave');
+            const btnCancelar = document.getElementById('btnCancelarClave');
+            const errorMessage = document.getElementById('errorMessage');
             
             serviceCards.forEach(card => {
                 card.addEventListener('click', function() {
                     const serviceName = this.querySelector('.service-name').textContent;
                     const statusElement = this.querySelector('.service-status');
                     
-                    // Verificar si es la tarjeta de Parametrización
-                    if (serviceName === 'Parametrización' && statusElement.classList.contains('status-available')) {
-                        // Mostrar mensaje de verificación
-                        const checkingDiv = this.querySelector('.permission-checking');
-                        if (checkingDiv) {
-                            checkingDiv.style.display = 'flex';
-                        }
-                        
-                        // Verificar si es administrador antes de redirigir
-                        setTimeout(() => {
-                            verificarPermisosParametrizacion(this);
-                        }, 500);
+                    // Si es la tarjeta de Parametrización
+                    if (this === parametrizacionCard && statusElement.classList.contains('status-available')) {
+                        abrirModalClave();
                         return;
                     }
                     
+                    // Para otros servicios
                     if (statusElement.classList.contains('status-available')) {
-                        // Aquí iría la lógica para redirigir a otros servicios disponibles
-                        alert(`Accediendo a: ${serviceName}`);
+                        showNotification(`Accediendo a: ${serviceName}`, 'info');
+                        // Aquí iría la redirección a otros servicios
                     } else {
-                        // Mostrar mensaje de servicio no disponible
                         showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
                     }
                 });
             });
             
-            // Función para verificar permisos de parametrización
-            function verificarPermisosParametrizacion(cardElement) {
-                // Ocultar mensaje de verificación
-                const checkingDiv = cardElement.querySelector('.permission-checking');
-                if (checkingDiv) {
-                    checkingDiv.style.display = 'none';
+            // Función para abrir el modal de clave
+            function abrirModalClave() {
+                modalClave.classList.add('active');
+                inputClave.focus();
+                errorMessage.classList.remove('show');
+                errorMessage.textContent = '';
+            }
+            
+            // Función para cerrar el modal de clave
+            function cerrarModalClave() {
+                modalClave.classList.remove('active');
+                inputClave.value = '';
+                errorMessage.classList.remove('show');
+                errorMessage.textContent = '';
+            }
+            
+            // Evento para el botón Ingresar
+            btnIngresar.addEventListener('click', function() {
+                const clave = inputClave.value.trim();
+                
+                if (!clave) {
+                    mostrarError('Por favor ingrese la clave de autorización.');
+                    inputClave.focus();
+                    return;
                 }
                 
-                // Verificar rol del usuario actual
-                const userRole = '<?php echo $_SESSION["tipo_usuario"] ?? ""; ?>';
-                
-                if (userRole === 'administrador') {
-                    // Si es administrador, redirigir
-                    showNotification('Redirigiendo a parametrización...', 'success');
+                // Aquí deberías hacer la validación con el backend
+                // Por ahora, uso una clave de ejemplo: "admin123"
+                if (clave === 'admin123') {
+                    // Clave correcta - Redirigir a parametrización
+                    showNotification('Clave correcta. Redirigiendo...', 'success');
+                    cerrarModalClave();
+                    
+                    // Redirigir después de un breve momento
                     setTimeout(() => {
                         window.location.href = '../manage/parametrizacion.php';
                     }, 1000);
                 } else {
-                    // Si no es administrador, mostrar error
-                    showNotification('Solo los administradores pueden acceder a la parametrización.', 'error');
+                    // Clave incorrecta
+                    mostrarError('Clave incorrecta. Por favor intente nuevamente.');
+                    inputClave.select();
+                    inputClave.focus();
                     
-                    // Opcional: agregar efecto visual de denegado
-                    cardElement.style.animation = 'shake 0.5s';
+                    // Efecto de vibración en el input
+                    inputClave.style.animation = 'shake 0.5s';
                     setTimeout(() => {
-                        cardElement.style.animation = '';
+                        inputClave.style.animation = '';
                     }, 500);
                 }
+            });
+            
+            // Evento para el botón Cancelar
+            btnCancelar.addEventListener('click', cerrarModalClave);
+            
+            // Cerrar modal con tecla Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalClave.classList.contains('active')) {
+                    cerrarModalClave();
+                }
+                
+                // Permitir enviar con Enter
+                if (e.key === 'Enter' && modalClave.classList.contains('active')) {
+                    btnIngresar.click();
+                }
+            });
+            
+            // Cerrar modal haciendo clic fuera del contenido
+            modalClave.addEventListener('click', function(e) {
+                if (e.target === modalClave) {
+                    cerrarModalClave();
+                }
+            });
+            
+            // Función para mostrar errores
+            function mostrarError(mensaje) {
+                errorMessage.textContent = mensaje;
+                errorMessage.classList.add('show');
             }
             
             // Función para mostrar notificaciones
-            function showNotification(message, type = 'error') {
+            function showNotification(message, type = 'info') {
+                const colors = {
+                    'error': '#dc3545',
+                    'success': '#28a745',
+                    'info': '#17a2b8'
+                };
+                
+                const icons = {
+                    'error': 'exclamation-circle',
+                    'success': 'check-circle',
+                    'info': 'info-circle'
+                };
+                
                 // Eliminar notificaciones anteriores
                 const oldNotifications = document.querySelectorAll('.notification');
                 oldNotifications.forEach(notification => notification.remove());
                 
                 const notification = document.createElement('div');
                 notification.className = 'notification';
-                notification.textContent = message;
                 notification.style.cssText = `
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: ${type === 'error' ? '#dc3545' : '#28a745'};
+                    background: ${colors[type] || colors.info};
                     color: white;
                     padding: 15px 20px;
                     border-radius: 8px;
@@ -937,13 +1224,19 @@ if (empty($nombreCompleto)) {
                     gap: 10px;
                 `;
                 
-                // Agregar ícono según tipo
+                // Agregar ícono
                 const icon = document.createElement('i');
-                icon.className = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-                notification.prepend(icon);
+                icon.className = `fas fa-${icons[type] || 'info-circle'}`;
+                notification.appendChild(icon);
+                
+                // Agregar texto
+                const text = document.createElement('span');
+                text.textContent = message;
+                notification.appendChild(text);
                 
                 document.body.appendChild(notification);
                 
+                // Auto-eliminar después de 3 segundos
                 setTimeout(() => {
                     notification.style.animation = 'slideOut 0.3s ease';
                     setTimeout(() => {
@@ -954,52 +1247,9 @@ if (empty($nombreCompleto)) {
                 }, 3000);
             }
             
-            // Añadir estilos CSS para animaciones
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-                
-                @keyframes shake {
-                    0% { transform: translateX(0); }
-                    25% { transform: translateX(-5px); }
-                    50% { transform: translateX(5px); }
-                    75% { transform: translateX(-5px); }
-                    100% { transform: translateX(0); }
-                }
-                
-                @media (max-width: 768px) {
-                    .notification {
-                        top: 10px;
-                        right: 10px;
-                        left: 10px;
-                        max-width: calc(100% - 20px);
-                        text-align: center;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Mejorar el responsive del logo
-            const logo = document.querySelector('.footer-logo');
-            if (logo) {
-                logo.onerror = function() {
-                    this.src = 'https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta';
-                    this.alt = 'Logo Gobernación del Meta (placeholder)';
-                };
-            }
-            
-            // Mostrar información de depuración en consola (solo desarrollo)
+            // Mostrar información de depuración en consola
             console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
             console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
-            console.log('Estado Parametrización:', '<?php echo ($_SESSION["tipo_usuario"] ?? "") === "administrador" ? "Acceso permitido" : "Acceso denegado"; ?>');
         });
     </script>
 </body>
