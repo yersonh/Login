@@ -1,5 +1,41 @@
 <?php
+session_start();
 
+// 1. Verificar que esté logueado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../../index.php");
+    exit();
+}
+
+// 2. Obtener datos del usuario
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+
+$tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
+$correoUsuario = $_SESSION['correo'] ?? '';
+
+// 3. Control de acceso
+$accesoPermitido = false;
+
+if ($tipoUsuario === 'administrador') {
+    $accesoPermitido = true;
+} elseif ($tipoUsuario === 'asistente') {
+    if (isset($_SESSION['verificado_por_admin']) && $_SESSION['verificado_por_admin'] === true) {
+        $accesoPermitido = true;
+    } else {
+        header("Location: ../views/menuAsistente.php");
+        exit();
+    }
+} else {
+    header("Location: ../menu.php");
+    exit();
+}
+
+// 4. Acceso permitido - continuar
 ?>
 <!DOCTYPE html>
 <html lang="es">
