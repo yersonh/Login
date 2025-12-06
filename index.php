@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     }
 
     if ($_SESSION['tipo_usuario'] === 'administrador') {
-        header("Location: views/admin.php");
+        header("Location: views/menuAsistente.php");
     } else {
         header("Location: views/menu.php");
     }
