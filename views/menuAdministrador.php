@@ -36,7 +36,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo - Secretaría de Minas y Energía</title>
-    <link rel="icon" href="../../imagenes/logo.png" type="image/png">
+    <link rel="icon" href="../imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/../imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al CSS modularizado -->
@@ -141,7 +141,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <aside class="sidebar">
             <!-- Logo Institucional -->
             <div class="logo-section">
-                <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="admin-logo">
+                <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="admin-logo">
                 <div class="department-name">GOBERNACIÓN DEL META</div>
                 <div class="department-subtitle">Secretaría de Minas y Energía</div>
             </div>
@@ -406,7 +406,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Footer -->
             <footer class="admin-footer">
-                <img src="../../imagenes/logo.png" alt="Logo" class="footer-logo">
+                <img src="../imagenes/logo.png" alt="Logo" class="footer-logo">
                 <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía</p>
                 <p class="footer-info">
                     Sistema de Gestión Administrativa • Versión 2.1.0 • 
