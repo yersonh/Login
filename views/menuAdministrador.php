@@ -226,17 +226,9 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <i class="fas fa-user-plus"></i>
                         <span>Agregar Usuario</span>
                     </button>
-                    <button class="action-btn" onclick="window.location.href='reportes.php'">
-                        <i class="fas fa-file-export"></i>
-                        <span>Generar Reporte</span>
-                    </button>
-                    <button class="action-btn" onclick="window.location.href='configuracion.php'">
-                        <i class="fas fa-backup"></i>
-                        <span>Backup del Sistema</span>
-                    </button>
-                    <button class="action-btn" onclick="mostrarModalConfiguracion()">
-                        <i class="fas fa-bell"></i>
-                        <span>Configurar Alertas</span>
+                    <button class="action-btn" onclick="window.location.href='parametrizar.php'">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Parametrización</span>
                     </button>
                 </div>
             </div>
