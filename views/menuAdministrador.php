@@ -210,7 +210,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         </aside>
 
         <!-- Contenido Principal -->
-        <main class="main-content">
+        <main class="main-content dashboard-main-content">
             <!-- Encabezado -->
             <div class="main-header">
                 <h1 class="welcome-title">Panel de Control Administrativo</h1>

@@ -13,6 +13,7 @@ body {
     color: #333;
     line-height: 1.6;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 /* Contenedor principal */
@@ -22,12 +23,12 @@ body {
     background-color: #f8f9fa;
 }
 
-/* Sidebar */
+/* Sidebar - Ajustado para subir el contenido */
 .sidebar {
     width: 280px;
     background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
     color: white;
-    padding: 15px 0 20px 0; /* Reducido padding-top de 20px a 15px */
+    padding: 10px 0 15px 0; /* Reducido significativamente padding-top */
     box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
     position: fixed;
     height: 100vh;
@@ -35,19 +36,19 @@ body {
     z-index: 1000;
 }
 
-/* Logo Section - ajustado para que no tape contenido */
+/* Logo Section - Aún más compacta */
 .logo-section {
     text-align: center;
-    padding: 15px 20px; /* Reducido de 20px */
+    padding: 10px 15px; /* Muy reducido */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 20px; /* Reducido de 30px */
+    margin-bottom: 15px; /* Reducido */
     position: relative;
 }
 
 .admin-logo {
-    width: 110px; /* Reducido de 120px */
+    width: 90px; /* Más pequeño */
     height: auto;
-    margin-bottom: 12px; /* Reducido de 15px */
+    margin-bottom: 8px; /* Reducido */
     filter: brightness(0) invert(1);
     transition: transform 0.3s ease;
 }
@@ -57,88 +58,79 @@ body {
 }
 
 .department-name {
-    font-size: 15px; /* Reducido de 16px */
+    font-size: 13px; /* Más pequeño */
     font-weight: 600;
-    margin-bottom: 4px; /* Reducido de 5px */
+    margin-bottom: 3px; /* Reducido */
     color: white;
     letter-spacing: 0.5px;
 }
 
 .department-subtitle {
-    font-size: 12px; /* Reducido de 13px */
+    font-size: 11px; /* Más pequeño */
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.3; /* Reducido de 1.4 */
+    line-height: 1.2; /* Reducido */
 }
 
-/* User Profile Sidebar */
+/* User Profile Sidebar - Más compacto */
 .user-profile-sidebar {
-    padding: 15px 20px; /* Reducido de 20px */
+    padding: 12px 15px; /* Reducido */
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 15px; /* Reducido de 20px */
+    margin-bottom: 10px; /* Reducido */
 }
 
 .user-avatar {
-    width: 70px; /* Reducido de 80px */
-    height: 70px; /* Reducido de 80px */
+    width: 60px; /* Más pequeño */
+    height: 60px; /* Más pequeño */
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 12px; /* Reducido de 15px */
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.user-avatar:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
+    margin: 0 auto 10px; /* Reducido */
+    border: 2px solid rgba(255, 255, 255, 0.2); /* Reducido */
 }
 
 .user-avatar i {
-    font-size: 32px; /* Reducido de 36px */
+    font-size: 28px; /* Más pequeño */
     color: white;
 }
 
 .user-name {
-    font-size: 15px; /* Reducido de 16px */
+    font-size: 13px; /* Más pequeño */
     font-weight: 600;
-    margin-bottom: 6px; /* Reducido de 8px */
+    margin-bottom: 5px; /* Reducido */
     color: white;
 }
 
 .user-role {
-    font-size: 12px; /* Reducido de 13px */
+    font-size: 11px; /* Más pequeño */
     color: #93c5fd;
     background: rgba(147, 197, 253, 0.1);
-    padding: 5px 14px; /* Reducido de 6px 16px */
-    border-radius: 20px;
+    padding: 4px 10px; /* Reducido */
+    border-radius: 15px; /* Reducido */
     display: inline-block;
-    margin-bottom: 6px; /* Reducido de 8px */
+    margin-bottom: 5px; /* Reducido */
     font-weight: 500;
-    letter-spacing: 0.3px;
 }
 
 .user-email {
-    font-size: 11px; /* Reducido de 12px */
+    font-size: 10px; /* Más pequeño */
     color: rgba(255, 255, 255, 0.7);
-    margin-top: 4px; /* Reducido de 5px */
+    margin-top: 3px; /* Reducido */
     word-break: break-word;
 }
 
-/* Navigation */
+/* Navigation - Más compacto */
 .nav-section {
-    padding: 0 20px;
-    margin-top: 5px; /* Añadido para compensar reducciones */
+    padding: 0 15px; /* Reducido */
 }
 
 .nav-title {
-    font-size: 12px;
+    font-size: 11px; /* Más pequeño */
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 12px; /* Reducido de 15px */
+    margin-bottom: 10px; /* Reducido */
     font-weight: 600;
     letter-spacing: 0.5px;
 }
@@ -150,87 +142,66 @@ body {
 }
 
 .nav-item {
-    margin-bottom: 6px; /* Reducido de 8px */
+    margin-bottom: 5px; /* Reducido */
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 12px 14px; /* Reducido de 14px 16px */
+    padding: 10px 12px; /* Reducido */
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: 8px; /* Reducido */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 14px;
+    font-size: 13px; /* Reducido */
     font-weight: 500;
-    position: relative;
-    overflow: hidden;
 }
 
 .nav-link:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    transform: translateX(6px); /* Reducido de 8px */
+    transform: translateX(4px); /* Reducido */
 }
 
 .nav-link.active {
     background: rgba(255, 255, 255, 0.15);
     color: white;
-    border-left: 4px solid #60a5fa;
+    border-left: 3px solid #60a5fa; /* Reducido */
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-icon {
-    margin-right: 12px; /* Reducido de 14px */
-    font-size: 18px;
-    width: 24px;
+    margin-right: 10px; /* Reducido */
+    font-size: 16px; /* Reducido */
+    width: 20px; /* Reducido */
     text-align: center;
-    transition: transform 0.3s ease;
 }
 
-.nav-link:hover .nav-icon {
-    transform: scale(1.1);
-}
-
-.nav-text {
-    flex: 1;
-}
-
-.logout-link {
-    color: #f87171 !important;
-}
-
-.logout-link:hover {
-    background: rgba(248, 113, 113, 0.1) !important;
-}
-
-/* Main Content - Optimizado para menos espacio blanco */
+/* Main Content - Sin espacio arriba */
 .main-content {
     flex: 1;
     margin-left: 280px;
-    padding: 15px 25px 25px; /* Top: 15px (reducido), Laterales: 25px, Bottom: 25px */
+    padding: 10px 20px 15px; /* Muy reducido padding-top */
     background-color: #f8f9fa;
     min-height: 100vh;
 }
 
-/* Header - más compacto pero manteniendo estilo */
+/* Header - Sin margen arriba y muy compacto */
 .main-header {
     background: white;
-    border-radius: 16px;
-    padding: 20px 25px; /* Reducido de 30px 35px */
-    margin-bottom: 20px; /* Reducido de 30px */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border-left: 6px solid #1e40af;
-    animation: fadeIn 0.5s ease-out;
+    border-radius: 12px; /* Reducido */
+    padding: 15px 20px; /* Muy reducido */
+    margin-bottom: 15px; /* Reducido */
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); /* Reducido */
+    border-left: 4px solid #1e40af; /* Reducido */
+    animation: fadeIn 0.3s ease-out;
 }
 
 .welcome-title {
-    font-size: 24px; /* Reducido de 28px */
+    font-size: 20px; /* Más pequeño */
     color: #1f2937;
-    margin-bottom: 8px; /* Reducido de 12px */
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    margin-bottom: 5px; /* Reducido */
+    font-weight: 700; /* Reducido */
     background: linear-gradient(135deg, #1e40af, #3b82f6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -238,57 +209,39 @@ body {
 }
 
 .welcome-subtitle {
-    font-size: 14px; /* Reducido de 16px */
+    font-size: 13px; /* Más pequeño */
     color: #6b7280;
-    margin-bottom: 0;
-    line-height: 1.5; /* Ajustado de 1.6 */
+    line-height: 1.4; /* Reducido */
 }
 
-/* Quick Actions - más compacto */
+/* Quick Actions - Muy compacto */
 .quick-actions {
     background: white;
-    border-radius: 16px;
-    padding: 20px 25px; /* Reducido de 30px */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 20px; /* Reducido de 30px */
-    animation: fadeIn 0.7s ease-out;
+    border-radius: 12px; /* Reducido */
+    padding: 15px 20px; /* Muy reducido */
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); /* Reducido */
+    margin-bottom: 15px; /* Reducido */
+    animation: fadeIn 0.4s ease-out;
 }
 
 .section-title {
-    font-size: 18px; /* Reducido de 20px */
+    font-size: 16px; /* Reducido */
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 15px; /* Reducido de 25px */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    margin-bottom: 10px; /* Reducido */
 }
 
-.view-all-link {
-    font-size: 14px;
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.view-all-link:hover {
-    color: #1d4ed8;
-    transform: translateX(3px);
-}
-
-/* Acciones Grid optimizado */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Reducido de 200px */
-    gap: 15px; /* Reducido de 20px */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Más pequeño */
+    gap: 12px; /* Reducido */
 }
 
 .action-btn {
     background: linear-gradient(135deg, #f8fafc, #f1f5f9);
     border: 2px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 18px; /* Reducido de 22px */
+    border-radius: 10px; /* Reducido */
+    padding: 15px; /* Reducido */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -297,83 +250,60 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: #475569;
     font-weight: 600;
-    font-size: 14px;
-    gap: 10px; /* Reducido de 12px */
-    min-height: 100px; /* Añadido para consistencia */
+    font-size: 13px; /* Reducido */
+    gap: 8px; /* Reducido */
+    min-height: 85px; /* Reducido */
 }
 
 .action-btn:hover {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
     border-color: #3b82f6;
-    transform: translateY(-4px); /* Reducido de -5px */
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2); /* Reducido de 10px 25px */
+    transform: translateY(-3px); /* Reducido */
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2); /* Reducido */
 }
 
 .action-btn i {
-    font-size: 26px; /* Reducido de 28px */
-    transition: transform 0.3s ease;
+    font-size: 22px; /* Reducido */
 }
 
-.action-btn:hover i {
-    transform: scale(1.15); /* Reducido de 1.2 */
-}
-
-/* Footer - más compacto */
+/* Footer - Muy compacto */
 .admin-footer {
-    margin-top: 25px; /* Reducido de 40px */
-    padding-top: 15px; /* Reducido de 25px */
+    margin-top: 15px; /* Muy reducido */
+    padding-top: 10px; /* Reducido */
     border-top: 1px solid #e5e7eb;
     text-align: center;
     color: #6b7280;
-    font-size: 13px; /* Reducido de 14px */
-    animation: fadeIn 0.8s ease-out;
+    font-size: 11px; /* Reducido */
 }
 
 .footer-logo {
-    width: 60px; /* Reducido de 70px */
+    width: 50px; /* Reducido */
     height: auto;
-    margin: 0 auto 10px; /* Reducido de 15px */
+    margin: 0 auto 8px; /* Reducido */
     opacity: 0.8;
-    transition: opacity 0.3s ease;
-}
-
-.footer-logo:hover {
-    opacity: 1;
 }
 
 .footer-info {
-    font-size: 12px; /* Reducido de 13px */
-    margin-top: 6px; /* Reducido de 8px */
+    font-size: 10px; /* Reducido */
+    margin-top: 4px; /* Reducido */
     color: #9ca3af;
-}
-
-.footer-link {
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.footer-link:hover {
-    color: #1d4ed8;
-    text-decoration: underline;
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(10px); } /* Reducido */
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive Design - Mantenido pero ajustado */
+/* Responsive Design */
 @media (max-width: 1200px) {
     .sidebar {
         width: 250px;
     }
     .main-content {
         margin-left: 250px;
-        padding: 15px 20px 20px;
+        padding: 8px 18px 12px;
     }
 }
 
@@ -383,11 +313,7 @@ body {
     }
     .main-content {
         margin-left: 230px;
-        padding: 15px 18px 18px;
-    }
-    .actions-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        padding: 8px 15px 12px;
     }
 }
 
@@ -400,106 +326,56 @@ body {
         position: relative;
         width: 100%;
         height: auto;
-        margin-bottom: 0;
-        padding: 10px 0 15px;
+        padding: 8px 0 12px;
     }
     
     .main-content {
         margin-left: 0;
-        padding: 12px 15px 15px;
-    }
-    
-    .actions-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        padding: 8px 12px 12px;
     }
     
     .main-header {
-        padding: 15px 20px;
-        margin-bottom: 15px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
     }
     
     .welcome-title {
-        font-size: 22px;
+        font-size: 18px;
     }
     
     .quick-actions {
-        padding: 15px 20px;
-    }
-    
-    .admin-footer {
-        margin-top: 20px;
-        padding-top: 12px;
+        padding: 12px 15px;
     }
 }
 
 @media (max-width: 480px) {
     .main-header {
-        padding: 12px 15px;
+        padding: 10px 12px;
     }
     
     .welcome-title {
-        font-size: 20px;
-    }
-    
-    .welcome-subtitle {
-        font-size: 13px;
+        font-size: 16px;
     }
     
     .quick-actions {
-        padding: 12px 15px;
-    }
-    
-    .section-title {
-        font-size: 16px;
-        margin-bottom: 12px;
+        padding: 10px 12px;
     }
     
     .action-btn {
-        padding: 15px;
-        min-height: 90px;
-    }
-    
-    .action-btn i {
-        font-size: 24px;
+        padding: 12px;
+        min-height: 75px;
     }
 }
 
-/* Scrollbar Styling */
-.sidebar::-webkit-scrollbar {
-    width: 5px; /* Reducido de 6px */
+/* Clase específica para la página principal - Mínimo espacio */
+.dashboard-main-content {
+    padding-top: 5px !important; /* Mínimo espacio arriba */
 }
 
-.sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+.dashboard-main-content .main-header {
+    margin-top: 0;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-/* Clases para futuro contenido - mantienen consistencia */
-.content-section {
-    background: white;
-    border-radius: 16px;
-    padding: 20px 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 20px;
-    animation: fadeIn 0.6s ease-out;
-}
-
-.content-section-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1f2937;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.dashboard-main-content .quick-actions {
+    margin-top: 5px;
 }
