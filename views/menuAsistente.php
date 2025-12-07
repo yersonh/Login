@@ -1,3 +1,38 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// CORREGIDO: Verificar que sea SOLO asistente
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
+    // Si no es asistente, redirigir según su rol
+    if (isset($_SESSION['tipo_usuario'])) {
+        if ($_SESSION['tipo_usuario'] === 'administrador') {
+            header("Location: menu.php");
+        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+            header("Location: menu.php");
+        } else {
+            // Rol desconocido
+            header("Location: ../index.php");
+        }
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+$nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
+$apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -176,32 +211,34 @@
         </footer>
     </div>
     
-    <!-- MODAL PARA INGRESAR CLAVE -->
-    <div class="modal-overlay" id="modalClave">
-        <div class="modal-clave">
-            <div class="modal-header">
-                <h3>Acceso restringido</h3>
-                <p>Verificación de seguridad requerida</p>
-            </div>
-            <div class="modal-body">
-                <p>Ingrese la clave autorizada para parametrizar:</p>
-                <div class="input-group">
-                    <label for="inputClave">Clave de autorización</label>
-                    <div class="clave-container">
-                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
-                        <button type="button" class="clave-eye" id="togglePassword">
-                            <i class="fas fa-eye"></i>
+        <!-- MODAL PARA INGRESAR CLAVE -->
+        <div class="modal-overlay" id="modalClave">
+            <div class="modal-clave">
+                <div class="modal-header">
+                    <h3>Acceso restringido</h3>
+                    <p>Verificación de seguridad requerida</p>
+                </div>
+                <div class="modal-body">
+                    <p>Ingrese la clave autorizada para parametrizar:</p>
+                    <div class="input-group">
+                        <label for="inputClave">Clave de autorización</label>
+                        <div class="clave-container">
+                            <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                            <i class="fas fa-key clave-icon"></i>
+                            <button type="button" class="clave-eye" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="modal-buttons">
+                        <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                            Ingresar
+                        </button>
+                        <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                            Cancelar
                         </button>
                     </div>
-                </div>
-                <div class="error-message" id="errorMessage"></div>
-                <div class="modal-buttons">
-                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
-                        Ingresar
-                    </button>
-                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
-                        Cancelar
-                    </button>
                 </div>
             </div>
         </div>
