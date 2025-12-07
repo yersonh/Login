@@ -40,7 +40,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="shortcut icon" href="/../imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al CSS modularizado -->
-    <link rel="stylesheet" href="/styles/admin.css">
+    <link rel="stylesheet" href="styles/admin.css">
     <style>
         /* Botón para volver como asistente */
         .return-assistant-btn {
@@ -205,8 +205,47 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 </ul>
             </div>
 
-            <!-- Enlaces de Soporte -->
+            <!-- Sección de Reportes 
+            <div class="nav-section" style="margin-top: 30px;">
+                <div class="nav-title">Reportes y Análisis</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="reportes.php" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
+                            <span class="nav-text">Reportes Generales</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="auditoria.php" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-clipboard-check"></i></span>
+                            <span class="nav-text">Auditoría</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="estadisticas.php" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                            <span class="nav-text">Estadísticas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>-->
 
+            <!-- Enlaces de Soporte 
+            <div class="nav-section" style="margin-top: 30px;">
+                <div class="nav-title">Soporte y Ayuda</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="soporte.php" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-headset"></i></span>
+                            <span class="nav-text">Soporte Técnico</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="manuales.php" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-book"></i></span>
+                            <span class="nav-text">Manuales</span>
+                        </a>
+                    </li>-->
                     <li class="nav-item">
                         <a href="../logout.php" class="nav-link logout-link">
                             <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
@@ -214,6 +253,11 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         </a>
                     </li>
                 </ul>
+            </div>
+
+            <!-- Información de Versión -->
+            <div class="version-info">
+                v2.1.0 • Sistema Administrativo SME
             </div>
         </aside>
 
@@ -225,6 +269,53 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <p class="welcome-subtitle">Gestione todos los aspectos del sistema de la Secretaría de Minas y Energía</p>
 
             </div>
+
+            <!-- Estadísticas 
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">Usuarios Activos</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% este mes
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="stat-value">2,847</div>
+                    <div class="stat-label">Procesos Activos</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 8% este mes
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-value">99.8%</div>
+                    <div class="stat-label">Tiempo Activo del Sistema</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-check-circle"></i> Estable
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Alertas Activas</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i> Requiere atención
+                    </div>
+                </div>
+            </div>-->
 
             <!-- Actividad Reciente -->
             <div class="recent-activity">
