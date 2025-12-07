@@ -1,5 +1,5 @@
 <?php
-// verificar_clave.php - VERSIÓN MODIFICADA PARA INICIAR SESIÓN COMO ADMIN
+// verificar_clave.php - VERSIÓN CORREGIDA PARA TU CLASE DATABASE
 
 session_start();
 header('Content-Type: application/json');
@@ -11,9 +11,9 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQ
     exit();
 }
 
-// Verificar que el usuario esté logueado como asistente
-if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'asistente') {
-    echo json_encode(['success' => false, 'message' => 'Debe estar logueado como asistente']);
+// Verificar que el usuario esté logueado
+if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['tipo_usuario'])) {
+    echo json_encode(['success' => false, 'message' => 'Sesión no válida']);
     exit();
 }
 
@@ -25,27 +25,28 @@ if (!isset($_POST['clave']) || empty(trim($_POST['clave']))) {
 
 $claveIngresada = trim($_POST['clave']);
 
-// Conectar a la base de datos
+// Conectar a la base de datos USANDO LA CLASE
 require_once '../config/database.php';
 
 try {
+    // 1. Instanciar la clase Database
     $database = new Database();
+    
+    // 2. Obtener la conexión PDO
     $pdo = $database->conectar();
     
+    // 3. Verificar si la conexión fue exitosa
     if (!$pdo) {
         throw new Exception("No se pudo conectar a la base de datos");
     }
     
-    // CONSULTA: Buscar administrador con esa contraseña
+    // 4. CONSULTA CORREGIDA CON JOIN
     $sql = "SELECT 
                 u.id_usuario,
                 u.correo,
                 u.contrasena,
-                u.tipo_usuario,
                 p.nombres,
-                p.apellidos,
-                p.documento,
-                p.telefono
+                p.apellidos
             FROM usuario u
             INNER JOIN persona p ON u.id_persona = p.id_persona
             WHERE u.tipo_usuario = 'administrador'";
@@ -68,38 +69,16 @@ try {
     }
     
     if ($claveValida && $adminEncontrado) {
-        // GUARDAR DATOS DEL ASISTENTE ORIGINAL PARA PODER REGRESAR
-        $datosAsistenteOriginal = [
-            'id_usuario' => $_SESSION['usuario_id'],
-            'nombres' => $_SESSION['nombres'],
-            'apellidos' => $_SESSION['apellidos'],
-            'correo' => $_SESSION['correo'],
-            'tipo_usuario' => $_SESSION['tipo_usuario']
-        ];
-        
-        // REINICIAR SESIÓN e INICIAR COMO ADMINISTRADOR
-        session_regenerate_id(true);
-        
-        // Establecer datos del administrador
-        $_SESSION['usuario_id'] = $adminEncontrado['id_usuario'];
-        $_SESSION['nombres'] = $adminEncontrado['nombres'];
-        $_SESSION['apellidos'] = $adminEncontrado['apellidos'];
-        $_SESSION['correo'] = $adminEncontrado['correo'];
-        $_SESSION['tipo_usuario'] = $adminEncontrado['tipo_usuario'];
-        $_SESSION['documento'] = $adminEncontrado['documento'];
-        $_SESSION['telefono'] = $adminEncontrado['telefono'];
-        
-        // Guardar información del cambio
-        $_SESSION['usuario_original'] = $datosAsistenteOriginal;
-        $_SESSION['admin_login_timestamp'] = time();
-        $_SESSION['admin_login_method'] = 'clave_asistente';
-        
-        error_log("SESIÓN CAMBIADA: Asistente " . $datosAsistenteOriginal['correo'] . 
-                  " ahora es Admin " . $adminEncontrado['correo']);
+        // Guardar en sesión
+        $_SESSION['verificado_por_admin'] = true;
+        $_SESSION['admin_verificador_id'] = $adminEncontrado['id_usuario'];
+        $_SESSION['admin_verificador_nombre'] = $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos'];
+        $_SESSION['admin_verificador_correo'] = $adminEncontrado['correo'];
+        $_SESSION['verificacion_timestamp'] = time();
         
         echo json_encode([
             'success' => true, 
-            'message' => 'Sesión iniciada como administrador',
+            'message' => 'Clave de administrador verificada correctamente',
             'administrador' => $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos']
         ]);
         
@@ -111,16 +90,18 @@ try {
     }
     
 } catch (PDOException $e) {
-    error_log("Error PDO: " . $e->getMessage());
+    error_log("Error PDO en verificar_clave: " . $e->getMessage());
+    
     echo json_encode([
         'success' => false, 
-        'message' => 'Error en la base de datos'
+        'message' => 'Error en la base de datos: ' . $e->getMessage()
     ]);
 } catch (Exception $e) {
-    error_log("Error general: " . $e->getMessage());
+    error_log("Error general en verificar_clave: " . $e->getMessage());
+    
     echo json_encode([
         'success' => false, 
-        'message' => 'Error del servidor'
+        'message' => 'Error del servidor: ' . $e->getMessage()
     ]);
 }
 ?>
