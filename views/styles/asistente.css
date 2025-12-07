@@ -1025,9 +1025,28 @@ body {
         margin-bottom: 8px;
     }
 }
-/* Agrega esto al CSS existente */
+/* Estilos para el campo de contraseña con ojo */
 .clave-container {
     position: relative;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.clave-input {
+    width: 100%;
+    padding: 12px 45px 12px 15px; /* Más padding a la derecha para el ojo */
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.clave-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .clave-eye {
@@ -1035,14 +1054,47 @@ body {
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    background: transparent;
+    background: none;
     border: none;
-    color: #666;
+    color: #94a3b8;
+    font-size: 16px;
     cursor: pointer;
-    padding: 5px;
-    z-index: 10;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
 }
 
-.clave-input {
-    padding-right: 45px; /* Espacio para el ojo */
+.clave-eye:hover {
+    color: #475569;
+    background-color: #f1f5f9;
+}
+
+.clave-eye:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.clave-eye.active {
+    color: #3b82f6;
+}
+
+/* Si el modal está oscuro, ajusta el color */
+.modal-clave .clave-eye {
+    color: #94a3b8;
+}
+
+.modal-clave .clave-eye:hover {
+    color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Para asegurar que el input se vea bien en todos los navegadores */
+.clave-input::-ms-reveal,
+.clave-input::-ms-clear {
+    display: none; /* Ocultar el ojo nativo de IE/Edge */
 }
