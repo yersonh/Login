@@ -1,3 +1,38 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// CORREGIDO: Verificar que sea SOLO asistente
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
+    // Si no es asistente, redirigir según su rol
+    if (isset($_SESSION['tipo_usuario'])) {
+        if ($_SESSION['tipo_usuario'] === 'administrador') {
+            header("Location: menu.php");
+        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+            header("Location: menu.php");
+        } else {
+            // Rol desconocido
+            header("Location: ../index.php");
+        }
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+$nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
+$apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,58 +44,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
     <link rel="stylesheet" href="styles/asistente.css">
-    <style>
-        /* Estilos específicos para el campo de contraseña */
-        .clave-container {
-            position: relative;
-            width: 100%;
-        }
-        
-        .clave-input {
-            width: 100%;
-            padding: 12px 45px 12px 15px; /* Padding solo a la derecha para el ojo */
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background-color: white;
-        }
-        
-        .clave-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .clave-eye {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            z-index: 2;
-        }
-        
-        .clave-eye:hover {
-            color: #475569;
-            background-color: #f1f5f9;
-        }
-        
-        .clave-eye:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-        
-        .clave-eye.active {
-            color: #3b82f6;
-        }
-    </style>
 </head>
 <body>
     
@@ -228,79 +211,38 @@
         </footer>
     </div>
     
-    <!-- MODAL PARA INGRESAR CLAVE -->
-    <div class="modal-overlay" id="modalClave">
-        <div class="modal-clave">
-            <div class="modal-header">
-                <h3>Acceso restringido</h3>
-                <p>Verificación de seguridad requerida</p>
-            </div>
-            <div class="modal-body">
-                <p>Ingrese la clave autorizada para parametrizar:</p>
-                <div class="input-group">
-                    <label for="inputClave">Clave de autorización</label>
-                    <div class="clave-container">
-                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
-                        <button type="button" class="clave-eye" id="togglePassword">
-                            <i class="fas fa-eye"></i>
+        <!-- MODAL PARA INGRESAR CLAVE -->
+        <div class="modal-overlay" id="modalClave">
+            <div class="modal-clave">
+                <div class="modal-header">
+                    <h3>Acceso restringido</h3>
+                    <p>Verificación de seguridad requerida</p>
+                </div>
+                <div class="modal-body">
+                    <p>Ingrese la clave autorizada para parametrizar:</p>
+                    <div class="input-group">
+                        <label for="inputClave">Clave de autorización</label>
+                        <div class="clave-container">
+                            <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                            <i class="fas fa-key clave-icon"></i>
+                            <button type="button" class="clave-eye" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="modal-buttons">
+                        <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                            Ingresar
+                        </button>
+                        <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                            Cancelar
                         </button>
                     </div>
-                </div>
-                <div class="error-message" id="errorMessage"></div>
-                <div class="modal-buttons">
-                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
-                        Ingresar
-                    </button>
-                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
-                        Cancelar
-                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- JavaScript para el ojo -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleButton = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('inputClave');
-            
-            if (toggleButton && passwordInput) {
-                toggleButton.addEventListener('click', function() {
-                    const eyeIcon = this.querySelector('i');
-                    
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        eyeIcon.classList.remove('fa-eye');
-                        eyeIcon.classList.add('fa-eye-slash');
-                        this.classList.add('active');
-                    } else {
-                        passwordInput.type = 'password';
-                        eyeIcon.classList.remove('fa-eye-slash');
-                        eyeIcon.classList.add('fa-eye');
-                        this.classList.remove('active');
-                    }
-                    
-                    // Mantener el foco en el campo
-                    passwordInput.focus();
-                });
-                
-                // Resetear cuando se muestre el modal
-                const modal = document.getElementById('modalClave');
-                if (modal) {
-                    // Si usas algún sistema para mostrar/ocultar el modal, agrega el evento allí
-                    // Por ejemplo, si usas una función para mostrar el modal:
-                    // modal.addEventListener('show', function() {
-                    //     passwordInput.type = 'password';
-                    //     const eyeIcon = toggleButton.querySelector('i');
-                    //     eyeIcon.classList.remove('fa-eye-slash');
-                    //     eyeIcon.classList.add('fa-eye');
-                    //     toggleButton.classList.remove('active');
-                    // });
-                }
-            }
-        });
-    </script>
     
     <!-- Enlace al archivo JavaScript modularizado -->
     <script src="../javascript/asistente.js"></script>
