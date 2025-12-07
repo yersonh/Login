@@ -10,11 +10,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelar = document.getElementById('btnCancelarClave');
     const errorMessage = document.getElementById('errorMessage');
     
+    // Función para mostrar/ocultar contraseña
+    function togglePasswordVisibility() {
+        if (inputClave && togglePassword) {
+            const eyeIcon = togglePassword.querySelector('i');
+            
+            if (inputClave.type === 'password') {
+                inputClave.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+                togglePassword.classList.add('active');
+            } else {
+                inputClave.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+                togglePassword.classList.remove('active');
+            }
+        }
+    }
+    
+    // Buscar botón del ojo después de que exista
+    let togglePassword = null;
+    
     // Inicializar eventos de las tarjetas de servicio
     initServiceCards();
     
     // Inicializar eventos del modal
     initModalEvents();
+    
+    // Inicializar evento del botón del ojo
+    initTogglePassword();
     
     // Mostrar información de depuración en consola
     console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
@@ -102,6 +127,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
+     * Inicializa el botón para mostrar/ocultar contraseña
+     */
+    function initTogglePassword() {
+        // Usar event delegation para manejar el clic en el botón del ojo
+        document.addEventListener('click', function(e) {
+            if (e.target && (e.target.id === 'togglePassword' || 
+                            e.target.closest('#togglePassword'))) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePasswordVisibility();
+            }
+        });
+        
+        // También buscar el botón después de que se cargue el DOM
+        setTimeout(() => {
+            togglePassword = document.getElementById('togglePassword');
+            if (togglePassword) {
+                togglePassword.addEventListener('click', togglePasswordVisibility);
+            }
+        }, 100);
+    }
+    
+    /**
      * Abre el modal de clave
      */
     function abrirModalClave() {
@@ -113,6 +161,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Efecto de entrada
         document.body.style.overflow = 'hidden';
+        
+        // Asegurar que el botón del ojo exista y tenga el evento
+        setTimeout(() => {
+            togglePassword = document.getElementById('togglePassword');
+            if (togglePassword) {
+                // Resetear el estado del ojo
+                const eyeIcon = togglePassword.querySelector('i');
+                if (eyeIcon) {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+                togglePassword.classList.remove('active');
+                
+                // Asegurar que el input sea tipo password
+                inputClave.type = 'password';
+            }
+        }, 10);
     }
     
     /**
@@ -126,6 +191,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Restaurar scroll
         document.body.style.overflow = '';
+        
+        // Resetear el estado del ojo
+        if (togglePassword) {
+            const eyeIcon = togglePassword.querySelector('i');
+            if (eyeIcon) {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+            togglePassword.classList.remove('active');
+        }
+        
+        // Asegurar que el input sea tipo password
+        inputClave.type = 'password';
     }
     
     /**
@@ -334,33 +412,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
     }
-   // Función para mostrar/ocultar contraseña
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('inputClave');
-    const toggleButton = document.getElementById('togglePassword');
     
-    if (passwordInput && toggleButton) {
-        const eyeIcon = toggleButton.querySelector('i');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-            toggleButton.classList.add('active');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
-            toggleButton.classList.remove('active');
-        }
+    // Agregar animación shake si no existe
+    if (!document.querySelector('#shake-animation')) {
+        const style = document.createElement('style');
+        style.id = 'shake-animation';
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     }
-}
-
-// Agregar evento al botón del ojo cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleButton = document.getElementById('togglePassword');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', togglePasswordVisibility);
-    }
-});
 });
