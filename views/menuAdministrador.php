@@ -132,74 +132,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         .access-info-banner .banner-link:hover {
             color: #92400e;
         }
-        
-        /* Estilos adicionales para compactar */
-        .compact-layout {
-            min-height: calc(100vh - 150px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .compact-header {
-            margin-bottom: 40px;
-            text-align: center;
-        }
-        
-        .compact-actions {
-            max-width: 600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .compact-actions .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            justify-content: center;
-        }
-        
-        .compact-action-btn {
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 30px;
-            font-size: 16px;
-            border-radius: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border: 2px solid #e2e8f0;
-            color: #475569;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .compact-action-btn:hover {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            border-color: #3b82f6;
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.25);
-        }
-        
-        .compact-action-btn i {
-            font-size: 42px;
-            transition: transform 0.3s ease;
-        }
-        
-        .compact-action-btn:hover i {
-            transform: scale(1.2);
-        }
-        
-        /* Footer ajustado */
-        .compact-footer {
-            margin-top: 60px;
-            padding-top: 25px;
-            border-top: 1px solid #e5e7eb;
-        }
     </style>
 </head>
 <body>
@@ -279,41 +211,37 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
         <!-- Contenido Principal -->
         <main class="main-content">
-            <!-- Layout compacto -->
-            <div class="compact-layout">
-                <!-- Encabezado compacto -->
-                <div class="compact-header">
-                    <h1 class="welcome-title">Panel de Control Administrativo</h1>
-                    <p class="welcome-subtitle">Gestione todos los aspectos del sistema de la Secretaría de Minas y Energía</p>
-                </div>
-                
-                <!-- Acciones Rápidas Compactas -->
-                <div class="compact-actions">
-                    <div class="section-title">
-                        <span>Acciones Rápidas</span>
-                    </div>
-                    <div class="actions-grid">
-                        <button class="compact-action-btn" onclick="window.location.href='gestion_usuarios.php'">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Agregar Usuario</span>
-                        </button>
-                        <button class="compact-action-btn" onclick="window.location.href='parametrizar.php'">
-                            <i class="fas fa-sliders-h"></i>
-                            <span>Parametrización</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Footer compacto -->
-                <footer class="admin-footer compact-footer">
-                    <img src="../imagenes/logo.png" alt="Logo" class="footer-logo">
-                    <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía</p>
-                    <p class="footer-info">
-                        SGEA • Versión 1.0.0 (Runtime) • Desarrollado por SisgonTech 
-                        <a href="#" class="footer-link">Políticas de Uso</a>
-                    </p>
-                </footer>
+            <!-- Encabezado -->
+            <div class="main-header">
+                <h1 class="welcome-title">Panel de Control Administrativo</h1>
+                <p class="welcome-subtitle">Gestione todos los aspectos del sistema de la Secretaría de Minas y Energía</p>
             </div>
+            <!-- Acciones Rápidas -->
+            <div class="quick-actions">
+                <div class="section-title">
+                    <span>Acciones Rápidas</span>
+                </div>
+                <div class="actions-grid">
+                    <button class="action-btn" onclick="window.location.href='gestion_usuarios.php'">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Agregar Usuario</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='parametrizar.php'">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Parametrización</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="admin-footer">
+                <img src="../imagenes/logo.png" alt="Logo" class="footer-logo">
+                <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía</p>
+                <p class="footer-info">
+                    SGEA • Versión 1.0.0 (Runtime) • Desarrollado por SisgonTech 
+                    <a href="#" class="footer-link">Políticas de Uso</a>
+                </p>
+            </footer>
         </main>
         
         <!-- Botón flotante para volver como asistente -->

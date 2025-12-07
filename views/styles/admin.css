@@ -27,7 +27,7 @@ body {
     width: 280px;
     background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
     color: white;
-    padding: 20px 0;
+    padding: 15px 0 20px 0; /* Reducido padding-top de 20px a 15px */
     box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
     position: fixed;
     height: 100vh;
@@ -35,19 +35,19 @@ body {
     z-index: 1000;
 }
 
-/* Logo Section */
+/* Logo Section - ajustado para que no tape contenido */
 .logo-section {
     text-align: center;
-    padding: 20px;
+    padding: 15px 20px; /* Reducido de 20px */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 30px;
-    z-index: 1001;
+    margin-bottom: 20px; /* Reducido de 30px */
+    position: relative;
 }
 
 .admin-logo {
-    width: 120px;
+    width: 110px; /* Reducido de 120px */
     height: auto;
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reducido de 15px */
     filter: brightness(0) invert(1);
     transition: transform 0.3s ease;
 }
@@ -57,36 +57,36 @@ body {
 }
 
 .department-name {
-    font-size: 16px;
+    font-size: 15px; /* Reducido de 16px */
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 4px; /* Reducido de 5px */
     color: white;
     letter-spacing: 0.5px;
 }
 
 .department-subtitle {
-    font-size: 13px;
+    font-size: 12px; /* Reducido de 13px */
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.4;
+    line-height: 1.3; /* Reducido de 1.4 */
 }
 
 /* User Profile Sidebar */
 .user-profile-sidebar {
-    padding: 20px;
+    padding: 15px 20px; /* Reducido de 20px */
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Reducido de 20px */
 }
 
 .user-avatar {
-    width: 80px;
-    height: 80px;
+    width: 70px; /* Reducido de 80px */
+    height: 70px; /* Reducido de 80px */
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
+    margin: 0 auto 12px; /* Reducido de 15px */
     border: 3px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
 }
@@ -98,46 +98,47 @@ body {
 }
 
 .user-avatar i {
-    font-size: 36px;
+    font-size: 32px; /* Reducido de 36px */
     color: white;
 }
 
 .user-name {
-    font-size: 16px;
+    font-size: 15px; /* Reducido de 16px */
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* Reducido de 8px */
     color: white;
 }
 
 .user-role {
-    font-size: 13px;
+    font-size: 12px; /* Reducido de 13px */
     color: #93c5fd;
     background: rgba(147, 197, 253, 0.1);
-    padding: 6px 16px;
+    padding: 5px 14px; /* Reducido de 6px 16px */
     border-radius: 20px;
     display: inline-block;
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* Reducido de 8px */
     font-weight: 500;
     letter-spacing: 0.3px;
 }
 
 .user-email {
-    font-size: 12px;
+    font-size: 11px; /* Reducido de 12px */
     color: rgba(255, 255, 255, 0.7);
-    margin-top: 5px;
+    margin-top: 4px; /* Reducido de 5px */
     word-break: break-word;
 }
 
 /* Navigation */
 .nav-section {
     padding: 0 20px;
+    margin-top: 5px; /* Añadido para compensar reducciones */
 }
 
 .nav-title {
     font-size: 12px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reducido de 15px */
     font-weight: 600;
     letter-spacing: 0.5px;
 }
@@ -149,13 +150,13 @@ body {
 }
 
 .nav-item {
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* Reducido de 8px */
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 14px 16px;
+    padding: 12px 14px; /* Reducido de 14px 16px */
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     border-radius: 10px;
@@ -169,7 +170,7 @@ body {
 .nav-link:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    transform: translateX(8px);
+    transform: translateX(6px); /* Reducido de 8px */
 }
 
 .nav-link.active {
@@ -181,7 +182,7 @@ body {
 }
 
 .nav-icon {
-    margin-right: 14px;
+    margin-right: 12px; /* Reducido de 14px */
     font-size: 18px;
     width: 24px;
     text-align: center;
@@ -204,30 +205,30 @@ body {
     background: rgba(248, 113, 113, 0.1) !important;
 }
 
-/* Main Content */
+/* Main Content - Optimizado para menos espacio blanco */
 .main-content {
     flex: 1;
     margin-left: 280px;
-    padding: 25px 30px;
+    padding: 15px 25px 25px; /* Top: 15px (reducido), Laterales: 25px, Bottom: 25px */
     background-color: #f8f9fa;
     min-height: 100vh;
 }
 
-/* Header */
+/* Header - más compacto pero manteniendo estilo */
 .main-header {
     background: white;
     border-radius: 16px;
-    padding: 30px 35px;
-    margin-bottom: 30px;
+    padding: 20px 25px; /* Reducido de 30px 35px */
+    margin-bottom: 20px; /* Reducido de 30px */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border-left: 6px solid #1e40af;
     animation: fadeIn 0.5s ease-out;
 }
 
 .welcome-title {
-    font-size: 28px;
+    font-size: 24px; /* Reducido de 28px */
     color: #1f2937;
-    margin-bottom: 12px;
+    margin-bottom: 8px; /* Reducido de 12px */
     font-weight: 800;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #1e40af, #3b82f6);
@@ -237,27 +238,27 @@ body {
 }
 
 .welcome-subtitle {
-    font-size: 16px;
+    font-size: 14px; /* Reducido de 16px */
     color: #6b7280;
     margin-bottom: 0;
-    line-height: 1.6;
+    line-height: 1.5; /* Ajustado de 1.6 */
 }
 
-/* Recent Activity */
-.recent-activity {
+/* Quick Actions - más compacto */
+.quick-actions {
     background: white;
     border-radius: 16px;
-    padding: 30px;
+    padding: 20px 25px; /* Reducido de 30px */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
-    animation: fadeIn 0.6s ease-out;
+    margin-bottom: 20px; /* Reducido de 30px */
+    animation: fadeIn 0.7s ease-out;
 }
 
 .section-title {
-    font-size: 20px;
+    font-size: 18px; /* Reducido de 20px */
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 25px;
+    margin-bottom: 15px; /* Reducido de 25px */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -276,95 +277,18 @@ body {
     transform: translateX(3px);
 }
 
-.activity-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.activity-item {
-    display: flex;
-    align-items: center;
-    padding: 18px 0;
-    border-bottom: 1px solid #f3f4f6;
-    transition: background-color 0.3s ease;
-}
-
-.activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-item:hover {
-    background-color: #f9fafb;
-    border-radius: 10px;
-    padding: 18px 15px;
-    margin: 0 -15px;
-}
-
-.activity-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 18px;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-
-.activity-icon.user {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #1d4ed8;
-}
-
-.activity-icon.security {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-    color: #16a34a;
-}
-
-.activity-icon.system {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    color: #d97706;
-}
-
-.activity-content {
-    flex: 1;
-}
-
-.activity-title {
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 5px;
-    font-size: 15px;
-}
-
-.activity-time {
-    font-size: 13px;
-    color: #6b7280;
-}
-
-/* Quick Actions */
-.quick-actions {
-    background: white;
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
-    animation: fadeIn 0.7s ease-out;
-}
-
+/* Acciones Grid optimizado */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Reducido de 200px */
+    gap: 15px; /* Reducido de 20px */
 }
 
 .action-btn {
     background: linear-gradient(135deg, #f8fafc, #f1f5f9);
     border: 2px solid #e2e8f0;
     border-radius: 14px;
-    padding: 22px;
+    padding: 18px; /* Reducido de 22px */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -374,41 +298,42 @@ body {
     color: #475569;
     font-weight: 600;
     font-size: 14px;
-    gap: 12px;
+    gap: 10px; /* Reducido de 12px */
+    min-height: 100px; /* Añadido para consistencia */
 }
 
 .action-btn:hover {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
     border-color: #3b82f6;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+    transform: translateY(-4px); /* Reducido de -5px */
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2); /* Reducido de 10px 25px */
 }
 
 .action-btn i {
-    font-size: 28px;
+    font-size: 26px; /* Reducido de 28px */
     transition: transform 0.3s ease;
 }
 
 .action-btn:hover i {
-    transform: scale(1.2);
+    transform: scale(1.15); /* Reducido de 1.2 */
 }
 
-/* Footer */
+/* Footer - más compacto */
 .admin-footer {
-    margin-top: 40px;
-    padding-top: 25px;
+    margin-top: 25px; /* Reducido de 40px */
+    padding-top: 15px; /* Reducido de 25px */
     border-top: 1px solid #e5e7eb;
     text-align: center;
     color: #6b7280;
-    font-size: 14px;
+    font-size: 13px; /* Reducido de 14px */
     animation: fadeIn 0.8s ease-out;
 }
 
 .footer-logo {
-    width: 70px;
+    width: 60px; /* Reducido de 70px */
     height: auto;
-    margin: 0 auto 15px;
+    margin: 0 auto 10px; /* Reducido de 15px */
     opacity: 0.8;
     transition: opacity 0.3s ease;
 }
@@ -418,8 +343,8 @@ body {
 }
 
 .footer-info {
-    font-size: 13px;
-    margin-top: 8px;
+    font-size: 12px; /* Reducido de 13px */
+    margin-top: 6px; /* Reducido de 8px */
     color: #9ca3af;
 }
 
@@ -441,13 +366,14 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive Design */
+/* Responsive Design - Mantenido pero ajustado */
 @media (max-width: 1200px) {
     .sidebar {
         width: 250px;
     }
     .main-content {
         margin-left: 250px;
+        padding: 15px 20px 20px;
     }
 }
 
@@ -457,10 +383,11 @@ body {
     }
     .main-content {
         margin-left: 230px;
-        padding: 20px;
+        padding: 15px 18px 18px;
     }
     .actions-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 }
 
@@ -474,44 +401,73 @@ body {
         width: 100%;
         height: auto;
         margin-bottom: 0;
-        padding: 15px 0;
+        padding: 10px 0 15px;
     }
     
     .main-content {
         margin-left: 0;
-        padding: 15px;
+        padding: 12px 15px 15px;
     }
     
     .actions-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
     
     .main-header {
-        padding: 20px 25px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
     }
     
     .welcome-title {
-        font-size: 24px;
+        font-size: 22px;
+    }
+    
+    .quick-actions {
+        padding: 15px 20px;
+    }
+    
+    .admin-footer {
+        margin-top: 20px;
+        padding-top: 12px;
     }
 }
 
 @media (max-width: 480px) {
     .main-header {
-        padding: 20px;
+        padding: 12px 15px;
     }
     
-    .recent-activity, .quick-actions {
-        padding: 20px;
+    .welcome-title {
+        font-size: 20px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 13px;
+    }
+    
+    .quick-actions {
+        padding: 12px 15px;
     }
     
     .section-title {
-        font-size: 18px;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .action-btn {
+        padding: 15px;
+        min-height: 90px;
+    }
+    
+    .action-btn i {
+        font-size: 24px;
     }
 }
 
 /* Scrollbar Styling */
 .sidebar::-webkit-scrollbar {
-    width: 6px;
+    width: 5px; /* Reducido de 6px */
 }
 
 .sidebar::-webkit-scrollbar-track {
@@ -526,4 +482,24 @@ body {
 
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
+}
+
+/* Clases para futuro contenido - mantienen consistencia */
+.content-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.content-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
