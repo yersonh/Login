@@ -182,7 +182,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <a href="parametrizar.php" class="nav-link active">
                             <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
                             <span class="nav-text">Parametrización</span>
-                            <span class="nav-badge">Nuevo</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -268,16 +267,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             <div class="main-header">
                 <h1 class="welcome-title">Panel de Control Administrativo</h1>
                 <p class="welcome-subtitle">Gestione todos los aspectos del sistema de la Secretaría de Minas y Energía</p>
-                
-                <?php if (isset($_SESSION['usuario_original'])): ?>
-                <div class="access-info-banner">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="banner-content">
-                        Has ingresado con credenciales de administrador. 
-                        <span class="banner-link" onclick="volverComoAsistente()">Volver como asistente</span>
-                    </div>
-                </div>
-                <?php endif; ?>
+
             </div>
 
             <!-- Estadísticas 
