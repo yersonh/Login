@@ -206,7 +206,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 </ul>
             </div>
 
-            <!-- Sección de Reportes -->
+            <!-- Sección de Reportes 
             <div class="nav-section" style="margin-top: 30px;">
                 <div class="nav-title">Reportes y Análisis</div>
                 <ul class="nav-menu">
@@ -229,9 +229,9 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         </a>
                     </li>
                 </ul>
-            </div>
+            </div>-->
 
-            <!-- Enlaces de Soporte -->
+            <!-- Enlaces de Soporte 
             <div class="nav-section" style="margin-top: 30px;">
                 <div class="nav-title">Soporte y Ayuda</div>
                 <ul class="nav-menu">
@@ -246,7 +246,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             <span class="nav-icon"><i class="fas fa-book"></i></span>
                             <span class="nav-text">Manuales</span>
                         </a>
-                    </li>
+                    </li>-->
                     <li class="nav-item">
                         <a href="../logout.php" class="nav-link logout-link">
                             <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
@@ -280,7 +280,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <?php endif; ?>
             </div>
 
-            <!-- Estadísticas -->
+            <!-- Estadísticas 
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon primary">
@@ -325,7 +325,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <i class="fas fa-arrow-down"></i> Requiere atención
                     </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Actividad Reciente -->
             <div class="recent-activity">
@@ -409,7 +409,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <img src="../imagenes/logo.png" alt="Logo" class="footer-logo">
                 <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía</p>
                 <p class="footer-info">
-                    Sistema de Gestión Administrativa • Versión 2.1.0 • 
+                    SGEA • Versión 1.0.0 (Runtime) • Desarrollado por SisgonTech 
                     <a href="#" class="footer-link">Políticas de Uso</a>
                 </p>
             </footer>
@@ -424,7 +424,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <?php endif; ?>
     </div>
 
-    <!-- Modal de Configuración -->
+    <!-- Modal de Configuración 
     <div class="modal-overlay" id="configModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -462,7 +462,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <button class="btn btn-primary" onclick="guardarConfiguracion()">Guardar Cambios</button>
             </div>
         </div>
-    </div>
+    </div>-->
 
     <script>
         // Función para volver como asistente
