@@ -334,4 +334,60 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
     }
+    // Función para mostrar/ocultar contraseña
+function togglePasswordVisibility() {
+    const passwordInput = document.getElementById('inputClave');
+    const eyeButton = document.getElementById('togglePassword');
+    const eyeIcon = eyeButton.querySelector('i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+        eyeButton.classList.add('active');
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+        eyeButton.classList.remove('active');
+    }
+}
+
+// Agregar evento al botón de ojo
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('togglePassword');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', togglePasswordVisibility);
+        
+        // También permitir mostrar/ocultar con Enter en el campo
+        const passwordInput = document.getElementById('inputClave');
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                togglePasswordVisibility();
+            }
+        });
+    }
+    
+    // Si usas jQuery y tienes eventos para el modal, agrega esto:
+    if (typeof $ !== 'undefined') {
+        // Cuando se muestra el modal, enfocar el campo y resetear el ojo
+        $('#modalClave').on('shown.bs.modal' || 'show', function() {
+            const passwordInput = document.getElementById('inputClave');
+            const eyeButton = document.getElementById('togglePassword');
+            const eyeIcon = eyeButton.querySelector('i');
+            
+            // Resetear a contraseña oculta
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+            eyeButton.classList.remove('active');
+            
+            // Enfocar el campo
+            setTimeout(() => {
+                passwordInput.focus();
+            }, 100);
+        });
+    }
+});
 });

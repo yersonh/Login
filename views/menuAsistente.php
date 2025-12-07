@@ -211,30 +211,34 @@ if (empty($nombreCompleto)) {
         </footer>
     </div>
     
-    <!-- MODAL PARA INGRESAR CLAVE -->
-    <div class="modal-overlay" id="modalClave">
-        <div class="modal-clave">
-            <div class="modal-header">
-                <h3>Acceso restringido</h3>
-                <p>Verificación de seguridad requerida</p>
-            </div>
-            <div class="modal-body">
-                <p>Ingrese la clave autorizada para parametrizar:</p>
-                <div class="input-group">
-                    <label for="inputClave">Clave de autorización</label>
-                    <div class="clave-container">
-                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
-                        <i class="fas fa-key clave-icon"></i>
-                    </div>
+        <!-- MODAL PARA INGRESAR CLAVE -->
+        <div class="modal-overlay" id="modalClave">
+            <div class="modal-clave">
+                <div class="modal-header">
+                    <h3>Acceso restringido</h3>
+                    <p>Verificación de seguridad requerida</p>
                 </div>
-                <div class="error-message" id="errorMessage"></div>
-                <div class="modal-buttons">
-                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
-                        Ingresar
-                    </button>
-                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
-                        Cancelar
-                    </button>
+                <div class="modal-body">
+                    <p>Ingrese la clave autorizada para parametrizar:</p>
+                    <div class="input-group">
+                        <label for="inputClave">Clave de autorización</label>
+                        <div class="clave-container">
+                            <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                            <i class="fas fa-key clave-icon"></i>
+                            <button type="button" class="clave-eye" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="modal-buttons">
+                        <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                            Ingresar
+                        </button>
+                        <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1025,3 +1025,24 @@ body {
         margin-bottom: 8px;
     }
 }
+/* Agrega esto al CSS existente */
+.clave-container {
+    position: relative;
+}
+
+.clave-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10;
+}
+
+.clave-input {
+    padding-right: 45px; /* Espacio para el ojo */
+}
