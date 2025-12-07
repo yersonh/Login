@@ -414,6 +414,46 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <?php endif; ?>
     </div>
 
+    <!-- Modal de Configuración 
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Configuración del Sistema</h3>
+                <button class="modal-close" onclick="cerrarModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="systemName">Nombre del Sistema</label>
+                    <input type="text" id="systemName" class="form-control" value="Sistema SME - Admin">
+                </div>
+                <div class="form-group">
+                    <label for="sessionTimeout">Tiempo de Sesión (minutos)</label>
+                    <input type="number" id="sessionTimeout" class="form-control" value="30" min="5" max="240">
+                </div>
+                <div class="form-group">
+                    <label for="backupFrequency">Frecuencia de Backup</label>
+                    <select id="backupFrequency" class="form-control">
+                        <option value="daily">Diario</option>
+                        <option value="weekly" selected>Semanal</option>
+                        <option value="monthly">Mensual</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emailNotifications" checked>
+                        <span>Notificaciones por Email</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarConfiguracion()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>-->
+
     <script>
         // Función para volver como asistente
         function volverComoAsistente() {
@@ -439,6 +479,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             }
         }
         
+        // Cerrar sesión de administrador después de inactividad (1 hora) - solo para asistentes
         <?php if (isset($_SESSION['usuario_original'])): ?>
         let inactivityTimer;
         
