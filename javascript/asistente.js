@@ -12,25 +12,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para mostrar/ocultar contraseña
     function togglePasswordVisibility() {
-        if (inputClave && togglePassword) {
-            const eyeIcon = togglePassword.querySelector('i');
+        const passwordInput = document.getElementById('inputClave');
+        const toggleButton = document.getElementById('togglePassword');
+        
+        if (passwordInput && toggleButton) {
+            const eyeIcon = toggleButton.querySelector('i');
             
-            if (inputClave.type === 'password') {
-                inputClave.type = 'text';
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
                 eyeIcon.classList.remove('fa-eye');
                 eyeIcon.classList.add('fa-eye-slash');
-                togglePassword.classList.add('active');
+                toggleButton.classList.add('active');
             } else {
-                inputClave.type = 'password';
+                passwordInput.type = 'password';
                 eyeIcon.classList.remove('fa-eye-slash');
                 eyeIcon.classList.add('fa-eye');
-                togglePassword.classList.remove('active');
+                toggleButton.classList.remove('active');
             }
         }
     }
-    
-    // Buscar botón del ojo después de que exista
-    let togglePassword = null;
     
     // Inicializar eventos de las tarjetas de servicio
     initServiceCards();
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar eventos del modal
     initModalEvents();
     
-    // Inicializar evento del botón del ojo
+    // Inicializar botón del ojo
     initTogglePassword();
     
     // Mostrar información de depuración en consola
@@ -130,63 +130,48 @@ document.addEventListener('DOMContentLoaded', function() {
      * Inicializa el botón para mostrar/ocultar contraseña
      */
     function initTogglePassword() {
-        // Usar event delegation para manejar el clic en el botón del ojo
+        const toggleButton = document.getElementById('togglePassword');
+        if (toggleButton) {
+            toggleButton.addEventListener('click', togglePasswordVisibility);
+        }
+        
+        // También usar event delegation por si el botón se carga después
         document.addEventListener('click', function(e) {
-            if (e.target && (e.target.id === 'togglePassword' || 
-                            e.target.closest('#togglePassword'))) {
+            if (e.target && (e.target.id === 'togglePassword' || e.target.closest('#togglePassword'))) {
                 e.preventDefault();
-                e.stopPropagation();
                 togglePasswordVisibility();
             }
         });
-        
-        // También buscar el botón después de que se cargue el DOM
-        setTimeout(() => {
-            togglePassword = document.getElementById('togglePassword');
-            if (togglePassword) {
-                togglePassword.addEventListener('click', togglePasswordVisibility);
-            }
-        }, 100);
     }
     
     /**
      * Abre el modal de clave
      */
-   function abrirModalClave() {
-    modalClave.classList.add('active');
-    inputClave.value = '';
-    inputClave.focus();
-    errorMessage.classList.remove('show');
-    errorMessage.textContent = '';
-    
-    // Efecto de entrada
-    document.body.style.overflow = 'hidden';
-    
-    // Asegurar que el botón del ojo exista y tenga el evento
-    setTimeout(() => {
-        // ACTUALIZAR LA VARIABLE togglePassword
-        togglePassword = document.getElementById('togglePassword');
-        if (togglePassword) {
-            // Resetear el estado del ojo
-            const eyeIcon = togglePassword.querySelector('i');
+    function abrirModalClave() {
+        modalClave.classList.add('active');
+        inputClave.value = '';
+        inputClave.focus();
+        errorMessage.classList.remove('show');
+        errorMessage.textContent = '';
+        
+        // Efecto de entrada
+        document.body.style.overflow = 'hidden';
+        
+        // Asegurar que el botón del ojo esté configurado
+        const toggleButton = document.getElementById('togglePassword');
+        if (toggleButton) {
+            // Resetear estado del ojo
+            const eyeIcon = toggleButton.querySelector('i');
             if (eyeIcon) {
                 eyeIcon.classList.remove('fa-eye-slash');
                 eyeIcon.classList.add('fa-eye');
             }
-            togglePassword.classList.remove('active');
+            toggleButton.classList.remove('active');
             
             // Asegurar que el input sea tipo password
             inputClave.type = 'password';
-            
-            // AGREGAR EL EVENTO DIRECTAMENTE
-            togglePassword.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                togglePasswordVisibility();
-            });
         }
-    }, 10);
-}
+    }
     
     /**
      * Cierra el modal de clave
@@ -200,14 +185,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Restaurar scroll
         document.body.style.overflow = '';
         
-        // Resetear el estado del ojo
-        if (togglePassword) {
-            const eyeIcon = togglePassword.querySelector('i');
+        // Resetear estado del ojo
+        const toggleButton = document.getElementById('togglePassword');
+        if (toggleButton) {
+            const eyeIcon = toggleButton.querySelector('i');
             if (eyeIcon) {
                 eyeIcon.classList.remove('fa-eye-slash');
                 eyeIcon.classList.add('fa-eye');
             }
-            togglePassword.classList.remove('active');
+            toggleButton.classList.remove('active');
         }
         
         // Asegurar que el input sea tipo password
