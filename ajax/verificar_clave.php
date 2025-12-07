@@ -1,5 +1,5 @@
 <?php
-// verificar_clave.php - VERSIÓN ACTUALIZADA PARA INICIAR SESIÓN COMO ADMINISTRADOR
+// verificar_clave.php - VERSIÓN CORREGIDA SIN COLUMNA documento
 
 session_start();
 header('Content-Type: application/json');
@@ -40,7 +40,7 @@ try {
         throw new Exception("No se pudo conectar a la base de datos");
     }
     
-    // 4. CONSULTA PARA BUSCAR ADMINISTRADOR
+    // 4. CONSULTA CORREGIDA - SIN COLUMNA documento
     $sql = "SELECT 
                 u.id_usuario,
                 u.correo,
@@ -48,7 +48,6 @@ try {
                 u.tipo_usuario,
                 p.nombres,
                 p.apellidos,
-                p.documento,
                 p.telefono
             FROM usuario u
             INNER JOIN persona p ON u.id_persona = p.id_persona
@@ -90,7 +89,6 @@ try {
         $_SESSION['apellidos'] = $adminEncontrado['apellidos'];
         $_SESSION['correo'] = $adminEncontrado['correo'];
         $_SESSION['tipo_usuario'] = $adminEncontrado['tipo_usuario'];
-        $_SESSION['documento'] = $adminEncontrado['documento'] ?? '';
         $_SESSION['telefono'] = $adminEncontrado['telefono'] ?? '';
         
         // También guardar info de verificación para auditoría
