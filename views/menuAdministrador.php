@@ -215,60 +215,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             <div class="main-header">
                 <h1 class="welcome-title">Panel de Control Administrativo</h1>
                 <p class="welcome-subtitle">Gestione todos los aspectos del sistema de la Secretaría de Minas y Energía</p>
-
             </div>
-            <!-- Actividad Reciente -->
-            <div class="recent-activity">
-                <div class="section-title">
-                    <span>Actividad Reciente del Sistema</span>
-                    <a href="#" class="view-all-link">
-                        Ver todo <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-icon user">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Nuevo usuario registrado</div>
-                            <div class="activity-time">Hace 15 minutos • María González</div>
-                        </div>
-                    </li>
-                    
-                    <li class="activity-item">
-                        <div class="activity-icon security">
-                            <i class="fas fa-key"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Cambio de permisos de acceso</div>
-                            <div class="activity-time">Hace 1 hora • Departamento de Licencias</div>
-                        </div>
-                    </li>
-                    
-                    <li class="activity-item">
-                        <div class="activity-icon system">
-                            <i class="fas fa-database"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Backup automático completado</div>
-                            <div class="activity-time">Hace 3 horas • Sistema automático</div>
-                        </div>
-                    </li>
-                    
-                    <li class="activity-item">
-                        <div class="activity-icon user">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Verificación de asistente completada</div>
-                            <div class="activity-time">Hoy 10:30 AM • Carlos Rodríguez</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
             <!-- Acciones Rápidas -->
             <div class="quick-actions">
                 <div class="section-title">
