@@ -1,23 +1,19 @@
 <?php
 session_start();
 
-// Verificar autenticación y rol
+// Verificar autenticación
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
-// Solo administradores pueden acceder
-if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'administrador') {
-    // Redirigir según rol
-    if (isset($_SESSION['tipo_usuario'])) {
-        if ($_SESSION['tipo_usuario'] === 'asistente') {
-            header("Location: menuAsistente.php");
-        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
-            header("Location: menu.php");
-        } else {
-            header("Location: ../index.php");
-        }
+// Verificar que sea administrador (ya sea administrador original o asistente con acceso)
+if ($_SESSION['tipo_usuario'] !== 'administrador') {
+    // Si no es administrador, redirigir según su rol
+    if ($_SESSION['tipo_usuario'] === 'asistente') {
+        header("Location: menuAsistente.php");
+    } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+        header("Location: menu.php");
     } else {
         header("Location: ../index.php");
     }

@@ -1,5 +1,5 @@
 <?php
-// verificar_clave.php - VERSIÓN CORREGIDA PARA TU CLASE DATABASE
+// verificar_clave.php - VERSIÓN ACTUALIZADA PARA INICIAR SESIÓN COMO ADMINISTRADOR
 
 session_start();
 header('Content-Type: application/json');
@@ -11,7 +11,7 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQ
     exit();
 }
 
-// Verificar que el usuario esté logueado
+// Verificar que el usuario esté logueado (puede ser asistente o usuario)
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['tipo_usuario'])) {
     echo json_encode(['success' => false, 'message' => 'Sesión no válida']);
     exit();
@@ -40,13 +40,16 @@ try {
         throw new Exception("No se pudo conectar a la base de datos");
     }
     
-    // 4. CONSULTA CORREGIDA CON JOIN
+    // 4. CONSULTA PARA BUSCAR ADMINISTRADOR
     $sql = "SELECT 
                 u.id_usuario,
                 u.correo,
                 u.contrasena,
+                u.tipo_usuario,
                 p.nombres,
-                p.apellidos
+                p.apellidos,
+                p.documento,
+                p.telefono
             FROM usuario u
             INNER JOIN persona p ON u.id_persona = p.id_persona
             WHERE u.tipo_usuario = 'administrador'";
@@ -69,17 +72,48 @@ try {
     }
     
     if ($claveValida && $adminEncontrado) {
-        // Guardar en sesión
+        // GUARDAR DATOS DEL USUARIO ORIGINAL (ASISTENTE/USUARIO) PARA PODER REGRESAR
+        $usuarioOriginal = [
+            'id_usuario' => $_SESSION['usuario_id'],
+            'nombres' => $_SESSION['nombres'] ?? '',
+            'apellidos' => $_SESSION['apellidos'] ?? '',
+            'correo' => $_SESSION['correo'] ?? '',
+            'tipo_usuario' => $_SESSION['tipo_usuario']
+        ];
+        
+        // Guardar usuario original en sesión
+        $_SESSION['usuario_original'] = $usuarioOriginal;
+        
+        // INICIAR SESIÓN COMO ADMINISTRADOR
+        $_SESSION['usuario_id'] = $adminEncontrado['id_usuario'];
+        $_SESSION['nombres'] = $adminEncontrado['nombres'];
+        $_SESSION['apellidos'] = $adminEncontrado['apellidos'];
+        $_SESSION['correo'] = $adminEncontrado['correo'];
+        $_SESSION['tipo_usuario'] = $adminEncontrado['tipo_usuario'];
+        $_SESSION['documento'] = $adminEncontrado['documento'] ?? '';
+        $_SESSION['telefono'] = $adminEncontrado['telefono'] ?? '';
+        
+        // También guardar info de verificación para auditoría
         $_SESSION['verificado_por_admin'] = true;
         $_SESSION['admin_verificador_id'] = $adminEncontrado['id_usuario'];
         $_SESSION['admin_verificador_nombre'] = $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos'];
         $_SESSION['admin_verificador_correo'] = $adminEncontrado['correo'];
         $_SESSION['verificacion_timestamp'] = time();
+        $_SESSION['admin_login_method'] = 'clave_asistente';
+        
+        // Regenerar ID de sesión por seguridad
+        session_regenerate_id(true);
+        
+        // Registrar en log
+        error_log("SESIÓN CAMBIADA: Usuario " . $usuarioOriginal['correo'] . 
+                  " (tipo: " . $usuarioOriginal['tipo_usuario'] . 
+                  ") ahora es Admin " . $adminEncontrado['correo']);
         
         echo json_encode([
             'success' => true, 
-            'message' => 'Clave de administrador verificada correctamente',
-            'administrador' => $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos']
+            'message' => 'Sesión iniciada como administrador',
+            'administrador' => $adminEncontrado['nombres'] . ' ' . $adminEncontrado['apellidos'],
+            'usuario_original' => $usuarioOriginal['tipo_usuario']
         ]);
         
     } else {
