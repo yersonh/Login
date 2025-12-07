@@ -224,7 +224,6 @@ if (empty($nombreCompleto)) {
                         <label for="inputClave">Clave de autorización</label>
                         <div class="clave-container">
                             <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
-                            <i class="fas fa-key clave-icon"></i>
                             <button type="button" class="clave-eye" id="togglePassword">
                                 <i class="fas fa-eye"></i>
                             </button>
