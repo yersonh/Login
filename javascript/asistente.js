@@ -152,33 +152,41 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Abre el modal de clave
      */
-    function abrirModalClave() {
-        modalClave.classList.add('active');
-        inputClave.value = '';
-        inputClave.focus();
-        errorMessage.classList.remove('show');
-        errorMessage.textContent = '';
-        
-        // Efecto de entrada
-        document.body.style.overflow = 'hidden';
-        
-        // Asegurar que el botón del ojo exista y tenga el evento
-        setTimeout(() => {
-            togglePassword = document.getElementById('togglePassword');
-            if (togglePassword) {
-                // Resetear el estado del ojo
-                const eyeIcon = togglePassword.querySelector('i');
-                if (eyeIcon) {
-                    eyeIcon.classList.remove('fa-eye-slash');
-                    eyeIcon.classList.add('fa-eye');
-                }
-                togglePassword.classList.remove('active');
-                
-                // Asegurar que el input sea tipo password
-                inputClave.type = 'password';
+   function abrirModalClave() {
+    modalClave.classList.add('active');
+    inputClave.value = '';
+    inputClave.focus();
+    errorMessage.classList.remove('show');
+    errorMessage.textContent = '';
+    
+    // Efecto de entrada
+    document.body.style.overflow = 'hidden';
+    
+    // Asegurar que el botón del ojo exista y tenga el evento
+    setTimeout(() => {
+        // ACTUALIZAR LA VARIABLE togglePassword
+        togglePassword = document.getElementById('togglePassword');
+        if (togglePassword) {
+            // Resetear el estado del ojo
+            const eyeIcon = togglePassword.querySelector('i');
+            if (eyeIcon) {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
             }
-        }, 10);
-    }
+            togglePassword.classList.remove('active');
+            
+            // Asegurar que el input sea tipo password
+            inputClave.type = 'password';
+            
+            // AGREGAR EL EVENTO DIRECTAMENTE
+            togglePassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePasswordVisibility();
+            });
+        }
+    }, 10);
+}
     
     /**
      * Cierra el modal de clave

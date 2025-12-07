@@ -245,45 +245,6 @@ if (empty($nombreCompleto)) {
     
     <!-- Enlace al archivo JavaScript modularizado -->
     <script src="../javascript/asistente.js"></script>
-    <script>
-// Función para mostrar/ocultar contraseña
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('inputClave');
-    const toggleButton = document.getElementById('togglePassword');
     
-    if (passwordInput && toggleButton) {
-        const eyeIcon = toggleButton.querySelector('i');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-            toggleButton.classList.add('active');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
-            toggleButton.classList.remove('active');
-        }
-    }
-}
-
-// Agregar evento cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el botón del ojo
-    const toggleButton = document.getElementById('togglePassword');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', togglePasswordVisibility);
-    }
-    
-    // También usar event delegation por si el modal se carga dinámicamente
-    document.addEventListener('click', function(e) {
-        if (e.target && (e.target.id === 'togglePassword' || e.target.closest('#togglePassword'))) {
-            e.preventDefault();
-            e.stopPropagation();
-            togglePasswordVisibility();
-        }
-    });
-});
 </body>
 </html>
