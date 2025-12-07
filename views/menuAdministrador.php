@@ -40,7 +40,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="shortcut icon" href="/../imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al CSS modularizado -->
-    <link rel="stylesheet" href="styles/admin.css">
+    <link rel="stylesheet" href="/styles/admin.css">
     <style>
         /* Botón para volver como asistente */
         .return-assistant-btn {
