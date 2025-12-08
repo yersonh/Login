@@ -118,28 +118,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.body.appendChild(confirmModal);
 
-        document.getElementById('confirmLogout').addEventListener('click', function() {
-        fetch('../ajax/logout.php', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Redirige a login
-                window.location.href = data.redirect; 
-            } else {
-                console.error('Error al cerrar sesión:', data.message);
-                alert('Hubo un problema al cerrar sesión.');
-            }
-        })
-        .catch(error => {
-            console.error('Error en logout AJAX:', error);
-            alert('Error de red. Intente de nuevo.');
-        });
-        });
+       document.getElementById('confirmLogout').addEventListener('click', function() {
+    fetch('../ajax/logout.php', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+        // Si tu back y front están en distintos orígenes necesitarás: , credentials: 'include'
+    })
+    .then(async response => {
+        const text = await response.text();
+        // Intentar parsear JSON, si falla mostrar el html recibido
+        try {
+            const data = JSON.parse(text);
+            return data;
+        } catch (err) {
+            console.error('logout AJAX - servidor devolvió algo distinto de JSON:');
+            console.log(text); // <<-- aquí verás el HTML / error completo
+            throw new Error('Respuesta inválida del servidor, revisar console.log(text)');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect || '../index.php';
+        } else {
+            console.error('Error al cerrar sesión:', data.message);
+            alert('Hubo un problema al cerrar sesión: ' + (data.message || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        console.error('Error de logout AJAX:', error);
+        alert('Error de red o respuesta inválida. Revisa la consola para más detalles.');
+    });
+});
 
 
         document.getElementById('cancelLogout').addEventListener('click', function() {
