@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnIngresar = document.getElementById('btnIngresarClave');
     const btnCancelar = document.getElementById('btnCancelarClave');
     const errorMessage = document.getElementById('errorMessage');
+    const logoutBtn = document.getElementById('logoutBtn');
     
     // Función para mostrar/ocultar contraseña
     function togglePasswordVisibility() {
@@ -122,7 +123,69 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    function initLogoutButton() {
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLogoutConfirmation();
+            });
+        }
+    }
     
+    function showLogoutConfirmation() {
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'modal-overlay active';
+        confirmModal.innerHTML = `
+            <div class="modal-clave">
+                <div class="modal-header">
+                    <h3>¿Cerrar sesión?</h3>
+                    <p>Confirmación requerida</p>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
+                        <p>¿Está seguro que desea cerrar la sesión actual?</p>
+                        <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">Será redirigido a la página de inicio de sesión.</p>
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="btn-modal btn-ingresar" id="confirmLogout">
+                            Sí, cerrar sesión
+                        </button>
+                        <button class="btn-modal btn-cancelar" id="cancelLogout">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(confirmModal);
+        
+        // Evento para confirmar cierre de sesión
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+            window.location.href = '../logout.php';
+        });
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            document.body.removeChild(confirmModal);
+        });
+        
+        confirmModal.addEventListener('click', function(e) {
+            if (e.target === confirmModal) {
+                document.body.removeChild(confirmModal);
+            }
+        });
+        
+        // También cerrar con Escape
+        const handleEscape = function(e) {
+            if (e.key === 'Escape') {
+                document.body.removeChild(confirmModal);
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+
     function abrirModalClave() {
         modalClave.classList.add('active');
         inputClave.value = '';
