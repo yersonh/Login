@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initPasswordToggle();
 
 
-    console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
-    console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
+    console.log('Menu Asistente - Usuario:', USER_CORREO);
+    console.log('Menu Asistente - Rol:', USER_TIPO);
+
 
     function initServiceCards() {
         serviceCards.forEach(card => {
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(confirmModal);
 
         document.getElementById('confirmLogout').addEventListener('click', function() {
-            window.location.href = '../logout.php';
+            window.location.href = '../ajax/logout.php';
         });
 
         document.getElementById('cancelLogout').addEventListener('click', function() {

@@ -252,7 +252,8 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     
     <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
-        const BASE_URL = '<?php echo $base_url; ?>';
+        const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
+        const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
     </script>
     <script src="../javascript/asistente.js"></script>
     
