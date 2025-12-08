@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Inicializar todas las funciones
     initServiceCards();
     initModalEvents();
     initTogglePassword();
@@ -76,42 +77,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function initModalEvents() {
         // Evento para el botón Ingresar
-        if (btnIngresar) {
-            btnIngresar.addEventListener('click', handleClaveSubmit);
-        }
+        btnIngresar.addEventListener('click', handleClaveSubmit);
         
         // Evento para el botón Cancelar
-        if (btnCancelar) {
-            btnCancelar.addEventListener('click', cerrarModalClave);
-        }
+        btnCancelar.addEventListener('click', cerrarModalClave);
         
         // Cerrar modal con tecla Escape
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modalClave && modalClave.classList.contains('active')) {
+            if (e.key === 'Escape' && modalClave.classList.contains('active')) {
                 cerrarModalClave();
             }
             
             // Permitir enviar con Enter
-            if (e.key === 'Enter' && modalClave && modalClave.classList.contains('active')) {
+            if (e.key === 'Enter' && modalClave.classList.contains('active')) {
                 handleClaveSubmit();
             }
         });
         
         // Cerrar modal haciendo clic fuera del contenido
-        if (modalClave) {
-            modalClave.addEventListener('click', function(e) {
-                if (e.target === modalClave) {
-                    cerrarModalClave();
-                }
-            });
+        modalClave.addEventListener('click', function(e) {
+            if (e.target === modalClave) {
+                cerrarModalClave();
+            }
+        });
 
-            inputClave.addEventListener('input', function() {
-                if (errorMessage.classList.contains('show')) {
-                    errorMessage.classList.remove('show');
-                    errorMessage.textContent = '';
-                }
-            });
-        }
+        inputClave.addEventListener('input', function() {
+            if (errorMessage.classList.contains('show')) {
+                errorMessage.classList.remove('show');
+                errorMessage.textContent = '';
+            }
+        });
     }
     
     function initTogglePassword() {
@@ -130,8 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function abrirModalClave() {
-        if (!modalClave) return;
-        
         modalClave.classList.add('active');
         inputClave.value = '';
         inputClave.focus();
@@ -153,8 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function cerrarModalClave() {
-        if (!modalClave) return;
-        
         modalClave.classList.remove('active');
         inputClave.value = '';
         errorMessage.classList.remove('show');
@@ -275,8 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} mensaje - Mensaje de error a mostrar
      */
     function mostrarError(mensaje) {
-        if (!errorMessage) return;
-        
         errorMessage.textContent = mensaje;
         errorMessage.classList.add('show');
         
@@ -408,6 +397,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 showLogoutConfirmation();
             });
+            
+            console.log('Botón de cerrar sesión inicializado correctamente');
+        } else {
+            console.error('ERROR: No se encontró el botón de cerrar sesión con id="logoutBtn"');
         }
     }
     
@@ -428,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 2001;
             animation: fadeIn 0.3s ease;
         `;
         
@@ -446,14 +439,14 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         modalContent.innerHTML = `
-            <div class="modal-header">
-                <h3 style="color: #1e293b; margin-bottom: 8px; font-size: 22px; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-sign-out-alt" style="color: #ef4444; font-size: 24px;"></i>
+            <div class="modal-header" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                <h3 style="color: white; margin-bottom: 8px; font-size: 22px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-sign-out-alt" style="font-size: 24px;"></i>
                     Cerrar sesión
                 </h3>
-                <p style="color: #64748b; margin-bottom: 25px; font-size: 15px; line-height: 1.5;">
+                <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; font-size: 15px; line-height: 1.5;">
                     ¿Está seguro que desea salir del sistema?<br>
-                    <small style="color: #94a3b8; font-size: 13px;">Se eliminará su sesión activa y los datos temporales.</small>
+                    <small style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">Se eliminará su sesión activa y los datos temporales.</small>
                 </p>
             </div>
             <div class="modal-body">
@@ -563,28 +556,18 @@ document.addEventListener('DOMContentLoaded', function() {
         logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cerrando sesión...';
         logoutBtn.disabled = true;
         
-        // Obtener token CSRF de la sesión (si existe en página)
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        
-        // Crear form data
-        const formData = new FormData();
-        formData.append('logout', 'true');
-        if (csrfToken) {
-            formData.append('csrf_token', csrfToken);
-        }
-        
         // Hacer petición AJAX
         fetch('../ajax/logout.php', {
             method: 'POST',
-            body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            credentials: 'same-origin' // Incluye cookies en la petición
+            body: 'logout=true'
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
+                throw new Error('Error en la respuesta del servidor: ' + response.status);
             }
             return response.json();
         })
@@ -626,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Como fallback, intentar redirección directa
             setTimeout(() => {
-                window.location.href = '../logout_fallback.php';
+                window.location.href = '../index.php?logout=direct';
             }, 1500);
         });
     }
