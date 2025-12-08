@@ -580,10 +580,6 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     </div>
                 <?php endif; ?>
 
-                <div class="signup">
-                    ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
-                </div>
-
                 <div class="sisgonTech">
                     <small>Desarrollado por SisgonTech 2026. Version de prueba Runtime</small>
                 </div>
