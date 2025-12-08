@@ -1098,3 +1098,68 @@ body {
 .clave-input::-ms-clear {
     display: none; /* Ocultar el ojo nativo de IE/Edge */
 }
+/* ========== ESTILOS PARA BOTÓN DE CERRAR SESIÓN ========== */
+.logout-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive para el botón de cerrar sesión */
+@media (max-width: 768px) {
+    .logout-btn {
+        margin-top: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logout-btn {
+        margin-top: 6px;
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}
+
+/* Ajuste para asegurar que todo quede alineado en móvil */
+@media (max-width: 768px) {
+    .user-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .welcome-user {
+        margin-bottom: 5px;
+    }
+    
+    .user-role {
+        margin-bottom: 5px;
+    }
+}

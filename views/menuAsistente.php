@@ -60,7 +60,12 @@ if (empty($nombreCompleto)) {
                         <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
                     </div>
                     <div class="user-role">Asistente</div>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </button>
                 </div>
+                    
             </div>
         </header>
         
