@@ -17,7 +17,6 @@ if ($_SESSION['tipo_usuario'] !== 'administrador') {
     }
     exit();
 }
-$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
 
 $nombreUsuario = $_SESSION['nombres'] ?? '';
 $apellidoUsuario = $_SESSION['apellidos'] ?? '';
