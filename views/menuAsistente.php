@@ -1,6 +1,16 @@
 <?php
 session_start();
 
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$host = $_SERVER['HTTP_HOST'];
+$script_dir = dirname($_SERVER['SCRIPT_NAME']);
+
+if ($script_dir === '/' || $script_dir === '\\') {
+    $base_url = $protocol . '://' . $host;
+} else {
+    $base_url = $protocol . '://' . $host . $script_dir;
+}
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -243,6 +253,7 @@ if (empty($nombreCompleto)) {
             </div>
         </div>
     </div>
+    <script>const BASE_URL = '<?php echo $base_url; ?>';</script>
     <script src="../javascript/asistente.js"></script>
     
 </body>
