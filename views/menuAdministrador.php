@@ -17,6 +17,7 @@ if ($_SESSION['tipo_usuario'] !== 'administrador') {
     }
     exit();
 }
+$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
 
 $nombreUsuario = $_SESSION['nombres'] ?? '';
 $apellidoUsuario = $_SESSION['apellidos'] ?? '';
@@ -204,7 +205,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <span>Acciones Rápidas</span>
                 </div>
                 <div class="actions-grid">
-                    <button class="action-btn" onclick="window.location.href='gestion_usuarios.php'">
+                    <button class="action-btn" onclick="window.location.href='registrar_usuario.php'">
                         <i class="fas fa-user-plus"></i>
                         <span>Agregar Usuario</span>
                     </button>
