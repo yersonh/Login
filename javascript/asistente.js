@@ -166,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('confirmLogout').addEventListener('click', function() {
             window.location.href = '/logout.php';
         });
-        ar
         document.getElementById('cancelLogout').addEventListener('click', function() {
             document.body.removeChild(confirmModal);
         });
