@@ -1,13 +1,24 @@
 <?php
 session_start();
 
-// VERIFICACIÓN CRÍTICA: Solo administradores pueden registrar usuarios
-if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'administrador') {
-    // Redirigir al menú principal si no es administrador
-    header("Location: /menuAdministrador.php");
+// Solo administradores
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
     exit();
 }
 
+if ($_SESSION['tipo_usuario'] !== 'administrador') {
+    if ($_SESSION['tipo_usuario'] === 'asistente') {
+        header("Location: menuAsistente.php");
+    } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+        header("Location: menu.php");
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+// Cabeceras de seguridad
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
@@ -16,123 +27,65 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/sesioncontrolador.php';
 
+// CSRF token
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 $database = new Database();
 $db = $database->conectar();
+
 $controller = new SesionControlador($db);
 
-// Variable para mensajes
 $mensaje = '';
-$tipo_mensaje = ''; // 'success' o 'error'
-$valores_formulario = [
-    'nombres' => '',
-    'apellidos' => '',
-    'correo' => '',
-    'telefono' => '',
-    'tipo_usuario' => 'usuario'
-];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
+    // Verificar token CSRF
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $mensaje = "Token de seguridad inválido";
-        $tipo_mensaje = 'error';
-    } else {
-        $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
-        $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
-        $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
-        $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm_password = $_POST['confirm_password'] ?? '';
-        $tipo_usuario = $_POST['tipo_usuario'] ?? 'usuario';
-
-        // Guardar valores para el formulario
-        $valores_formulario = [
-            'nombres' => $nombres,
-            'apellidos' => $apellidos,
-            'correo' => $_POST['correo'] ?? '',
-            'telefono' => $_POST['telefono'] ?? '',
-            'tipo_usuario' => $tipo_usuario
-        ];
-
-        // Validaciones
-        $errores = [];
-
-        if (empty($nombres) || strlen($nombres) > 50) {
-            $errores[] = "Nombre inválido";
-        }
-
-        if (empty($apellidos) || strlen($apellidos) > 50) {
-            $errores[] = "Apellido inválido";
-        }
-
-        if (!$correo || strlen($correo) > 100) {
-            $errores[] = "Correo electrónico inválido";
-        }
-
-        if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
-            $errores[] = "Teléfono inválido";
-        }
-
-        if (empty($password) || strlen($password) < 8) {
-            $errores[] = "La contraseña debe tener al menos 8 caracteres";
-        }
-
-        if (!preg_match('/[A-Z]/', $password) ||
-            !preg_match('/[a-z]/', $password) ||
-            !preg_match('/[0-9]/', $password)) {
-            $errores[] = "La contraseña debe contener mayúsculas, minúsculas y números";
-        }
-
-        if ($password !== $confirm_password) {
-            $errores[] = "Las contraseñas no coinciden";
-        }
-
-        // Validar tipo de usuario
-        $tipos_permitidos = ['usuario', 'asistente', 'administrador'];
-        if (!in_array($tipo_usuario, $tipos_permitidos)) {
-            $errores[] = "Tipo de usuario no válido";
-        }
-
-        if (empty($errores)) {
-            // Registrar usuario con tipo específico
-            $resultado = $controller->registrar(
-                $nombres,
-                $apellidos,
-                $correo,
-                $telefono,
-                $password,
-                $tipo_usuario // Agregar el tipo de usuario
-            );
-
-            if ($resultado) {
-                $mensaje = "Usuario registrado exitosamente";
-                $tipo_mensaje = 'success';
-                // Limpiar formulario después de éxito
-                $valores_formulario = [
-                    'nombres' => '',
-                    'apellidos' => '',
-                    'correo' => '',
-                    'telefono' => '',
-                    'tipo_usuario' => 'usuario'
-                ];
-            } else {
-                $mensaje = "Error al registrar usuario. El correo podría ya estar registrado.";
-                $tipo_mensaje = 'error';
-            }
-        } else {
-            $mensaje = implode("<br>", $errores);
-            $tipo_mensaje = 'error';
-        }
+        die("Token de seguridad inválido");
     }
 
-    // Regenerar token CSRF después de procesar
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    // Recoger y sanitizar datos
+    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
+    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Validaciones
+    if (empty($nombres) || strlen($nombres) > 50) $mensaje = "Nombre inválido";
+    else if (empty($apellidos) || strlen($apellidos) > 50) $mensaje = "Apellido inválido";
+    else if (!$correo || strlen($correo) > 100) $mensaje = "Correo electrónico inválido";
+    else if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) $mensaje = "Teléfono inválido";
+    else if (empty($password) || strlen($password) < 8) $mensaje = "La contraseña debe tener al menos 8 caracteres";
+    else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) $mensaje = "La contraseña debe contener mayúsculas, minúsculas y números";
+    else if ($password !== $confirm_password) $mensaje = "Las contraseñas no coinciden";
+
+    // Registrar usuario si no hay errores
+    if (empty($mensaje)) {
+        $resultado = $controller->registrar(
+            $nombres,
+            $apellidos,
+            $correo,
+            $telefono,
+            $password
+        );
+
+        if ($resultado) {
+            echo "<script>
+                alert('Usuario registrado correctamente.');
+                window.location.href = 'gestion_usuarios.php';
+            </script>";
+            exit;
+        } else {
+            $mensaje = "Error al registrar usuario, verifique los datos.";
+        }
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -151,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background: url("../imagenes/login3.jpg") no-repeat center center/cover;
             color: #fff;
             text-align: center;
@@ -164,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         }
 
         .form-box {
-            background: rgba(59, 57, 57, 0.85);
+            background: rgba(59, 57, 57, 0.5);
             color: white;
             display: flex;
             flex-direction: column;
@@ -172,33 +125,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             padding: 30px 25px;
             border-radius: 15px;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         h2 {
             margin-bottom: 20px;
             color: #fff;
             font-size: 24px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-
-        .admin-notice {
-            background: rgba(0, 123, 255, 0.2);
-            border: 1px solid #007bff;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #cce7ff;
-        }
-
-        .admin-notice i {
-            color: #007bff;
-            margin-right: 8px;
         }
 
         .form-group {
@@ -209,27 +143,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         label {
             display: block;
             margin-bottom: 5px;
-            color: #ddd;
+            color: #ccc;
             font-size: 14px;
-            font-weight: 500;
         }
 
         input, select {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #555;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #333;
             color: #fff;
             font-size: 16px;
-            transition: all 0.3s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: #007bff;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
         }
 
         .input-group {
@@ -249,18 +179,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
         .mensaje-error {
             display: none;
-            color: #ff6b6b;
-            font-size: 13px;
+            color: #ff5555;
+            font-size: 12px;
             margin-top: 5px;
-            background: rgba(255, 107, 107, 0.1);
-            padding: 5px 10px;
-            border-radius: 4px;
         }
 
         .password-strength {
             margin-top: 5px;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 12px;
         }
 
         .strength-weak { color: #ff4444; }
@@ -268,78 +194,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         .strength-strong { color: #44ff44; }
 
         button {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: #007bff;
             color: #fff;
-            padding: 15px 20px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             width: 100%;
             font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin-top: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
         }
 
         button:hover {
-            background: linear-gradient(135deg, #0056b3, #003d82);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
+            background: #0056b3;
         }
 
         button:disabled {
-            background: #666;
+            background: #555;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .volver-link {
-            color: #4dc3ff;
+            color: #0af;
             text-decoration: none;
             display: block;
             margin-top: 20px;
             font-size: 14px;
-            transition: color 0.3s;
         }
 
         .volver-link:hover {
-            color: #80d4ff;
             text-decoration: underline;
         }
 
         .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
             display: none;
         }
 
         .alert-error {
-            background: rgba(255, 68, 68, 0.2);
-            border: 1px solid #ff4444;
-            color: #ffcccc;
+            background: #ff4444;
+            color: white;
         }
 
         .alert-success {
-            background: rgba(68, 255, 68, 0.2);
-            border: 1px solid #44ff44;
-            color: #ccffcc;
-        }
-
-        .user-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            font-size: 13px;
-            color: #aaa;
-            border-left: 3px solid #007bff;
+            background: #44ff44;
+            color: black;
         }
 
         /* Media Queries para Responsive */
@@ -352,12 +254,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             .form-box {
                 padding: 20px 15px;
-                border-radius: 12px;
-                margin-top: 20px;
+                border-radius: 10px;
             }
 
             h2 {
-                font-size: 22px;
+                font-size: 20px;
                 margin-bottom: 15px;
             }
 
@@ -372,32 +273,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             button {
                 padding: 16px 20px;
-                font-size: 16px;
             }
 
             .volver-link {
                 margin-top: 15px;
-                font-size: 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="form-box">
-        <h2><i class="fas fa-user-plus"></i> Registrar Nuevo Usuario</h2>
-        
-        <!-- Notificación de administrador -->
-        <div class="admin-notice">
-            <i class="fas fa-shield-alt"></i> 
-            Modo administrador: Registrando nuevo usuario para el sistema
-        </div>
-
-        <!-- Mostrar mensajes del servidor -->
-        <?php if ($mensaje): ?>
-            <div class="alert alert-<?php echo $tipo_mensaje; ?>" id="server-message" style="display: block;">
-                <?php echo $mensaje; ?>
-            </div>
-        <?php endif; ?>
+        <h2>Registrar Usuario</h2>
 
         <div id="alert-message" class="alert"></div>
 
@@ -406,49 +292,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             <div class="form-group">
-                <label for="nombres"><i class="fas fa-user"></i> Nombres:</label>
-                <input type="text" id="nombres" name="nombres" placeholder="Ingresa los nombres"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo htmlspecialchars($valores_formulario['nombres']); ?>">
+                <label for="nombres">Nombres:</label>
+                <input type="text" id="nombres" name="nombres" placeholder="Ingresa tus nombres"
+                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
             </div>
 
             <div class="form-group">
-                <label for="apellidos"><i class="fas fa-user"></i> Apellidos:</label>
-                <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa los apellidos"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required
-                    value="<?php echo htmlspecialchars($valores_formulario['apellidos']); ?>">
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos"
+                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
             </div>
 
             <div class="form-group">
-                <label for="correo"><i class="fas fa-envelope"></i> Correo electrónico:</label>
+                <label for="correo">Correo electrónico:</label>
                 <div class="input-group">
                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com"
-                        maxlength="100" required
-                        value="<?php echo htmlspecialchars($valores_formulario['correo']); ?>">
+                        maxlength="100" required>
                     <span id="correo-alerta" class="icono-alerta" title="Este correo ya está registrado"></span>
                 </div>
                 <small id="mensaje-error" class="mensaje-error"></small>
             </div>
 
             <div class="form-group">
-                <label for="telefono"><i class="fas fa-phone"></i> Teléfono:</label>
-                <input type="tel" id="telefono" name="telefono" placeholder="Ingresa el teléfono"
-                    pattern="[0-9]{7,15}" maxlength="15" required
-                    value="<?php echo htmlspecialchars($valores_formulario['telefono']); ?>">
-                <small style="color: #aaa; font-size: 12px;">Solo números, 7-15 dígitos</small>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono"
+                    pattern="[0-9]{7,15}" maxlength="15" required>
+                <small style="color: #ccc;">Solo números, 10 dígitos</small>
             </div>
 
             <div class="form-group">
-                <label for="tipo_usuario"><i class="fas fa-user-tag"></i> Tipo de Usuario:</label>
-                <select id="tipo_usuario" name="tipo_usuario" required>
-                    <option value="usuario" <?php echo $valores_formulario['tipo_usuario'] === 'usuario' ? 'selected' : ''; ?>>Usuario</option>
-                    <option value="asistente" <?php echo $valores_formulario['tipo_usuario'] === 'asistente' ? 'selected' : ''; ?>>Asistente</option>
-                    <option value="administrador" <?php echo $valores_formulario['tipo_usuario'] === 'administrador' ? 'selected' : ''; ?>>Administrador</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="password"><i class="fas fa-lock"></i> Contraseña:</label>
+                <label for="password">Contraseña:</label>
                 <input type="password" id="password" name="password"
                     placeholder="Mínimo 8 caracteres con mayúsculas, minúsculas y números"
                     minlength="8" required>
@@ -456,27 +329,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             </div>
 
             <div class="form-group">
-                <label for="confirm_password"><i class="fas fa-lock"></i> Confirmar Contraseña:</label>
+                <label for="confirm_password">Confirmar Contraseña:</label>
                 <input type="password" id="confirm_password" name="confirm_password"
-                    placeholder="Repite la contraseña"
+                    placeholder="Repite tu contraseña"
                     minlength="8" required>
                 <small id="password-match-error" class="mensaje-error">Las contraseñas no coinciden</small>
             </div>
 
-            <!-- Información del administrador que está registrando -->
-            <div class="user-info">
-                <i class="fas fa-user-shield"></i> 
-                Registrando como: <strong><?php echo $_SESSION['nombres'] ?? 'Administrador'; ?></strong>
-            </div>
+            <!-- Campos ocultos para rol y estado fijos -->
+            <input type="hidden" name="id_rol" value="2">
+            <input type="hidden" name="id_estado" value="1">
 
-            <button type="submit" name="registrar" id="btnRegistrar">
-                <i class="fas fa-user-plus"></i> Registrar Usuario
-            </button>
+            <button type="submit" name="registrar" id="btnRegistrar">Registrar</button>
         </form>
 
-        <a href="/menuAdministrador.php" class="volver-link">
-            <i class="fas fa-arrow-left"></i> Volver al Menú Principal
-        </a>
+        <a href="../index.php" class="volver-link">Volver al inicio</a>
     </div>
 
     <script>
@@ -487,17 +354,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             alerta.className = 'alert ' + (tipo === 'error' ? 'alert-error' : 'alert-success');
             alerta.style.display = 'block';
 
-            // Ocultar después de 5 segundos
             setTimeout(() => {
                 alerta.style.display = 'none';
-            }, 5000);
-        }
-
-        // Ocultar mensaje del servidor después de 5 segundos
-        const serverMessage = document.getElementById('server-message');
-        if (serverMessage) {
-            setTimeout(() => {
-                serverMessage.style.display = 'none';
             }, 5000);
         }
 
@@ -521,7 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             if (/[^A-Za-z0-9]/.test(password)) strength++;
 
             if (strength <= 2) {
-                feedback = "Débil";
+                feedback = "Debil";
                 strengthElement.className = "password-strength strength-weak";
             } else if (strength <= 4) {
                 feedback = "Media";
@@ -538,7 +396,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
         });
 
         // Verificar coincidencia de contraseñas
-        document.getElementById("confirm_password").addEventListener("input", verificarCoincidenciaContraseñas);
+        document.getElementById("confirm_password").addEventListener("input", function(e) {
+            verificarCoincidenciaContraseñas();
+        });
 
         function verificarCoincidenciaContraseñas() {
             const password = document.getElementById("password").value;
@@ -564,7 +424,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             }
         }
 
-        // Verificar correo (necesita actualizar la ruta del endpoint)
         document.getElementById("correo").addEventListener("blur", function() {
             verificarCorreo(this.value);
         });
@@ -594,13 +453,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             if (!emailRegex.test(correo)) {
                 alerta.style.display = "inline";
                 mensajeError.style.display = "block";
-                mensajeError.textContent = "Formato de correo inválido";
+                mensajeError.textContent = "Formato de correo invalido";
                 btnRegistrar.disabled = true;
                 return;
             }
 
-            // IMPORTANTE: Actualiza esta ruta según tu estructura de archivos
-            fetch("/manage/verificar_correo.php", {
+            // Verificar si el correo existe
+            fetch("manage/verificar_correoManage.php", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -617,7 +476,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 if (data.existe) {
                     alerta.style.display = "inline";
                     mensajeError.style.display = "block";
-                    mensajeError.textContent = "Este correo ya está registrado. Intenta con otro.";
+                    mensajeError.textContent = "Este correo ya esta registrado. Intenta con otro.";
                     btnRegistrar.disabled = true;
                 } else {
                     alerta.style.display = "none";
@@ -631,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 }
             })
             .catch(err => {
-                console.error("Error en la verificación:", err);
+                console.error("Error en la verificacion:", err);
                 alerta.style.display = "none";
                 mensajeError.style.display = "none";
                 btnRegistrar.disabled = false;
@@ -647,7 +506,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (alerta.style.display === "inline") {
                 e.preventDefault();
-                mostrarAlerta("Por favor, usa un correo electrónico que no esté registrado.", "error");
+                mostrarAlerta("Por favor, usa un correo electronico que no este registrado.", "error");
                 return false;
             }
 
@@ -660,7 +519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password)) {
                 e.preventDefault();
-                mostrarAlerta("La contraseña debe contener mayúsculas, minúsculas y números.", "error");
+                mostrarAlerta("La contraseña debe contener mayusculas, minusculas y numeros.", "error");
                 return false;
             }
 
@@ -671,7 +530,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 return false;
             }
 
-            // Validar campos requeridos
             const campos = ['nombres', 'apellidos', 'telefono', 'password', 'confirm_password'];
             for (let campo of campos) {
                 if (!document.getElementById(campo).value.trim()) {
@@ -684,7 +542,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             return true;
         });
 
-        // Formatear teléfono (solo números)
         document.getElementById("telefono").addEventListener("input", function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
