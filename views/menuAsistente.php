@@ -193,7 +193,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 <div class="footer-logo-container">
                     <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
-                        <div class="developer-name">SisgonTech</div>
+                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     </div>
                 </div>
             </div>
