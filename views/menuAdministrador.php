@@ -170,6 +170,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Menú de Navegación -->
             <div class="nav-section">
+                <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
                 <div class="nav-title">Administración del Sistema</div>
                 <ul class="nav-menu">
                     <li class="nav-item">
