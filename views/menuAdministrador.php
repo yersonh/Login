@@ -36,7 +36,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="icon" href="../imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/../imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Enlace al CSS modularizado -->
     <link rel="stylesheet" href="styles/admin.css">
     <style>
         /* Botón para volver como asistente */
@@ -138,9 +137,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <aside class="sidebar">
             <!-- Logo Institucional -->
             <div class="logo-section">
-               <!--  <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="admin-logo">-->
                 <div class="department-name">Gestión del Sistena</div>
-               <!-- <div class="department-subtitle">Secretaría de Minas y Energía</div>-->
             </div>
 
             <!-- Perfil del Usuario -->
@@ -207,7 +204,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         </aside>
 
         <!-- Contenido Principal -->
-        <main class="main-content dashboard-main-content">
             <!-- Encabezado -->
             <div class="main-header">
                 <h1 class="welcome-title">Panel de Control Administrativo</h1>
