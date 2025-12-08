@@ -35,6 +35,10 @@ $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario del Sistema';
 }
+
+// Definir $base_url para usar en JavaScript si es necesario
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -69,7 +73,6 @@ if (empty($nombreCompleto)) {
                         <span>Cerrar sesión</span>
                     </button>
                 </div>
-                    
             </div>
         </header>
         
@@ -216,38 +219,41 @@ if (empty($nombreCompleto)) {
         </footer>
     </div>
     
-        <!-- MODAL PARA INGRESAR CLAVE -->
-        <div class="modal-overlay" id="modalClave">
-            <div class="modal-clave">
-                <div class="modal-header">
-                    <h3>Acceso restringido</h3>
-                    <p>Verificación de seguridad requerida</p>
+    <!-- MODAL PARA INGRESAR CLAVE -->
+    <div class="modal-overlay" id="modalClave">
+        <div class="modal-clave">
+            <div class="modal-header">
+                <h3>Acceso restringido</h3>
+                <p>Verificación de seguridad requerida</p>
+            </div>
+            <div class="modal-body">
+                <p>Ingrese la clave autorizada para parametrizar:</p>
+                <div class="input-group">
+                    <label for="inputClave">Clave de autorización</label>
+                    <div class="clave-container">
+                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                        <button type="button" class="clave-eye" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Ingrese la clave autorizada para parametrizar:</p>
-                    <div class="input-group">
-                        <label for="inputClave">Clave de autorización</label>
-                        <div class="clave-container">
-                            <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
-                            <button type="button" class="clave-eye" id="togglePassword">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="error-message" id="errorMessage"></div>
-                    <div class="modal-buttons">
-                        <button class="btn-modal btn-ingresar" id="btnIngresarClave">
-                            Ingresar
-                        </button>
-                        <button class="btn-modal btn-cancelar" id="btnCancelarClave">
-                            Cancelar
-                        </button>
-                    </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="modal-buttons">
+                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                        Ingresar
+                    </button>
+                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                        Cancelar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <script>const BASE_URL = '<?php echo $base_url; ?>';</script>
+    
+    <!-- Incluye BASE_URL si es necesario para JavaScript -->
+    <script>
+        const BASE_URL = '<?php echo $base_url; ?>';
+    </script>
     <script src="../javascript/asistente.js"></script>
     
 </body>

@@ -35,8 +35,7 @@ header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
 header("Pragma: no-cache"); // HTTP 1.0
 header("Expires: 0"); // Proxies
 
-// HEADERS PARA PREVENIR VUELTA ATRÁS
+// Redirigir al index.php que está un nivel arriba (en la raíz)
 header("Location: ../index.php");
-header("HTTP/1.1 302 Found");
 exit();
 ?>
