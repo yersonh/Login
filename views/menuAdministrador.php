@@ -151,21 +151,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <?php echo htmlspecialchars($correoUsuario); ?>
                 </div>
                 
-                <?php if (isset($_SESSION['usuario_original'])): ?>
-                <div class="session-info">
-                    <strong><i class="fas fa-user-clock"></i> Acceso Especial</strong>
-                    Has ingresado desde una cuenta de asistente
-                    <span>
-                        <i class="fas fa-history"></i> 
-                        <?php 
-                        if (isset($_SESSION['admin_login_timestamp'])) {
-                            $hora = date('H:i', $_SESSION['admin_login_timestamp']);
-                            echo "Ingresado a las $hora";
-                        }
-                        ?>
-                    </span>
-                </div>
-                <?php endif; ?>
             </div>
 
             <!-- Menú de Navegación -->
