@@ -1,5 +1,3 @@
-// Scripts para el Portal de Asistente
-
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos DOM
     const serviceCards = document.querySelectorAll('.service-card');
@@ -31,30 +29,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
-    // Inicializar eventos de las tarjetas de servicio
+
     initServiceCards();
-    
-    // Inicializar eventos del modal
+
     initModalEvents();
-    
-    // Inicializar botón del ojo
+
     initTogglePassword();
-    
-    // Mostrar información de depuración en consola
+
     console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
     console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
-    
-    /**
-     * Inicializa los eventos para todas las tarjetas de servicio
-     */
+
     function initServiceCards() {
         serviceCards.forEach(card => {
             card.addEventListener('click', function() {
                 handleServiceClick(this);
             });
-            
-            // Efecto hover mejorado
+
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-8px)';
             });
@@ -67,19 +57,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     /**
      * Maneja el clic en una tarjeta de servicio
-     * @param {HTMLElement} card - Elemento de la tarjeta clickeada
+     * @param {HTMLElement} card 
      */
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
         const statusElement = card.querySelector('.service-status');
-        
-        // Si es la tarjeta de Parametrización
+
         if (card === adminCard && statusElement.classList.contains('status-available')) {
             abrirModalClave();
             return;
         }
-        
-        // Para otros servicios
+
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
             // Aquí iría la redirección a otros servicios
@@ -88,9 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    /**
-     * Inicializa los eventos del modal de clave
-     */
     function initModalEvents() {
         // Evento para el botón Ingresar
         btnIngresar.addEventListener('click', handleClaveSubmit);
@@ -116,8 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cerrarModalClave();
             }
         });
-        
-        // Limpiar error al empezar a escribir
+
         inputClave.addEventListener('input', function() {
             if (errorMessage.classList.contains('show')) {
                 errorMessage.classList.remove('show');
@@ -125,10 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    /**
-     * Inicializa el botón para mostrar/ocultar contraseña
-     */
     function initTogglePassword() {
         const toggleButton = document.getElementById('togglePassword');
         if (toggleButton) {
@@ -143,49 +123,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    /**
-     * Abre el modal de clave
-     */
+
     function abrirModalClave() {
         modalClave.classList.add('active');
         inputClave.value = '';
         inputClave.focus();
         errorMessage.classList.remove('show');
         errorMessage.textContent = '';
-        
-        // Efecto de entrada
+
         document.body.style.overflow = 'hidden';
-        
-        // Asegurar que el botón del ojo esté configurado
+
         const toggleButton = document.getElementById('togglePassword');
         if (toggleButton) {
-            // Resetear estado del ojo
             const eyeIcon = toggleButton.querySelector('i');
             if (eyeIcon) {
                 eyeIcon.classList.remove('fa-eye-slash');
                 eyeIcon.classList.add('fa-eye');
             }
             toggleButton.classList.remove('active');
-            
-            // Asegurar que el input sea tipo password
             inputClave.type = 'password';
         }
     }
     
-    /**
-     * Cierra el modal de clave
-     */
     function cerrarModalClave() {
         modalClave.classList.remove('active');
         inputClave.value = '';
         errorMessage.classList.remove('show');
         errorMessage.textContent = '';
         
-        // Restaurar scroll
         document.body.style.overflow = '';
-        
-        // Resetear estado del ojo
+
         const toggleButton = document.getElementById('togglePassword');
         if (toggleButton) {
             const eyeIcon = toggleButton.querySelector('i');
@@ -195,14 +162,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             toggleButton.classList.remove('active');
         }
-        
-        // Asegurar que el input sea tipo password
+
         inputClave.type = 'password';
     }
     
-    /**
-     * Maneja el envío de la clave
-     */
     function handleClaveSubmit() {
         const clave = inputClave.value.trim();
         
@@ -211,19 +174,16 @@ document.addEventListener('DOMContentLoaded', function() {
             inputClave.focus();
             return;
         }
-        
-        // Validar formato básico (opcional)
+
         if (clave.length < 4) {
             mostrarError('La clave debe tener al menos 4 caracteres.');
             inputClave.focus();
             return;
         }
-        
-        // Mostrar estado de carga
+
         btnIngresar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
         btnIngresar.disabled = true;
-        
-        // Verificar clave de administrador via AJAX
+
         verificarClaveAdministrador(clave);
     }
     
@@ -247,34 +207,26 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            // Restaurar botón
             btnIngresar.innerHTML = 'Ingresar';
             btnIngresar.disabled = false;
             
             if (data.success) {
-                // Clave correcta
                 claveCorrectaHandler();
             } else {
-                // Clave incorrecta
                 claveIncorrectaHandler(data.message || 'Clave incorrecta.');
             }
         })
         .catch(error => {
-            // Error en la petición
             console.error('Error:', error);
             btnIngresar.innerHTML = 'Ingresar';
             btnIngresar.disabled = false;
             mostrarError('Error de conexión. Intente nuevamente.');
         });
     }
-    
-    /**
-     * Maneja la respuesta cuando la clave es correcta
-     */
+
     function claveCorrectaHandler() {
         showNotification('✓ Clave de administrador verificada. Redirigiendo...', 'success');
-        
-        // Efecto visual de éxito
+
         inputClave.style.borderColor = '#10b981';
         inputClave.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
         
@@ -385,8 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         document.body.appendChild(notification);
-        
-        // Auto-eliminar después de 4 segundos
+
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => {
@@ -395,8 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 300);
         }, 4000);
-        
-        // Cerrar al hacer clic
+
         notification.addEventListener('click', () => {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => {
@@ -406,8 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
     }
-    
-    // Agregar animación shake si no existe
+
     if (!document.querySelector('#shake-animation')) {
         const style = document.createElement('style');
         style.id = 'shake-animation';

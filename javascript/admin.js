@@ -1,5 +1,3 @@
-// javascript/admin.js - Scripts para el Panel Administrativo
-
 class AdminPanel {
     constructor() {
         this.initializeElements();
@@ -21,45 +19,37 @@ class AdminPanel {
     }
 
     initializeEvents() {
-        // Activar enlace actual en el menú
         this.highlightCurrentPage();
-        
-        // Eventos de navegación
+
         this.navLinks.forEach(link => {
             link.addEventListener('click', (e) => this.handleNavClick(e));
         });
 
-        // Eventos de tarjetas de estadísticas
         this.statCards.forEach(card => {
             card.addEventListener('mouseenter', () => this.handleCardHover(card, true));
             card.addEventListener('mouseleave', () => this.handleCardHover(card, false));
         });
 
-        // Eventos de actividad
         this.activityItems.forEach(item => {
             item.addEventListener('click', () => this.handleActivityClick(item));
         });
 
-        // Eventos de botones de acción
         this.actionButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
             });
         });
 
-        // Eventos del modal
         if (this.modalClose) {
             this.modalClose.addEventListener('click', () => this.closeModal());
         }
 
-        // Cerrar modal con Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modal.classList.contains('active')) {
                 this.closeModal();
             }
         });
 
-        // Cerrar modal haciendo clic fuera
         this.modal.addEventListener('click', (e) => {
             if (e.target === this.modal) {
                 this.closeModal();
@@ -68,15 +58,12 @@ class AdminPanel {
     }
 
     initAnimations() {
-        // Animar valores de estadísticas
         this.animateStats();
-        
-        // Aplicar animaciones escalonadas
+
         this.applyStaggeredAnimations();
     }
 
     initNotifications() {
-        // Mostrar notificación de bienvenida
         setTimeout(() => {
             this.showNotification(
                 'Bienvenido al Panel Administrativo',
@@ -85,7 +72,6 @@ class AdminPanel {
             );
         }, 1000);
 
-        // Simular notificaciones periódicas
         setInterval(() => {
             if (Math.random() > 0.7) {
                 this.showRandomNotification();
@@ -106,18 +92,14 @@ class AdminPanel {
     handleNavClick(e) {
         const link = e.currentTarget;
         const allLinks = document.querySelectorAll('.nav-link');
-        
-        // Remover clase active de todos los enlaces
+
         allLinks.forEach(l => l.classList.remove('active'));
-        
-        // Agregar clase active al enlace clickeado
+
         link.classList.add('active');
-        
-        // Guardar estado en localStorage
+
         const page = link.getAttribute('href');
         localStorage.setItem('lastAdminPage', page);
-        
-        // Efecto visual de clic
+
         link.style.transform = 'scale(0.95)';
         setTimeout(() => {
             link.style.transform = '';
@@ -137,8 +119,7 @@ class AdminPanel {
     handleActivityClick(item) {
         const title = item.querySelector('.activity-title').textContent;
         this.showNotification(`Accediendo a: ${title}`, 'info', 3000);
-        
-        // Efecto visual
+
         item.style.backgroundColor = '#f3f4f6';
         setTimeout(() => {
             item.style.backgroundColor = '';
@@ -167,8 +148,7 @@ class AdminPanel {
                     if (currentValue >= targetValue) {
                         stat.textContent = originalText;
                         clearInterval(timer);
-                        
-                        // Efecto de finalización
+
                         stat.style.color = '#10b981';
                         setTimeout(() => {
                             stat.style.color = '';
@@ -184,7 +164,6 @@ class AdminPanel {
     }
 
     applyStaggeredAnimations() {
-        // Aplicar animaciones escalonadas a los elementos
         const animatedElements = [
             ...this.statCards,
             ...this.activityItems
@@ -206,7 +185,6 @@ class AdminPanel {
             setTimeout(() => notification.remove(), 300);
         });
 
-        // Crear nueva notificación
         const notification = document.createElement('div');
         notification.className = `admin-notification ${type}`;
         
@@ -252,11 +230,9 @@ class AdminPanel {
 
         document.body.appendChild(notification);
 
-        // Evento para cerrar
         const closeBtn = notification.querySelector('.notification-close');
         closeBtn.addEventListener('click', () => this.removeNotification(notification));
 
-        // Auto-eliminar
         setTimeout(() => {
             this.removeNotification(notification);
         }, duration);

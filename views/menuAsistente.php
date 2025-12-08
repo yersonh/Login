@@ -238,8 +238,6 @@ if (empty($nombreCompleto)) {
             </div>
         </div>
     </div>
-    
-    <!-- Enlace al archivo JavaScript modularizado -->
     <script src="../javascript/asistente.js"></script>
     
 </body>
