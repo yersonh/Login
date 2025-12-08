@@ -6,7 +6,6 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-// CORREGIDO: Verificar que sea SOLO asistente
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
     // Si no es asistente, redirigir según su rol
     if (isset($_SESSION['tipo_usuario'])) {
@@ -48,7 +47,6 @@ if (empty($nombreCompleto)) {
 <body>
     
     <div class="app-container">
-        <!-- Cabecera SIN LOGO CON BIENVENIDA PERSONALIZADA -->
         <header class="app-header">
             <div class="header-content">
                 <div class="department-info">
@@ -75,7 +73,7 @@ if (empty($nombreCompleto)) {
             
             <!-- Grid de servicios -->
             <div class="services-grid">
-                <!-- Servicio 1 -->
+                <!-- Servicio 1 CPS -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-file-contract"></i>
@@ -85,7 +83,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 2 -->
+                <!-- Servicio 2 Documentos -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-folder-open"></i>
@@ -95,7 +93,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 3 -->
+                <!-- Servicio 3 Correo -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-envelope"></i>
@@ -105,7 +103,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 4 -->
+                <!-- Servicio 4 Drive SME -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-hdd"></i>
@@ -115,7 +113,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 5 -->
+                <!-- Servicio 5 APP RAI -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-mobile-alt"></i>
@@ -125,7 +123,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 6 -->
+                <!-- Servicio 6 Reuniones Virtuales -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-video"></i>
@@ -135,7 +133,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 7 -->
+                <!-- Servicio 7 Agenda Digital -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-calendar-alt"></i>
@@ -145,7 +143,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 8 -->
+                <!-- Servicio 8 Sistema de Mapas -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-map-marked-alt"></i>
@@ -155,7 +153,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
                 
-                <!-- Servicio 9 -->
+                <!-- Servicio 9 Gestor de Tareas -->
                 <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-tasks"></i>
@@ -178,12 +176,10 @@ if (empty($nombreCompleto)) {
             </div>
         </main>
         
-        <!-- Footer CON LOGO e información - FONDO BLANCO -->
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
-                    <!-- LOGO AQUÍ EN EL FOOTER -->
-                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
                         <div class="developer-name">SisgonTech</div>
                     </div>

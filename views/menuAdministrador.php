@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Verificar autenticación
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -9,7 +8,6 @@ if (!isset($_SESSION['usuario_id'])) {
 
 // Verificar que sea administrador (ya sea administrador original o asistente con acceso)
 if ($_SESSION['tipo_usuario'] !== 'administrador') {
-    // Si no es administrador, redirigir según su rol
     if ($_SESSION['tipo_usuario'] === 'asistente') {
         header("Location: menuAsistente.php");
     } else if ($_SESSION['tipo_usuario'] === 'usuario') {
@@ -20,7 +18,6 @@ if ($_SESSION['tipo_usuario'] !== 'administrador') {
     exit();
 }
 
-// Datos del usuario
 $nombreUsuario = $_SESSION['nombres'] ?? '';
 $apellidoUsuario = $_SESSION['apellidos'] ?? '';
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
@@ -152,7 +149,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <i class="fas fa-user-shield"></i>
                 </div>
                 <div class="user-name"><?php echo htmlspecialchars($nombreCompleto); ?></div>
-                <div class="user-role">Administrador Principal</div>
+                <div class="user-role">Administrador</div>
                 <div class="user-email">
                     <?php echo htmlspecialchars($correoUsuario); ?>
                 </div>
@@ -253,20 +250,16 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <?php endif; ?>
     </div>
     <script>
-        // Función para volver como asistente
         function volverComoAsistente() {
             if (confirm('¿Desea volver a su sesión original como asistente?')) {
-                // Mostrar mensaje de carga
                 const btn = document.querySelector('.return-assistant-btn');
                 if (btn) {
                     const originalText = btn.innerHTML;
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Regresando...';
                     btn.disabled = true;
-                    
-                    // Redirigir al script que maneja el cambio
+
                     window.location.href = '../ajax/volver_asistente.php';
-                    
-                    // Restaurar botón después de 3 segundos si no se redirige
+
                     setTimeout(() => {
                         btn.innerHTML = originalText;
                         btn.disabled = false;
@@ -283,8 +276,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
-            
-            // Aplicar timeout solo si es un acceso desde asistente
             inactivityTimer = setTimeout(() => {
                 if (confirm('Su sesión de administrador ha expirado por inactividad. ¿Volver como asistente?')) {
                     window.location.href = '../ajax/volver_asistente.php';
@@ -296,13 +287,10 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         ['mousemove', 'keypress', 'click', 'scroll'].forEach(event => {
             document.addEventListener(event, resetInactivityTimer);
         });
-        
-        // Iniciar timer
+
         resetInactivityTimer();
         <?php endif; ?>
     </script>
-
-    <!-- Enlace al archivo JavaScript modularizado -->
     <script src="../javascript/admin.js"></script>
 </body>
 </html>
