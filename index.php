@@ -580,6 +580,9 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     </div>
                 <?php endif; ?>
 
+                <div class="signup">
+                </div>
+
                 <div class="sisgonTech">
                     <small>Desarrollado por SisgonTech 2026. Version de prueba Runtime</small>
                 </div>
