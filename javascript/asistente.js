@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnIngresar = document.getElementById('btnIngresarClave');
     const btnCancelar = document.getElementById('btnCancelarClave');
     const errorMessage = document.getElementById('errorMessage');
-    const logoutBtn = document.getElementById('logoutBtn');
     
     // Función para mostrar/ocultar contraseña
     function togglePasswordVisibility() {
@@ -77,36 +76,42 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function initModalEvents() {
         // Evento para el botón Ingresar
-        btnIngresar.addEventListener('click', handleClaveSubmit);
+        if (btnIngresar) {
+            btnIngresar.addEventListener('click', handleClaveSubmit);
+        }
         
         // Evento para el botón Cancelar
-        btnCancelar.addEventListener('click', cerrarModalClave);
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', cerrarModalClave);
+        }
         
         // Cerrar modal con tecla Escape
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modalClave.classList.contains('active')) {
+            if (e.key === 'Escape' && modalClave && modalClave.classList.contains('active')) {
                 cerrarModalClave();
             }
             
             // Permitir enviar con Enter
-            if (e.key === 'Enter' && modalClave.classList.contains('active')) {
+            if (e.key === 'Enter' && modalClave && modalClave.classList.contains('active')) {
                 handleClaveSubmit();
             }
         });
         
         // Cerrar modal haciendo clic fuera del contenido
-        modalClave.addEventListener('click', function(e) {
-            if (e.target === modalClave) {
-                cerrarModalClave();
-            }
-        });
+        if (modalClave) {
+            modalClave.addEventListener('click', function(e) {
+                if (e.target === modalClave) {
+                    cerrarModalClave();
+                }
+            });
 
-        inputClave.addEventListener('input', function() {
-            if (errorMessage.classList.contains('show')) {
-                errorMessage.classList.remove('show');
-                errorMessage.textContent = '';
-            }
-        });
+            inputClave.addEventListener('input', function() {
+                if (errorMessage.classList.contains('show')) {
+                    errorMessage.classList.remove('show');
+                    errorMessage.textContent = '';
+                }
+            });
+        }
     }
     
     function initTogglePassword() {
@@ -123,70 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    function initLogoutButton() {
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                showLogoutConfirmation();
-            });
-        }
-    }
     
-    function showLogoutConfirmation() {
-        const confirmModal = document.createElement('div');
-        confirmModal.className = 'modal-overlay active';
-        confirmModal.innerHTML = `
-            <div class="modal-clave">
-                <div class="modal-header">
-                    <h3>¿Cerrar sesión?</h3>
-                    <p>Confirmación requerida</p>
-                </div>
-                <div class="modal-body">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
-                        <p>¿Está seguro que desea cerrar la sesión actual?</p>
-                        <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">Será redirigido a la página de inicio de sesión.</p>
-                    </div>
-                    <div class="modal-buttons">
-                        <button class="btn-modal btn-ingresar" id="confirmLogout">
-                            Sí, cerrar sesión
-                        </button>
-                        <button class="btn-modal btn-cancelar" id="cancelLogout">
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(confirmModal);
-        
-        // Evento para confirmar cierre de sesión
-        document.getElementById('confirmLogout').addEventListener('click', function() {
-            window.location.href = '../logout.php';
-        });
-        document.getElementById('cancelLogout').addEventListener('click', function() {
-            document.body.removeChild(confirmModal);
-        });
-        
-        confirmModal.addEventListener('click', function(e) {
-            if (e.target === confirmModal) {
-                document.body.removeChild(confirmModal);
-            }
-        });
-        
-        // También cerrar con Escape
-        const handleEscape = function(e) {
-            if (e.key === 'Escape') {
-                document.body.removeChild(confirmModal);
-                document.removeEventListener('keydown', handleEscape);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
-    }
-
     function abrirModalClave() {
+        if (!modalClave) return;
+        
         modalClave.classList.add('active');
         inputClave.value = '';
         inputClave.focus();
@@ -208,6 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function cerrarModalClave() {
+        if (!modalClave) return;
+        
         modalClave.classList.remove('active');
         inputClave.value = '';
         errorMessage.classList.remove('show');
@@ -295,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             cerrarModalClave();
             
-            // Redirigir a parametrizacion.php
+            // Redirigir a menuAdministrador.php
             setTimeout(() => {
                 window.location.href = '../views/menuAdministrador.php';
             }, 500);
@@ -328,6 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} mensaje - Mensaje de error a mostrar
      */
     function mostrarError(mensaje) {
+        if (!errorMessage) return;
+        
         errorMessage.textContent = mensaje;
         errorMessage.classList.add('show');
         
@@ -440,5 +389,245 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         `;
         document.head.appendChild(style);
+    }
+    
+    /**
+     * ====================================================
+     * FUNCIONES DE CIERRE DE SESIÓN
+     * ====================================================
+     */
+    
+    /**
+     * Inicializa el botón de cerrar sesión
+     */
+    function initLogoutButton() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLogoutConfirmation();
+            });
+        }
+    }
+    
+    /**
+     * Muestra la confirmación para cerrar sesión
+     */
+    function showLogoutConfirmation() {
+        // Crear modal de confirmación
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        `;
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-clave';
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 4px solid #ef4444;
+        `;
+        
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3 style="color: #1e293b; margin-bottom: 8px; font-size: 22px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-sign-out-alt" style="color: #ef4444; font-size: 24px;"></i>
+                    Cerrar sesión
+                </h3>
+                <p style="color: #64748b; margin-bottom: 25px; font-size: 15px; line-height: 1.5;">
+                    ¿Está seguro que desea salir del sistema?<br>
+                    <small style="color: #94a3b8; font-size: 13px;">Se eliminará su sesión activa y los datos temporales.</small>
+                </p>
+            </div>
+            <div class="modal-body">
+                <div style="background: #fef2f2; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 3px solid #ef4444;">
+                    <p style="margin: 0; color: #991b1b; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Si tiene la opción "Recordar mi sesión" activada, deberá volver a iniciar sesión.
+                    </p>
+                </div>
+                <div class="modal-buttons" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px;">
+                    <button class="btn-modal btn-cancelar" id="confirmCancelLogout" 
+                        style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 12px 25px; border-radius: 8px; 
+                               font-weight: 500; cursor: pointer; transition: all 0.2s; font-size: 14px; flex: 1;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-modal btn-logout" id="confirmLogout" 
+                        style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 25px; 
+                               border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; flex: 1;">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+        document.body.style.overflow = 'hidden';
+        
+        // Agregar animaciones CSS si no existen
+        if (!document.querySelector('#logout-animations')) {
+            const style = document.createElement('style');
+            style.id = 'logout-animations';
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                @keyframes slideUp {
+                    from { transform: translateY(30px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                
+                .btn-modal {
+                    transition: all 0.2s !important;
+                }
+                
+                .btn-modal:hover {
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+                }
+                
+                .btn-logout:hover {
+                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+                    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.3) !important;
+                }
+                
+                .btn-cancelar:hover {
+                    background: #e2e8f0 !important;
+                    border-color: #cbd5e1 !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Event listeners para los botones del modal
+        const confirmLogoutBtn = document.getElementById('confirmLogout');
+        const cancelLogoutBtn = document.getElementById('confirmCancelLogout');
+        
+        confirmLogoutBtn.addEventListener('click', performLogout);
+        cancelLogoutBtn.addEventListener('click', function() {
+            closeLogoutModal();
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeLogoutModal();
+            }
+        });
+        
+        // Cerrar modal con tecla Escape
+        const escapeHandler = function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutModal();
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        function closeLogoutModal() {
+            if (modalOverlay.parentNode) {
+                document.body.removeChild(modalOverlay);
+            }
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    }
+    
+    /**
+     * Ejecuta el cierre de sesión via AJAX
+     */
+    function performLogout() {
+        const logoutBtn = document.getElementById('confirmLogout');
+        const originalContent = logoutBtn.innerHTML;
+        
+        // Mostrar loading
+        logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cerrando sesión...';
+        logoutBtn.disabled = true;
+        
+        // Obtener token CSRF de la sesión (si existe en página)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        // Crear form data
+        const formData = new FormData();
+        formData.append('logout', 'true');
+        if (csrfToken) {
+            formData.append('csrf_token', csrfToken);
+        }
+        
+        // Hacer petición AJAX
+        fetch('../ajax/logout.php', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin' // Incluye cookies en la petición
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Mostrar notificación de éxito
+                showNotification('✓ Sesión cerrada correctamente', 'success');
+                
+                // Limpiar localStorage/sessionStorage si es necesario
+                localStorage.removeItem('session_activity');
+                sessionStorage.clear();
+                
+                // Redirigir después de un breve delay
+                setTimeout(() => {
+                    window.location.href = '../index.php';
+                }, 1200);
+            } else {
+                // Mostrar error específico
+                logoutBtn.innerHTML = originalContent;
+                logoutBtn.disabled = false;
+                
+                const errorMsg = data.message || 'Error al cerrar sesión';
+                showNotification(`❌ ${errorMsg}`, 'error');
+                
+                // Si hay error de CSRF, recargar la página
+                if (data.csrf_error) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error en logout:', error);
+            logoutBtn.innerHTML = originalContent;
+            logoutBtn.disabled = false;
+            
+            showNotification('❌ Error de conexión. Intentando redirección directa...', 'error');
+            
+            // Como fallback, intentar redirección directa
+            setTimeout(() => {
+                window.location.href = '../logout_fallback.php';
+            }, 1500);
+        });
     }
 });
