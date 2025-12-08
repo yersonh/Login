@@ -170,37 +170,40 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Menú de Navegación -->
             <div class="nav-section">
-                <div class="nav-title">Administración del Sistema</div>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="parametrizar.php" class="nav-link active">
-                            <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
-                            <span class="nav-text">Parametrización</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="gestion_usuarios.php" class="nav-link">
-                            <span class="nav-icon"><i class="fas fa-users-cog"></i></span>
-                            <span class="nav-text">Gestión de Usuarios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="configuracion.php" class="nav-link">
-                            <span class="nav-icon"><i class="fas fa-cog"></i></span>
-                            <span class="nav-text">Configuración</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <!-- Enlaces de Soporte -->
-                    <li class="nav-item">
-                        <a href="../logout.php" class="nav-link logout-link">
-                            <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
-                            <span class="nav-text">Cerrar Sesión</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <div class="nav-section">
+            <div class="nav-title">Administración del Sistema</div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="parametrizar.php" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
+                        <span class="nav-text">Parametrización</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="gestion_usuarios.php" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-users-cog"></i></span>
+                        <span class="nav-text">Gestión de Usuarios</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="configuracion.php" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span class="nav-text">Configuración</span>
+                    </a>
+                </li>
+
+                <!-- Cerrar sesión -->
+                <li class="nav-item">
+                    <a href="../logout.php" class="nav-link logout-link">
+                        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                        <span class="nav-text">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
         </aside>
 
         <!-- Contenido Principal -->
