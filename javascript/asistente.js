@@ -7,10 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelar = document.getElementById('btnCancelarClave');
     const errorMessage = document.getElementById('errorMessage');
     const logoutBtn = document.getElementById('logoutBtn');
+    const togglePassword = document.getElementById('togglePassword');
+    const iconoPassword = togglePassword.querySelector('i');
+
 
     initServiceCards();
     initModalEvents();
     initLogoutButton();
+    initPasswordToggle();
+
 
     console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
     console.log('Menu Asistente - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
@@ -145,6 +150,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
 
         inputClave.type = 'password';
+    }
+    function initPasswordToggle() {
+        togglePassword.addEventListener('click', function () {
+            const esPassword = inputClave.type === 'password';
+
+            // Cambiar tipo del input
+            inputClave.type = esPassword ? 'text' : 'password';
+
+            // Cambiar icono
+            iconoPassword.classList.toggle('fa-eye');
+            iconoPassword.classList.toggle('fa-eye-slash');
+
+            // Volver a enfocar el input
+            inputClave.focus();
+        });
     }
 
     function cerrarModalClave() {
