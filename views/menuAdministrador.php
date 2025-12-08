@@ -138,7 +138,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <aside class="sidebar">
             <!-- Logo Institucional -->
             <div class="logo-section">
-               <!--  <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="admin-logo">-->
+               <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                 <div class="department-name">Gestión del Sistena</div>
                <!-- <div class="department-subtitle">Secretaría de Minas y Energía</div>-->
             </div>
