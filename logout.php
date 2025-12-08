@@ -1,25 +1,20 @@
 <?php
-
 session_start();
 
-if (isset($_SESSION['correo'])) {
-    error_log("Logout de usuario: " . $_SESSION['correo']);
-}
+if (isset($_COOKIE['remember_token'])) {
+    require_once 'config/database.php';
+    $database = new Database();
+    $db = $database->conectar();
 
-$_SESSION = array();
+    $stmt = $db->prepare("DELETE FROM remember_tokens WHERE token = :token");
+    $stmt->bindParam(':token', $_COOKIE['remember_token']);
+    $stmt->execute();
 
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
+    setcookie('remember_token', '', time() - 3600, '/');
 }
 
 session_destroy();
 
-setcookie('remember_token', '', time() - 3600, '/');
-
-header("Location: /index.php");
+header("Location: ../index.php");
 exit();
 ?>
