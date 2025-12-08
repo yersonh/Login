@@ -119,8 +119,28 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(confirmModal);
 
         document.getElementById('confirmLogout').addEventListener('click', function() {
-            window.location.href = '../ajax/logout.php';
+        fetch('../ajax/logout.php', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirige a login
+                window.location.href = data.redirect; 
+            } else {
+                console.error('Error al cerrar sesión:', data.message);
+                alert('Hubo un problema al cerrar sesión.');
+            }
+        })
+        .catch(error => {
+            console.error('Error en logout AJAX:', error);
+            alert('Error de red. Intente de nuevo.');
         });
+        });
+
 
         document.getElementById('cancelLogout').addEventListener('click', function() {
             document.body.removeChild(confirmModal);
