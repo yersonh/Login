@@ -13,7 +13,6 @@ body {
     color: #333;
     line-height: 1.6;
     overflow-x: hidden;
-    -webkit-text-size-adjust: 100%; /* Previene zoom automático en iOS */
 }
 
 /* Contenedor principal */
@@ -21,165 +20,127 @@ body {
     display: flex;
     min-height: 100vh;
     background-color: #f8f9fa;
-    flex-direction: column; /* Cambio importante para móviles */
 }
 
-/* Sidebar - COMPLETAMENTE REDISEÑADO PARA MÓVILES */
+/* Sidebar */
 .sidebar {
-    width: 100%; /* Full width en móviles */
+    width: 280px;
     background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
     color: white;
-    padding: 10px 0 15px 0;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    position: relative; /* Cambiado de fixed */
-    height: auto; /* Altura automática */
-    overflow-y: visible;
+    padding: 15px 0 20px 0; /* Reducido padding-top de 20px a 15px */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
     z-index: 1000;
-    transition: transform 0.3s ease;
 }
 
-/* Logo Section móvil */
+/* Logo Section - ajustado para que no tape contenido */
 .logo-section {
     text-align: center;
-    padding: 12px 15px;
+    padding: 15px 20px; /* Reducido de 20px */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Reducido de 30px */
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
 }
 
 .admin-logo {
-    width: 50px; /* Mucho más pequeño para móviles */
+    width: 110px; /* Reducido de 120px */
     height: auto;
-    margin-bottom: 0; /* Sin margin-bottom */
+    margin-bottom: 12px; /* Reducido de 15px */
     filter: brightness(0) invert(1);
     transition: transform 0.3s ease;
 }
 
-.department-info {
-    text-align: left;
-    flex: 1;
+.admin-logo:hover {
+    transform: scale(1.05);
 }
 
 .department-name {
-    font-size: 14px; /* Reducido para móviles */
+    font-size: 15px; /* Reducido de 16px */
     font-weight: 600;
-    margin-bottom: 3px;
+    margin-bottom: 4px; /* Reducido de 5px */
     color: white;
-    letter-spacing: 0.3px;
-    line-height: 1.2;
+    letter-spacing: 0.5px;
 }
 
 .department-subtitle {
-    font-size: 10px; /* Reducido para móviles */
+    font-size: 12px; /* Reducido de 13px */
     color: rgba(255, 255, 255, 0.8);
-    line-height: 1.2;
+    line-height: 1.3; /* Reducido de 1.4 */
 }
 
-/* Menú hamburguesa para móviles */
-.mobile-menu-toggle {
-    display: none; /* Oculto por defecto */
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 1001;
-    padding: 8px;
-}
-
-/* User Profile Sidebar móvil */
+/* User Profile Sidebar */
 .user-profile-sidebar {
-    padding: 12px 15px;
+    padding: 15px 20px; /* Reducido de 20px */
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    margin-bottom: 15px; /* Reducido de 20px */
 }
 
 .user-avatar {
-    width: 50px; /* Más pequeño para móviles */
-    height: 50px;
+    width: 70px; /* Reducido de 80px */
+    height: 70px; /* Reducido de 80px */
     background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    flex-shrink: 0;
+    margin: 0 auto 12px; /* Reducido de 15px */
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }
 
 .user-avatar i {
-    font-size: 22px; /* Reducido para móviles */
-}
-
-.user-details {
-    text-align: left;
-    flex: 1;
-    overflow: hidden;
+    font-size: 32px; /* Reducido de 36px */
+    color: white;
 }
 
 .user-name {
-    font-size: 14px;
+    font-size: 15px; /* Reducido de 16px */
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 6px; /* Reducido de 8px */
     color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .user-role {
-    font-size: 10px;
+    font-size: 12px; /* Reducido de 13px */
     color: #93c5fd;
     background: rgba(147, 197, 253, 0.1);
-    padding: 3px 8px;
-    border-radius: 12px;
+    padding: 5px 14px; /* Reducido de 6px 16px */
+    border-radius: 20px;
     display: inline-block;
-    margin-bottom: 3px;
+    margin-bottom: 6px; /* Reducido de 8px */
     font-weight: 500;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
 }
 
 .user-email {
-    font-size: 10px;
+    font-size: 11px; /* Reducido de 12px */
     color: rgba(255, 255, 255, 0.7);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-top: 4px; /* Reducido de 5px */
+    word-break: break-word;
 }
 
-/* Navigation móvil */
+/* Navigation */
 .nav-section {
-    padding: 0 15px;
-    margin-top: 5px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-
-.nav-section.active {
-    max-height: 500px; /* Ajusta según necesites */
+    padding: 0 20px;
+    margin-top: 5px; /* Añadido para compensar reducciones */
 }
 
 .nav-title {
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 10px;
+    margin-bottom: 12px; /* Reducido de 15px */
     font-weight: 600;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
 }
 
 .nav-menu {
@@ -189,407 +150,363 @@ body {
 }
 
 .nav-item {
-    margin-bottom: 5px;
+    margin-bottom: 6px; /* Reducido de 8px */
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
+    padding: 12px 14px; /* Reducido de 14px 16px */
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    font-size: 13px;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
     font-weight: 500;
     position: relative;
+    overflow: hidden;
 }
 
-.nav-link:hover,
-.nav-link:active {
+.nav-link:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
+    transform: translateX(6px); /* Reducido de 8px */
 }
 
 .nav-link.active {
     background: rgba(255, 255, 255, 0.15);
     color: white;
-    border-left: 3px solid #60a5fa;
+    border-left: 4px solid #60a5fa;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-icon {
-    margin-right: 10px;
-    font-size: 16px;
-    width: 20px;
+    margin-right: 12px; /* Reducido de 14px */
+    font-size: 18px;
+    width: 24px;
     text-align: center;
-    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.nav-link:hover .nav-icon {
+    transform: scale(1.1);
 }
 
 .nav-text {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* Main Content - OPTIMIZADO PARA MÓVILES */
+.logout-link {
+    color: #f87171 !important;
+}
+
+.logout-link:hover {
+    background: rgba(248, 113, 113, 0.1) !important;
+}
+
+/* Main Content - Optimizado para menos espacio blanco */
 .main-content {
     flex: 1;
-    margin-left: 0; /* Sin margin en móviles */
-    padding: 12px 15px 20px;
+    margin-left: 280px;
+    padding: 15px 25px 25px; /* Top: 15px (reducido), Laterales: 25px, Bottom: 25px */
     background-color: #f8f9fa;
-    min-height: calc(100vh - 60px); /* Considera la altura del header móvil */
-    width: 100%;
+    min-height: 100vh;
 }
 
-/* Header móvil */
+/* Header - más compacto pero manteniendo estilo */
 .main-header {
     background: white;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    border-left: 4px solid #1e40af;
+    border-radius: 16px;
+    padding: 20px 25px; /* Reducido de 30px 35px */
+    margin-bottom: 20px; /* Reducido de 30px */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-left: 6px solid #1e40af;
     animation: fadeIn 0.5s ease-out;
 }
 
 .welcome-title {
-    font-size: 18px; /* Reducido para móviles */
+    font-size: 24px; /* Reducido de 28px */
     color: #1f2937;
-    margin-bottom: 6px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
+    margin-bottom: 8px; /* Reducido de 12px */
+    font-weight: 800;
+    letter-spacing: -0.5px;
     background: linear-gradient(135deg, #1e40af, #3b82f6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1.3;
 }
 
 .welcome-subtitle {
-    font-size: 12px;
+    font-size: 14px; /* Reducido de 16px */
     color: #6b7280;
     margin-bottom: 0;
-    line-height: 1.4;
+    line-height: 1.5; /* Ajustado de 1.6 */
 }
 
-/* Quick Actions móvil */
+/* Quick Actions - más compacto */
 .quick-actions {
     background: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    margin-bottom: 15px;
+    border-radius: 16px;
+    padding: 20px 25px; /* Reducido de 30px */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px; /* Reducido de 30px */
     animation: fadeIn 0.7s ease-out;
 }
 
 .section-title {
-    font-size: 16px;
+    font-size: 18px; /* Reducido de 20px */
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 12px;
+    margin-bottom: 15px; /* Reducido de 25px */
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .view-all-link {
-    font-size: 12px;
+    font-size: 14px;
     color: #3b82f6;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
-/* Acciones Grid móvil */
+.view-all-link:hover {
+    color: #1d4ed8;
+    transform: translateX(3px);
+}
+
+/* Acciones Grid optimizado */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Reducido de 200px */
+    gap: 15px; /* Reducido de 20px */
 }
 
 .action-btn {
     background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px; /* Reducido de 22px */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: #475569;
     font-weight: 600;
-    font-size: 12px;
-    gap: 8px;
-    min-height: 80px;
-    text-align: center;
-    word-break: break-word;
-    -webkit-tap-highlight-color: transparent; /* Elimina highlight azul en iOS */
+    font-size: 14px;
+    gap: 10px; /* Reducido de 12px */
+    min-height: 100px; /* Añadido para consistencia */
 }
 
-.action-btn:hover,
-.action-btn:active {
+.action-btn:hover {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
     border-color: #3b82f6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    transform: translateY(-4px); /* Reducido de -5px */
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2); /* Reducido de 10px 25px */
 }
 
 .action-btn i {
-    font-size: 20px;
+    font-size: 26px; /* Reducido de 28px */
     transition: transform 0.3s ease;
 }
 
-/* Footer móvil */
+.action-btn:hover i {
+    transform: scale(1.15); /* Reducido de 1.2 */
+}
+
+/* Footer - más compacto */
 .admin-footer {
-    margin-top: 20px;
-    padding-top: 15px;
+    margin-top: 25px; /* Reducido de 40px */
+    padding-top: 15px; /* Reducido de 25px */
     border-top: 1px solid #e5e7eb;
     text-align: center;
     color: #6b7280;
-    font-size: 11px;
+    font-size: 13px; /* Reducido de 14px */
     animation: fadeIn 0.8s ease-out;
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    margin: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .footer-logo {
-    width: 50px;
+    width: 60px; /* Reducido de 70px */
     height: auto;
-    margin: 0 auto 8px;
+    margin: 0 auto 10px; /* Reducido de 15px */
     opacity: 0.8;
+    transition: opacity 0.3s ease;
 }
 
+.footer-logo:hover {
+    opacity: 1;
+}
+
+.sisgotech-logo{
+    width: 80px; 
+    height: 50px;
+    margin: 0 auto 10px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
 .footer-info {
-    font-size: 10px;
-    margin-top: 5px;
+    font-size: 12px; /* Reducido de 13px */
+    margin-top: 6px; /* Reducido de 8px */
     color: #9ca3af;
-    line-height: 1.4;
 }
 
-/* Animaciones */
+.footer-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+/* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* RESPONSIVE BREAKPOINTS ESPECÍFICOS PARA MÓVILES */
-
-/* Móviles pequeños (hasta 360px) */
-@media (max-width: 360px) {
-    .actions-grid {
-        grid-template-columns: 1fr; /* 1 columna en móviles muy pequeños */
-        gap: 8px;
-    }
-    
-    .action-btn {
-        min-height: 70px;
-        padding: 10px 6px;
-        font-size: 11px;
-    }
-    
-    .action-btn i {
-        font-size: 18px;
-    }
-    
-    .main-header {
-        padding: 12px;
-    }
-    
-    .welcome-title {
-        font-size: 16px;
-    }
-    
+/* Responsive Design - Mantenido pero ajustado */
+@media (max-width: 1200px) {
     .sidebar {
-        padding: 8px 0 12px 0;
+        width: 250px;
+    }
+    .main-content {
+        margin-left: 250px;
+        padding: 15px 20px 20px;
     }
 }
 
-/* Móviles medianos (361px - 480px) */
-@media (min-width: 361px) and (max-width: 480px) {
+@media (max-width: 992px) {
+    .sidebar {
+        width: 230px;
+    }
+    .main-content {
+        margin-left: 230px;
+        padding: 15px 18px 18px;
+    }
     .actions-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        margin-bottom: 0;
+        padding: 10px 0 15px;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 12px 15px 15px;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
         gap: 10px;
     }
     
-    .action-btn {
-        min-height: 85px;
-    }
-}
-
-/* Tabletas pequeñas (481px - 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-    .admin-container {
-        flex-direction: row; /* Sidebar lateral en tablets */
+    .main-header {
+        padding: 15px 20px;
+        margin-bottom: 15px;
     }
     
-    .sidebar {
-        width: 220px;
-        position: fixed;
-        height: 100vh;
+    .welcome-title {
+        font-size: 22px;
     }
     
-    .main-content {
-        margin-left: 220px;
+    .quick-actions {
         padding: 15px 20px;
     }
     
-    .actions-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+    .admin-footer {
+        margin-top: 20px;
+        padding-top: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 12px 15px;
     }
     
-    .action-btn {
-        min-height: 90px;
-        padding: 15px 10px;
+    .welcome-title {
+        font-size: 20px;
+    }
+    
+    .welcome-subtitle {
         font-size: 13px;
     }
     
-    .logo-section {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
+    .quick-actions {
+        padding: 12px 15px;
     }
     
-    .department-info {
-        text-align: center;
+    .section-title {
+        font-size: 16px;
+        margin-bottom: 12px;
     }
     
-    .user-profile-sidebar {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
+    .action-btn {
+        padding: 15px;
+        min-height: 90px;
     }
     
-    .user-details {
-        text-align: center;
+    .action-btn i {
+        font-size: 24px;
     }
 }
 
-/* Tablets grandes y escritorio pequeño (769px - 992px) */
-@media (min-width: 769px) and (max-width: 992px) {
-    .sidebar {
-        width: 240px;
-    }
-    
-    .main-content {
-        margin-left: 240px;
-        padding: 20px 25px;
-    }
-    
-    .actions-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-    }
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+    width: 5px; /* Reducido de 6px */
 }
 
-/* Escritorio (993px en adelante) */
-@media (min-width: 993px) {
-    .admin-container {
-        flex-direction: row;
-    }
-    
-    .sidebar {
-        width: 280px;
-        position: fixed;
-        height: 100vh;
-    }
-    
-    .main-content {
-        margin-left: 280px;
-        padding: 20px 30px;
-    }
-    
-    .actions-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 20px;
-    }
-    
-    /* Ocultar toggle en escritorio */
-    .mobile-menu-toggle {
-        display: none !important;
-    }
-    
-    /* Mostrar navegación siempre en escritorio */
-    .nav-section {
-        max-height: none !important;
-        overflow: visible !important;
-    }
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
 }
 
-/* Optimizaciones táctiles */
-@media (hover: none) and (pointer: coarse) {
-    .action-btn:hover {
-        transform: none;
-    }
-    
-    .nav-link:hover {
-        transform: none;
-    }
-    
-    .action-btn:active {
-        transform: scale(0.98);
-    }
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
 }
 
-/* Mejoras para iOS */
-@supports (-webkit-touch-callout: none) {
-    .admin-container {
-        min-height: -webkit-fill-available;
-    }
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
-/* Clases para futuro contenido */
+/* Clases para futuro contenido - mantienen consistencia */
 .content-section {
     background: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    margin-bottom: 15px;
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
     animation: fadeIn 0.6s ease-out;
 }
 
 .content-section-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: #1f2937;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-/* Mejoras de legibilidad en móviles */
-@media (max-width: 768px) {
-    h1, h2, h3, h4 {
-        word-wrap: break-word;
-        hyphens: auto;
-    }
-    
-    p, span, a {
-        font-size: 14px;
-        line-height: 1.5;
-    }
-    
-    .btn, button, input, select, textarea {
-        font-size: 16px; /* Previene zoom automático en iOS */
-    }
-}
-
-/* Scroll optimizado para móviles */
-@media (max-width: 768px) {
-    body {
-        -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-    }
-    
-    .main-content {
-        overflow-y: auto;
-    }
 }

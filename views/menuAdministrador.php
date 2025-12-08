@@ -204,7 +204,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <span>Acciones Rápidas</span>
                 </div>
                 <div class="actions-grid">
-                    <button class="action-btn" onclick="window.location.href='registrar_usuario.php'">
+                    <button class="action-btn" onclick="window.location.href='registrarusuario.php'">
                         <i class="fas fa-user-plus"></i>
                         <span>Agregar Usuario</span>
                     </button>
