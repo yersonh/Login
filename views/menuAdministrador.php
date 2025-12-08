@@ -170,7 +170,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Menú de Navegación -->
             <div class="nav-section">
-                <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
                 <div class="nav-title">Administración del Sistema</div>
                 <ul class="nav-menu">
                     <li class="nav-item">
@@ -205,6 +204,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         </aside>
 
         <!-- Contenido Principal -->
+        <main class="main-content dashboard-main-content">
             <!-- Encabezado -->
             <div class="main-header">
                 <h1 class="welcome-title">Panel de Control Administrativo</h1>
