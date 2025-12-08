@@ -7,32 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelar = document.getElementById('btnCancelarClave');
     const errorMessage = document.getElementById('errorMessage');
     const logoutBtn = document.getElementById('logoutBtn');
-    
-    // Función para mostrar/ocultar contraseña
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('inputClave');
-        const toggleButton = document.getElementById('togglePassword');
-        
-        if (passwordInput && toggleButton) {
-            const eyeIcon = toggleButton.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-                toggleButton.classList.add('active');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-                toggleButton.classList.remove('active');
-            }
-        }
-    }
 
     initServiceCards();
     initModalEvents();
-    initTogglePassword();
     initLogoutButton();
 
     console.log('Menu Asistente - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
@@ -53,11 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
-    /**
-     * Maneja el clic en una tarjeta de servicio
-     * @param {HTMLElement} card 
-     */
+
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
         const statusElement = card.querySelector('.service-status');
@@ -69,32 +42,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
-            // Aquí iría la redirección a otros servicios
         } else {
             showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
         }
     }
-    
+
     function initModalEvents() {
-        // Evento para el botón Ingresar
         btnIngresar.addEventListener('click', handleClaveSubmit);
-        
-        // Evento para el botón Cancelar
         btnCancelar.addEventListener('click', cerrarModalClave);
-        
-        // Cerrar modal con tecla Escape
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && modalClave.classList.contains('active')) {
                 cerrarModalClave();
             }
-            
-            // Permitir enviar con Enter
             if (e.key === 'Enter' && modalClave.classList.contains('active')) {
                 handleClaveSubmit();
             }
         });
-        
-        // Cerrar modal haciendo clic fuera del contenido
+
         modalClave.addEventListener('click', function(e) {
             if (e.target === modalClave) {
                 cerrarModalClave();
@@ -108,21 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    function initTogglePassword() {
-        const toggleButton = document.getElementById('togglePassword');
-        if (toggleButton) {
-            toggleButton.addEventListener('click', togglePasswordVisibility);
-        }
-        
-        // También usar event delegation por si el botón se carga después
-        document.addEventListener('click', function(e) {
-            if (e.target && (e.target.id === 'togglePassword' || e.target.closest('#togglePassword'))) {
-                e.preventDefault();
-                togglePasswordVisibility();
-            }
-        });
-    }
 
     function initLogoutButton() {
         if (logoutBtn) {
@@ -132,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    
+
     function showLogoutConfirmation() {
         const confirmModal = document.createElement('div');
         confirmModal.className = 'modal-overlay active';
@@ -161,22 +111,21 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         document.body.appendChild(confirmModal);
-        
-        // Evento para confirmar cierre de sesión
+
         document.getElementById('confirmLogout').addEventListener('click', function() {
             window.location.href = '../logout.php';
         });
+
         document.getElementById('cancelLogout').addEventListener('click', function() {
             document.body.removeChild(confirmModal);
         });
-        
+
         confirmModal.addEventListener('click', function(e) {
             if (e.target === confirmModal) {
                 document.body.removeChild(confirmModal);
             }
         });
-        
-        // También cerrar con Escape
+
         const handleEscape = function(e) {
             if (e.key === 'Escape') {
                 document.body.removeChild(confirmModal);
@@ -195,39 +144,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.body.style.overflow = 'hidden';
 
-        const toggleButton = document.getElementById('togglePassword');
-        if (toggleButton) {
-            const eyeIcon = toggleButton.querySelector('i');
-            if (eyeIcon) {
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-            toggleButton.classList.remove('active');
-            inputClave.type = 'password';
-        }
+        inputClave.type = 'password';
     }
-    
+
     function cerrarModalClave() {
         modalClave.classList.remove('active');
         inputClave.value = '';
         errorMessage.classList.remove('show');
         errorMessage.textContent = '';
-        
         document.body.style.overflow = '';
-
-        const toggleButton = document.getElementById('togglePassword');
-        if (toggleButton) {
-            const eyeIcon = toggleButton.querySelector('i');
-            if (eyeIcon) {
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-            toggleButton.classList.remove('active');
-        }
-
         inputClave.type = 'password';
     }
-    
+
     function handleClaveSubmit() {
         const clave = inputClave.value.trim();
         
@@ -248,18 +176,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         verificarClaveAdministrador(clave);
     }
-    
-    /**
-     * Verifica la clave de administrador con el servidor
-     * @param {string} clave - Clave a verificar
-     */
+
     function verificarClaveAdministrador(clave) {
-        // Crear FormData para enviar la clave
         const formData = new FormData();
         formData.append('clave', clave);
         formData.append('tipo_verificacion', 'clave_admin_parametrizacion');
         
-        // Hacer petición AJAX al servidor
         fetch('../ajax/verificar_clave.php', {
             method: 'POST',
             body: formData,
@@ -294,24 +216,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => {
             cerrarModalClave();
-            
-            // Redirigir a parametrizacion.php
             setTimeout(() => {
                 window.location.href = '../views/menuAdministrador.php';
             }, 500);
         }, 1000);
     }
-    
-    /**
-     * Maneja la respuesta cuando la clave es incorrecta
-     * @param {string} mensajeError - Mensaje de error específico
-     */
+
     function claveIncorrectaHandler(mensajeError = 'Clave incorrecta.') {
         mostrarError(`❌ ${mensajeError}`);
         inputClave.select();
         inputClave.focus();
-        
-        // Efecto de error en el input
+
         inputClave.style.borderColor = '#ef4444';
         inputClave.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
         inputClave.style.animation = 'shake 0.5s';
@@ -322,24 +237,13 @@ document.addEventListener('DOMContentLoaded', function() {
             inputClave.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.05)';
         }, 500);
     }
-    
-    /**
-     * Muestra un mensaje de error en el modal
-     * @param {string} mensaje - Mensaje de error a mostrar
-     */
+
     function mostrarError(mensaje) {
         errorMessage.textContent = mensaje;
         errorMessage.classList.add('show');
-        
-        // Scroll al mensaje de error
         errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    
-    /**
-     * Muestra una notificación en pantalla
-     * @param {string} message - Mensaje a mostrar
-     * @param {string} type - Tipo de notificación (error, success, info)
-     */
+
     function showNotification(message, type = 'info') {
         const colors = {
             'error': '#ef4444',
@@ -352,8 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'success': 'check-circle',
             'info': 'info-circle'
         };
-        
-        // Eliminar notificaciones anteriores
+
         const oldNotifications = document.querySelectorAll('.notification');
         oldNotifications.forEach(notification => {
             notification.style.animation = 'slideOut 0.3s ease';
@@ -363,22 +266,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 300);
         });
-        
-        // Crear la notificación
+
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         
-        // Agregar ícono
         const icon = document.createElement('i');
         icon.className = `fas fa-${icons[type] || 'info-circle'}`;
         notification.appendChild(icon);
         
-        // Agregar texto
         const text = document.createElement('span');
         text.textContent = message;
         notification.appendChild(text);
-        
-        // Estilos
+
         notification.style.cssText = `
             position: fixed;
             top: 25px;
