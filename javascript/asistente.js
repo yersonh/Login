@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showLogoutConfirmation() {
-        // Crear un modal de confirmación
         const confirmModal = document.createElement('div');
         confirmModal.className = 'modal-overlay active';
         confirmModal.innerHTML = `
@@ -165,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Evento para confirmar cierre de sesión
         document.getElementById('confirmLogout').addEventListener('click', function() {
-            window.location.href = '../logout.php';
+            window.location.href = '/logout.php';
         });
         ar
         document.getElementById('cancelLogout').addEventListener('click', function() {
