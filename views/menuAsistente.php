@@ -1,15 +1,9 @@
 <?php
 session_start();
 
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-$host = $_SERVER['HTTP_HOST'];
-$script_dir = dirname($_SERVER['SCRIPT_NAME']);
-
-if ($script_dir === '/' || $script_dir === '\\') {
-    $base_url = $protocol . '://' . $host;
-} else {
-    $base_url = $protocol . '://' . $host . $script_dir;
-}
+header("Cache-Control: no-cache, no-store, must-revalidate"); 
+header("Pragma: no-cache"); 
+header("Expires: 0"); 
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");

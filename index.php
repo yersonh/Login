@@ -632,7 +632,14 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         </div>
     </div>
 </div>
-
+<script>
+if (window.history && window.history.pushState) {
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function(event) {
+        window.history.pushState(null, null, window.location.href);
+    };
+}
+</script>
     <script src="javascript/login-script.js"></script>
 </body>
 </html>

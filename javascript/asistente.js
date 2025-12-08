@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Evento para confirmar cierre de sesión
         document.getElementById('confirmLogout').addEventListener('click', function() {
-            window.location.href = BASE_URL + '/logout.php';
+            window.location.href = '../logout.php';
         });
         document.getElementById('cancelLogout').addEventListener('click', function() {
             document.body.removeChild(confirmModal);
