@@ -17,22 +17,6 @@ if ($_SESSION['tipo_usuario'] !== 'administrador') {
     }
     exit();
 }
-// Solo administradores
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
-
-if ($_SESSION['tipo_usuario'] !== 'administrador') {
-    if ($_SESSION['tipo_usuario'] === 'asistente') {
-        header("Location: menuAsistente.php");
-    } else if ($_SESSION['tipo_usuario'] === 'usuario') {
-        header("Location: menu.php");
-    } else {
-        header("Location: ../index.php");
-    }
-    exit();
-}
 
 // Cabeceras de seguridad
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none';");
