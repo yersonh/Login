@@ -1133,7 +1133,7 @@ body {
 .logout-btn {
     position: fixed;
     bottom: 25px;
-    left: 25px;
+    right: 25px;
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border: none;
