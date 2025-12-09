@@ -511,7 +511,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1><span class="titulo-sgea">Modulo de medición de desempeño, tareas<br>y compromisos</span></h1>
+            <h1><span class="titulo-sgea">Modulo de medición de <br>desempeño, tareas y compromisos</span></h1>
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>
