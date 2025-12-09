@@ -262,10 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function claveCorrectaHandler() {
-        showNotification('✓ Clave de administrador verificada. Redirigiendo...', 'success');
-
-        inputClave.style.borderColor = '#10b981';
-        inputClave.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
         
         setTimeout(() => {
             cerrarModalClave();
