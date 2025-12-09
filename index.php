@@ -502,7 +502,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGEA Sistema de Gestión y Enrutamiento Administrativo</title>
+    <title>Modulo de medición de desempeño, tareas y compromisos</title>
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -511,7 +511,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
 <body>
     <div class="container">
         <div class="left">
-            <h1><span class="titulo-sgea">SGEA Sistema de Gestión y<br>Enrutamiento Administrativo</span></h1>
+            <h1><span class="titulo-sgea">Modulo de medición de desempeño, tareas<br>y compromisos</span></h1>
             <p>Administre, gestione, mida y haga seguimiento a actividades administrativas corporativas e institucionales. Gestione con solo un click!!!!!</p>
             <div class="icons">
                 <i class="fab fa-facebook"></i>

@@ -67,7 +67,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     <div class="welcome-user">
                         <i class="fas fa-user-circle"></i>
                         <span>Bienvenido(a) </span>
-                        <strong style="font-size: 20px; font-weight: bold;">
+                        <strong style="font-size: 25px; font-weight: bold;">
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
