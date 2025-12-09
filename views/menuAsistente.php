@@ -68,10 +68,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
                     </div>
                     <div class="user-role">Asistente</div>
-                    <button class="logout-btn" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Cerrar sesión</span>
-                    </button>
+                    
                 </div>
             </div>
         </header>
@@ -187,7 +184,10 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 </div>
             </div>
         </main>
-        
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </button>
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
