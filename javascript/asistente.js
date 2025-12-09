@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p style="font-size: 16px; margin-bottom: 5px;">
                             <strong style="font-size: 22px; font-weight: bold; color: #333;">${nombreMostrar}</strong>
                         </p>
-                        <p>¿Está seguro que desea cerrar la sesión actual?</p>
+                        <p style="margin-top: 15px;">¿Está seguro que desea cerrar la sesión actual?</p>
                         <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">Será redirigido a la página de inicio de sesión.</p>
                     </div>
                     <div class="modal-buttons">
