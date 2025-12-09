@@ -66,7 +66,10 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     <!-- Mensaje personalizado de bienvenida con PHP -->
                     <div class="welcome-user">
                         <i class="fas fa-user-circle"></i>
-                        <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
+                        <span>Bienvenido(a) </span>
+                        <strong style="font-size: 20px; font-weight: bold;">
+                            <?php echo htmlspecialchars($nombreCompleto); ?>
+                        </strong>
                     </div>
                     <div class="user-role">Asistente</div>
                     
