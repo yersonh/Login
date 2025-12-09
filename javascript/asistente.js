@@ -90,6 +90,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showLogoutConfirmation() {
+        const nombreMostrar = (typeof USER_NOMBRE_COMPLETO !== 'undefined' && USER_NOMBRE_COMPLETO) 
+                                ? USER_NOMBRE_COMPLETO 
+                                : 'Usuario';
         const confirmModal = document.createElement('div');
         confirmModal.className = 'modal-overlay active';
         confirmModal.innerHTML = `
@@ -101,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-body">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
+                        <p style="font-size: 16px; margin-bottom: 5px;">
+                        <strong>${nombreMostrar}</strong>
+                        </p>
                         <p>¿Está seguro que desea cerrar la sesión actual?</p>
                         <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">Será redirigido a la página de inicio de sesión.</p>
                     </div>

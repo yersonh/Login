@@ -51,6 +51,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
     <link rel="stylesheet" href="styles/asistente.css">
+
 </head>
 <body>
     
@@ -254,7 +255,9 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     <script>
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
+        const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
     </script>
+    
     <script src="../javascript/asistente.js"></script>
     
 </body>
