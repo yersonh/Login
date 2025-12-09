@@ -182,12 +182,12 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 </li>
 
                 <!-- Cerrar sesión -->
-                <li class="nav-item">
+              <!--  <li class="nav-item">
                     <a href="../logout.php" class="nav-link logout-link">
                         <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
                         <span class="nav-text">Cerrar Sesión</span>
                     </a>
-                </li>
+                </li>-->
             </ul>
         </div>
         </aside>
@@ -231,7 +231,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <!-- Botón flotante para volver como asistente -->
         <?php if (isset($_SESSION['usuario_original'])): ?>
         <button class="return-assistant-btn" onclick="volverComoAsistente()">
-            Volver
+            Terminar
         </button>
         <?php endif; ?>
     </div>
