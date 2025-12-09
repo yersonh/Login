@@ -160,7 +160,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="parametrizar.php" class="nav-link active">
+                    <a href="/manage/parametrizacion.php" class="nav-link active">
                         <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
                         <span class="nav-text">Parametrización</span>
                     </a>
