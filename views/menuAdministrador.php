@@ -276,6 +276,12 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
         resetInactivityTimer();
         <?php endif; ?>
+
+        window.history.pushState(null, "", window.location.href);
+
+        window.onpopstate = function () {
+            window.history.pushState(null, "", window.location.href);
+        };
     </script>
     <script src="../javascript/admin.js"></script>
 </body>
