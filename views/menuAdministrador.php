@@ -138,7 +138,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <aside class="sidebar">
             <!-- Logo Institucional -->
             <div class="logo-section">
-                <div class="department-name" style="font-size: 30px; font-weight: bold;">Gestión del Sistena</div>
+                <div class="department-name" style="font-size: 25px; font-weight: bold;">Gestión del Sistena</div>
             </div>
 
             <!-- Perfil del Usuario -->
