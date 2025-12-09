@@ -1,4 +1,5 @@
 class AdminPanel {
+    /*
     constructor() {
         this.initializeElements();
         this.initializeEvents();
@@ -392,4 +393,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mostrar información de depuración
     console.log('Panel Administrativo - Usuario:', '<?php echo $_SESSION["correo"] ?? "No identificado"; ?>');
     console.log('Panel Administrativo - Rol:', '<?php echo $_SESSION["tipo_usuario"] ?? "No definido"; ?>');
-});
+});*/
+}
