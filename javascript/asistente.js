@@ -103,13 +103,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-body">
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
-                        <p style="font-size: 16px; margin-bottom: 5px;">
-                            <strong style="font-size: 22px; font-weight: bold; color: #333;">${nombreMostrar}</strong>
-                        </p>
-                        <p style="margin-top: 15px;">¿Está seguro que desea cerrar la sesión actual?</p>
-                        <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">Será redirigido a la página de inicio de sesión.</p>
-                    </div>
+    <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
+    
+    <p style="margin-bottom: 5px;">
+        <strong style="font-size: 22px; font-weight: bold; color: #333;">${nombreMostrar}</strong>
+    </p>
+    
+    <p style="margin-top: 10px; margin-bottom: 5px;">¿Está seguro que desea cerrar la sesión actual?</p> 
+    
+    <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido a la página de inicio de sesión.</p>
+</div>
                     <div class="modal-buttons">
                         <button class="btn-modal btn-ingresar" id="confirmLogout">
                             Sí, cerrar sesión
