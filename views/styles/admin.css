@@ -57,7 +57,7 @@ body {
 }
 
 .department-name {
-    font-size: 30px; 
+    font-size: 30px !important; /* Reducido de 32px */
     font-weight: 600;
     margin-bottom: 4px; 
     color: white;
