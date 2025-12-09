@@ -44,15 +44,5 @@ class SesionControlador {
     public function obtenerUsuarios() {
         return $this->usuarioModel->obtenerTodos();
     }
-
-    public function esAdministrador($id_usuario) {
-        $sql = "SELECT tipo_usuario FROM usuario WHERE id_usuario = :id_usuario";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_usuario', $id_usuario);
-        $stmt->execute();
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return ($resultado && $resultado['tipo_usuario'] === 'administrador');
-    }
 }
 ?>
