@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'usuario') {
-    // Si no es asistente, redirigir según su rol
+    // Si no es usuario, redirigir según su rol
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'asistente') {
             header("Location: menuAsistente.php");
@@ -24,7 +24,7 @@ if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'usuario'
         header("Location: ../index.php");
     }
     exit();
-    
+}
 $nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
 $apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
 
@@ -32,7 +32,6 @@ $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario del Sistema';
-}
 }
 ?>
 <!DOCTYPE html>
