@@ -3,415 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal - Secretaría de Minas y Energía</title>
+    <title>Portal de Servicios - Secretaría de Minas y Energía</title>
+    <link rel="icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #FFFFFF;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .logo-container {
-            margin-bottom: 25px;
-        }
-        
-        .logo {
-            max-height: 200px;
-            max-width: 100%;
-        }
-        
-        .title {
-            color: #000000;
-            margin-bottom: 10px;
-            font-size: 32px;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        
-        .menu-item {
-            background-color: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            border-left: 5px solid #004a8d;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            height: 100%;
-        }
-        
-        .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        .menu-item i {
-            font-size: 32px;
-            margin-bottom: 12px;
-            color: #004a8d;
-        }
-        
-        .menu-item-name {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: #333;
-        }
-        
-        .menu-item-desc {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .status-indicator {
-            margin-top: 5px;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        .status-active {
-            background-color: #e6f7e9;
-            color: #2e7d32;
-        }
-        
-        .status-inactive {
-            background-color: #f5f5f5;
-            color: #757575;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .programmer-info {
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .contact-info {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .copyright {
-            font-size: 13px;
-            color: #888;
-        }
-        
-        .copyright-year {
-            color: #004a8d;
-            font-weight: bold;
-        }
-        
-        /* Tablet y pantallas medianas */
-        @media (max-width: 992px) {
-            .container {
-                max-width: 95%;
-            }
-            
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
-            }
-            
-            .title {
-                font-size: 28px;
-            }
-            
-            .logo {
-                max-height: 120px;
-            }
-        }
-        
-        /* Móviles */
-        @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
-                gap: 12px;
-            }
-            
-            /* SOLO para móviles - Centrar el último botón */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: center;
-                width: 50%; /* Ocupa solo la mitad del ancho para verse centrado */
-                max-width: 250px; /* Ancho máximo */
-            }
-            
-            .title {
-                font-size: 26px;
-            }
-            
-            .subtitle {
-                font-size: 16px;
-            }
-            
-            .logo {
-                max-height: 150px;
-            }
-            
-            .menu-item {
-                padding: 15px 12px;
-            }
-            
-            .menu-item i {
-                font-size: 28px;
-            }
-            
-            .menu-item-name {
-                font-size: 15px;
-            }
-            
-            .menu-item-desc {
-                font-size: 12px;
-            }
-        }
-        
-        /* Móviles muy pequeños */
-        @media (max-width: 480px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr); /* Mantenemos 2 columnas */
-                gap: 10px;
-            }
-            
-            /* SOLO para móviles pequeños - Centrar el último botón */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: center;
-                width: 80%; /* Un poco más ancho en móviles pequeños */
-                max-width: 280px;
-            }
-            
-            .title {
-                font-size: 24px;
-            }
-            
-            .subtitle {
-                font-size: 15px;
-                margin-bottom: 25px;
-            }
-            
-            .logo {
-                max-height: 150px; /* Logo ajustado para pantallas muy pequeñas */
-            }
-            
-            .menu-item {
-                padding: 12px 10px;
-                border-left-width: 4px;
-            }
-            
-            .menu-item i {
-                font-size: 26px;
-                margin-bottom: 8px;
-            }
-            
-            .menu-item-name {
-                font-size: 14px;
-            }
-            
-            .menu-item-desc {
-                font-size: 11px;
-            }
-            
-            .contact-info {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .footer {
-                margin-top: 30px;
-                padding-top: 15px;
-            }
-        }
-        
-        /* Móviles extremadamente pequeños */
-        @media (max-width: 360px) {
-            body {
-                padding: 15px;
-            }
-            
-            .menu-grid {
-                grid-template-columns: 1fr; /* 1 columna solo en pantallas muy pequeñas */
-            }
-            
-            /* En una columna no necesitamos centrar */
-            .menu-item:nth-child(9):last-child {
-                grid-column: 1 / -1;
-                justify-self: stretch;
-                width: 100%;
-                max-width: none;
-            }
-            
-            .logo {
-                max-height: 150px;
-            }
-            
-            .title {
-                font-size: 22px;
-            }
-        }
-    </style>
+    <!-- Enlace al archivo CSS modularizado -->
+    <link rel="stylesheet" href="styles/menu.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <!-- Logo de la Gobernación del Meta -->
-                <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="logo">
+    
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="department-info">
+                    <h1>GOBERNACIÓN DEL META</h1>
+                    <h2>Secretaría de Minas y Energía</h2>
+                </div>
+                <div class="user-profile">
+                    <!-- Mensaje personalizado de bienvenida con PHP -->
+                    <div class="welcome-user">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Bienvenido(a) </span>
+                        <strong style="font-size: 25px; font-weight: bold;">
+                            <?php echo htmlspecialchars($nombreCompleto); ?>
+                        </strong>
+                    </div>
+                    <div class="user-role">Asistente</div>
+                </div>
             </div>
-            <h1 class="title">Secretaría de Minas y Energía</h1>
-            <p class="subtitle">Selecciona una de las opciones disponibles</p>
-        </div>
+        </header>
         
-        <div class="menu-grid">
-            <!-- Fila 1 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-file-contract"></i>
-                <div class="menu-item-name">Gestión CPS</div>
-                <div class="menu-item-desc">Control de procesos y seguimiento</div>
-                <div class="status-indicator status-inactive">No disponible</div>
+        <!-- Contenido principal -->
+        <main class="app-main">
+            <div class="welcome-section">
+                <h3>Portal de Servicios Digitales</h3>
+                <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
             </div>
             
-            <div class="menu-item">
-                <i class="fas fa-folder-open"></i>
-                <div class="menu-item-name">Documentos</div>
-                <div class="menu-item-desc">Acceso a archivos y documentos</div>
-                <div class="status-indicator status-inactive">No disponible</div>
+            <!-- Grid de servicios - SOLO 2 SERVICIOS -->
+            <div class="services-grid">
+                <!-- Servicio 1: Programar actividad -->
+                <div class="service-card" id="programar-actividad">
+                    <div class="service-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="service-name">Programar Actividad</div>
+                    <div class="service-desc">Crear y gestionar nuevas actividades y eventos</div>
+                    <div class="service-status status-available">Disponible</div>
+                </div>
+                
+                <!-- Servicio 2: Dar de alta -->
+                <div class="service-card" id="dar-de-alta">
+                    <div class="service-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="service-name">Dar de Alta</div>
+                    <div class="service-desc">Registrar nuevos usuarios o elementos en el sistema</div>
+                    <div class="service-status status-available">Disponible</div>
+                </div>
             </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-envelope"></i>
-                <div class="menu-item-name">Correo</div>
-                <div class="menu-item-desc">Acceso al sistema de correo</div>
-                <div class="status-indicator status-active">Disponible</div>
-            </div>
-            
-            <!-- Fila 2 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-hdd"></i>
-                <div class="menu-item-name">Drive SME</div>
-                <div class="menu-item-desc">Almacenamiento en la nube</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-mobile-alt"></i>
-                <div class="menu-item-name">APP RAI</div>
-                <div class="menu-item-desc">Aplicación móvil RAI</div>
-                <div class="status-indicator status-active">Disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-video"></i>
-                <div class="menu-item-name">Reuniones Meet</div>
-                <div class="menu-item-desc">Videoconferencias y reuniones</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <!-- Fila 3 con 3 botones -->
-            <div class="menu-item">
-                <i class="fas fa-calendar-alt"></i>
-                <div class="menu-item-name">Agenda</div>
-                <div class="menu-item-desc">Gestión de calendarios</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <div class="menu-item">
-                <i class="fas fa-map-marked-alt"></i>
-                <div class="menu-item-name">Mapas</div>
-                <div class="menu-item-desc">Sistemas de información geográfica</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-            
-            <!-- Último botón - Solo se centrará en móviles -->
-            <div class="menu-item">
-                <i class="fas fa-tasks"></i>
-                <div class="menu-item-name">Tareas</div>
-                <div class="menu-item-desc">Gestión de tareas y asignaciones</div>
-                <div class="status-indicator status-inactive">No disponible</div>
-            </div>
-        </div>
+        </main>
         
-        <div class="footer">
-            <div class="programmer-info">SisgonTech</div>
-            <div class="contact-info">
-                <span><i class="fas fa-phone-alt"></i> Cel. (57 -608) 6 818503</span>
-                <span><i class="fas fa-envelope"></i> Email: gobernaciondelmeta@meta.gov.co</span>
+        <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar sesión</span>
+        </button>
+        
+        <footer class="app-footer">
+            <div class="footer-left">
+                <div class="footer-logo-container">
+                    <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="../imagenes/sisgoTech.png" alt="Logo SisgoTech" class="footer-logo">
+                </div>
             </div>
-            <div class="copyright">
-                Reconocidos todos los derechos de autor • <span class="copyright-year">Gobernación del Meta 2026</span>
+            <div class="footer-right">
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Cel. (57 -608) 6 818503</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope"></i>
+                        <span>gobernaciondelmeta@meta.gov.co</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>+57 (310) 631 0227</span>
+                    </div>
+                </div>
+                <div class="copyright">
+                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- MODAL PARA INGRESAR CLAVE -->
+    <div class="modal-overlay" id="modalClave">
+        <div class="modal-clave">
+            <div class="modal-header">
+                <h3>Acceso restringido</h3>
+                <p>Verificación de seguridad requerida</p>
+            </div>
+            <div class="modal-body">
+                <p>Ingrese la clave autorizada para parametrizar:</p>
+                <div class="input-group">
+                    <label for="inputClave">Clave de autorización</label>
+                    <div class="clave-container">
+                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                        <button type="button" class="clave-eye" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="modal-buttons">
+                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                        Ingresar
+                    </button>
+                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                        Cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     
+    <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Añadir funcionalidad a los botones del menú
-            const menuItems = document.querySelectorAll('.menu-item');
-            
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const itemName = this.querySelector('.menu-item-name').textContent;
-                    const status = this.querySelector('.status-indicator');
-                    
-                    if (status.classList.contains('status-active')) {
-                        alert(`Accediendo a: ${itemName}`);
-                        // Aquí iría la lógica para redirigir a la funcionalidad correspondiente
-                    } else {
-                        alert(`${itemName} no está disponible en este momento`);
-                    }
-                });
-            });
-        });
+        const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
+        const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
+        const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
     </script>
+    
+    <script src="../javascript/menu.js"></script>
+    
 </body>
 </html>

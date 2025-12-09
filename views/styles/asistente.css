@@ -1192,3 +1192,528 @@ body {
         margin-bottom: 5px;
     }
 }
+/* ========== MEJORAS RESPONSIVE PARA DISPOSITIVOS MÁS PEQUEÑOS ========== */
+
+/* Pantallas medianas (tablets más pequeñas) */
+@media (max-width: 900px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .app-main {
+        padding: 20px 25px;
+    }
+    
+    .app-header, .app-footer {
+        padding: 20px 25px;
+    }
+    
+    .footer-logo-container {
+        gap: 15px;
+    }
+    
+    .footer-logo {
+        height: 60px;
+    }
+}
+
+/* Tablets pequeñas y móviles grandes */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        background: white;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+    
+    .app-header {
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .department-info h1 {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+    
+    .department-info h2 {
+        font-size: 18px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .welcome-user {
+        font-size: 17px;
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+    
+    .user-role {
+        font-size: 13px;
+        padding: 3px 10px;
+    }
+    
+    .app-main {
+        padding: 15px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+    
+    .welcome-section p {
+        font-size: 16px;
+        padding: 0 10px;
+    }
+    
+    /* 1 columna en móviles para mejor legibilidad */
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        max-width: 500px;
+        margin: 0 auto 30px;
+    }
+    
+    .service-card {
+        padding: 18px;
+        margin: 0 5px;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .service-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .service-name {
+        font-size: 16px;
+    }
+    
+    .service-desc {
+        font-size: 13px;
+    }
+    
+    .app-footer {
+        padding: 20px 15px;
+        flex-direction: column;
+        gap: 20px;
+        border-radius: 0 0 8px 8px;
+    }
+    
+    .footer-left {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        height: 70px;
+    }
+    
+    .developer-info {
+        font-size: 13px;
+    }
+    
+    .footer-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .contact-info {
+        font-size: 13px;
+    }
+    
+    .contact-info div {
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+    
+    .copyright {
+        font-size: 11px;
+        text-align: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    /* Botón de logout en móvil */
+    .logout-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 12px 18px;
+        font-size: 14px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    
+    .logout-btn i {
+        font-size: 16px;
+    }
+}
+
+/* Móviles medianos */
+@media (max-width: 480px) {
+    .app-header {
+        padding: 15px;
+    }
+    
+    .department-info h1 {
+        font-size: 20px;
+    }
+    
+    .department-info h2 {
+        font-size: 16px;
+    }
+    
+    .welcome-user {
+        font-size: 16px;
+    }
+    
+    .app-main {
+        padding: 12px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 15px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 22px;
+    }
+    
+    .welcome-section p {
+        font-size: 15px;
+        padding: 0;
+    }
+    
+    .services-grid {
+        gap: 10px;
+    }
+    
+    .service-card {
+        padding: 15px;
+        margin: 0;
+    }
+    
+    .service-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    
+    .service-name {
+        font-size: 15px;
+    }
+    
+    .service-desc {
+        font-size: 12px;
+    }
+    
+    .service-status {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+    
+    .app-footer {
+        padding: 15px 12px;
+        gap: 15px;
+    }
+    
+    .footer-logo {
+        height: 60px;
+    }
+    
+    .developer-info {
+        font-size: 12px;
+    }
+    
+    .contact-info {
+        font-size: 12px;
+    }
+    
+    /* Modal mejorado para móviles pequeños */
+    .modal-clave {
+        width: 95%;
+        max-width: 340px;
+        margin: 10px;
+    }
+    
+    .modal-header {
+        padding: 20px 15px;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 30px 20px 20px;
+    }
+    
+    .modal-body::before {
+        top: -18px;
+        font-size: 22px;
+        width: 36px;
+        height: 36px;
+        border-width: 3px;
+    }
+    
+    .clave-input {
+        padding: 14px 40px 14px 14px;
+        font-size: 15px;
+    }
+    
+    .clave-eye {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+}
+
+/* Móviles pequeños (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: calc(100vh - 10px);
+    }
+    
+    .department-info h1 {
+        font-size: 18px;
+    }
+    
+    .department-info h2 {
+        font-size: 15px;
+    }
+    
+    .welcome-user {
+        font-size: 15px;
+    }
+    
+    .user-role {
+        font-size: 12px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 20px;
+    }
+    
+    .welcome-section p {
+        font-size: 14px;
+    }
+    
+    .service-card {
+        padding: 12px;
+    }
+    
+    .service-name {
+        font-size: 14px;
+    }
+    
+    .service-desc {
+        font-size: 11px;
+    }
+    
+    .app-footer {
+        padding: 12px 10px;
+    }
+    
+    .footer-logo {
+        height: 50px;
+    }
+    
+    .developer-info {
+        font-size: 11px;
+    }
+    
+    .contact-info {
+        font-size: 11px;
+    }
+    
+    .contact-info div {
+        margin-bottom: 6px;
+    }
+    
+    .copyright {
+        font-size: 10px;
+    }
+    
+    .logout-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+    
+    .logout-btn i {
+        font-size: 15px;
+    }
+    
+    .modal-clave {
+        width: 95%;
+        max-width: 300px;
+    }
+    
+    .modal-header h3 {
+        font-size: 18px;
+    }
+    
+    .modal-header p {
+        font-size: 14px;
+    }
+    
+    .modal-body p {
+        font-size: 13px;
+    }
+    
+    .clave-input {
+        padding: 12px 35px 12px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Dispositivos muy pequeños (altura limitada) */
+@media (max-height: 700px) and (max-width: 768px) {
+    body {
+        padding: 5px 0;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .app-main {
+        padding: 10px 15px;
+    }
+    
+    .services-grid {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 15px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+    
+    .logout-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Orientación horizontal en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .service-card {
+        padding: 12px;
+    }
+    
+    .app-footer {
+        padding: 15px;
+    }
+}
+
+/* Mejoras de accesibilidad para toques en móviles */
+@media (hover: none) and (pointer: coarse) {
+    .service-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+    
+    .service-card:active {
+        transform: scale(0.98);
+        background-color: #f8f9fa;
+    }
+    
+    .btn-modal:hover {
+        transform: none;
+    }
+    
+    .btn-modal:active {
+        transform: scale(0.98);
+    }
+    
+    .logout-btn:hover {
+        transform: none;
+    }
+    
+    .logout-btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Ajustes para Safari en iOS */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Mejoras de rendimiento para animaciones en móviles */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
