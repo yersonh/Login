@@ -1,5 +1,5 @@
 <?php
-/*
+
 session_start();
 
 // Solo administradores
@@ -30,7 +30,7 @@ if (empty($nombreCompleto)) {
 
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
-*/
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
