@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (card === CPSCard && statusElement.classList.contains('status-available')) {
-            abrirModalClave();
+            irCPS();
             return;
         }
 
@@ -311,79 +311,9 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    /*function showNotification(message, type = 'info') {
-        const colors = {
-            'error': '#ef4444',
-            'success': '#10b981',
-            'info': '#3b82f6'
-        };
-        
-        const icons = {
-            'error': 'exclamation-circle',
-            'success': 'check-circle',
-            'info': 'info-circle'
-        };
-
-        const oldNotifications = document.querySelectorAll('.notification');
-        oldNotifications.forEach(notification => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        });
-
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        
-        const icon = document.createElement('i');
-        icon.className = `fas fa-${icons[type] || 'info-circle'}`;
-        notification.appendChild(icon);
-        
-        const text = document.createElement('span');
-        text.textContent = message;
-        notification.appendChild(text);
-
-        notification.style.cssText = `
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            background: ${colors[type] || colors.info};
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 350px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 4px solid ${type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#2563eb'};
-        `;
-        
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-
-        notification.addEventListener('click', () => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        });
-    }*/
+    function irCPS() {
+        window.location.href = 'CPS/OpcionesCPS.php';
+    }
 
     if (!document.querySelector('#shake-animation')) {
         const style = document.createElement('style');
