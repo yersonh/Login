@@ -381,3 +381,866 @@ body {
         font-size: 13px;
     }
 }
+/* ========== MODAL DE CLAVE ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-clave {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    transform: translateY(-30px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-overlay.active .modal-clave {
+    transform: translateY(0) scale(1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-header h3 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.modal-header p {
+    font-size: 16px;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+.modal-body {
+    padding: 40px 35px 35px;
+    position: relative;
+}
+
+.modal-body::before {
+    content: '🔐';
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    background: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--primary-color);
+    z-index: 3;
+}
+
+.modal-body p {
+    text-align: center;
+    color: #4a5568;
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.input-group {
+    margin-bottom: 30px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 15px;
+    text-align: center;
+}
+
+.clave-container {
+    position: relative;
+}
+
+.clave-input {
+    width: 100%;
+    padding: 18px 50px 18px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background: #f8fafc;
+    color: var(--dark-color);
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.clave-input:focus {
+    border-color: var(--primary-color);
+    background: white;
+    outline: none;
+    box-shadow: 0 4px 12px rgba(0, 74, 141, 0.15);
+    transform: translateY(-2px);
+}
+
+.clave-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clave-eye:hover {
+    color: #475569;
+    background-color: #f1f5f9;
+}
+
+.modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-modal {
+    padding: 16px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex: 1;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s;
+}
+
+.btn-modal:hover::before {
+    left: 100%;
+}
+
+.btn-ingresar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 74, 141, 0.2);
+}
+
+.btn-ingresar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 74, 141, 0.3);
+}
+
+.btn-cancelar {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-cancelar:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+}
+
+.error-message {
+    color: #ef4444;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.error-message.show {
+    opacity: 1;
+}
+
+/* ========== RESPONSIVE: ESCRITORIO GRANDE (> 1200px) ========== */
+@media (min-width: 1201px) {
+    .app-container {
+        max-width: 1400px;
+    }
+    
+    .services-grid {
+        max-width: 1000px;
+        gap: 40px;
+    }
+}
+
+/* ========== RESPONSIVE: TABLETS GRANDES (992px - 1200px) ========== */
+@media (max-width: 1200px) and (min-width: 993px) {
+    .services-grid {
+        max-width: 700px;
+    }
+    
+    .app-footer {
+        padding: 25px 30px;
+    }
+}
+
+/* ========== RESPONSIVE: TABLETS (768px - 992px) ========== */
+@media (max-width: 992px) and (min-width: 769px) {
+    .services-grid {
+        max-width: 600px;
+        gap: 25px;
+    }
+    
+    .app-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 25px;
+        padding: 25px 30px;
+    }
+    
+    .footer-left, .footer-right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .contact-info div {
+        justify-content: center;
+    }
+    
+    .footer-left {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .service-card {
+        padding: 25px 20px;
+    }
+    
+    .service-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 26px;
+    }
+    
+    .service-name {
+        font-size: 20px;
+    }
+    
+    .service-desc {
+        font-size: 14px;
+    }
+}
+
+/* ========== RESPONSIVE: TABLETS PEQUEÑAS Y MÓVILES GRANDES (576px - 768px) ========== */
+@media (max-width: 768px) and (min-width: 577px) {
+    body {
+        padding: 10px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .app-header {
+        padding: 20px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .welcome-user {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .welcome-user strong {
+        font-size: 22px !important;
+    }
+    
+    .app-main {
+        padding: 20px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-section p {
+        font-size: 16px;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 400px;
+    }
+    
+    .service-card {
+        padding: 25px 20px;
+    }
+    
+    .service-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .service-name {
+        font-size: 20px;
+    }
+    
+    .service-desc {
+        font-size: 14px;
+    }
+    
+    .app-footer {
+        padding: 25px;
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .footer-left {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .logout-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+    
+    /* Modal para tablets */
+    .modal-clave {
+        width: 95%;
+        max-width: 380px;
+    }
+    
+    .modal-header {
+        padding: 25px 20px;
+    }
+    
+    .modal-header h3 {
+        font-size: 22px;
+    }
+    
+    .modal-body {
+        padding: 35px 25px 25px;
+    }
+    
+    .modal-body::before {
+        top: -20px;
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .modal-body p {
+        font-size: 15px;
+    }
+    
+    .clave-input {
+        padding: 16px;
+        font-size: 16px;
+    }
+    
+    .btn-modal {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+}
+
+/* ========== RESPONSIVE: MÓVILES MEDIANOS (480px - 576px) ========== */
+@media (max-width: 576px) and (min-width: 481px) {
+    .app-header, .app-main, .app-footer {
+        padding: 15px;
+    }
+    
+    .department-info h1 {
+        font-size: 20px;
+    }
+    
+    .department-info h2 {
+        font-size: 18px;
+    }
+    
+    .welcome-user {
+        font-size: 16px;
+    }
+    
+    .welcome-user strong {
+        font-size: 20px !important;
+    }
+    
+    .welcome-section {
+        margin-bottom: 18px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+    
+    .welcome-section p {
+        font-size: 15px;
+    }
+    
+    .services-grid {
+        gap: 15px;
+    }
+    
+    .service-card {
+        padding: 20px 15px;
+    }
+    
+    .app-footer {
+        padding: 20px 15px;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .footer-left {
+        flex-direction: row;
+        gap: 15px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .footer-logo-container {
+        flex-direction: row;
+        gap: 15px;
+        text-align: left;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        height: 60px;
+        min-width: 60px;
+    }
+    
+    .footer-right {
+        width: 100%;
+        text-align: left;
+    }
+    
+    .contact-info {
+        font-size: 13px;
+    }
+    
+    .contact-info div {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 8px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+    
+    .copyright {
+        font-size: 11px;
+        text-align: left;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    .logout-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    /* Modal para móviles medianos */
+    .modal-clave {
+        width: 95%;
+        max-width: 340px;
+    }
+    
+    .modal-header {
+        padding: 20px 15px;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 30px 20px 20px;
+    }
+    
+    .modal-body p {
+        font-size: 14px;
+    }
+    
+    .clave-input {
+        padding: 14px;
+        font-size: 15px;
+    }
+    
+    .btn-modal {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* ========== RESPONSIVE: MÓVILES PEQUEÑOS (< 480px) ========== */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: calc(100vh - 10px);
+    }
+    
+    .app-header {
+        padding: 15px;
+    }
+    
+    .header-content {
+        gap: 12px;
+    }
+    
+    .department-info h1 {
+        font-size: 18px;
+    }
+    
+    .department-info h2 {
+        font-size: 15px;
+    }
+    
+    .welcome-user {
+        font-size: 15px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .welcome-user strong {
+        font-size: 18px !important;
+    }
+    
+    .user-role {
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+    
+    .app-main {
+        padding: 12px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 15px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+    
+    .welcome-section p {
+        font-size: 14px;
+    }
+    
+    .services-grid {
+        gap: 12px;
+    }
+    
+    .service-card {
+        padding: 18px 12px;
+    }
+    
+    .service-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .service-name {
+        font-size: 18px;
+    }
+    
+    .service-desc {
+        font-size: 13px;
+    }
+    
+    .app-footer {
+        padding: 15px 12px;
+        gap: 15px;
+    }
+    
+    .footer-left {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .footer-logo {
+        height: 50px;
+    }
+    
+    .footer-right {
+        text-align: center;
+    }
+    
+    .contact-info {
+        font-size: 12px;
+    }
+    
+    .contact-info div {
+        justify-content: center;
+        margin-bottom: 8px;
+    }
+    
+    .copyright {
+        font-size: 10px;
+    }
+    
+    .logout-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+    
+    /* Modal para móviles pequeños */
+    .modal-clave {
+        width: 95%;
+        max-width: 300px;
+        margin: 10px;
+    }
+    
+    .modal-header {
+        padding: 18px 15px;
+    }
+    
+    .modal-header h3 {
+        font-size: 18px;
+    }
+    
+    .modal-header p {
+        font-size: 14px;
+    }
+    
+    .modal-body {
+        padding: 30px 15px 15px;
+    }
+    
+    .modal-body::before {
+        top: -18px;
+        font-size: 22px;
+        width: 36px;
+        height: 36px;
+        border-width: 3px;
+    }
+    
+    .modal-body p {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    
+    .clave-input {
+        padding: 12px 40px 12px 12px;
+        font-size: 14px;
+    }
+    
+    .btn-modal {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* ========== RESPONSIVE: DISPOSITIVOS MUY PEQUEÑOS (altura limitada) ========== */
+@media (max-height: 700px) and (max-width: 768px) {
+    body {
+        padding: 5px 0;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .app-main {
+        padding: 10px 15px;
+    }
+    
+    .services-grid {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 15px;
+    }
+    
+    .logout-btn {
+        bottom: 10px;
+        right: 10px;
+    }
+}
+
+/* ========== RESPONSIVE: ORIENTACIÓN HORIZONTAL EN MÓVILES ========== */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-width: 100%;
+    }
+    
+    .service-card {
+        padding: 15px;
+    }
+    
+    .app-footer {
+        padding: 15px;
+    }
+}
+
+/* ========== MEJORAS DE ACCESIBILIDAD PARA TÁCTIL ========== */
+@media (hover: none) and (pointer: coarse) {
+    .service-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+    
+    .service-card:active {
+        transform: scale(0.98);
+        background-color: #f8f9fa;
+    }
+    
+    .btn-modal:hover {
+        transform: none;
+    }
+    
+    .btn-modal:active {
+        transform: scale(0.98);
+    }
+    
+    .logout-btn:hover {
+        transform: none;
+    }
+    
+    .logout-btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/* ========== AJUSTES PARA SAFARI EN iOS ========== */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* ========== MEJORAS DE RENDIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .service-card:hover {
+        transform: none;
+    }
+    
+    .btn-modal:hover {
+        transform: none;
+    }
+}
