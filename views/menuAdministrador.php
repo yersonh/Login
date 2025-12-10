@@ -216,11 +216,12 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
                 <!-- Cerrar sesión -->
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link logout-link">
+                    <a href="#" class="nav-link logout-link" id="logoutBtn">
                         <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
                         <span class="nav-text">Cerrar Sesión</span>
                     </a>
                 </li>
+
             </ul>
         </div>
         </aside>
