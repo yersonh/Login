@@ -37,6 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     function irAOM() {
-        window.location.href = 'menuContratistas.php';
+    window.location.href = 'menuContratistas.php'; 
     }
 });

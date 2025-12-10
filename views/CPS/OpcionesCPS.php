@@ -181,7 +181,7 @@ if (empty($nombreCompleto)) {
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
     </script>
     
-    <script src="../javascript/opcionesCPS.js"></script>
+    <script src="/../../javascript/opcionesCPS.js"></script>
     
     <!-- Script para evitar retroceder -->
     <script>
