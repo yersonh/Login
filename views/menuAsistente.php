@@ -254,7 +254,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         </div>
     </div>
     
-    <!-- Incluye BASE_URL si es necesario para JavaScript -->
+   <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
@@ -262,6 +262,14 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     </script>
     
     <script src="../javascript/asistente.js"></script>
+    
+    <!-- Script para evitar retroceder -->
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
     
 </body>
 </html>

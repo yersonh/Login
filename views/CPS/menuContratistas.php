@@ -44,7 +44,7 @@ if (empty($nombreCompleto)) {
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
-    <link rel="stylesheet" href="../styles/opciones.css">
+    <link rel="stylesheet" href="../styles/asistente.css">
 
 </head>
 <body>
@@ -72,7 +72,8 @@ if (empty($nombreCompleto)) {
         <!-- Contenido principal -->
         <main class="app-main">
             <div class="welcome-section">
-                <h3>Opciones de Gestión CPS</h3>
+                <h3>Menú AOM Contratistas</h3>
+                <p>Selecciona una opción:</p>
             </div>
             
             <!-- Grid de servicios - 2 filas x 3 columnas -->
@@ -139,9 +140,9 @@ if (empty($nombreCompleto)) {
             </div>
         </main>
         
-        <button class="volver-btn" id="volvertBtn">
+        <button class="logout-btn" id="logoutBtn">
             <i class="fas fa-sign-out-alt"></i>
-            <span>Volver</span>
+            <span>Cerrar sesión</span>
         </button>
         
         <footer class="app-footer">
