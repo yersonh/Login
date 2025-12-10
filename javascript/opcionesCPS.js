@@ -31,75 +31,60 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-    function showVolverConfirmation() {
-    const confirmModal = document.createElement('div');
-    // Usamos 'modal-overlay active' para que se muestre inmediatamente
-    confirmModal.className = 'modal-overlay active';
-    
-    // --- Estructura del Modal de Confirmación para Volver ---
-    confirmModal.innerHTML = `
-        <div class="modal-clave">
-            <div class="modal-header">
-                <h3>¿Volver al Menú Principal?</h3>
-                <p>Confirmación requerida</p>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-arrow-circle-left" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
-                    <p style="margin-top: 10px; margin-bottom: 5px;">¿Confirma que desea regresar al menú anterior?</p> 
-                    <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido(a) al menú de servicios.</p>
-                </div>
-                <div class="modal-buttons">
-                    <button class="btn-modal btn-ingresar" id="confirmVolver">
-                        Sí, Volver
-                    </button>
-                    <button class="btn-modal btn-cancelar" id="cancelVolver">
-                        Permanecer aquí
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(confirmModal);
-
-    // --- Lógica de Eventos del Modal ---
-
-    // 1. CONFIRMAR VOLVER (Redirecciona al menú principal)
-    document.getElementById('confirmVolver').addEventListener('click', function() {
-        // Opción 1: Usa window.history.back() para ir a la página anterior
-        // window.history.back(); 
+        function showVolverConfirmation() {
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'modal-overlay active';
         
-        // Opción 2: Redirige directamente a la URL de tu menú principal (más seguro)
-        // Ya que estás en views/CPS/OpcionesCPS.php, necesitas subir dos niveles para views/menuAsistente.php
-        window.location.href = '../menuAsistente.php'; 
+        confirmModal.innerHTML = `
+            <div class="modal-clave modal-volver">
+                <div class="modal-header">
+                    <h3>¿Volver al Menú Principal?</h3>
+                    <p>Confirmación requerida</p>
+                </div>
+                <div class="modal-body">
+                    <div class="volver-content">
+                        <i class="fas fa-arrow-circle-left volver-icon"></i>
+                        <p class="volver-message">¿Confirma que desea regresar al menú anterior?</p> 
+                        <p class="volver-submessage">Será redirigido(a) al menú de servicios.</p>
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="btn-modal btn-volver" id="confirmVolver">
+                            <i class="fas fa-arrow-left"></i> Sí, Volver
+                        </button>
+                        <button class="btn-modal btn-cancelar" id="cancelVolver">
+                            <i class="fas fa-times"></i> Permanecer aquí
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
         
-        document.body.removeChild(confirmModal);
-    });
-
-    // 2. CANCELAR (Cierra el modal)
-    const cancelVolver = document.getElementById('cancelVolver');
-    cancelVolver.addEventListener('click', function() {
-        document.body.removeChild(confirmModal);
-    });
-
-    // 3. Cierre al hacer clic fuera del modal (overlay)
-    confirmModal.addEventListener('click', function(e) {
-        // Solo si el clic fue directamente en el fondo
-        if (e.target === confirmModal) {
+        document.body.appendChild(confirmModal);
+        
+        document.getElementById('confirmVolver').addEventListener('click', function() {
+            window.location.href = '../menuAsistente.php'; 
             document.body.removeChild(confirmModal);
-        }
-    });
+        });
 
-    // 4. Cierre con la tecla ESC
-    const handleEscape = function(e) {
-        if (e.key === 'Escape') {
+        const cancelVolver = document.getElementById('cancelVolver');
+        cancelVolver.addEventListener('click', function() {
             document.body.removeChild(confirmModal);
-            document.removeEventListener('keydown', handleEscape);
-        }
-    };
-    document.addEventListener('keydown', handleEscape);
-}
+        });
+
+        confirmModal.addEventListener('click', function(e) {
+            if (e.target === confirmModal) {
+                document.body.removeChild(confirmModal);
+            }
+        });
+        
+        const handleEscape = function(e) {
+            if (e.key === 'Escape') {
+                document.body.removeChild(confirmModal);
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
         const statusElement = card.querySelector('.service-status');
