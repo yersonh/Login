@@ -93,8 +93,8 @@ if (empty($nombreCompleto)) {
                     <div class="service-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
-                    <div class="service-name">Dar de Alta</div>
-                    <div class="service-desc">Registrar nuevos usuarios o elementos en el sistema</div>
+                    <div class="service-name">Dar de Alta actividad</div>
+                    <div class="service-desc">Descargar actividad programada pendiente de ejecución</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
             </div>
