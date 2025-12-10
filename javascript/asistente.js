@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const serviceCards = document.querySelectorAll('.service-card');
     const adminCard = document.getElementById('admin-card');
+    const CPSCard = document.getElementById('CPS-card');
     const modalClave = document.getElementById('modalClave');
     const inputClave = document.getElementById('inputClave');
     const btnIngresar = document.getElementById('btnIngresarClave');
@@ -42,6 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusElement = card.querySelector('.service-status');
 
         if (card === adminCard && statusElement.classList.contains('status-available')) {
+            abrirModalClave();
+            return;
+        }
+
+        if (card === CPSCard && statusElement.classList.contains('status-available')) {
             abrirModalClave();
             return;
         }

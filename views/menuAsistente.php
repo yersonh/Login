@@ -87,7 +87,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
             <!-- Grid de servicios -->
             <div class="services-grid">
                 <!-- Servicio 1 CPS -->
-                <div class="service-card">
+                <div class="service-card CPS-card" id="CPS-card">
                     <div class="service-icon">
                         <i class="fas fa-file-contract"></i>
                     </div>
