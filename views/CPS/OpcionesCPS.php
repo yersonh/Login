@@ -64,7 +64,7 @@ if (empty($nombreCompleto)) {
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
-                    <div class="user-role">Asistente CPS</div>
+                    <div class="user-role">Asistente</div>
                 </div>
             </div>
         </header>
@@ -73,7 +73,6 @@ if (empty($nombreCompleto)) {
         <main class="app-main">
             <div class="welcome-section">
                 <h3>Opciones de Gestión CPS</h3>
-                <p>Seleccione una de las opciones para gestionar el Control de Procesos y Seguimiento</p>
             </div>
             
             <!-- Grid de servicios - 2 filas x 3 columnas -->
