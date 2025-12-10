@@ -579,47 +579,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 transform: translateY(0);
             }
         }
-        /* --- Ajustes SOLO para celulares --- */
-@media (max-width: 576px) {
-
-    /* Centrar contenedor completo */
-    .app-container {
-        margin: 0 auto;
-    }
-
-    /* Centrar textos principales */
-    .department-info h1,
-    .department-info h2,
-    .page-title h1 {
-        text-align: center;
-    }
-
-    /* Centrar logo actual */
-    .logo-preview {
-        margin: 0 auto;
-    }
-
-    /* Centrar botones */
-    .form-actions {
-        justify-content: center;
-        text-align: center;
-    }
-
-    /* Asegurar que todo se vea fluido en pantallas pequeñas */
-    .logo-config,
-    .current-logo,
-    .logo-form {
-        width: 100%;
-        text-align: center;
-    }
-
-    /* Ajuste extra para el header */
-    .header-content {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
+        
     </style>
 </head>
 <body>
