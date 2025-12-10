@@ -279,7 +279,6 @@ $consecutivo = rand(100, 999); // Temporal
         <main class="app-main">
             <div class="welcome-section">
                 <h3>Registrar Contratista / CPS</h3>
-                <p>Complete el formulario para registrar un nuevo contratista en el sistema</p>
             </div>
             
             <div class="form-container">
