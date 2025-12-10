@@ -694,13 +694,16 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             
                             <div class="form-group">
                                 <label for="tipoLicencia">Tipo de Licencia:</label>
-                                <select id="tipoLicencia" class="form-control">
+                                <input type="text" id="tipoLicencia" class="form-control" 
+                                value="Evaluación">
+
+                                <!--<select id="tipoLicencia" class="form-control">
                                     <option value="evaluacion" selected>Evaluación</option>
                                     <option value="basica">Básica</option>
                                     <option value="estandar">Estándar</option>
                                     <option value="premium">Premium</option>
                                     <option value="enterprise">Enterprise</option>
-                                </select>
+                                </select>-->
                             </div>
                             
                             <div class="form-group">
