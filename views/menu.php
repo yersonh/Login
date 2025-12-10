@@ -64,7 +64,7 @@ if (empty($nombreCompleto)) {
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
-                    <div class="user-role">Usuario</div>
+                    <div class="user-role">Contratista</div>
                 </div>
             </div>
         </header>

@@ -4,6 +4,11 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+require_once __DIR__ . '/../config/database.php';
+
+$database = new Database();
+$db = $database->conectar();
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -17,6 +22,27 @@ if ($_SESSION['tipo_usuario'] !== 'administrador') {
         header("Location: ../index.php");
     }
     exit();
+}
+
+$fotoPerfil = '../imagenes/usuarios/imagendefault.png';
+
+try {
+    $query = "SELECT p.foto_perfil 
+              FROM usuario u 
+              INNER JOIN persona p ON u.id_persona = p.id_persona 
+              WHERE u.id_usuario = :id_usuario";
+    
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':id_usuario', $_SESSION['usuario_id']);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($resultado && !empty($resultado['foto_perfil'])) {
+        $fotoBD = $resultado['foto_perfil'];
+        $fotoPerfil = (strpos($fotoBD, '/') === 0) ? '..' . $fotoBD : $fotoBD;
+    }
+} catch (Exception $e) {
+    error_log("Error cargando foto: " . $e->getMessage());
 }
 
 $nombreUsuario = $_SESSION['nombres'] ?? '';
@@ -39,6 +65,14 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/admin.css">
     <style>
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Recorta la imagen para llenar el circulo sin deformar */
+            border-radius: 50%;
+            display: block;
+        }
         /* Botón para volver como asistente */
         .return-assistant-btn {
             position: fixed;
@@ -144,7 +178,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             <!-- Perfil del Usuario -->
             <div class="user-profile-sidebar">
                 <div class="user-avatar">
-                    <i class="fas fa-user-shield"></i>
+                    <img src="<?php echo htmlspecialchars($fotoPerfil); ?>" alt="Foto de Perfil" onerror="this.src='../imagenes/usuarios/imagendefault.png'">
                 </div>
                 <div class="user-name"><?php echo htmlspecialchars($nombreCompleto); ?></div>
                 <div class="user-role">Administrador</div>
