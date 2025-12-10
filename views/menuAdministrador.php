@@ -194,7 +194,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/manage/parametrizacion.php" class="nav-link active">
+                    <a href="manage/parametrizacion.php" class="nav-link active">
                         <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
                         <span class="nav-text">Parametrización</span>
                     </a>
@@ -242,7 +242,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <i class="fas fa-user-plus"></i>
                         <span>Agregar Usuario</span>
                     </button>
-                    <button class="action-btn" onclick="window.location.href='/manage/parametrizacion.php'">
+                    <button class="action-btn" onclick="window.location.href='manage/parametrizacion.php'">
                         <i class="fas fa-sliders-h"></i>
                         <span>Parametrización</span>
                     </button>
