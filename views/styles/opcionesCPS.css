@@ -252,7 +252,7 @@ body {
     margin-top: 10px;
 }
 
-/* ========== BOTÓN VOLVER ========== */
+/* ========== BOTÓN VOLVER FLOTANTE ========== */
 .volver-btn {
     position: fixed;
     bottom: 25px;
@@ -270,6 +270,7 @@ body {
     gap: 10px;
     z-index: 100;
     transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .volver-btn:hover {
@@ -281,6 +282,7 @@ body {
 .volver-btn i {
     font-size: 18px;
 }
+
 
 /* ========== MODALES BASE ========== */
 .modal-overlay {
@@ -534,7 +536,7 @@ body {
 /* ========== RESPONSIVE - TABLETS (768px - 992px) ========== */
 @media (max-width: 992px) and (min-width: 769px) {
     .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
     }
     
@@ -615,12 +617,10 @@ body {
         font-size: 16px;
     }
     
+    /* 2 COLUMNAS EN TABLETAS */
     .services-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 15px;
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
     }
     
     .service-card {
@@ -628,13 +628,13 @@ body {
         min-height: 170px;
     }
     
+    /* Botones flotantes ajustados */
     .volver-btn {
         bottom: 15px;
         right: 15px;
         padding: 12px 18px;
         font-size: 14px;
     }
-    
     /* Modal en tablets pequeñas */
     .modal-clave {
         width: 95%;
@@ -711,7 +711,9 @@ body {
         font-size: 15px;
     }
     
+    /* 2 COLUMNAS EN MÓVILES MEDIANOS */
     .services-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
     
@@ -739,9 +741,12 @@ body {
         height: 70px;
     }
     
+    /* Botones flotantes */
     .volver-btn {
         padding: 10px 15px;
         font-size: 13px;
+        bottom: 15px;
+        right: 15px;
     }
     
     /* Modal en móviles medianos */
@@ -852,7 +857,9 @@ body {
         font-size: 14px;
     }
     
+    /* 2 COLUMNAS EN MÓVILES PEQUEÑOS */
     .services-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
     
@@ -917,6 +924,7 @@ body {
         font-size: 11px;
     }
     
+    /* Botones flotantes en móviles pequeños */
     .volver-btn {
         bottom: 10px;
         right: 10px;
@@ -1015,12 +1023,12 @@ body {
         min-height: 140px;
     }
     
+    /* Botones flotantes en altura pequeña */
     .volver-btn {
         bottom: 8px;
         right: 8px;
         padding: 8px 10px;
     }
-    
     /* Ajustar modal para altura pequeña */
     .modal-clave {
         max-height: 90vh;
@@ -1038,10 +1046,10 @@ body {
         min-height: auto;
     }
     
+    /* En horizontal mantenemos 2 columnas */
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        max-width: 100%;
     }
     
     .service-card {
@@ -1060,6 +1068,22 @@ body {
     
     .modal-body::before {
         top: -15px;
+    }
+}
+
+/* ========== RESPONSIVE - PARA 1 COLUMNA EN MÓVILES MUY PEQUEÑOS ========== */
+@media (max-width: 375px) {
+    /* En móviles muy pequeños cambiamos a 1 columna */
+    .services-grid {
+        grid-template-columns: 1fr;
+        max-width: 280px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .service-card {
+        padding: 15px;
+        min-height: 140px;
     }
 }
 
@@ -1083,11 +1107,11 @@ body {
         transform: scale(0.98);
     }
     
-    .volver-btn:hover {
+    .volver-btn:hover{
         transform: none;
     }
     
-    .volver-btn:active {
+    .volver-btn:active{
         transform: scale(0.95);
     }
 }
@@ -1105,7 +1129,7 @@ body {
     /* Mejorar el comportamiento de los botones en iOS */
     .service-card,
     .btn-modal,
-    .volver-btn {
+    .volver-btn{
         -webkit-tap-highlight-color: transparent;
     }
 }
