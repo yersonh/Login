@@ -11,14 +11,12 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
-    // Si no es asistente, redirigir según su rol
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'administrador') {
             header("Location: menu.php");
         } else if ($_SESSION['tipo_usuario'] === 'usuario') {
             header("Location: menu.php");
         } else {
-            // Rol desconocido
             header("Location: ../index.php");
         }
     } else {
@@ -41,7 +39,7 @@ if (empty($nombreCompleto)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Servicios - Secretaría de Minas y Energía</title>
+    <title>Portal CPS - Secretaría de Minas y Energía</title>
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -59,7 +57,6 @@ if (empty($nombreCompleto)) {
                     <h2>Secretaría de Minas y Energía</h2>
                 </div>
                 <div class="user-profile">
-                    <!-- Mensaje personalizado de bienvenida con PHP -->
                     <div class="welcome-user">
                         <i class="fas fa-user-circle"></i>
                         <span>Bienvenido(a) </span>
@@ -67,8 +64,7 @@ if (empty($nombreCompleto)) {
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
-                    <div class="user-role">Asistente</div>
-                    
+                    <div class="user-role">Asistente CPS</div>
                 </div>
             </div>
         </header>
@@ -76,124 +72,85 @@ if (empty($nombreCompleto)) {
         <!-- Contenido principal -->
         <main class="app-main">
             <div class="welcome-section">
-                <h3>Portal de Servicios Digitales</h3>
-                <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
+                <h3>Opciones de Gestión CPS</h3>
+                <p>Seleccione una de las opciones para gestionar el Control de Procesos y Seguimiento</p>
             </div>
             
-            <!-- Grid de servicios -->
+            <!-- Grid de servicios - 2 filas x 3 columnas -->
             <div class="services-grid">
-                <!-- Servicio 1 CPS -->
-                <div class="service-card CPS-card" id="CPS-card">
+                <!-- Opción 1: AOM Contratistas CPS -->
+                <div class="service-card" id="aom-card">
                     <div class="service-icon">
-                        <i class="fas fa-file-contract"></i>
+                        <i class="fas fa-handshake"></i>
                     </div>
-                    <div class="service-name">Gestión CPS</div>
-                    <div class="service-desc">Sistema de Control de Procesos y Seguimiento</div>
+                    <div class="service-name">AOM Contratistas CPS</div>
+                    <div class="service-desc">Gestión de Actas de Obra y Mantenimiento</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 2 Documentos -->
-                <div class="service-card">
+                <!-- Opción 2: Consulta General -->
+                <div class="service-card" id="consulta-card">
                     <div class="service-icon">
-                        <i class="fas fa-folder-open"></i>
+                        <i class="fas fa-search"></i>
                     </div>
-                    <div class="service-name">Gestión Documental</div>
-                    <div class="service-desc">Repositorio digital de archivos</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-name">Consulta General</div>
+                    <div class="service-desc">Búsqueda y consulta de información CPS</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 3 Correo -->
-                <div class="service-card">
+                <!-- Opción 3: Municipios asignados -->
+                <div class="service-card" id="municipios-card">
                     <div class="service-icon">
-                        <i class="fas fa-envelope"></i>
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <div class="service-name">Correo Institucional</div>
-                    <div class="service-desc">Correo electrónico corporativo</div>
-                    <div class="service-status status-unavailable">Disponible</div>
+                    <div class="service-name">Municipios Asignados</div>
+                    <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 4 Drive SME -->
-                <div class="service-card">
+                <!-- Opción 4: Reportes -->
+                <div class="service-card" id="reportes-card">
                     <div class="service-icon">
-                        <i class="fas fa-hdd"></i>
+                        <i class="fas fa-chart-bar"></i>
                     </div>
-                    <div class="service-name">Drive SME</div>
-                    <div class="service-desc">Almacenamiento en la nube</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-name">Reportes</div>
+                    <div class="service-desc">Generación de reportes y estadísticas</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 5 APP RAI -->
-                <div class="service-card">
+                <!-- Opción 5: Gestión visitas -->
+                <div class="service-card" id="visitas-card">
                     <div class="service-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-calendar-check"></i>
                     </div>
-                    <div class="service-name">APP RAI</div>
-                    <div class="service-desc">Aplicación móvil para Reportes</div>
-                    <div class="service-status status-unavailable">Disponible</div>
+                    <div class="service-name">Gestión de Visitas</div>
+                    <div class="service-desc">Programación y seguimiento de visitas</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 6 Reuniones Virtuales -->
-                <div class="service-card">
+                <!-- Opción 6: Programar -->
+                <div class="service-card" id="programar-card">
                     <div class="service-icon">
-                        <i class="fas fa-video"></i>
+                        <i class="fas fa-calendar-plus"></i>
                     </div>
-                    <div class="service-name">Reuniones Virtuales</div>
-                    <div class="service-desc">Videoconferencias colaborativas</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 7 Agenda Digital -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="service-name">Agenda Digital</div>
-                    <div class="service-desc">Calendarios y eventos</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 8 Sistema de Mapas -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="service-name">Sistema de Mapas</div>
-                    <div class="service-desc">Información geográfica</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 9 Gestor de Tareas -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="service-name">Gestor de Tareas</div>
-                    <div class="service-desc">Seguimiento de actividades</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 10: Gestion del sistema -->
-                <div class="service-card admin-card" id="admin-card">
-                    <div class="admin-only-badge">ADMIN</div>
-                    <div class="service-icon">
-                        <i class="fas fa-sliders-h"></i>
-                    </div>
-                    <div class="service-name">Gestión del Sistema</div>
-                    <div class="service-desc">Configuración del sistema y parámetros</div>
+                    <div class="service-name">Programar</div>
+                    <div class="service-desc">Programación de actividades y eventos</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
             </div>
         </main>
-                    <button class="logout-btn" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Cerrar sesión</span>
-                    </button>
+        
+        <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar sesión</span>
+        </button>
+        
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
-                    <img src="../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
-                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                        <img src="../../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     </div>
                 </div>
             </div>
@@ -258,6 +215,14 @@ if (empty($nombreCompleto)) {
     </script>
     
     <script src="../javascript/asistente.js"></script>
+    
+    <!-- Script para evitar retroceder -->
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
     
 </body>
 </html>

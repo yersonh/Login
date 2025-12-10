@@ -256,11 +256,6 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     
     <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
-        history.pushState(null, "", location.href);
-
-        window.onpopstate = function () {
-            history.pushState(null, "", location.href);
-        };
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
