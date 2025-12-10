@@ -340,40 +340,55 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        /* Información de licencia */
-        .license-info {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            border-left: 4px solid var(--primary-color);
-            margin-top: 30px;
+        /* Formulario de parametrización */
+        .param-form-section {
+            margin-top: 40px;
         }
         
-        .license-info h3 {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .license-details {
+        .param-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .license-details p {
-            margin: 0;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f1f1;
+        @media (max-width: 768px) {
+            .param-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
-        .license-details strong {
+        .param-group {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .param-group h3 {
             color: var(--primary-color);
-            min-width: 140px;
-            display: inline-block;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 18px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .form-col label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 14px;
         }
         
         /* Footer */
@@ -450,10 +465,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             .current-logo, .logo-form {
                 width: 100%;
             }
-            
-            .license-details {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
         
         @media (max-width: 768px) {
@@ -495,10 +506,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 justify-content: center;
             }
             
-            .license-details {
-                grid-template-columns: 1fr;
-            }
-            
             .app-footer {
                 flex-direction: column;
                 gap: 25px;
@@ -532,10 +539,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             
             .logo-preview {
                 height: 100px;
-            }
-            
-            .license-info {
-                padding: 20px;
             }
         }
         
@@ -576,86 +579,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 transform: translateY(0);
             }
         }
-        
-        /* Sección de gestión de usuarios */
-        .users-section {
-            margin-top: 40px;
-        }
-        
-        .users-table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-        
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .users-table th {
-            background: var(--primary-color);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-        
-        .users-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .users-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .role-admin {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .role-asistente {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-        
-        .role-usuario {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .role-select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            font-size: 14px;
-        }
-        
-        .update-btn {
-            padding: 6px 12px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        
-        .update-btn:hover {
-            background: var(--secondary-color);
-        }
     </style>
 </head>
 <body>
@@ -686,7 +609,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             <div class="page-title">
                 <h1><i class="fas fa-sliders-h"></i> Panel de Parametrización</h1>
                 <button class="back-button" onclick="window.location.href='../menu.php'">
-                    <i class="fas fa-arrow-left"></i> Volver al Portal
+                    <i class="fas fa-arrow-left"></i> Volver
                 </button>
             </div>
             
@@ -743,10 +666,10 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             
                             <div class="form-actions">
                                 <button type="button" class="btn btn-primary" onclick="uploadLogo()">
-                                    <i class="fas fa-save"></i> Guardar Cambios
+                                    <i class="fas fa-save"></i> Guardar Cambios del Logo
                                 </button>
                                 <button type="button" class="btn btn-secondary" onclick="restoreDefaultLogo()">
-                                    <i class="fas fa-undo"></i> Restaurar Predeterminado
+                                    <i class="fas fa-undo"></i> Restaurar Logo Predeterminado
                                 </button>
                             </div>
                         </form>
@@ -754,32 +677,79 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 </div>
             </div>
             
-            <!-- Sección de Gestión de Usuarios (Opcional) -->
-            <div class="config-panel users-section">
-                <h2><i class="fas fa-users-cog"></i> Gestión de Usuarios</h2>
-                <p>Desde aquí puedes gestionar los roles de los usuarios del sistema.</p>
+            <!-- Formulario de Parametrización -->
+            <div class="config-panel param-form-section">
+                <h2><i class="fas fa-cogs"></i> Configuración del Sistema</h2>
                 
-                <div id="usersLoading" style="text-align: center; padding: 20px;">
-                    <i class="fas fa-spinner fa-spin"></i> Cargando usuarios...
-                </div>
-                
-                <div id="usersTableContainer" class="users-table-container" style="display: none;">
-                    <!-- La tabla se cargará dinámicamente -->
-                </div>
-            </div>
-            
-            <!-- Información de licencia -->
-            <div class="license-info">
-                <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                <div class="license-details">
-                    <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
-                    <p><strong>Tipo de Licencia:</strong> Evaluación</p>
-                    <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
-                    <p><strong>Desarrollado por:</strong> SisgonTech</p>
-                    <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
-                    <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
-                    <p><strong>Teléfono:</strong> (57 -608) 6 818503</p>
-                </div>
+                <form id="paramForm">
+                    <div class="param-grid">
+                        <!-- Grupo 1: Información Básica -->
+                        <div class="param-group">
+                            <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
+                            <div class="form-group">
+                                <label for="version">Versión:</label>
+                                <input type="text" id="version" class="form-control" 
+                                       value="1.0.0" placeholder="Ej: 1.0.0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tipoLicencia">Tipo de Licencia:</label>
+                                <select id="tipoLicencia" class="form-control">
+                                    <option value="evaluacion" selected>Evaluación</option>
+                                    <option value="basica">Básica</option>
+                                    <option value="estandar">Estándar</option>
+                                    <option value="premium">Premium</option>
+                                    <option value="enterprise">Enterprise</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="validaHasta">Válida hasta:</label>
+                                <input type="date" id="validaHasta" class="form-control" 
+                                       value="2026-03-31">
+                            </div>
+                        </div>
+                        
+                        <!-- Grupo 2: Información del Desarrollador -->
+                        <div class="param-group">
+                            <h3><i class="fas fa-code"></i> Información del Desarrollador</h3>
+                            <div class="form-group">
+                                <label for="desarrolladoPor">Desarrollado por:</label>
+                                <input type="text" id="desarrolladoPor" class="form-control" 
+                                       value="SisgonTech" placeholder="Nombre del desarrollador">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion">Dirección:</label>
+                                <textarea id="direccion" class="form-control" rows="3" 
+                                          placeholder="Dirección completa">Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta</textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label for="contacto">Contacto:</label>
+                                    <input type="email" id="contacto" class="form-control" 
+                                           value="gobernaciondelmeta@meta.gov.co" placeholder="correo@ejemplo.com">
+                                </div>
+                                
+                                <div class="form-col">
+                                    <label for="telefono">Teléfono:</label>
+                                    <input type="tel" id="telefono" class="form-control" 
+                                           value="(57 -608) 6 818503" placeholder="(XXX) XXX-XXXX">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="saveParameters()">
+                            <i class="fas fa-save"></i> Guardar Configuración
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetParameters()">
+                            <i class="fas fa-redo"></i> Restaurar Valores Predeterminados
+                        </button>
+                    </div>
+                </form>
             </div>
         </main>
         
@@ -865,9 +835,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     fileNameSpan.textContent = 'Haga clic para seleccionar un archivo';
                 }
             });
-            
-            // Cargar lista de usuarios (opcional)
-            loadUsers();
         });
         
         function uploadLogo() {
@@ -881,7 +848,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             }
             
             // Simulación de carga (en un caso real, aquí iría una petición AJAX)
-            showSuccess('Guardando cambios...');
+            showSuccess('Guardando logo...');
             
             setTimeout(() => {
                 // Actualizar vista previa
@@ -897,7 +864,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     reader.readAsDataURL(fileInput.files[0]);
                 }
                 
-                showSuccess('Los cambios se han guardado correctamente.');
+                showSuccess('Logo actualizado correctamente.');
             }, 1500);
         }
         
@@ -926,6 +893,69 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             }
         }
         
+        function saveParameters() {
+            // Obtener valores del formulario
+            const version = document.getElementById('version').value;
+            const tipoLicencia = document.getElementById('tipoLicencia').value;
+            const validaHasta = document.getElementById('validaHasta').value;
+            const desarrolladoPor = document.getElementById('desarrolladoPor').value;
+            const direccion = document.getElementById('direccion').value;
+            const contacto = document.getElementById('contacto').value;
+            const telefono = document.getElementById('telefono').value;
+            
+            // Validaciones básicas
+            if (!version || !desarrolladoPor || !contacto || !telefono) {
+                showError('Por favor complete todos los campos requeridos.');
+                return;
+            }
+            
+            // Validar fecha
+            if (!validaHasta) {
+                showError('Por favor seleccione una fecha de validez.');
+                return;
+            }
+            
+            // Simulación de guardado
+            showSuccess('Guardando configuración del sistema...');
+            
+            setTimeout(() => {
+                // Aquí normalmente se enviaría una petición AJAX al servidor
+                console.log('Datos a guardar:', {
+                    version,
+                    tipoLicencia,
+                    validaHasta,
+                    desarrolladoPor,
+                    direccion,
+                    contacto,
+                    telefono
+                });
+                
+                showSuccess('Configuración guardada correctamente.');
+                
+                // Actualizar información visible en la página si es necesario
+                updateDisplayedInfo();
+            }, 1500);
+        }
+        
+        function resetParameters() {
+            if (confirm('¿Está seguro de restaurar todos los valores predeterminados? Se perderán todos los cambios no guardados.')) {
+                showSuccess('Restaurando valores predeterminados...');
+                
+                setTimeout(() => {
+                    // Restaurar valores predeterminados
+                    document.getElementById('version').value = '1.0.0';
+                    document.getElementById('tipoLicencia').value = 'evaluacion';
+                    document.getElementById('validaHasta').value = '2026-03-31';
+                    document.getElementById('desarrolladoPor').value = 'SisgonTech';
+                    document.getElementById('direccion').value = 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta';
+                    document.getElementById('contacto').value = 'gobernaciondelmeta@meta.gov.co';
+                    document.getElementById('telefono').value = '(57 -608) 6 818503';
+                    
+                    showSuccess('Valores predeterminados restaurados correctamente.');
+                }, 1000);
+            }
+        }
+        
         function updateAllLogos(newLogoUrl) {
             // Actualizar todos los logos en la página
             const allLogos = document.querySelectorAll('img[src*="logo"]');
@@ -934,6 +964,26 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     logo.src = newLogoUrl;
                 }
             });
+        }
+        
+        function updateDisplayedInfo() {
+            // Actualizar información mostrada en la página si es necesario
+            const desarrolladoPor = document.getElementById('desarrolladoPor').value;
+            const contacto = document.getElementById('contacto').value;
+            const telefono = document.getElementById('telefono').value;
+            
+            // Actualizar footer si es necesario
+            const footerContact = document.querySelectorAll('.contact-info div span');
+            if (footerContact.length >= 3) {
+                footerContact[1].textContent = contacto; // Correo
+                footerContact[0].textContent = telefono; // Teléfono principal
+            }
+            
+            // Actualizar info del desarrollador
+            const devName = document.querySelector('.developer-name');
+            if (devName) {
+                devName.textContent = desarrolladoPor;
+            }
         }
         
         function showSuccess(message) {
@@ -954,108 +1004,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             setTimeout(() => {
                 alert.style.display = 'none';
             }, 5000);
-        }
-        
-        function loadUsers() {
-            fetch('/../../includes/get_users.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.users) {
-                        displayUsersTable(data.users);
-                    } else {
-                        document.getElementById('usersLoading').innerHTML = 
-                            '<p style="color: #dc3545;">Error al cargar usuarios: ' + (data.message || 'Error desconocido') + '</p>';
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('usersLoading').innerHTML = 
-                        '<p style="color: #dc3545;">Error de conexión: ' + error.message + '</p>';
-                });
-        }
-        
-        function displayUsersTable(users) {
-            const container = document.getElementById('usersTableContainer');
-            const loading = document.getElementById('usersLoading');
-            
-            if (users.length === 0) {
-                loading.innerHTML = '<p>No hay usuarios registrados.</p>';
-                return;
-            }
-            
-            let html = `
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Email</th>
-                            <th>Nombre</th>
-                            <th>Rol Actual</th>
-                            <th>Cambiar Rol</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            users.forEach(user => {
-                const roleClass = getRoleClass(user.tipo_usuario);
-                html += `
-                    <tr>
-                        <td>${user.id_usuario}</td>
-                        <td>${user.correo}</td>
-                        <td>${user.nombres || ''} ${user.apellidos || ''}</td>
-                        <td><span class="role-badge ${roleClass}">${user.tipo_usuario}</span></td>
-                        <td>
-                            <select class="role-select" id="role-${user.id_usuario}">
-                                <option value="administrador" ${user.tipo_usuario === 'administrador' ? 'selected' : ''}>Administrador</option>
-                                <option value="asistente" ${user.tipo_usuario === 'asistente' ? 'selected' : ''}>Asistente</option>
-                                <option value="usuario" ${user.tipo_usuario === 'usuario' ? 'selected' : ''}>Usuario</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button class="update-btn" onclick="updateUserRole(${user.id_usuario})">
-                                <i class="fas fa-sync-alt"></i> Actualizar
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                    </tbody>
-                </table>
-            `;
-            
-            container.innerHTML = html;
-            loading.style.display = 'none';
-            container.style.display = 'block';
-        }
-        
-        function getRoleClass(role) {
-            switch(role) {
-                case 'administrador': return 'role-admin';
-                case 'asistente': return 'role-asistente';
-                case 'usuario': return 'role-usuario';
-                default: return '';
-            }
-        }
-        
-        function updateUserRole(userId) {
-            const select = document.getElementById(`role-${userId}`);
-            const newRole = select.value;
-            
-            if (confirm(`¿Está seguro de cambiar el rol del usuario #${userId} a "${newRole}"?`)) {
-                showSuccess('Actualizando rol...');
-                
-                setTimeout(() => {
-                    // Simulación de actualización
-                    const roleBadge = document.querySelector(`#role-${userId}`).closest('tr').querySelector('.role-badge');
-                    roleBadge.textContent = newRole;
-                    roleBadge.className = `role-badge ${getRoleClass(newRole)}`;
-                    
-                    showSuccess(`Rol actualizado correctamente a "${newRole}"`);
-                }, 1000);
-            }
         }
     </script>
 </body>
