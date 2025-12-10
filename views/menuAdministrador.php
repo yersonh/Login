@@ -323,6 +323,13 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
         
     </script>
+     <!-- Script para evitar retroceder -->
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
     <script src="../javascript/admin.js"></script>
 </body>
 </html>
