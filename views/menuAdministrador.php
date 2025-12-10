@@ -242,7 +242,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <i class="fas fa-user-plus"></i>
                         <span>Agregar Usuario</span>
                     </button>
-                    <button class="action-btn" onclick="window.location.href='parametrizar.php'">
+                    <button class="action-btn" onclick="window.location.href='/manage/parametrizacion.php'">
                         <i class="fas fa-sliders-h"></i>
                         <span>Parametrización</span>
                     </button>
