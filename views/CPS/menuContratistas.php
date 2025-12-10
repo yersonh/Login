@@ -39,12 +39,12 @@ if (empty($nombreCompleto)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal CPS - Secretaría de Minas y Energía</title>
+    <title>Gestión AOM Contratistas - Secretaría de Minas y Energía</title>
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
-    <link rel="stylesheet" href="../styles/asistente.css">
+    <link rel="stylesheet" href="../styles/contratistas.css">
 
 </head>
 <body>
@@ -73,76 +73,66 @@ if (empty($nombreCompleto)) {
         <main class="app-main">
             <div class="welcome-section">
                 <h3>Menú AOM Contratistas</h3>
-                <p>Selecciona una opción:</p>
+                <p>Selecciona una opción:/p>
             </div>
             
-            <!-- Grid de servicios - 2 filas x 3 columnas -->
+            <!-- Grid de servicios - 5 opciones en 2 filas (3 en primera, 2 en segunda) -->
             <div class="services-grid">
-                <!-- Opción 1: AOM Contratistas CPS -->
-                <div class="service-card" id="aom-card">
+                <!-- Opción 1: Agregar nuevo contratista -->
+                <div class="service-card" id="agregar-contratista">
                     <div class="service-icon">
-                        <i class="fas fa-handshake"></i>
+                        <i class="fas fa-user-plus"></i>
                     </div>
-                    <div class="service-name">AOM Contratistas CPS</div>
-                    <div class="service-desc">Gestión de Actas de Obra y Mantenimiento</div>
+                    <div class="service-name">Agregar Nuevo Contratista</div>
+                    <div class="service-desc">Registrar nuevo contratista en el sistema</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Opción 2: Consulta General -->
-                <div class="service-card" id="consulta-card">
+                <!-- Opción 2: Modificar datos contratista -->
+                <div class="service-card" id="modificar-contratista">
                     <div class="service-icon">
-                        <i class="fas fa-search"></i>
+                        <i class="fas fa-user-edit"></i>
                     </div>
-                    <div class="service-name">Consulta General</div>
-                    <div class="service-desc">Búsqueda y consulta de información CPS</div>
+                    <div class="service-name">Modificar Datos Contratista</div>
+                    <div class="service-desc">Actualizar información de contratistas existentes</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Opción 3: Municipios asignados -->
-                <div class="service-card" id="municipios-card">
+                <!-- Opción 3: Parametrizar obligaciones -->
+                <div class="service-card" id="parametrizar-obligaciones">
                     <div class="service-icon">
-                        <i class="fas fa-map-marker-alt"></i>
+                        <i class="fas fa-cogs"></i>
                     </div>
-                    <div class="service-name">Municipios Asignados</div>
-                    <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
+                    <div class="service-name">Parametrizar Obligaciones</div>
+                    <div class="service-desc">Configurar obligaciones contractuales</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Opción 4: Reportes -->
-                <div class="service-card" id="reportes-card">
+                <!-- Opción 4: Dashboard estadístico -->
+                <div class="service-card" id="dashboard-estadistico">
                     <div class="service-icon">
-                        <i class="fas fa-chart-bar"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="service-name">Reportes</div>
-                    <div class="service-desc">Generación de reportes y estadísticas</div>
+                    <div class="service-name">Dashboard Estadístico</div>
+                    <div class="service-desc">Visualización de métricas y estadísticas</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Opción 5: Gestión visitas -->
-                <div class="service-card" id="visitas-card">
+                <!-- Opción 5: Visor de registrados -->
+                <div class="service-card" id="visor-registrados">
                     <div class="service-icon">
-                        <i class="fas fa-calendar-check"></i>
+                        <i class="fas fa-eye"></i>
                     </div>
-                    <div class="service-name">Gestión de Visitas</div>
-                    <div class="service-desc">Programación y seguimiento de visitas</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
-                
-                <!-- Opción 6: Programar -->
-                <div class="service-card" id="programar-card">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="service-name">Programar</div>
-                    <div class="service-desc">Programación de actividades y eventos</div>
+                    <div class="service-name">Visor de Registrados</div>
+                    <div class="service-desc">Consulta y visualización de contratistas registrados</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
             </div>
         </main>
         
-        <button class="logout-btn" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Cerrar sesión</span>
+        <button class="volver-btn" id="volverBtn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver</span>
         </button>
         
         <footer class="app-footer">
@@ -150,7 +140,7 @@ if (empty($nombreCompleto)) {
                 <div class="footer-logo-container">
                     <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
-                        <img src="../../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                        <img src="../../imagenes/sisgoTech.png" alt="Logo SisgoTech" class="footer-logo">
                     </div>
                 </div>
             </div>
@@ -174,7 +164,39 @@ if (empty($nombreCompleto)) {
                 </div>
             </div>
         </footer>
-    </div>    
+    </div>
+    
+    <!-- MODAL PARA INGRESAR CLAVE -->
+    <div class="modal-overlay" id="modalClave">
+        <div class="modal-clave">
+            <div class="modal-header">
+                <h3>Acceso restringido</h3>
+                <p>Verificación de seguridad requerida</p>
+            </div>
+            <div class="modal-body">
+                <p>Ingrese la clave autorizada para parametrizar:</p>
+                <div class="input-group">
+                    <label for="inputClave">Clave de autorización</label>
+                    <div class="clave-container">
+                        <input type="password" id="inputClave" class="clave-input" placeholder="Digite la clave..." maxlength="20" autocomplete="off">
+                        <button type="button" class="clave-eye" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="modal-buttons">
+                    <button class="btn-modal btn-ingresar" id="btnIngresarClave">
+                        Ingresar
+                    </button>
+                    <button class="btn-modal btn-cancelar" id="btnCancelarClave">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
@@ -182,7 +204,7 @@ if (empty($nombreCompleto)) {
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
     </script>
     
-    <script src="../javascript/asistente.js"></script>
+    <script src="/../../javascript/contratistas.js"></script>
     
     <!-- Script para evitar retroceder -->
     <script>
