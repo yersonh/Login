@@ -1,3 +1,41 @@
+<?php
+session_start();
+
+header("Cache-Control: no-cache, no-store, must-revalidate"); 
+header("Pragma: no-cache"); 
+header("Expires: 0"); 
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
+    // Si no es asistente, redirigir según su rol
+    if (isset($_SESSION['tipo_usuario'])) {
+        if ($_SESSION['tipo_usuario'] === 'administrador') {
+            header("Location: menu.php");
+        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+            header("Location: menu.php");
+        } else {
+            // Rol desconocido
+            header("Location: ../index.php");
+        }
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+$nombreUsuario = isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '';
+$apellidoUsuario = isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '';
+
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
