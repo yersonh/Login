@@ -170,52 +170,59 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <div class="admin-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-    <div class="logo-section">
-        <div class="department-name" style="font-size: 25px; font-weight: bold;">Gestión del Sistena</div>
-    </div>
+            <!-- Logo Institucional -->
+            <div class="logo-section">
+                <div class="department-name" style="font-size: 25px; font-weight: bold;">Gestión del Sistena</div>
+            </div>
 
-    <div class="user-profile-sidebar">
-        <div class="user-avatar">
-            <img src="<?php echo htmlspecialchars($fotoPerfil); ?>" alt="Foto de Perfil" onerror="this.src='../imagenes/usuarios/imagendefault.png'">
+            <!-- Perfil del Usuario -->
+            <div class="user-profile-sidebar">
+                <div class="user-avatar">
+                    <img src="<?php echo htmlspecialchars($fotoPerfil); ?>" alt="Foto de Perfil" onerror="this.src='../imagenes/usuarios/imagendefault.png'">
+                </div>
+                <div class="user-name"><?php echo htmlspecialchars($nombreCompleto); ?></div>
+                <div class="user-role">Administrador</div>
+                <div class="user-email">
+                    <?php echo htmlspecialchars($correoUsuario); ?>
+                </div>
+                
+            </div>
+
+            <!-- Menú de Navegación -->
+            <div class="nav-section">
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="manage/parametrizacion.php" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
+                        <span class="nav-text">Parametrización</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="gestion_usuarios.php" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-users-cog"></i></span>
+                        <span class="nav-text">Gestión de Usuarios</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="configuracion.php" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span class="nav-text">Configuración</span>
+                    </a>
+                </li>
+
+                <!-- Cerrar sesión -->
+                <li class="nav-item">
+                    <a class="nav-link logout-link" id="logoutBtn">
+                        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                        <span class="nav-text">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <div class="user-name"><?php echo htmlspecialchars($nombreCompleto); ?></div>
-        <div class="user-role">Administrador</div>
-        <div class="user-email">
-            <?php echo htmlspecialchars($correoUsuario); ?>
-        </div>
-    </div>
-
-    <div class="nav-section"> 
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="manage/parametrizacion.php" class="nav-link active">
-                    <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
-                    <span class="nav-text">Parametrización</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="gestion_usuarios.php" class="nav-link active">
-                    <span class="nav-icon"><i class="fas fa-users-cog"></i></span>
-                    <span class="nav-text">Gestión de Usuarios</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="configuracion.php" class="nav-link active">
-                    <span class="nav-icon"><i class="fas fa-cog"></i></span>
-                    <span class="nav-text">Configuración</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link logout-link" id="logoutBtn">
-                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
-                    <span class="nav-text">Cerrar Sesión</span>
-                </a>
-            </li>
-        </ul>
-    </div> </aside>
+        </aside>
 
         <!-- Contenido Principal -->
         <main class="main-content dashboard-main-content">
