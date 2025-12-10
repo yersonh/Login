@@ -93,7 +93,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </div>
                     <div class="service-name">Gestión CPS</div>
                     <div class="service-desc">Sistema de Control de Procesos y Seguimiento</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
                 <!-- Servicio 2 Documentos -->
