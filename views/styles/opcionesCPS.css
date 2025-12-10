@@ -444,10 +444,6 @@ body {
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 }
 
-.modal-volver .modal-body::before {
-    content: '↩️';
-    border-color: #0ea5e9;
-}
 
 /* Contenido específico para el modal de volver */
 .volver-content {
@@ -474,19 +470,6 @@ body {
     color: #6c757d;
     margin-top: 0;
     margin-bottom: 0;
-}
-
-/* Botón específico para volver */
-.btn-volver {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
-}
-
-.btn-volver:hover {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
 }
 
 /* ========== ANIMACIONES ========== */
