@@ -249,7 +249,7 @@ body {
 }
 
 /* Botón de cerrar sesión */
-.logout-btn {
+.volver-btn {
     position: fixed;
     bottom: 25px;
     right: 25px;
@@ -268,13 +268,13 @@ body {
     transition: all 0.3s ease;
 }
 
-.logout-btn:hover {
+.volver-btn:hover {
     background: linear-gradient(135deg, #d97706, #b45309);
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
 }
 
-.logout-btn i {
+.volver-btn i {
     font-size: 18px;
 }
 
@@ -339,7 +339,7 @@ body {
         margin-right: auto;
     }
     
-    .logout-btn {
+    .volver-btn {
         bottom: 15px;
         right: 15px;
         padding: 12px 18px;
@@ -376,7 +376,7 @@ body {
         height: 60px;
     }
     
-    .logout-btn {
+    .volver-btn{
         padding: 10px 15px;
         font-size: 13px;
     }
