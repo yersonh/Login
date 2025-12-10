@@ -764,9 +764,9 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             <div class="footer-left">
                 <div class="footer-logo-container">
                     <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo" 
-                        onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">
+                         onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">
                     <div class="developer-info">
-                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo"></div>
+                        <div class="developer-name">SisgonTech</div>
                         <div>Sistema de Gestión para Gobernación del Meta</div>
                     </div>
                 </div>
