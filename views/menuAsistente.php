@@ -113,7 +113,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </div>
                     <div class="service-name">Correo Institucional</div>
                     <div class="service-desc">Correo electrónico corporativo</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">Disponible</div>
                 </div>
                 
                 <!-- Servicio 4 Drive SME -->
@@ -133,7 +133,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </div>
                     <div class="service-name">APP RAI</div>
                     <div class="service-desc">Aplicación móvil para Reportes</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">Disponible</div>
                 </div>
                 
                 <!-- Servicio 6 Reuniones Virtuales -->
