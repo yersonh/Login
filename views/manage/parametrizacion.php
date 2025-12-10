@@ -714,6 +714,13 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                                 <input type="date" id="validaHasta" class="form-control" 
                                        value="2026-03-31">
                             </div>
+                           <!-- días restantes-->
+                            <div class="form-group">
+                                <label for="diasRestantes">Días restantes de evaluación:</label>
+                                <input type="text" id="diasRestantes" class="form-control" 
+                                    value="30 días" readonly>
+                            </div>
+
                         </div>
                         
                         <!-- Grupo 2: Información del Desarrollador -->
