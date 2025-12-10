@@ -48,6 +48,7 @@ try {
 $nombreUsuario = $_SESSION['nombres'] ?? '';
 $apellidoUsuario = $_SESSION['apellidos'] ?? '';
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Administrador del Sistema';
 }
@@ -316,6 +317,11 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         window.onpopstate = function () {
             window.history.pushState(null, "", window.location.href);
         };
+
+        const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
+        const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
+        const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
+        
     </script>
     <script src="../javascript/admin.js"></script>
 </body>
