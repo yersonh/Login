@@ -1,4 +1,4 @@
-/* styles/asistente.css - Versión corregida */
+/* styles/asistente.css - Versión completa y organizada */
 
 /* ========== VARIABLES CSS ========== */
 :root {
@@ -283,6 +283,7 @@ body {
     font-size: 18px;
 }
 
+
 /* ========== MODALES BASE ========== */
 .modal-overlay {
     position: fixed;
@@ -438,6 +439,52 @@ body {
     transform: translateY(-2px);
 }
 
+/* ========== MODAL PARA VOLVER ========== */
+.modal-volver .modal-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+
+/* Contenido específico para el modal de volver */
+.volver-content {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.volver-icon {
+    font-size: 48px;
+    color: #0ea5e9;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.volver-message {
+    margin: 10px 0 5px;
+    color: #495057;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.volver-submessage {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Botón específico para volver */
+.btn-volver {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.btn-volver:hover {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+}
+
 /* ========== ANIMACIONES ========== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
@@ -514,6 +561,19 @@ body {
     .welcome-section p {
         font-size: 17px;
     }
+    
+    /* Modal en tablets */
+    .modal-clave {
+        max-width: 380px;
+    }
+    
+    .modal-header {
+        padding: 25px;
+    }
+    
+    .modal-body {
+        padding: 35px 30px 30px;
+    }
 }
 
 /* ========== RESPONSIVE - TABLETS PEQUEÑAS (576px - 768px) ========== */
@@ -564,12 +624,59 @@ body {
         min-height: 170px;
     }
     
-    /* Botón volver flotante ajustado */
+    /* Botones flotantes ajustados */
     .volver-btn {
         bottom: 15px;
         right: 15px;
         padding: 12px 18px;
         font-size: 14px;
+    }
+    /* Modal en tablets pequeñas */
+    .modal-clave {
+        width: 95%;
+        max-width: 360px;
+        margin: 15px;
+    }
+    
+    .modal-header {
+        padding: 22px 18px;
+    }
+    
+    .modal-header h3 {
+        font-size: 22px;
+    }
+    
+    .modal-body {
+        padding: 30px 25px 25px;
+    }
+    
+    .modal-body::before {
+        top: -20px;
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .modal-body p {
+        font-size: 15px;
+    }
+    
+    .volver-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+    
+    .volver-message {
+        font-size: 15px;
+    }
+    
+    .volver-submessage {
+        font-size: 13px;
+    }
+    
+    .btn-modal {
+        padding: 14px 20px;
+        font-size: 15px;
     }
 }
 
@@ -630,12 +737,59 @@ body {
         height: 70px;
     }
     
-    /* Botón volver flotante */
+    /* Botones flotantes */
     .volver-btn {
         padding: 10px 15px;
         font-size: 13px;
         bottom: 15px;
         right: 15px;
+    }
+    
+    /* Modal en móviles medianos */
+    .modal-clave {
+        width: 95%;
+        max-width: 340px;
+        margin: 10px;
+    }
+    
+    .modal-header {
+        padding: 20px 15px;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 28px 20px 20px;
+    }
+    
+    .modal-body::before {
+        top: -18px;
+        font-size: 22px;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .modal-body p {
+        font-size: 14px;
+    }
+    
+    .volver-icon {
+        font-size: 36px;
+    }
+    
+    .volver-message {
+        font-size: 14px;
+    }
+    
+    .volver-submessage {
+        font-size: 12px;
+    }
+    
+    .btn-modal {
+        padding: 12px;
+        font-size: 14px;
     }
 }
 
@@ -766,12 +920,73 @@ body {
         font-size: 11px;
     }
     
-    /* Botón volver flotante en móviles pequeños */
+    /* Botones flotantes en móviles pequeños */
     .volver-btn {
         bottom: 10px;
         right: 10px;
         padding: 10px 12px;
         font-size: 12px;
+    }
+    
+    /* Modal en móviles pequeños */
+    .modal-clave {
+        width: 95%;
+        max-width: 300px;
+        margin: 5px;
+        border-radius: 16px;
+    }
+    
+    .modal-header {
+        padding: 18px 12px;
+    }
+    
+    .modal-header h3 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+    
+    .modal-header p {
+        font-size: 14px;
+    }
+    
+    .modal-body {
+        padding: 25px 15px 15px;
+    }
+    
+    .modal-body::before {
+        top: -16px;
+        font-size: 20px;
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
+    }
+    
+    .modal-body p {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    
+    .volver-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .volver-message {
+        font-size: 13px;
+        margin: 8px 0 4px;
+    }
+    
+    .volver-submessage {
+        font-size: 11px;
+    }
+    
+    .modal-buttons {
+        gap: 10px;
+    }
+    
+    .btn-modal {
+        padding: 10px;
+        font-size: 13px;
     }
 }
 
@@ -804,11 +1019,16 @@ body {
         min-height: 140px;
     }
     
-    /* Botón volver flotante en altura pequeña */
+    /* Botones flotantes en altura pequeña */
     .volver-btn {
         bottom: 8px;
         right: 8px;
         padding: 8px 10px;
+    }
+    /* Ajustar modal para altura pequeña */
+    .modal-clave {
+        max-height: 90vh;
+        overflow-y: auto;
     }
 }
 
@@ -831,6 +1051,19 @@ body {
     .service-card {
         padding: 15px;
         min-height: 160px;
+    }
+    
+    /* Modal en horizontal */
+    .modal-clave {
+        max-width: 320px;
+    }
+    
+    .modal-body {
+        padding: 20px 15px 15px;
+    }
+    
+    .modal-body::before {
+        top: -15px;
     }
 }
 
@@ -870,11 +1103,11 @@ body {
         transform: scale(0.98);
     }
     
-    .volver-btn:hover {
+    .volver-btn:hover{
         transform: none;
     }
     
-    .volver-btn:active {
+    .volver-btn:active{
         transform: scale(0.95);
     }
 }
@@ -892,7 +1125,7 @@ body {
     /* Mejorar el comportamiento de los botones en iOS */
     .service-card,
     .btn-modal,
-    .volver-btn {
+    .volver-btn{
         -webkit-tap-highlight-color: transparent;
     }
 }
