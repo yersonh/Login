@@ -644,6 +644,110 @@ body {
     animation: float 1.5s ease-in-out infinite;
 }
 
+/* ========== ESTILOS PARA EL CAMPO DE CONTRASEÑA CON OJO ========== */
+.clave-container {
+    position: relative;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.clave-input {
+    width: 100%;
+    padding: 12px 45px 12px 15px; /* Más padding a la derecha para el ojo */
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.clave-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.clave-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+}
+
+.clave-eye:hover {
+    color: #475569;
+    background-color: #f1f5f9;
+}
+
+.clave-eye:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.clave-eye.active {
+    color: #3b82f6;
+}
+
+/* Si el modal está oscuro, ajusta el color */
+.modal-clave .clave-eye {
+    color: #94a3b8;
+}
+
+.modal-clave .clave-eye:hover {
+    color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Para asegurar que el input se vea bien en todos los navegadores */
+.clave-input::-ms-reveal,
+.clave-input::-ms-clear {
+    display: none; /* Ocultar el ojo nativo de IE/Edge */
+}
+
+/* ========== ESTILOS PARA BOTÓN DE CERRAR SESIÓN ========== */
+.logout-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+
+.logout-btn i {
+    font-size: 18px;
+}
+
 /* ========== RESPONSIVE ========== */
 
 /* Tablets */
@@ -653,30 +757,117 @@ body {
         gap: 18px;
     }
     
+    /* FOOTER CENTRADO PARA TABLETS */
     .app-footer {
-        flex-direction: column;
-        text-align: center;
-        gap: 25px;
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+        padding: 30px 25px !important;
+        gap: 30px !important;
     }
     
     .footer-left, .footer-right {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .contact-info div {
-        justify-content: center;
+        width: 100% !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
     }
     
     .footer-left {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 20px !important;
     }
     
     .footer-logo-container {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 20px !important;
+        text-align: center !important;
+    }
+    
+    .footer-logo {
+        display: block !important;
+        margin: 0 auto !important;
+    }
+    
+    .footer-right {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .contact-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 15px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .contact-info div {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-bottom: 0 !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+    
+    .copyright {
+        text-align: center !important;
+        margin-top: 15px !important;
+        padding-top: 15px !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+        width: 100% !important;
+    }
+    
+    /* Responsive para modal mejorado */
+    .modal-clave {
+        width: 95%;
+        max-width: 380px;
+    }
+    
+    .modal-header {
+        padding: 25px 20px;
+    }
+    
+    .modal-header h3 {
+        font-size: 22px;
+    }
+    
+    .modal-body {
+        padding: 35px 25px 25px;
+    }
+    
+    .modal-body::before {
+        top: -20px;
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .modal-body p {
+        font-size: 15px;
+    }
+    
+    .clave-input {
+        padding: 16px;
+        font-size: 16px;
+    }
+    
+    .btn-modal {
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+    
+    .modal-buttons {
         flex-direction: column;
         gap: 15px;
-        text-align: center;
     }
 }
 
@@ -757,8 +948,86 @@ body {
         padding: 3px 10px;
     }
     
+    /* FOOTER CENTRADO PARA MÓVILES */
     .app-footer {
-        padding: 25px;
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+        padding: 25px 20px !important;
+        gap: 25px !important;
+    }
+    
+    .app-footer > div {
+        width: 100% !important;
+        max-width: 400px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+    
+    .footer-left {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-bottom: 20px !important;
+        gap: 20px !important;
+    }
+    
+    .footer-logo-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 20px !important;
+    }
+    
+    .footer-logo-container img {
+        margin: 0 auto !important;
+        display: block !important;
+        height: 70px !important;
+        width: auto !important;
+    }
+    
+    .footer-right {
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .contact-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 15px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .contact-info div {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 10px !important;
+        flex-wrap: wrap !important;
+        text-align: center !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .copyright {
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+        margin-top: 15px !important;
+        padding-top: 15px !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .volver-btn, .logout-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 12px 18px;
+        font-size: 14px;
     }
     
     /* Responsive para modal mejorado */
@@ -820,6 +1089,7 @@ body {
     }
 }
 
+/* Móviles pequeños */
 @media (max-width: 576px) {
     .app-header, .app-main, .app-footer {
         padding: 15px;
@@ -838,7 +1108,7 @@ body {
     }
     
     .welcome-section {
-        margin-bottom: 18px;
+        margin-bottom: 15px;
     }
     
     .welcome-section h3 {
@@ -858,68 +1128,44 @@ body {
         padding: 15px;
     }
     
+    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
     .app-footer {
-        flex-direction: column;
-        gap: 20px;
-        padding: 20px 15px;
-    }
-    
-    .footer-left {
-        flex-direction: row;
-        gap: 15px;
-        width: 100%;
-        justify-content: flex-start;
+        padding: 20px 15px !important;
+        gap: 25px !important;
     }
     
     .footer-logo-container {
-        flex-direction: row;
-        gap: 15px;
-        text-align: left;
-        align-items: center;
+        gap: 15px !important;
     }
     
-    .footer-logo {
-        height: 60px;
-        min-width: 60px;
-    }
-    
-    .developer-info {
-        font-size: 13px;
-        text-align: left;
-    }
-    
-    .developer-name {
-        margin-bottom: 3px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: left;
+    .footer-logo-container img {
+        height: 65px !important;
     }
     
     .contact-info {
-        font-size: 13px;
+        font-size: 13px !important;
+        gap: 12px !important;
     }
     
     .contact-info div {
-        flex-direction: row;
-        justify-content: flex-start;
-        gap: 8px;
-        margin-bottom: 10px;
-        text-align: left;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        flex-wrap: wrap !important;
     }
     
-    .contact-info i {
-        min-width: 20px;
-        text-align: center;
+    .contact-info span {
+        text-align: center !important;
+        word-break: break-word !important;
     }
     
     .copyright {
-        font-size: 11px;
-        text-align: left;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #eee;
+        font-size: 11px !important;
+        text-align: center !important;
+        margin: 0 auto !important;
+        max-width: 280px !important;
+        line-height: 1.4 !important;
     }
     
     /* Modal responsive móvil mejorado */
@@ -947,6 +1193,7 @@ body {
     }
 }
 
+/* Móviles muy pequeños */
 @media (max-width: 480px) {
     .modal-clave {
         width: 95%;
@@ -968,8 +1215,39 @@ body {
     .modal-body p {
         font-size: 14px;
     }
+    
+    /* FOOTER CENTRADO PARA MÓVILES MUY PEQUEÑOS */
+    .app-footer {
+        padding: 18px 12px !important;
+        gap: 22px !important;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    .footer-logo-container img {
+        height: 60px !important;
+    }
+    
+    .contact-info div {
+        flex-direction: column !important;
+        gap: 5px !important;
+        text-align: center !important;
+    }
+    
+    .contact-info i {
+        font-size: 16px !important;
+    }
+    
+    .copyright {
+        font-size: 10px !important;
+        max-width: 250px !important;
+    }
 }
 
+/* Móviles extra pequeños */
 @media (max-width: 375px) {
     .department-info h1 {
         font-size: 18px;
@@ -984,7 +1262,7 @@ body {
     }
     
     .welcome-section {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
     
     .welcome-section h3 {
@@ -1001,179 +1279,33 @@ body {
         padding: 15px;
     }
     
+    /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
     .app-footer {
-        gap: 15px;
-        padding: 15px;
+        gap: 20px !important;
+        padding: 15px 10px !important;
     }
     
     .footer-logo-container {
-        gap: 10px;
+        gap: 12px !important;
     }
     
     .footer-logo {
-        height: 50px;
-        min-width: 50px;
-    }
-    
-    .developer-info {
-        font-size: 12px;
+        height: 55px !important;
     }
     
     .contact-info {
-        font-size: 12px;
+        font-size: 12px !important;
     }
     
     .contact-info div {
-        margin-bottom: 8px;
+        flex-direction: column !important;
+        gap: 4px !important;
+        text-align: center !important;
     }
-}
-/* Estilos para el campo de contraseña con ojo */
-.clave-container {
-    position: relative;
-    width: 100%;
-    margin-top: 8px;
-}
-
-.clave-input {
-    width: 100%;
-    padding: 12px 45px 12px 15px; /* Más padding a la derecha para el ojo */
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    background-color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.clave-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.clave-eye {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-}
-
-.clave-eye:hover {
-    color: #475569;
-    background-color: #f1f5f9;
-}
-
-.clave-eye:active {
-    transform: translateY(-50%) scale(0.95);
-}
-
-.clave-eye.active {
-    color: #3b82f6;
-}
-
-/* Si el modal está oscuro, ajusta el color */
-.modal-clave .clave-eye {
-    color: #94a3b8;
-}
-
-.modal-clave .clave-eye:hover {
-    color: #3b82f6;
-    background-color: rgba(59, 130, 246, 0.1);
-}
-
-/* Para asegurar que el input se vea bien en todos los navegadores */
-.clave-input::-ms-reveal,
-.clave-input::-ms-clear {
-    display: none; /* Ocultar el ojo nativo de IE/Edge */
-}
-/* ========== ESTILOS PARA BOTÓN DE CERRAR SESIÓN ========== */
-/*
-.logout-btn {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.logout-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.logout-btn:active {
-    transform: translateY(0);
-    background: rgba(255, 255, 255, 0.15);
-}*/
-
-.logout-btn {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 22px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-    align-items: center;
-    gap: 10px;
-    z-index: 9999;
-    transition: all 0.3s ease;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    ;
-        }
-.logout-btn:hover {
-    background: linear-gradient(135deg, #d97706, #b45309);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
-        }
-.logout-btn i {
-    font-size: 18px;
-        }
-
-/* Responsive para el botón de cerrar sesión */
-@media (max-width: 768px) {
-    .logout-btn {
-        margin-top: 8px;
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 576px) {
-    .logout-btn {
-        margin-top: 6px;
-        padding: 5px 10px;
-        font-size: 11px;
+    
+    .copyright {
+        font-size: 10px !important;
+        line-height: 1.4 !important;
     }
 }
 
