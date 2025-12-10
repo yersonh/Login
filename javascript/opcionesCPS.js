@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const serviceCards = document.querySelectorAll('.service-card');
     const aomCard = document.getElementById('aom-card');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const volvertBtn = document.getElementById('volvertBtn');
     
     initServiceCards();
     initLogoutButton();
@@ -24,104 +24,82 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     function initLogoutButton() {
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
+        if (volvertBtn) {
+            volvertBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                showLogoutConfirmation();
+                showVolverConfirmation();
             });
         }
-    }function showLogoutConfirmation() {
-        const nombreMostrar = (typeof USER_NOMBRE_COMPLETO !== 'undefined' && USER_NOMBRE_COMPLETO) 
-                                ? USER_NOMBRE_COMPLETO 
-                                : 'Usuario';
-        const confirmModal = document.createElement('div');
-        confirmModal.className = 'modal-overlay active';
-        confirmModal.innerHTML = `
-            <div class="modal-clave">
-                <div class="modal-header">
-                    <h3>¿Cerrar sesión?</h3>
-                    <p>Confirmación requerida</p>
+    }
+    function showVolverConfirmation() {
+    const confirmModal = document.createElement('div');
+    // Usamos 'modal-overlay active' para que se muestre inmediatamente
+    confirmModal.className = 'modal-overlay active';
+    
+    // --- Estructura del Modal de Confirmación para Volver ---
+    confirmModal.innerHTML = `
+        <div class="modal-clave">
+            <div class="modal-header">
+                <h3>¿Volver al Menú Principal?</h3>
+                <p>Confirmación requerida</p>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fas fa-arrow-circle-left" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
+                    <p style="margin-top: 10px; margin-bottom: 5px;">¿Confirma que desea regresar al menú anterior?</p> 
+                    <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido(a) al menú de servicios.</p>
                 </div>
-                <div class="modal-body">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <i class="fas fa-sign-out-alt" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
-                        
-                        <p style="margin-bottom: 5px;">
-                            <strong style="font-size: 22px; font-weight: bold; color: #333;">${nombreMostrar}</strong>
-                        </p>
-                        
-                        <p style="margin-top: 10px; margin-bottom: 5px;">¿Confirma cerrar la sesión actual?</p> 
-                        
-                        <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido a la página de inicio de sesión.</p>
-                    </div>
-                    <div class="modal-buttons">
-                        <button class="btn-modal btn-ingresar" id="confirmLogout">
-                            Sí, cerrar sesión
-                        </button>
-                        <button class="btn-modal btn-cancelar" id="cancelLogout">
-                            Cancelar
-                        </button>
-                    </div>
+                <div class="modal-buttons">
+                    <button class="btn-modal btn-ingresar" id="confirmVolver">
+                        Sí, Volver
+                    </button>
+                    <button class="btn-modal btn-cancelar" id="cancelVolver">
+                        Permanecer aquí
+                    </button>
                 </div>
             </div>
-        `;
+        </div>
+    `;
+    
+    document.body.appendChild(confirmModal);
+
+    // --- Lógica de Eventos del Modal ---
+
+    // 1. CONFIRMAR VOLVER (Redirecciona al menú principal)
+    document.getElementById('confirmVolver').addEventListener('click', function() {
+        // Opción 1: Usa window.history.back() para ir a la página anterior
+        // window.history.back(); 
         
-        document.body.appendChild(confirmModal);
-
-       document.getElementById('confirmLogout').addEventListener('click', function() {
-    fetch('../ajax/logout.php', {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-        // Si tu back y front están en distintos orígenes necesitarás: , credentials: 'include'
-    })
-    .then(async response => {
-        const text = await response.text();
-        // Intentar parsear JSON, si falla mostrar el html recibido
-        try {
-            const data = JSON.parse(text);
-            return data;
-        } catch (err) {
-            console.error('logout AJAX - servidor devolvió algo distinto de JSON:');
-            console.log(text); // <<-- aquí verás el HTML / error completo
-            throw new Error('Respuesta inválida del servidor, revisar console.log(text)');
-        }
-    })
-    .then(data => {
-        if (data.success) {
-            window.location.href = data.redirect || '../index.php';
-        } else {
-            console.error('Error al cerrar sesión:', data.message);
-            alert('Hubo un problema al cerrar sesión: ' + (data.message || 'Error desconocido'));
-        }
-    })
-    .catch(error => {
-        console.error('Error de logout AJAX:', error);
-        alert('Error de red o respuesta inválida. Revisa la consola para más detalles.');
+        // Opción 2: Redirige directamente a la URL de tu menú principal (más seguro)
+        // Ya que estás en views/CPS/OpcionesCPS.php, necesitas subir dos niveles para views/menuAsistente.php
+        window.location.href = '../menuAsistente.php'; 
+        
+        document.body.removeChild(confirmModal);
     });
-});
 
+    // 2. CANCELAR (Cierra el modal)
+    const cancelVolver = document.getElementById('cancelVolver');
+    cancelVolver.addEventListener('click', function() {
+        document.body.removeChild(confirmModal);
+    });
 
-        document.getElementById('cancelLogout').addEventListener('click', function() {
+    // 3. Cierre al hacer clic fuera del modal (overlay)
+    confirmModal.addEventListener('click', function(e) {
+        // Solo si el clic fue directamente en el fondo
+        if (e.target === confirmModal) {
             document.body.removeChild(confirmModal);
-        });
+        }
+    });
 
-        confirmModal.addEventListener('click', function(e) {
-            if (e.target === confirmModal) {
-                document.body.removeChild(confirmModal);
-            }
-        });
-
-        const handleEscape = function(e) {
-            if (e.key === 'Escape') {
-                document.body.removeChild(confirmModal);
-                document.removeEventListener('keydown', handleEscape);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
-    }
+    // 4. Cierre con la tecla ESC
+    const handleEscape = function(e) {
+        if (e.key === 'Escape') {
+            document.body.removeChild(confirmModal);
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+}
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
         const statusElement = card.querySelector('.service-status');
