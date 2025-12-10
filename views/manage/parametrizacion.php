@@ -114,18 +114,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             gap: 10px;
         }
         
-        .admin-badge {
-            background: linear-gradient(45deg, #ffc107, #ff9800);
-            color: #856404;
-            padding: 3px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
         .user-profile {
             text-align: right;
         }
@@ -679,9 +667,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <h1>GOBERNACIÓN DEL META</h1>
                     <h2>
                         Secretaría de Minas y Energía
-                        <span class="admin-badge">
-                            <i class="fas fa-shield-alt"></i> ADMINISTRADOR
-                        </span>
                     </h2>
                 </div>
                 <div class="user-profile">
