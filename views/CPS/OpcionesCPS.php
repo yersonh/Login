@@ -139,7 +139,7 @@ if (empty($nombreCompleto)) {
             </div>
         </main>
         
-        <button class="volver-btn" id="volvertBtn">
+        <button class="btn-volver" id="volvertBtn">
             <i class="fas fa-sign-out-alt"></i>
             <span>Volver</span>
         </button>
