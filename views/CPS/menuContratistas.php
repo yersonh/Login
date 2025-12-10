@@ -73,7 +73,7 @@ if (empty($nombreCompleto)) {
         <main class="app-main">
             <div class="welcome-section">
                 <h3>Menú AOM Contratistas</h3>
-                <p>Selecciona una opción:/p>
+                <p>Selecciona una opción:</p>
             </div>
             
             <!-- Grid de servicios - 5 opciones en 2 filas (3 en primera, 2 en segunda) -->
