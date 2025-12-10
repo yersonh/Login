@@ -595,7 +595,10 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <div class="user-profile">
                     <div class="welcome-user">
                         <i class="fas fa-user-circle"></i>
-                        <span>Bienvenido(a) <?php echo htmlspecialchars($nombreCompleto); ?></span>
+                        <span>Bienvenido(a)</span>
+                        <strong style="font-size: 25px; font-weight: bold;">
+                            <?php echo htmlspecialchars($nombreCompleto); ?>
+                        </strong>
                     </div>
                     <div class="user-role">
                         <i class="fas fa-user-shield"></i> Administrador
@@ -632,6 +635,9 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         <div class="logo-preview">
                             <img id="currentLogo" src="../../imagenes/logo.png" alt="Logo actual" 
                                  onerror="this.src='https://via.placeholder.com/300x120/004a8d/ffffff?text=LOGO+ACTUAL'">
+                            <div class="developer-info">
+                                <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                            </div>
                         </div>
                         <p class="logo-info">Tamaño recomendado: 300x120 px (Formato: PNG, JPG o SVG)</p>
                     </div>
