@@ -479,6 +479,7 @@ body {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(0, 74, 141, 0.2);
+    gap: 15px;
 }
 
 .btn-ingresar:hover {
