@@ -190,6 +190,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Menú de Navegación -->
             <div class="nav-section">
+            <div class="nav-section">
 
             <ul class="nav-menu">
                 <li class="nav-item">
@@ -215,7 +216,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
                 <!-- Cerrar sesión -->
                 <li class="nav-item">
-                    <a class="nav-link logout-link" id="logoutBtn">
+                    <a href="../logout.php" class="nav-link logout-link">
                         <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
                         <span class="nav-text">Cerrar Sesión</span>
                     </a>
