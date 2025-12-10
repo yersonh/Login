@@ -197,7 +197,7 @@ body {
     color: var(--gray-color);
 }
 
-/* ========== FOOTER ========== */
+/* ========== FOOTER CENTRADO ========== */
 .app-footer {
     background-color: white;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
@@ -247,97 +247,6 @@ body {
     font-size: 12px;
     color: #adb5bd;
     margin-top: 10px;
-}
-
-/* ========== RESPONSIVE - TABLETS (768px - 992px) ========== */
-@media (max-width: 992px) and (min-width: 769px) {
-    .app-footer {
-        flex-direction: column;
-        gap: 25px;
-        text-align: center;
-    }
-    
-    .footer-left, .footer-right {
-        width: 100%;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-    }
-}
-
-/* ========== RESPONSIVE - TABLETS PEQUEÑAS (576px - 768px) ========== */
-@media (max-width: 768px) and (min-width: 577px) {
-    .app-footer {
-        padding: 20px;
-    }
-}
-
-/* ========== RESPONSIVE - MÓVILES MEDIANOS (480px - 576px) ========== */
-@media (max-width: 576px) and (min-width: 481px) {
-    .app-footer {
-        padding: 15px;
-    }
-    
-    .footer-logo {
-        height: 70px;
-    }
-}
-
-/* ========== RESPONSIVE - MÓVILES PEQUEÑOS (< 480px) ========== */
-@media (max-width: 480px) {
-    .app-footer {
-        padding: 15px;
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .footer-left {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .footer-logo {
-        height: 60px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .contact-info {
-        font-size: 13px;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-        margin-bottom: 6px;
-    }
-    
-    .copyright {
-        font-size: 11px;
-    }
-}
-
-/* ========== RESPONSIVE - DISPOSITIVOS MUY PEQUEÑOS (altura limitada) ========== */
-@media (max-height: 700px) and (max-width: 768px) {
-    .app-footer {
-        padding: 10px;
-    }
-}
-
-/* ========== RESPONSIVE - ORIENTACIÓN HORIZONTAL EN MÓVILES ========== */
-@media (max-width: 768px) and (orientation: landscape) {
-    .app-footer {
-        padding: 10px;
-    }
 }
 
 /* ========== MODAL DE CLAVE MEJORADO ========== */
@@ -731,30 +640,32 @@ body {
         gap: 18px;
     }
     
-    /* FOOTER CENTRADO PARA TABLETS - REGLAS ANTERIORES */
+    /* FOOTER CENTRADO PARA TABLETS */
     .app-footer {
         flex-direction: column;
         text-align: center;
-        gap: 25px;
+        gap: 20px;
+        padding: 25px 30px;
     }
     
     .footer-left, .footer-right {
         width: 100%;
+    }
+    
+    .footer-left {
         justify-content: center;
+        align-items: center;
+    }
+    
+    .footer-right {
+        text-align: center;
     }
     
     .contact-info div {
         justify-content: center;
     }
     
-    .footer-left {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 15px;
+    .copyright {
         text-align: center;
     }
 }
@@ -836,9 +747,54 @@ body {
         padding: 3px 10px;
     }
     
-    /* FOOTER EN MÓVILES */
+    /* FOOTER CENTRADO PARA MÓVILES */
     .app-footer {
-        padding: 25px;
+        padding: 20px;
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .footer-left {
+        flex-direction: column;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        height: 70px;
+    }
+    
+    .footer-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .contact-info {
+        font-size: 14px;
+    }
+    
+    .contact-info div {
+        justify-content: center;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .copyright {
+        font-size: 12px;
+        text-align: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
     
     /* Responsive para modal mejorado */
@@ -900,9 +856,10 @@ body {
     }
 }
 
+/* Móviles pequeños */
 @media (max-width: 576px) {
     .app-header, .app-main, .app-footer {
-        padding: 20px;
+        padding: 15px;
     }
     
     .department-info h1 {
@@ -918,7 +875,7 @@ body {
     }
     
     .welcome-section {
-        margin-bottom: 18px;
+        margin-bottom: 15px;
     }
     
     .welcome-section h3 {
@@ -938,44 +895,14 @@ body {
         padding: 15px;
     }
     
-    /* FOOTER EN MÓVILES PEQUEÑOS - REGLAS ANTERIORES */
+    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
     .app-footer {
-        flex-direction: column;
+        padding: 15px;
         gap: 20px;
-        padding: 20px 15px;
-    }
-    
-    .footer-left {
-        flex-direction: row;
-        gap: 15px;
-        width: 100%;
-        justify-content: flex-start;
-    }
-    
-    .footer-logo-container {
-        flex-direction: row;
-        gap: 15px;
-        text-align: left;
-        align-items: center;
     }
     
     .footer-logo {
         height: 60px;
-        min-width: 60px;
-    }
-    
-    .developer-info {
-        font-size: 13px;
-        text-align: left;
-    }
-    
-    .developer-name {
-        margin-bottom: 3px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: left;
     }
     
     .contact-info {
@@ -983,24 +910,11 @@ body {
     }
     
     .contact-info div {
-        flex-direction: row;
-        justify-content: flex-start;
-        gap: 8px;
-        margin-bottom: 10px;
-        text-align: left;
-    }
-    
-    .contact-info i {
-        min-width: 20px;
-        text-align: center;
+        margin-bottom: 8px;
     }
     
     .copyright {
         font-size: 11px;
-        text-align: left;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #eee;
     }
     
     /* Modal responsive móvil mejorado */
@@ -1028,6 +942,7 @@ body {
     }
 }
 
+/* Móviles muy pequeños */
 @media (max-width: 480px) {
     .modal-clave {
         width: 95%;
@@ -1049,8 +964,27 @@ body {
     .modal-body p {
         font-size: 14px;
     }
+    
+    /* FOOTER CENTRADO PARA MÓVILES MUY PEQUEÑOS */
+    .app-footer {
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .footer-logo {
+        height: 55px;
+    }
+    
+    .contact-info {
+        font-size: 12px;
+    }
+    
+    .copyright {
+        font-size: 10px;
+    }
 }
 
+/* Móviles extra pequeños */
 @media (max-width: 375px) {
     .department-info h1 {
         font-size: 18px;
@@ -1065,7 +999,7 @@ body {
     }
     
     .welcome-section {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
     
     .welcome-section h3 {
@@ -1082,33 +1016,25 @@ body {
         padding: 15px;
     }
     
-    /* FOOTER EN MÓVILES MUY PEQUEÑOS - REGLAS ANTERIORES */
+    /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
     .app-footer {
         gap: 15px;
-        padding: 15px;
-    }
-    
-    .footer-logo-container {
-        gap: 10px;
+        padding: 12px;
     }
     
     .footer-logo {
         height: 50px;
-        min-width: 50px;
-    }
-    
-    .developer-info {
-        font-size: 12px;
     }
     
     .contact-info {
         font-size: 12px;
     }
     
-    .contact-info div {
-        margin-bottom: 8px;
+    .copyright {
+        font-size: 10px;
     }
 }
+
 /* Estilos para el campo de contraseña con ojo */
 .clave-container {
     position: relative;
@@ -1182,6 +1108,7 @@ body {
 .clave-input::-ms-clear {
     display: none; /* Ocultar el ojo nativo de IE/Edge */
 }
+
 /* ========== ESTILOS PARA BOTÓN DE CERRAR SESIÓN ========== */
 .logout-btn {
     position: fixed;
