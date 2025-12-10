@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <strong style="font-size: 22px; font-weight: bold; color: #333;">${nombreMostrar}</strong>
                         </p>
                         
-                        <p style="margin-top: 10px; margin-bottom: 5px;">¿Está seguro que desea cerrar la sesión actual?</p> 
+                        <p style="margin-top: 10px; margin-bottom: 5px;">¿Confirma cerrar la sesión actual?</p> 
                         
                         <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido a la página de inicio de sesión.</p>
                     </div>
