@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'contratista') {
-    // Si no es usuario, redirigir según su rol
+    // Si no es contratista, redirigir según su rol
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'asistente') {
             header("Location: menuAsistente.php");

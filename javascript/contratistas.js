@@ -15,8 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showVolverConfirmation();
             });
         }
-        
-        // Opciones del menú
+
         const opciones = [
             'agregar-contratista',
             'modificar-contratista',
@@ -191,8 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (errorMessage) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
-            
-            // Auto-ocultar después de 5 segundos
+
             setTimeout(() => {
                 errorMessage.classList.remove('show');
             }, 5000);

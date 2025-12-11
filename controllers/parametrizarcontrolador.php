@@ -1,57 +1,48 @@
 <?php
-require_once __DIR__ . '/../models/parametrizar.php';
+session_start();
 
-class ConfiguracionControlador {
-    private $modelo;
-
-    public function __construct() {
-        $this->modelo = new Configuracion();
-    }
-
-    // Método para usar en las vistas (menuAdministrador, login, etc.)
-    public function getDatos() {
-        return $this->modelo->obtenerConfiguracion();
-    }
-
-    // Método para procesar el formulario de edición
-    public function actualizarDatos() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            
-            // 1. Obtener datos actuales por si no se sube logo nuevo
-            $configActual = $this->getDatos();
-            $rutaLogo = $configActual['ruta_logo'];
-
-            // 2. Manejo de subida de imagen (Logo)
-            if (isset($_FILES['logo_nuevo']) && $_FILES['logo_nuevo']['error'] === UPLOAD_ERR_OK) {
-                $directorioDestino = __DIR__ . '/../imagenes/';
-                $nombreArchivo = 'logo_sistema_' . time() . '.png'; // Nombre único
-                $rutaDestino = $directorioDestino . $nombreArchivo;
-                
-                // Mover archivo
-                if (move_uploaded_file($_FILES['logo_nuevo']['tmp_name'], $rutaDestino)) {
-                    $rutaLogo = '../imagenes/' . $nombreArchivo; // Ruta relativa para guardar en BD
-                }
-            }
-
-            // 3. Preparar array de datos
-            $datos = [
-                'version_sistema' => $_POST['version'] ?? $configActual['version_sistema'],
-                'tipo_licencia'   => $_POST['licencia'] ?? $configActual['tipo_licencia'],
-                'valida_hasta'    => $_POST['valida_hasta'] ?? $configActual['valida_hasta'],
-                'desarrollado_por'=> $_POST['desarrollador'] ?? $configActual['desarrollado_por'],
-                'direccion'       => $_POST['direccion'] ?? $configActual['direccion'],
-                'correo_contacto' => $_POST['email'] ?? $configActual['correo_contacto'],
-                'telefono'        => $_POST['telefono'] ?? $configActual['telefono'],
-                'ruta_logo'       => $rutaLogo
-            ];
-
-            // 4. Guardar en BD
-            if ($this->modelo->actualizarConfiguracion($datos)) {
-                return ['success' => true, 'message' => 'Configuración actualizada correctamente.'];
-            } else {
-                return ['success' => false, 'message' => 'Error al guardar en base de datos.'];
-            }
-        }
-    }
+// Solo administradores
+if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'administrador') {
+    header("Location: ../index.php");
+    exit();
 }
+
+require_once '../models/Configuracion.php';
+
+$configModel = new Configuracion();
+$config = $configModel->obtenerConfiguracion();
+
+// Si no hay configuración, crear una por defecto
+if (!$config) {
+    // Podrías crear un método para inicializar la configuración
+    $config = [
+        'version_sistema' => '1.0.0',
+        'tipo_licencia' => 'Evaluación',
+        'valida_hasta' => '2026-03-31',
+        'desarrollado_por' => 'SisgonTech',
+        'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
+        'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
+        'telefono' => '(57 -608) 6 818503',
+        'ruta_logo' => '../../imagenes/logo.png',
+        'enlace_web' => 'https://www.meta.gov.co',
+        'texto_alternativo' => 'Logo Gobernación del Meta'
+    ];
+}
+
+// Calcular días restantes
+$fechaVencimiento = new DateTime($config['valida_hasta']);
+$hoy = new DateTime();
+$diferencia = $hoy->diff($fechaVencimiento);
+$diasRestantes = ($fechaVencimiento > $hoy) ? $diferencia->days : 0;
+
+// Datos del usuario (manteniendo tu código original)
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+
+$tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
+$correoUsuario = $_SESSION['correo'] ?? '';
 ?>
