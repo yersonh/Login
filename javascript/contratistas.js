@@ -1,6 +1,5 @@
 // javascript/aom.js
 document.addEventListener('DOMContentLoaded', function() {
-    const volverBtn = document.getElementById('volverBtn');
     
     initButtons();
     
@@ -8,13 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('AOM Contratistas - Rol:', USER_TIPO);
 
     function initButtons() {
-        // Botón volver
-        if (volverBtn) {
-            volverBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                showVolverConfirmation();
-            });
-        }
 
         const opciones = [
             'agregar-contratista',
@@ -58,60 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function showVolverConfirmation() {
-        const confirmModal = document.createElement('div');
-        confirmModal.className = 'modal-overlay active';
-        
-        confirmModal.innerHTML = `
-            <div class="modal-clave">
-                <div class="modal-header">
-                    <h3>¿Volver al Menú Anterior?</h3>
-                    <p>Confirmación requerida</p>
-                </div>
-                <div class="modal-body">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <i class="fas fa-arrow-circle-left" style="font-size: 48px; color: #004a8d; margin-bottom: 15px;"></i>
-                        <p style="margin-top: 10px; margin-bottom: 5px;">¿Confirma que desea regresar al menú anterior?</p> 
-                        <p style="font-size: 14px; color: #6c757d; margin-top: 0; margin-bottom: 0;">Será redirigido(a) al menú de servicios CPS.</p>
-                    </div>
-                    <div class="modal-buttons">
-                        <button class="btn-modal btn-ingresar" id="confirmVolver">
-                            Sí, Volver
-                        </button>
-                        <button class="btn-modal btn-cancelar" id="cancelVolver">
-                            Permanecer aquí
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(confirmModal);
-        
-        document.getElementById('confirmVolver').addEventListener('click', function() {
-            window.location.href = '../menuAsistente.php';
-            document.body.removeChild(confirmModal);
-        });
-
-        const cancelVolver = document.getElementById('cancelVolver');
-        cancelVolver.addEventListener('click', function() {
-            document.body.removeChild(confirmModal);
-        });
-
-        confirmModal.addEventListener('click', function(e) {
-            if (e.target === confirmModal) {
-                document.body.removeChild(confirmModal);
-            }
-        });
-        
-        const handleEscape = function(e) {
-            if (e.key === 'Escape') {
-                document.body.removeChild(confirmModal);
-                document.removeEventListener('keydown', handleEscape);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
-    }
     
     // Manejo del modal de clave (para parametrizar obligaciones)
     const modalClave = document.getElementById('modalClave');
@@ -196,4 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 5000);
         }
     }
+    document.getElementById('volverBtn').addEventListener('click', function() {
+            window.location.href = 'OpcionesCPS.php';
+        });
 });
