@@ -41,7 +41,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../styles/parametrizacion.css">
+    <link rel="stylesheet" href="../styles/parametrizar.css">
 </head>
 <body>
     <div class="app-container">
