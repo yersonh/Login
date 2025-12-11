@@ -624,12 +624,12 @@ $consecutivo = rand(100, 999); // Temporal
         
         // Manejo de botones
         document.getElementById('volverBtn').addEventListener('click', function() {
-            window.location.href = 'menu_asistente.php';
+            window.location.href = 'menuContratistas.php';
         });
         
         document.getElementById('cancelarBtn').addEventListener('click', function() {
             if (confirm('¿Está seguro de cancelar? Los datos no guardados se perderán.')) {
-                window.location.href = 'menu_asistente.php';
+                window.location.href = 'menuContratistas.php';
             }
         });
         
