@@ -37,7 +37,7 @@ $consecutivo = rand(100, 999); // Temporal
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="../styles/contratistas.css">
+    <link rel="stylesheet" href="../styles/agregar_contratista.css">
     <style>
         /* Estilos específicos para el formulario */
         .form-container {
