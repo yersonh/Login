@@ -83,10 +83,25 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap; /* Evita que se rompa en varias líneas */
 }
 
 .welcome-user i {
     color: #ffd700;
+    flex-shrink: 0; /* Evita que el icono se reduzca */
+}
+
+.welcome-user span {
+    white-space: nowrap; /* Mantiene "Bienvenido(a)" en una línea */
+}
+
+.welcome-user strong {
+    font-size: 25px !important; /* Tamaño fijo para el nombre */
+    font-weight: bold;
+    white-space: nowrap; /* Evita que el nombre se divida */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Agrega "..." si el nombre es muy largo */
+    max-width: 200px; /* Ancho máximo para el nombre */
 }
 
 .user-role {
@@ -511,6 +526,10 @@ body {
     .service-card {
         min-height: 220px;
     }
+    
+    .welcome-user strong {
+        max-width: 250px; /* Más espacio para nombre largo en desktop */
+    }
 }
 
 /* ========== RESPONSIVE - TABLETS GRANDES (992px - 1200px) ========== */
@@ -528,6 +547,10 @@ body {
         width: 60px;
         height: 60px;
         font-size: 24px;
+    }
+    
+    .welcome-user strong {
+        max-width: 180px; /* Ajustado para tablets */
     }
 }
 
@@ -578,6 +601,14 @@ body {
         font-size: 17px;
     }
     
+    .welcome-user {
+        flex-wrap: nowrap; /* Asegura que todo quede en una línea */
+    }
+    
+    .welcome-user strong {
+        max-width: 150px; /* Ajustado para tablets pequeñas */
+    }
+    
     /* Modal en tablets */
     .modal-clave {
         max-width: 380px;
@@ -619,6 +650,14 @@ body {
     
     .welcome-user {
         justify-content: center;
+        flex-wrap: nowrap; /* Mantiene todo en una línea */
+        white-space: nowrap;
+        overflow: hidden; /* Oculta contenido que se desborda */
+    }
+    
+    .welcome-user strong {
+        max-width: 130px; /* Ajustado para móviles grandes */
+        font-size: 22px !important;
     }
     
     .welcome-section h3 {
@@ -769,6 +808,14 @@ body {
     
     .welcome-user {
         font-size: 16px;
+        justify-content: center;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+    
+    .welcome-user strong {
+        font-size: 20px !important;
+        max-width: 110px; /* Ajustado para móviles medianos */
     }
     
     .welcome-section h3 {
@@ -921,14 +968,22 @@ body {
     
     .welcome-user {
         font-size: 15px;
-        flex-direction: column;
-        gap: 5px;
         align-items: center;
         justify-content: center;
+        gap: 5px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+    .welcome-user span {
+        display: inline; /* Asegura que "Bienvenido(a)" esté en línea */
     }
     
     .welcome-user strong {
-        font-size: 20px !important;
+        font-size: 18px !important;
+        max-width: 90px; /* Ajustado para móviles pequeños */
+        display: inline; /* Asegura que esté en línea */
     }
     
     .user-role {
@@ -1126,6 +1181,10 @@ body {
         min-height: 140px;
     }
     
+    .welcome-user strong {
+        max-width: 80px; /* Más pequeño en pantallas con altura limitada */
+    }
+    
     /* Botones flotantes en altura pequeña */
     .volver-btn {
         bottom: 8px;
@@ -1159,6 +1218,10 @@ body {
     .service-card {
         padding: 15px;
         min-height: 160px;
+    }
+    
+    .welcome-user strong {
+        max-width: 120px; /* Más espacio en horizontal */
     }
     
     /* Modal en horizontal */
@@ -1200,6 +1263,12 @@ body {
     
     .welcome-user {
         font-size: 14px;
+        gap: 4px;
+    }
+    
+    .welcome-user strong {
+        font-size: 16px !important;
+        max-width: 70px; /* Muy pequeño para móviles extra pequeños */
     }
     
     /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
