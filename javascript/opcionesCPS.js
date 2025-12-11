@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-
     const serviceCards = document.querySelectorAll('.service-card');
     const aomCard = document.getElementById('aom-card');
-
+    
     initServiceCards();
 
     console.log('Menu Asistente - Usuario:', USER_CORREO);
     console.log('Menu Asistente - Rol:', USER_TIPO);
-
     function initServiceCards() {
         serviceCards.forEach(card => {
             card.addEventListener('click', function() {
@@ -23,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
         const statusElement = card.querySelector('.service-status');
@@ -32,24 +29,17 @@ document.addEventListener('DOMContentLoaded', function() {
             irAOM();
             return;
         }
-
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
         } else {
             showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
         }
     }
-
     function irAOM() {
-        window.location.href = 'menuContratistas.php'; 
+    window.location.href = 'menuContratistas.php'; 
     }
 
-    // --- FIX DEL ERROR ---
-    const volverBtn = document.getElementById('volverBtn');
-    if (volverBtn) {
-        volverBtn.addEventListener('click', function() {
+    document.getElementById('volverBtn').addEventListener('click', function() {
             window.location.href = '../menuAsistente.php';
         });
-    }
-
 });
