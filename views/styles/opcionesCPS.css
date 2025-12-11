@@ -1,4 +1,4 @@
-/* styles/asistente.css - Versión completa y organizada */
+/* styles/asistente.css - Versión completa y organizada con mejoras responsive */
 
 /* ========== VARIABLES CSS ========== */
 :root {
@@ -496,6 +496,8 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* ========== RESPONSIVE MEJORADO ========== */
+
 /* ========== RESPONSIVE - DESKTOP GRANDE (> 1200px) ========== */
 @media (min-width: 1201px) {
     .app-container {
@@ -540,14 +542,28 @@ body {
         flex-direction: column;
         gap: 25px;
         text-align: center;
+        padding: 25px 30px;
     }
     
     .footer-left, .footer-right {
         width: 100%;
     }
     
+    .footer-left {
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .footer-right {
+        text-align: center;
+    }
+    
     .contact-info div {
         justify-content: center;
+    }
+    
+    .copyright {
+        text-align: center;
     }
     
     .service-card {
@@ -624,6 +640,62 @@ body {
         min-height: 170px;
     }
     
+    .service-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+    }
+    
+    /* FOOTER CENTRADO PARA MÓVILES */
+    .app-footer {
+        padding: 20px;
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .footer-left {
+        flex-direction: column;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .footer-logo-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        height: 70px;
+    }
+    
+    .footer-right {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .contact-info {
+        font-size: 14px;
+    }
+    
+    .contact-info div {
+        justify-content: center;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .copyright {
+        font-size: 12px;
+        text-align: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
     /* Botones flotantes ajustados */
     .volver-btn {
         bottom: 15px;
@@ -631,6 +703,7 @@ body {
         padding: 12px 18px;
         font-size: 14px;
     }
+    
     /* Modal en tablets pequeñas */
     .modal-clave {
         width: 95%;
@@ -733,8 +806,26 @@ body {
         font-size: 13px;
     }
     
+    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
+    .app-footer {
+        padding: 15px;
+        gap: 20px;
+    }
+    
     .footer-logo {
         height: 70px;
+    }
+    
+    .contact-info {
+        font-size: 13px;
+    }
+    
+    .contact-info div {
+        margin-bottom: 8px;
+    }
+    
+    .copyright {
+        font-size: 11px;
     }
     
     /* Botones flotantes */
@@ -809,7 +900,9 @@ body {
     }
     
     .header-content {
+        flex-direction: column;
         gap: 12px;
+        text-align: center;
     }
     
     .department-info h1 {
@@ -818,13 +911,20 @@ body {
     }
     
     .department-info h2 {
-        font-size: 16px;
+        font-size: 18px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        width: 100%;
     }
     
     .welcome-user {
         font-size: 15px;
         flex-direction: column;
         gap: 5px;
+        align-items: center;
+        justify-content: center;
     }
     
     .welcome-user strong {
@@ -881,6 +981,7 @@ body {
         margin-bottom: 12px;
     }
     
+    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
     .app-footer {
         padding: 15px;
         flex-direction: column;
@@ -891,11 +992,13 @@ body {
     .footer-left {
         flex-direction: column;
         gap: 10px;
+        align-items: center;
     }
     
     .footer-logo-container {
         flex-direction: column;
         gap: 10px;
+        align-items: center;
     }
     
     .footer-logo {
@@ -914,10 +1017,14 @@ body {
     .contact-info div {
         justify-content: center;
         margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     
     .copyright {
         font-size: 11px;
+        text-align: center;
     }
     
     /* Botones flotantes en móviles pequeños */
@@ -1025,6 +1132,7 @@ body {
         right: 8px;
         padding: 8px 10px;
     }
+    
     /* Ajustar modal para altura pequeña */
     .modal-clave {
         max-height: 90vh;
@@ -1080,6 +1188,36 @@ body {
     .service-card {
         padding: 15px;
         min-height: 140px;
+    }
+    
+    .department-info h1 {
+        font-size: 18px;
+    }
+    
+    .department-info h2 {
+        font-size: 16px;
+    }
+    
+    .welcome-user {
+        font-size: 14px;
+    }
+    
+    /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
+    .app-footer {
+        gap: 15px;
+        padding: 12px;
+    }
+    
+    .footer-logo {
+        height: 50px;
+    }
+    
+    .contact-info {
+        font-size: 12px;
+    }
+    
+    .copyright {
+        font-size: 10px;
     }
 }
 
