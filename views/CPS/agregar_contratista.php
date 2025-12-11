@@ -41,11 +41,22 @@ try {
     $municipios = $municipioModel->obtenerMunicipiosActivos();
     $tiposVinculacion = $tipoModel->obtenerTiposActivos();
     
-    function generarConsecutivo() {
-        $anio = date('Y');
-        $mes = date('m');
-        $numero = rand(1, 999);
-        return "SEJ-" . str_pad($numero, 4, '0', STR_PAD_LEFT);
+    function generarConsecutivo($db) {
+        try {
+            // Obtener el siguiente valor de la secuencia
+            $sql = "SELECT nextval('detalle_contrato_seq') AS consecutivo";
+            $stmt = $db->query($sql);
+            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $num = $fila['consecutivo'] ?? 1;
+
+            // Formatear como SEJ-0001, SEJ-0002, ...
+            return "SEJ-" . str_pad($num, 4, '0', STR_PAD_LEFT);
+
+        } catch (Exception $e) {
+            error_log("Error al generar consecutivo: " . $e->getMessage());
+            return "SEJ-0001";
+        }
     }
     
     $consecutivo = generarConsecutivo();
