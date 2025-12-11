@@ -42,22 +42,38 @@ class Usuario {
     }
 
     public function obtenerPorCorreo($correo) {
-        $sql = "SELECT u.*, p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
-                FROM usuario u
-                JOIN persona p ON u.id_persona = p.id_persona
-                WHERE u.correo = :correo";
+    // Agregamos u.reset_password y u.fecha_creacion
+    $sql = "SELECT u.*, u.reset_password, u.fecha_creacion, 
+                   p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
+            FROM usuario u
+            JOIN persona p ON u.id_persona = p.id_persona
+            WHERE u.correo = :correo";
 
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':correo', $correo);
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':correo', $correo);
 
-        try {
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error al obtener usuario por correo: " . $e->getMessage());
-            return false;
-        }
+    try {
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al obtener usuario por correo: " . $e->getMessage());
+        return false;
     }
+}
+public function marcarClaveEstablecida($id_usuario) {
+    $sql = "UPDATE usuario SET reset_password = FALSE 
+            WHERE id_usuario = :id_usuario";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+
+    try {
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error al marcar clave como establecida: " . $e->getMessage());
+        return false;
+    }
+}
 
     public function actualizarTipoUsuario($id_usuario, $tipo_usuario) {
         $sql = "UPDATE usuario SET tipo_usuario = :tipo_usuario 
