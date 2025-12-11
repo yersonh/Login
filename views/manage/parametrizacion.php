@@ -1,3 +1,37 @@
+<?php
+
+session_start();
+
+// Solo administradores
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+if ($_SESSION['tipo_usuario'] !== 'administrador') {
+    if ($_SESSION['tipo_usuario'] === 'asistente') {
+        header("Location: menuAsistente.php");
+    } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+        header("Location: menu.php");
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+
+// 2. Obtener datos del usuario
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario del Sistema';
+}
+
+$tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
+$correoUsuario = $_SESSION['correo'] ?? '';
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +41,7 @@
     <link rel="icon" href="/imagenes/logo.png" type="image/png">
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../styles/parametrizar.css">
+    <link rel="stylesheet" href="../styles/parametrizacion.css">
 </head>
 <body>
     <div class="app-container">
