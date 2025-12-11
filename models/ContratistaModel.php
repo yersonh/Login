@@ -13,24 +13,17 @@ class ContratistaModel {
         $this->usuarioModel = new Usuario($db);
     }
 
-    /**
-     * Registra un contratista completo (persona + contrato + usuario)
-     */
     public function registrarContratistaCompleto($datos) {
-        // Iniciar transacción
         $this->conn->beginTransaction();
         
         try {
-            // 1. VERIFICAR SI YA EXISTE
             if ($this->existeContratista($datos['cedula'], $datos['numero_contrato'])) {
                 throw new Exception('Ya existe un contratista con esa cédula o número de contrato');
             }
 
-            // 2. SEPARAR NOMBRES Y APELLIDOS
             $nombreCompleto = $datos['nombre_completo'];
             $partesNombre = $this->separarNombresApellidos($nombreCompleto);
 
-            // 3. INSERTAR PERSONA
             $id_persona = $this->personaModel->insertar(
                 $datos['cedula'],
                 $partesNombre['nombres'],
@@ -42,18 +35,13 @@ class ContratistaModel {
                 throw new Exception('Error al registrar los datos personales');
             }
 
-            // 4. INSERTAR DETALLE DE CONTRATO
             $id_detalle = $this->insertarDetalleContrato($id_persona, $datos);
-            
-            // 5. CREAR USUARIO AUTOMÁTICAMENTE
             $credenciales = $this->crearUsuarioAutomatico($id_persona, $datos['correo']);
             
-            // 6. ACTUALIZAR SEJ EN DETALLE_CONTRATO (si aplica)
             if (isset($datos['sej'])) {
                 $this->actualizarSEJ($id_detalle, $datos['sej']);
             }
 
-            // Confirmar transacción
             $this->conn->commit();
             
             return [
@@ -65,7 +53,6 @@ class ContratistaModel {
             ];
             
         } catch (Exception $e) {
-            // Revertir en caso de error
             $this->conn->rollBack();
             error_log("Error en registrarContratistaCompleto: " . $e->getMessage());
             
@@ -76,18 +63,13 @@ class ContratistaModel {
         }
     }
 
-    /**
-     * Verifica si ya existe un contratista con esa cédula o número de contrato
-     */
     private function existeContratista($cedula, $numero_contrato) {
-        // Verificar en persona
         $sql_persona = "SELECT COUNT(*) FROM persona WHERE cedula = :cedula";
         $stmt = $this->conn->prepare($sql_persona);
         $stmt->bindParam(':cedula', $cedula);
         $stmt->execute();
         $existePersona = $stmt->fetchColumn() > 0;
 
-        // Verificar en detalle_contrato
         $sql_contrato = "SELECT COUNT(*) FROM detalle_contrato WHERE numero_contrato = :numero_contrato";
         $stmt = $this->conn->prepare($sql_contrato);
         $stmt->bindParam(':numero_contrato', $numero_contrato);
@@ -97,15 +79,12 @@ class ContratistaModel {
         return $existePersona || $existeContrato;
     }
 
-    /**
-     * Separa nombres y apellidos del nombre completo
-     */
     private function separarNombresApellidos($nombreCompleto) {
         $partes = explode(' ', trim($nombreCompleto));
         
         if (count($partes) >= 2) {
-            $nombres = array_shift($partes); // Primer nombre
-            $apellidos = implode(' ', $partes); // El resto son apellidos
+            $nombres = array_shift($partes);
+            $apellidos = implode(' ', $partes);
         } else {
             $nombres = $nombreCompleto;
             $apellidos = '';
@@ -117,9 +96,6 @@ class ContratistaModel {
         ];
     }
 
-    /**
-     * Inserta el detalle del contrato
-     */
     private function insertarDetalleContrato($id_persona, $datos) {
         $sql = "INSERT INTO detalle_contrato (
             id_persona, id_area, id_tipo_vinculacion,
@@ -135,13 +111,11 @@ class ContratistaModel {
 
         $stmt = $this->conn->prepare($sql);
         
-        // Formatear fechas de "dd/mm/aaaa" a "aaaa-mm-dd"
         $fecha_contrato = $this->formatearFecha($datos['fecha_contrato']);
         $fecha_inicio = $this->formatearFecha($datos['fecha_inicio']);
         $fecha_final = $this->formatearFecha($datos['fecha_final']);
         $fecha_rp = !empty($datos['fecha_rp']) ? $this->formatearFecha($datos['fecha_rp']) : null;
 
-        // Bind parameters
         $stmt->bindParam(':id_persona', $id_persona);
         $stmt->bindParam(':id_area', $datos['id_area']);
         $stmt->bindParam(':id_tipo_vinculacion', $datos['id_tipo_vinculacion']);
@@ -163,32 +137,25 @@ class ContratistaModel {
         return $resultado['id_detalle'];
     }
 
-    /**
-     * Crea usuario automáticamente
-     */
     private function crearUsuarioAutomatico($id_persona, $correo) {
-        // Verificar si el correo ya está registrado
         if ($this->usuarioModel->existeCorreo($correo)) {
             throw new Exception('El correo electrónico ya está registrado en el sistema');
         }
 
-        // Generar contraseña temporal (puede ser la cédula o aleatoria)
         $password_temporal = $this->generarPasswordTemporal();
         
-        // Insertar usuario
         $success = $this->usuarioModel->insertar(
             $id_persona,
             $correo,
             $password_temporal,
-            'contratista',  // Tipo de usuario fijo
-            true            // Activo
+            'contratista',
+            true
         );
 
         if (!$success) {
             throw new Exception('Error al crear el usuario');
         }
 
-        // Obtener el ID del usuario recién creado
         $usuario = $this->usuarioModel->obtenerPorCorreo($correo);
         
         return [
@@ -197,16 +164,7 @@ class ContratistaModel {
         ];
     }
 
-    /**
-     * Genera una contraseña temporal
-     */
     private function generarPasswordTemporal() {
-        // Puedes usar diferentes estrategias:
-        // 1. Últimos 4 dígitos de la cédula + "Meta"
-        // 2. Generar aleatorio
-        // 3. Fecha actual
-        
-        // Por ahora, generamos una aleatoria
         $caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $password = '';
         for ($i = 0; $i < 8; $i++) {
@@ -216,9 +174,6 @@ class ContratistaModel {
         return $password;
     }
 
-    /**
-     * Formatea fecha de dd/mm/aaaa a aaaa-mm-dd
-     */
     private function formatearFecha($fecha) {
         if (empty($fecha)) return null;
         
@@ -227,12 +182,9 @@ class ContratistaModel {
             return $partes[2] . '-' . $partes[1] . '-' . $partes[0];
         }
         
-        return $fecha; // Si ya está en formato correcto
+        return $fecha;
     }
 
-    /**
-     * Actualiza el SEJ en el detalle del contrato
-     */
     private function actualizarSEJ($id_detalle, $sej) {
         $sql = "UPDATE detalle_contrato SET sej = :sej WHERE id_detalle = :id_detalle";
         $stmt = $this->conn->prepare($sql);
@@ -242,9 +194,6 @@ class ContratistaModel {
         return $stmt->execute();
     }
 
-    /**
-     * Método para obtener todos los contratistas
-     */
     public function obtenerTodosContratistas() {
         $sql = "SELECT 
                     p.id_persona, p.cedula, p.nombres, p.apellidos, p.telefono,
@@ -264,6 +213,32 @@ class ContratistaModel {
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerContratistaPorId($id_detalle) {
+        $sql = "SELECT 
+                    p.*, dc.*,
+                    a.nombre AS area_nombre,
+                    tv.nombre AS tipo_vinculacion_nombre,
+                    m1.nombre AS municipio_principal_nombre,
+                    m2.nombre AS municipio_secundario_nombre,
+                    m3.nombre AS municipio_terciario_nombre,
+                    u.correo, u.activo AS usuario_activo
+                FROM detalle_contrato dc
+                JOIN persona p ON dc.id_persona = p.id_persona
+                LEFT JOIN area a ON dc.id_area = a.id_area
+                LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
+                LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
+                LEFT JOIN municipio m2 ON dc.id_municipio_secundario = m2.id_municipio
+                LEFT JOIN municipio m3 ON dc.id_municipio_terciario = m3.id_municipio
+                LEFT JOIN usuario u ON p.id_persona = u.id_persona
+                WHERE dc.id_detalle = :id_detalle";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_detalle', $id_detalle);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 ?>

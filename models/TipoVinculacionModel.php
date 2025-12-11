@@ -25,5 +25,14 @@ class TipoVinculacionModel {
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function crearTipo($nombre) {
+        $sql = "INSERT INTO tipo_vinculacion (nombre) VALUES (:nombre) RETURNING id_tipo";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':nombre', $nombre);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC)['id_tipo'];
+    }
 }
 ?>

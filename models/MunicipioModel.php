@@ -25,5 +25,15 @@ class MunicipioModel {
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function buscarPorNombre($nombre) {
+        $sql = "SELECT * FROM municipio WHERE nombre ILIKE :nombre AND activo = true";
+        $stmt = $this->conn->prepare($sql);
+        $busqueda = "%" . $nombre . "%";
+        $stmt->bindParam(':nombre', $busqueda);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

@@ -25,5 +25,14 @@ class AreaModel {
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function crearArea($nombre) {
+        $sql = "INSERT INTO area (nombre) VALUES (:nombre) RETURNING id_area";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':nombre', $nombre);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC)['id_area'];
+    }
 }
 ?>

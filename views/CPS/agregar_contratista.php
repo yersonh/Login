@@ -5,6 +5,11 @@ header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache"); 
 header("Expires: 0"); 
 
+require_once '../../config/database.php';
+require_once '../../models/AreaModel.php';
+require_once '../../models/MunicipioModel.php';
+require_once '../../models/TipoVinculacionModel.php';
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -24,8 +29,31 @@ $apellidoUsuario = htmlspecialchars($_SESSION['apellidos'] ?? '');
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreCompleto;
 
-// Generar consecutivo (ejemplo, normalmente vendría de BD)
-$consecutivo = rand(100, 999); // Temporal
+try {
+    $database = new Database();
+    $db = $database->getConnection();
+    
+    $areaModel = new AreaModel($db);
+    $municipioModel = new MunicipioModel($db);
+    $tipoModel = new TipoVinculacionModel($db);
+    
+    $areas = $areaModel->obtenerAreasActivas();
+    $municipios = $municipioModel->obtenerMunicipiosActivos();
+    $tiposVinculacion = $tipoModel->obtenerTiposActivos();
+    
+    function generarConsecutivo() {
+        $anio = date('Y');
+        $mes = date('m');
+        $numero = rand(1, 999);
+        return "SEJ-" . str_pad($numero, 4, '0', STR_PAD_LEFT);
+    }
+    
+    $consecutivo = generarConsecutivo();
+    
+} catch (Exception $e) {
+    error_log("Error al cargar datos del formulario: " . $e->getMessage());
+    die("Error al cargar el formulario. Por favor contacte al administrador.");
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -38,6 +66,218 @@ $consecutivo = rand(100, 999); // Temporal
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="../styles/agregar_contratista.css">
+    <style>
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+        
+        .form-title {
+            color: var(--primary-color);
+            font-size: 26px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
+            text-align: center;
+        }
+        
+        .form-subtitle {
+            color: var(--secondary-color);
+            font-size: 20px;
+            margin: 30px 0 20px;
+            padding-left: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 15px;
+        }
+        
+        .form-label .required {
+            color: #dc3545;
+            margin-left: 3px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+            background-color: #fafafa;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
+        }
+        
+        .form-control.small {
+            max-width: 200px;
+        }
+        
+        .form-control.medium {
+            max-width: 300px;
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23004a8d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+        
+        .consecutivo-display {
+            background-color: #f0f7ff;
+            border: 2px dashed var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .consecutivo-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-left: 10px;
+        }
+        
+        .datetime-display {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            font-family: monospace;
+            font-size: 15px;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 150px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 74, 141, 0.25);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.25);
+        }
+        
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #eaeaea;
+        }
+        
+        .form-help {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .contract-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .form-control.small,
+            .form-control.medium {
+                max-width: 100%;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     
@@ -61,7 +301,6 @@ $consecutivo = rand(100, 999); // Temporal
             </div>
         </header>
         
-        <!-- Contenido principal -->
         <main class="app-main">
             <div class="welcome-section">
                 <h3>Registrar Contratista / CPS</h3>
@@ -71,7 +310,7 @@ $consecutivo = rand(100, 999); // Temporal
                 <h2 class="form-title">FORMULARIO DE INGRESO DE DATOS CONTRATISTA</h2>
                 
                 <div class="consecutivo-display">
-                    <strong>SEI:</strong>
+                    <strong>SEJ:</strong>
                     <span class="consecutivo-number"><?php echo $consecutivo; ?></span>
                 </div>
                 
@@ -143,16 +382,16 @@ $consecutivo = rand(100, 999); // Temporal
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="tipo_vinculacion">
+                            <label class="form-label" for="id_tipo_vinculacion">
                                 Tipo de vinculación <span class="required">*</span>
                             </label>
-                            <select id="tipo_vinculacion" name="tipo_vinculacion" class="form-control" required>
+                            <select id="id_tipo_vinculacion" name="id_tipo_vinculacion" class="form-control" required>
                                 <option value="">Seleccione</option>
-                                <option value="contratista">Contratista</option>
-                                <option value="cps">CPS</option>
-                                <option value="prestacion_servicios">Prestación de Servicios</option>
-                                <option value="consultor">Consultor</option>
-                                <option value="otros">Otros</option>
+                                <?php foreach ($tiposVinculacion as $tipo): ?>
+                                <option value="<?= htmlspecialchars($tipo['id_tipo']) ?>">
+                                    <?= htmlspecialchars($tipo['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -164,62 +403,61 @@ $consecutivo = rand(100, 999); // Temporal
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label" for="municipio_principal">
+                            <label class="form-label" for="id_municipio_principal">
                                 Municipio 1 (principal) <span class="required">*</span>
                             </label>
-                            <select id="municipio_principal" name="municipio_principal" class="form-control" required>
+                            <select id="id_municipio_principal" name="id_municipio_principal" class="form-control" required>
                                 <option value="">Seleccione</option>
-                                <option value="villavicencio">Villavicencio</option>
-                                <option value="acacias">Acacías</option>
-                                <option value="granada">Granada</option>
-                                <option value="san_martin">San Martín</option>
-                                <option value="puerto_lopez">Puerto López</option>
-                                <option value="otro">Otro municipio</option>
+                                <?php foreach ($municipios as $municipio): ?>
+                                <option value="<?= htmlspecialchars($municipio['id_municipio']) ?>" 
+                                        <?= ($municipio['nombre'] == 'Villavicencio') ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($municipio['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="municipio_secundario">
+                            <label class="form-label" for="id_municipio_secundario">
                                 Municipio 2 (opcional)
                             </label>
-                            <select id="municipio_secundario" name="municipio_secundario" class="form-control">
+                            <select id="id_municipio_secundario" name="id_municipio_secundario" class="form-control">
                                 <option value="">Seleccione</option>
-                                <option value="villavicencio">Villavicencio</option>
-                                <option value="acacias">Acacías</option>
-                                <option value="granada">Granada</option>
-                                <option value="san_martin">San Martín</option>
-                                <option value="puerto_lopez">Puerto López</option>
-                                <option value="ninguno">Ninguno</option>
+                                <option value="0">Ninguno</option>
+                                <?php foreach ($municipios as $municipio): ?>
+                                <option value="<?= htmlspecialchars($municipio['id_municipio']) ?>">
+                                    <?= htmlspecialchars($municipio['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="municipio_terciario">
+                            <label class="form-label" for="id_municipio_terciario">
                                 Municipio 3 (opcional)
                             </label>
-                            <select id="municipio_terciario" name="municipio_terciario" class="form-control">
+                            <select id="id_municipio_terciario" name="id_municipio_terciario" class="form-control">
                                 <option value="">Seleccione</option>
-                                <option value="villavicencio">Villavicencio</option>
-                                <option value="acacias">Acacías</option>
-                                <option value="granada">Granada</option>
-                                <option value="san_martin">San Martín</option>
-                                <option value="puerto_lopez">Puerto López</option>
-                                <option value="ninguno">Ninguno</option>
+                                <option value="0">Ninguno</option>
+                                <?php foreach ($municipios as $municipio): ?>
+                                <option value="<?= htmlspecialchars($municipio['id_municipio']) ?>">
+                                    <?= htmlspecialchars($municipio['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label" for="area">
-                                Área
+                            <label class="form-label" for="id_area">
+                                Área <span class="required">*</span>
                             </label>
-                            <select id="area" name="area" class="form-control">
+                            <select id="id_area" name="id_area" class="form-control" required>
                                 <option value="">Seleccione</option>
-                                <option value="minas">Minas</option>
-                                <option value="energia">Energía</option>
-                                <option value="administrativa">Administrativa</option>
-                                <option value="juridica">Jurídica</option>
-                                <option value="tecnica">Técnica</option>
-                                <option value="otra">Otra</option>
+                                <?php foreach ($areas as $area): ?>
+                                <option value="<?= htmlspecialchars($area['id_area']) ?>">
+                                    <?= htmlspecialchars($area['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
