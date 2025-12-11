@@ -31,7 +31,6 @@ body {
     align-items: center;
 }
 
-/* ========== CONTENEDOR PRINCIPAL (MISMO TAMAÑO) ========== */
 .app-container {
     width: 100%;
     max-width: 1200px;
@@ -711,6 +710,21 @@ body {
     
     .modal-body {
         padding: 35px 30px 30px;
+    }
+}
+
+/* ========== RESPONSIVE - DESKTOP GRANDE (> 1200px) ========== */
+@media (min-width: 1201px) {
+    .app-container {
+        max-width: 1400px;
+    }
+    
+    .services-grid {
+        gap: 30px;
+    }
+    
+    .service-card {
+        min-height: 220px;
     }
 }
 
