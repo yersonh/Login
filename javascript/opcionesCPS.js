@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const aomCard = document.getElementById('aom-card');
     
     initServiceCards();
-    initLogoutButton();
 
     console.log('Menu Asistente - Usuario:', USER_CORREO);
     console.log('Menu Asistente - Rol:', USER_TIPO);
