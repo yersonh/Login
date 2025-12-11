@@ -41,6 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'menuContratistas.php'; 
     }
     document.getElementById('volverBtn').addEventListener('click', function() {
-            window.location.href = '../menuAsistente.php';
+            window.history.back();
         });
 });
