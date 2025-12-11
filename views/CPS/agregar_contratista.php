@@ -331,7 +331,6 @@ $consecutivo = rand(100, 999); // Temporal
                                    id="correo" 
                                    name="correo" 
                                    class="form-control" 
-                                   placeholder="ejemplo@correo.com"
                                    required>
                         </div>
                         
@@ -343,8 +342,6 @@ $consecutivo = rand(100, 999); // Temporal
                                    id="celular" 
                                    name="celular" 
                                    class="form-control medium" 
-                                   placeholder="3101234567"
-                                   value="3101234567"
                                    required>
                         </div>
                         

@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
 if ($_SESSION['tipo_usuario'] !== 'administrador') {
     if ($_SESSION['tipo_usuario'] === 'asistente') {
         header("Location: menuAsistente.php");
-    } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+    } else if ($_SESSION['tipo_usuario'] === 'contratista') {
         header("Location: menu.php");
     } else {
         header("Location: ../index.php");

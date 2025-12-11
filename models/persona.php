@@ -6,14 +6,17 @@ class Persona {
         $this->conn = $db;
     }
 
-    public function insertar($nombres, $apellidos, $telefono, $foto_perfil = null) {
+    public function insertar($cedula, $nombres, $apellidos, $telefono, $foto_perfil = null) {
         if ($foto_perfil === null) {
             $foto_perfil = '/imagenes/usuarios/imagendefault.png';
         }
-        $sql = "INSERT INTO persona (nombres, apellidos, telefono, foto_perfil)
-                VALUES (:nombres, :apellidos, :telefono, :foto_perfil)
+
+        $sql = "INSERT INTO persona (cedula, nombres, apellidos, telefono, foto_perfil)
+                VALUES (:cedula, :nombres, :apellidos, :telefono, :foto_perfil)
                 RETURNING id_persona";
+
         $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':cedula', $cedula);
         $stmt->bindParam(':nombres', $nombres);
         $stmt->bindParam(':apellidos', $apellidos);
         $stmt->bindParam(':telefono', $telefono);
@@ -28,8 +31,10 @@ class Persona {
             return false;
         }
     }
+
     public function actualizarFoto($id_persona, $foto_perfil) {
         $sql = "UPDATE persona SET foto_perfil = :foto_perfil WHERE id_persona = :id_persona";
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':foto_perfil', $foto_perfil);
         $stmt->bindParam(':id_persona', $id_persona);

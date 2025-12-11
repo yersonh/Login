@@ -15,7 +15,7 @@ if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistent
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'administrador') {
             header("Location: menu.php");
-        } else if ($_SESSION['tipo_usuario'] === 'usuario') {
+        } else if ($_SESSION['tipo_usuario'] === 'contratista') {
             header("Location: menu.php");
         } else {
             // Rol desconocido

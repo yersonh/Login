@@ -11,7 +11,7 @@ class SesionControlador {
         $this->usuarioModel = new Usuario($db);
     }
 
-    public function registrar($nombres, $apellidos, $correo, $telefono, $password, $tipo_usuario = 'usuario') {
+    public function registrar($nombres, $apellidos, $correo, $telefono, $password, $tipo_usuario = 'contratista') {
 
         if ($this->usuarioModel->existeCorreo($correo)) {
             return false;
