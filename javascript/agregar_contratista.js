@@ -62,12 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     document.getElementById('volverBtn').addEventListener('click', function() {
-        window.location.href = 'menu_asistente.php';
+        window.location.href = 'menuContratistas.php';
     });
     
     document.getElementById('cancelarBtn').addEventListener('click', function() {
         if (confirm('¿Está seguro de cancelar? Los datos no guardados se perderán.')) {
-            window.location.href = 'menu_asistente.php';
+            window.location.href = 'menuContratistas.php';
         }
     });
     
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(`¡Contratista registrado exitosamente!\n\nSEJ: ${sej}\n\nSe ha creado automáticamente el usuario con acceso al sistema.`);
                 
                 setTimeout(() => {
-                    window.location.href = 'menu_asistente.php';
+                    window.location.href = 'menuContratistas.php';
                 }, 2000);
                 
             } else {
