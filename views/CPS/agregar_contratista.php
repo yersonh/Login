@@ -31,7 +31,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
 
 try {
     $database = new Database();
-    $db = $database->getConnection();
+    $db = $database->conectar();
     
     $areaModel = new AreaModel($db);
     $municipioModel = new MunicipioModel($db);
