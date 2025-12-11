@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Aquí puedes agregar la lógica para cada opción
         switch(opcionId) {
             case 'agregar-contratista':
-                window.location.href = '../contratistas/agregar_contratista.php';
+                window.location.href = 'agregar_contratista.php';
                 break;
             case 'modificar-contratista':
                 window.location.href = 'modificar_contratista.php';
