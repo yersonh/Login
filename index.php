@@ -616,31 +616,14 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
         <span class="close">&times;</span>
-        
-        <!-- Logo dinámico -->
+        <!-- Logo más cerca del título -->
         <div class="license-logo-container">
-            <?php
-            $logoPath = ConfigHelper::obtener('ruta_logo', 'imagenes/logo.png');
-            $logoUrl = (strpos($logoPath, 'http') === 0) 
-                ? $logoPath 
-                : $base_url . ((strpos($logoPath, '/') === 0) ? $logoPath : '/' . $logoPath);
-            ?>
-            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                 alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
-                 class="license-logo"
-                 onerror="this.src='<?php echo $base_url; ?>/imagenes/logo.png'">
+            <img src="<?php echo $base_url; ?>/imagenes/logo.png" alt="Logo Gobernación" class="license-logo">
         </div>
         
         <!-- Información pegada al logo -->
         <div class="license-details">
-            <p><strong>Entidad:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-            <p><strong>Website:</strong> 
-                <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
-                   target="_blank">
-                    <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>
-                </a>
-            </p>
-            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?> (Runtime)</p>
+            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
             <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
             <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
             <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>

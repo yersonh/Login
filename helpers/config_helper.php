@@ -1,6 +1,6 @@
 <?php
-// helpers/config_helper.php - VERSIÓN ACTUALIZADA
-require_once __DIR__ . '/../models/Configuracion.php';
+// helpers/config_helper.php
+require_once __DIR__ . '/../models/parametrizar.php';
 
 class ConfigHelper {
     private static $configCache = null;
@@ -11,7 +11,7 @@ class ConfigHelper {
             self::$configCache = $model->obtenerConfiguracion();
             
             if (!self::$configCache) {
-                // Valores por defecto COMPLETOS
+                // Valores por defecto si no hay configuración
                 self::$configCache = [
                     'version_sistema' => '1.0.0',
                     'tipo_licencia' => 'Evaluación',
@@ -19,10 +19,8 @@ class ConfigHelper {
                     'desarrollado_por' => 'SisgonTech',
                     'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
                     'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
-                    'telefono' => '(57 -608) 6 818503',
-                    'ruta_logo' => '/imagenes/logo.png',        // ← NUEVO
-                    'entidad' => 'Gobernación del Meta',        // ← NUEVO
-                    'enlace_web' => 'https://www.meta.gov.co'   // ← NUEVO
+                    'telefono' => '(57 -608) 6 818503'
+                    
                 ];
             }
         }
@@ -58,22 +56,6 @@ class ConfigHelper {
     public static function obtenerVersionCompleta() {
         $version = self::obtener('version_sistema', '1.0.0');
         return $version;
-    }
-    
-    // Nuevo método para obtener logo con URL completa
-    public static function obtenerLogoUrl($baseUrl = '') {
-        $logoPath = self::obtener('ruta_logo', '../imagenes/logo.png');
-        
-        if (strpos($logoPath, 'http') === 0) {
-            return $logoPath;
-        }
-        
-        if (empty($baseUrl)) {
-            $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") 
-                       . "://" . $_SERVER['HTTP_HOST'];
-        }
-        
-        return $baseUrl . ((strpos($logoPath, '/') === 0) ? $logoPath : '/' . $logoPath);
     }
 }
 ?>
