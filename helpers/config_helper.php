@@ -54,7 +54,7 @@ class ConfigHelper {
     
     public static function obtenerVersionCompleta() {
         $version = self::obtener('version_sistema', '1.0.0');
-        return $version . ' (Runtime)';
+        return $version;
     }
 }
 ?>
