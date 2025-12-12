@@ -11,7 +11,7 @@ class ConfigHelper {
             self::$configCache = $model->obtenerConfiguracion();
             
             if (!self::$configCache) {
-                // Valores por defecto si no hay configuración
+                // Valores por defecto con RUTAS CORRECTAS
                 self::$configCache = [
                     'version_sistema' => '1.0.0',
                     'tipo_licencia' => 'Evaluación',
@@ -19,8 +19,10 @@ class ConfigHelper {
                     'desarrollado_por' => 'SisgonTech',
                     'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
                     'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
-                    'telefono' => '(57 -608) 6 818503'
-                    
+                    'telefono' => '(57 -608) 6 818503',
+                    'ruta_logo' => 'imagenes/logo.png',        // ← SIN / al inicio
+                    'entidad' => 'Gobernación del Meta',
+                    'enlace_web' => 'https://www.meta.gov.co'
                 ];
             }
         }
@@ -36,12 +38,10 @@ class ConfigHelper {
         return self::$configCache[$campo] ?? $default;
     }
     
-    // Métodos específicos para formato especial
     public static function obtenerFechaFormateada() {
         $fecha = self::obtener('valida_hasta', '2026-03-31');
         if (empty($fecha)) return '31 de Marzo de 2026';
         
-        // Convertir formato YYYY-MM-DD a texto
         $meses = [
             '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
             '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
@@ -55,7 +55,20 @@ class ConfigHelper {
     
     public static function obtenerVersionCompleta() {
         $version = self::obtener('version_sistema', '1.0.0');
-        return $version;
+        return $version . ' (Runtime)';
+    }
+    
+    // Método SIMPLE para obtener logo - NO complicar con lógica
+    public static function obtenerLogoUrl() {
+        $logoPath = self::obtener('ruta_logo', 'imagenes/logo.png');
+        
+        // Si ya es URL completa
+        if (strpos($logoPath, 'http://') === 0 || strpos($logoPath, 'https://') === 0) {
+            return $logoPath;
+        }
+        
+        // Para Railway/producción, la ruta debe ser relativa al dominio raíz
+        return '/' . ltrim($logoPath, '/');
     }
 }
 ?>
