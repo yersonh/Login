@@ -6,6 +6,7 @@ require_once 'controllers/sesioncontrolador.php';
 require_once __DIR__ . '/phpmailer/PHPMailer.php';
 require_once __DIR__ . '/phpmailer/SMTP.php';
 require_once __DIR__ . '/phpmailer/Exception.php';
+require_once __DIR__ . '/helpers/config_helper.php';
 
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
 $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
@@ -622,13 +623,13 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         
         <!-- Información pegada al logo -->
         <div class="license-details">
-            <p><strong>Versión:</strong> 1.0.0 (Runtime)</p>
-            <p><strong>Tipo de Licencia:</strong> Evaluación</p>
-            <p><strong>Válida hasta:</strong> 31 de Marzo de 2026</p>
-            <p><strong>Desarrollado por:</strong> SisgonTech</p>
-            <p><strong>Dirección:</strong> Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, en Villavicencio, Meta</p>
-            <p><strong>Contacto:</strong> gobernaciondelmeta@meta.gov.co</p>
-            <p><strong>Teléfono:</strong> (57 -608) 6 818503</p>
+            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
+            <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
+            <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
+            <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>
+            <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion', 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta')); ?></p>
+            <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto', 'gobernaciondelmeta@meta.gov.co')); ?></p>
+            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono', '(57 -608) 6 818503')); ?></p>
         </div>
     </div>
 </div>
