@@ -11,11 +11,14 @@ class Configuracion {
     }
 
     public function obtenerConfiguracion() {
-        $query = "SELECT * FROM " . $this->table . " WHERE id_parametrizacion = 1 LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $query = "SELECT * FROM " . $this->table . " 
+              ORDER BY created_at DESC 
+              LIMIT 1";
+    
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
     public function insertarConfiguracion($datos) {
     $query = "INSERT INTO " . $this->table . " (
