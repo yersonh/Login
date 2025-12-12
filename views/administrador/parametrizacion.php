@@ -30,7 +30,7 @@ $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
 
 // 3. Obtener datos de configuración desde la base de datos
-require_once __DIR__ . '../../controllers/ConfiguracionControlador.php';
+require_once __DIR__ . '/../../controllers/ConfiguracionControlador.php';
 $controladorConfig = new ConfiguracionControlador();
 $configuracion = $controladorConfig->obtenerDatos();
 
