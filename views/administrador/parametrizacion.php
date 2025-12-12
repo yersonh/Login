@@ -151,14 +151,14 @@ if (!empty($configuracion['valida_hasta'])) {
                             </div>
                             
                             <div class="form-group">
-                                <label for="logoAltText">Texto alternativo (SEO):</label>
+                                <label for="logoAltText">Nombre entidad:</label>
                                 <input type="text" id="logoAltText" class="form-control" 
                                        value="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo Gobernación del Meta'); ?>" 
                                        maxlength="100">
                             </div>
                             
                             <div class="form-group">
-                                <label for="logoLink">Enlace al hacer clic:</label>
+                                <label for="logoLink">Website:</label>
                                 <input type="url" id="logoLink" class="form-control" 
                                        value="<?php echo htmlspecialchars($configuracion['enlace_web'] ?? 'https://www.meta.gov.co'); ?>" 
                                        placeholder="https://ejemplo.com">
