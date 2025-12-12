@@ -5,10 +5,10 @@ header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache"); 
 header("Expires: 0"); 
 
-require_once '../../config/database.php';
-require_once '../../models/AreaModel.php';
-require_once '../../models/MunicipioModel.php';
-require_once '../../models/TipoVinculacionModel.php';
+require_once '/../../config/database.php';
+require_once '/../../models/AreaModel.php';
+require_once '/../../models/MunicipioModel.php';
+require_once '/../../models/TipoVinculacionModel.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
