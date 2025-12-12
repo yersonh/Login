@@ -128,7 +128,7 @@ if (!empty($configuracion['valida_hasta'])) {
                         <div class="logo-preview">
                             <img id="currentLogo" 
                                  src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
-                                 alt="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo actual'); ?>" 
+                                 alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo actual'); ?>" 
                                  onerror="this.src='https://via.placeholder.com/300x120/004a8d/ffffff?text=LOGO+ACTUAL'">
                         </div>
                         <p class="logo-info">Tamaño recomendado: 300x120 px (Formato: PNG, JPG o SVG)</p>
@@ -153,7 +153,7 @@ if (!empty($configuracion['valida_hasta'])) {
                             <div class="form-group">
                                 <label for="logoAltText">Nombre entidad:</label>
                                 <input type="text" id="logoAltText" class="form-control" 
-                                       value="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo Gobernación del Meta'); ?>" 
+                                       value="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>" 
                                        maxlength="100">
                             </div>
                             
@@ -263,7 +263,7 @@ if (!empty($configuracion['valida_hasta'])) {
             <div class="footer-left">
                 <div class="footer-logo-container">
                     <img src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
-                         alt="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo Gobernación del Meta'); ?>" 
+                         alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>" 
                          class="footer-logo" 
                          onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">
                     <div class="developer-info">
