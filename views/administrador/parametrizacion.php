@@ -253,6 +253,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     </div>
     
     <!-- Incluir el archivo JavaScript externo -->
-    <script src="/../../js/parametrizar.js"></script>
+    <script src="../../js/parametrizar.js"></script>
 </body>
 </html>
