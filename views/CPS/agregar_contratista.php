@@ -64,13 +64,17 @@ try {
     }
 }
 
-    
     $consecutivo = generarConsecutivo($db);
     
 } catch (Exception $e) {
     error_log("Error al cargar datos del formulario: " . $e->getMessage());
     die("Error al cargar el formulario. Por favor contacte al administrador.");
 }
+?>
+<?php
+require_once '../../controllers/ContratistaController.php';
+$controller = new ContratistaController();
+$controller->mostrarFormulario();
 ?>
 <!DOCTYPE html>
 <html lang="es">
