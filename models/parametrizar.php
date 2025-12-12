@@ -47,7 +47,6 @@ class Configuracion {
         return $stmt->execute();
     }
 
-    // Método específico para actualizar solo el logo
     public function actualizarLogo($rutaLogo, $textoAlt, $enlace) {
         $query = "UPDATE " . $this->table . " SET 
                     ruta_logo = :logo,

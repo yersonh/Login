@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 // Solo administradores
@@ -30,6 +29,39 @@ if (empty($nombreCompleto)) {
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
 
+// 3. Obtener datos de configuración desde la base de datos
+require_once __DIR__ . '/../controllers/ConfiguracionControlador.php';
+$controladorConfig = new ConfiguracionControlador();
+$configuracion = $controladorConfig->obtenerDatos();
+
+// Si no hay datos, usar valores por defecto
+if (empty($configuracion)) {
+    $configuracion = [
+        'version_sistema' => '1.0.0',
+        'tipo_licencia' => 'Evaluación',
+        'valida_hasta' => '2026-03-31',
+        'desarrollado_por' => 'SisgonTech',
+        'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
+        'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
+        'telefono' => '(57 -608) 6 818503',
+        'ruta_logo' => '../../imagenes/logo.png',
+        'texto_alternativo' => 'Logo Gobernación del Meta',
+        'enlace_web' => 'https://www.meta.gov.co'
+    ];
+}
+
+// Calcular días restantes si existe fecha de validez
+$diasRestantes = '90 días'; // Valor por defecto
+if (!empty($configuracion['valida_hasta'])) {
+    $hoy = new DateTime();
+    $validaHasta = new DateTime($configuracion['valida_hasta']);
+    if ($validaHasta > $hoy) {
+        $diferencia = $hoy->diff($validaHasta);
+        $diasRestantes = $diferencia->days . ' días';
+    } else {
+        $diasRestantes = '0 días (Expirada)';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -94,7 +126,9 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                     <div class="current-logo">
                         <h3>Logo Actual</h3>
                         <div class="logo-preview">
-                            <img id="currentLogo" src="../../imagenes/logo.png" alt="Logo actual" 
+                            <img id="currentLogo" 
+                                 src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
+                                 alt="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo actual'); ?>" 
                                  onerror="this.src='https://via.placeholder.com/300x120/004a8d/ffffff?text=LOGO+ACTUAL'">
                         </div>
                         <p class="logo-info">Tamaño recomendado: 300x120 px (Formato: PNG, JPG o SVG)</p>
@@ -119,13 +153,15 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             <div class="form-group">
                                 <label for="logoAltText">Texto alternativo (SEO):</label>
                                 <input type="text" id="logoAltText" class="form-control" 
-                                       value="Logo Gobernación del Meta" maxlength="100">
+                                       value="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo Gobernación del Meta'); ?>" 
+                                       maxlength="100">
                             </div>
                             
                             <div class="form-group">
                                 <label for="logoLink">Enlace al hacer clic:</label>
                                 <input type="url" id="logoLink" class="form-control" 
-                                       value="https://www.meta.gov.co" placeholder="https://ejemplo.com">
+                                       value="<?php echo htmlspecialchars($configuracion['enlace_web'] ?? 'https://www.meta.gov.co'); ?>" 
+                                       placeholder="https://ejemplo.com">
                             </div>
                             
                             <div class="form-actions">
@@ -153,25 +189,26 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             <div class="form-group">
                                 <label for="version">Versión:</label>
                                 <input type="text" id="version" class="form-control" 
-                                       value="1.0.0" placeholder="Ej: 1.0.0">
+                                       value="<?php echo htmlspecialchars($configuracion['version_sistema'] ?? '1.0.0'); ?>" 
+                                       placeholder="Ej: 1.0.0">
                             </div>
                             
                             <div class="form-group">
                                 <label for="tipoLicencia">Tipo de Licencia:</label>
                                 <input type="text" id="tipoLicencia" class="form-control" 
-                                value="Evaluación">
+                                       value="<?php echo htmlspecialchars($configuracion['tipo_licencia'] ?? 'Evaluación'); ?>">
                             </div>
                             
                             <div class="form-group">
                                 <label for="validaHasta">Válida hasta:</label>
                                 <input type="date" id="validaHasta" class="form-control" 
-                                       value="2026-03-31">
+                                       value="<?php echo htmlspecialchars($configuracion['valida_hasta'] ?? '2026-03-31'); ?>">
                             </div>
                            
                             <div class="form-group">
                                 <label for="diasRestantes">Días restantes de evaluación:</label>
                                 <input type="text" id="diasRestantes" class="form-control" 
-                                    value="90 días" readonly>
+                                       value="<?php echo htmlspecialchars($diasRestantes); ?>" readonly>
                             </div>
                         </div>
                         
@@ -181,26 +218,29 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                             <div class="form-group">
                                 <label for="desarrolladoPor">Desarrollado por:</label>
                                 <input type="text" id="desarrolladoPor" class="form-control" 
-                                       value="SisgonTech" placeholder="Nombre del desarrollador">
+                                       value="<?php echo htmlspecialchars($configuracion['desarrollado_por'] ?? 'SisgonTech'); ?>" 
+                                       placeholder="Nombre del desarrollador">
                             </div>
                             
                             <div class="form-group">
                                 <label for="direccion">Dirección:</label>
                                 <textarea id="direccion" class="form-control" rows="3" 
-                                          placeholder="Dirección completa">Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta</textarea>
+                                          placeholder="Dirección completa"><?php echo htmlspecialchars($configuracion['direccion'] ?? 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta'); ?></textarea>
                             </div>
                             
                             <div class="form-row">
                                 <div class="form-col">
                                     <label for="contacto">Contacto:</label>
                                     <input type="email" id="contacto" class="form-control" 
-                                           value="gobernaciondelmeta@meta.gov.co" placeholder="correo@ejemplo.com">
+                                           value="<?php echo htmlspecialchars($configuracion['correo_contacto'] ?? 'gobernaciondelmeta@meta.gov.co'); ?>" 
+                                           placeholder="correo@ejemplo.com">
                                 </div>
                                 
                                 <div class="form-col">
                                     <label for="telefono">Teléfono:</label>
                                     <input type="tel" id="telefono" class="form-control" 
-                                           value="(57 -608) 6 818503" placeholder="(XXX) XXX-XXXX">
+                                           value="<?php echo htmlspecialchars($configuracion['telefono'] ?? '(57 -608) 6 818503'); ?>" 
+                                           placeholder="(XXX) XXX-XXXX">
                                 </div>
                             </div>
                         </div>
@@ -222,10 +262,14 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
-                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo" 
+                    <img src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
+                         alt="<?php echo htmlspecialchars($configuracion['texto_alternativo'] ?? 'Logo Gobernación del Meta'); ?>" 
+                         class="footer-logo" 
                          onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">
                     <div class="developer-info">
-                        <div class="developer-name">SisgonTech</div>
+                        <div class="developer-name">
+                            <?php echo htmlspecialchars($configuracion['desarrollado_por'] ?? 'SisgonTech'); ?>
+                        </div>
                         <div>Sistema de Gestión para Gobernación del Meta</div>
                     </div>
                 </div>
@@ -234,11 +278,11 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 <div class="contact-info">
                     <div>
                         <i class="fas fa-phone-alt"></i>
-                        <span>Cel. (57 -608) 6 818503</span>
+                        <span>Cel. <?php echo htmlspecialchars($configuracion['telefono'] ?? '(57 -608) 6 818503'); ?></span>
                     </div>
                     <div>
                         <i class="fas fa-envelope"></i>
-                        <span>gobernaciondelmeta@meta.gov.co</span>
+                        <span><?php echo htmlspecialchars($configuracion['correo_contacto'] ?? 'gobernaciondelmeta@meta.gov.co'); ?></span>
                     </div>
                     <div>
                         <i class="fas fa-mobile-alt"></i>
