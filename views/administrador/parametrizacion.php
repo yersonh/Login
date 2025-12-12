@@ -30,7 +30,7 @@ $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
 
 // 3. Obtener datos de configuración desde la base de datos
-require_once __DIR__ . '/../controllers/ConfiguracionControlador.php';
+require_once __DIR__ . '../../controllers/ConfiguracionControlador.php';
 $controladorConfig = new ConfiguracionControlador();
 $configuracion = $controladorConfig->obtenerDatos();
 
@@ -104,7 +104,7 @@ if (!empty($configuracion['valida_hasta'])) {
         <main class="app-main">
             <div class="page-title">
                 <h1><i class="fas fa-sliders-h"></i> Panel de Parametrización</h1>
-                <button class="back-button" onclick="window.location.href='../menu.php'">
+                <button class="back-button" onclick="window.location.href='../menuAdministrador.php'">
                     <i class="fas fa-arrow-left"></i> Volver
                 </button>
             </div>
