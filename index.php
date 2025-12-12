@@ -641,6 +641,8 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
             <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
             <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
             <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
+            <!-- NUEVA LÍNEA: Días restantes -->
+            <p><strong>Días restantes:</strong> <?php echo ConfigHelper::obtenerDiasRestantes(); ?></p>
             <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>
             <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></p>
             <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></p>

@@ -70,5 +70,118 @@ class ConfigHelper {
         // Para Railway/producción, la ruta debe ser relativa al dominio raíz
         return '/' . ltrim($logoPath, '/');
     }
+    
+    // NUEVO: Método para obtener días restantes
+    public static function obtenerDiasRestantes() {
+        $fechaValidez = self::obtener('valida_hasta', '2026-03-31');
+        
+        if (empty($fechaValidez)) {
+            return 'No definida';
+        }
+        
+        try {
+            $hoy = new DateTime();
+            $fechaValida = new DateTime($fechaValidez);
+            
+            // Si la fecha ya pasó
+            if ($fechaValida < $hoy) {
+                $diferencia = $hoy->diff($fechaValida);
+                return 'Expirada hace ' . abs($diferencia->days) . ' días';
+            }
+            
+            // Si la fecha está vigente
+            $diferencia = $hoy->diff($fechaValida);
+            
+            // Formatear según cantidad de días
+            if ($diferencia->days === 0) {
+                return 'Hoy expira';
+            } elseif ($diferencia->days === 1) {
+                return '1 día restante';
+            } elseif ($diferencia->days < 30) {
+                return $diferencia->days . ' días restantes';
+            } elseif ($diferencia->days < 365) {
+                $meses = floor($diferencia->days / 30);
+                return $meses . ' mes' . ($meses > 1 ? 'es' : '') . ' restantes';
+            } else {
+                $anios = floor($diferencia->days / 365);
+                $meses = floor(($diferencia->days % 365) / 30);
+                $resultado = $anios . ' año' . ($anios > 1 ? 's' : '');
+                if ($meses > 0) {
+                    $resultado .= ' y ' . $meses . ' mes' . ($meses > 1 ? 'es' : '');
+                }
+                return $resultado . ' restantes';
+            }
+            
+        } catch (Exception $e) {
+            return 'Error en fecha';
+        }
+    }
+    
+    // O versión más simple (opcional):
+    public static function obtenerDiasRestantesSimple() {
+        $fechaValidez = self::obtener('valida_hasta', '2026-03-31');
+        
+        if (empty($fechaValidez)) {
+            return 'Indefinido';
+        }
+        
+        try {
+            $hoy = new DateTime();
+            $fechaValida = new DateTime($fechaValidez);
+            
+            if ($fechaValida < $hoy) {
+                return 'Expirada';
+            }
+            
+            $diferencia = $hoy->diff($fechaValida);
+            return $diferencia->days . ' días';
+            
+        } catch (Exception $e) {
+            return 'Error';
+        }
+    }
+    
+    // Versión con colores (opcional - requiere CSS)
+    public static function obtenerDiasRestantesConEstilo() {
+        $fechaValidez = self::obtener('valida_hasta', '2026-03-31');
+        
+        if (empty($fechaValidez)) {
+            return '<span class="dias-restantes dias-expirado">No definida</span>';
+        }
+        
+        try {
+            $hoy = new DateTime();
+            $fechaValida = new DateTime($fechaValidez);
+            
+            if ($fechaValida < $hoy) {
+                $diferencia = $hoy->diff($fechaValida);
+                return '<span class="dias-restantes dias-expirado">Expirada hace ' . abs($diferencia->days) . ' días</span>';
+            }
+            
+            $diferencia = $hoy->diff($fechaValida);
+            $dias = $diferencia->days;
+            
+            // Determinar clase CSS según días restantes
+            if ($dias <= 0) {
+                $clase = 'dias-expirado';
+                $texto = 'Hoy expira';
+            } elseif ($dias <= 7) {
+                $clase = 'dias-critico';
+                $texto = $dias . ' día' . ($dias > 1 ? 's' : '') . ' restantes';
+            } elseif ($dias <= 30) {
+                $clase = 'dias-advertencia';
+                $texto = $dias . ' días restantes';
+            } else {
+                $clase = 'dias-normal';
+                $meses = floor($dias / 30);
+                $texto = $meses . ' mes' . ($meses > 1 ? 'es' : '') . ' restantes';
+            }
+            
+            return '<span class="dias-restantes ' . $clase . '">' . $texto . '</span>';
+            
+        } catch (Exception $e) {
+            return '<span class="dias-restantes dias-expirado">Error en fecha</span>';
+        }
+    }
 }
 ?>
