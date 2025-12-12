@@ -245,7 +245,7 @@ select.form-control {
     border-radius: 8px;
     border: 1px solid #dee2e6;
     font-family: monospace;
-    font-size: 15px;
+    font-size: 20px;
     color: var(--dark-color);
     margin-bottom: 20px;
     display: inline-block;
@@ -728,7 +728,7 @@ select.form-control {
     
     .datetime-display {
         padding: 10px 12px;
-        font-size: 14px;
+        font-size: 18px;
         margin-bottom: 15px;
     }
     
@@ -893,7 +893,7 @@ select.form-control {
     
     .datetime-display {
         padding: 8px 10px;
-        font-size: 13px;
+        font-size: 15px;
     }
     
     .info-section {
