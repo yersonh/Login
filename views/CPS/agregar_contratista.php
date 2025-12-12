@@ -314,18 +314,6 @@ try {
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label" for="duracion_contrato">
-                                Duración del contrato <span class="required">*</span>
-                            </label>
-                            <input type="text" 
-                                   id="duracion_contrato" 
-                                   name="duracion_contrato" 
-                                   class="form-control small" 
-                                   placeholder="Ej: 12 meses"
-                                   required>
-                            <div class="form-help">Ejemplo: 6 meses, 1 año</div>
-                        </div>
                         
                         <div class="form-group">
                             <label class="form-label" for="fecha_final">
@@ -338,6 +326,19 @@ try {
                                    placeholder="dd/mm/aaaa"
                                    required>
                             <div class="form-help">Formato: dd/mm/aaaa</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="duracion_contrato">
+                                Duración del contrato <span class="required">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="duracion_contrato" 
+                                   name="duracion_contrato" 
+                                   class="form-control small" 
+                                   placeholder="Ej: 12 meses"
+                                   required>
+                            <div class="form-help">Ejemplo: 6 meses, 1 año</div>
                         </div>
                         
                         <div class="form-group">
