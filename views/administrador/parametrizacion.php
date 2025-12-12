@@ -45,7 +45,7 @@ if (empty($configuracion)) {
         'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
         'telefono' => '(57 -608) 6 818503',
         'ruta_logo' => '../../imagenes/logo.png',
-        'texto_alternativo' => 'Logo Gobernación del Meta',
+        'entidad' => 'Logo Gobernación del Meta',
         'enlace_web' => 'https://www.meta.gov.co'
     ];
 }
