@@ -59,7 +59,7 @@ try {
         }
     }
     
-    $consecutivo = generarConsecutivo();
+    $consecutivo = generarConsecutivo($db);
     
 } catch (Exception $e) {
     error_log("Error al cargar datos del formulario: " . $e->getMessage());
