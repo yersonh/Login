@@ -416,7 +416,7 @@ try {
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <script src="/../../javascript/agregar_contratista.js"></script>
+    <script src="../../javascript/agregar_contratista.js"></script>
     
 </body>
 </html>
