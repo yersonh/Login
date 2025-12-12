@@ -28,7 +28,7 @@ class Configuracion {
                     telefono = :tel,
                     ruta_logo = :logo,
                     enlace_web = :enlace, 
-                    texto_alternativo = :texto_alt,
+                    entidad = :entidad,
                     updated_at = NOW()
                   WHERE id_parametrizacion = 1";
 
@@ -42,11 +42,11 @@ class Configuracion {
         $stmt->bindParam(':tel', $datos['telefono']);
         $stmt->bindParam(':logo', $datos['ruta_logo']);
         $stmt->bindParam(':enlace', $datos['enlace_web']); 
-        $stmt->bindParam(':texto_alt', $datos['texto_alternativo']);
+        $stmt->bindParam(':entidad', $datos['entidad']);
 
         return $stmt->execute();
     }
-
+/*
     public function actualizarLogo($rutaLogo, $textoAlt, $enlace) {
         $query = "UPDATE " . $this->table . " SET 
                     ruta_logo = :logo,
@@ -61,6 +61,6 @@ class Configuracion {
         $stmt->bindParam(':enlace', $enlace);
 
         return $stmt->execute();
-    }
+    }*/
 }
 ?>
