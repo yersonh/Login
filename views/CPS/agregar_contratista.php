@@ -42,20 +42,27 @@ try {
     $tiposVinculacion = $tipoModel->obtenerTiposActivos();
     
     function generarConsecutivo($db) {
-        try {
-            // Obtener el siguiente valor de la secuencia
-            $sql = "SELECT nextval('detalle_contrato_seq') AS consecutivo";
-            $stmt = $db->query($sql);
-            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        // Obtener el máximo actual del id_detalle
+        $sql = "SELECT MAX(id_detalle) AS ultimo FROM detalle_contrato";
+        $stmt = $db->query($sql);
+        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Retornar el número tal cual
-            return $fila['consecutivo'] ?? 1;
+        // Si no hay registros, empezamos en 1
+        $ultimo = $fila['ultimo'];
 
-        } catch (Exception $e) {
-            error_log("Error al generar consecutivo: " . $e->getMessage());
+        if ($ultimo === null) {
             return 1;
         }
+
+        // De lo contrario sumamos +1 al máximo encontrado
+        return $ultimo + 1;
+
+    } catch (Exception $e) {
+        error_log("Error al generar consecutivo: " . $e->getMessage());
+        return 1;
     }
+}
 
     
     $consecutivo = generarConsecutivo($db);
