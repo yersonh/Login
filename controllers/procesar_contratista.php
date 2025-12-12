@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     $database = new Database();
-    $db = $database->getConnection();
+    $db = $database->conectar();
     
     $contratistaModel = new ContratistaModel($db);
     

@@ -14,7 +14,7 @@ class ContratistaController {
 
     public function __construct() {
         $database = new Database();
-        $this->db = $database->getConnection();
+        $this->db = $database->conectar();
         
         $this->contratistaModel = new ContratistaModel($this->db);
         $this->areaModel = new AreaModel($this->db);
