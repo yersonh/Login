@@ -112,7 +112,7 @@ try {
             </div>
             
             <div class="form-container">
-                <h2 class="form-title">FORMULARIO DE INGRESO DE DATOS CONTRATISTA</h2>
+                <h2 class="form-title">DATOS CONTRATISTA</h2>
                 
                 <div class="consecutivo-display">
                     <strong>Contratista:</strong>
