@@ -10,14 +10,12 @@ class Configuracion {
         $this->conn = $database->conectar();
     }
 
-    public function obtenerConfiguracionMasReciente() {
-    $query = "SELECT * FROM " . $this->table . " 
-              ORDER BY id_parametrizacion DESC 
-              LIMIT 1";
-    $stmt = $this->conn->prepare($query);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    public function obtenerConfiguracion() {
+        $query = "SELECT * FROM " . $this->table . " WHERE id_parametrizacion = 1 LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function insertarConfiguracion($datos) {
     $query = "INSERT INTO " . $this->table . " (
@@ -48,5 +46,20 @@ class Configuracion {
 
     return $stmt->execute();
 }
+    public function actualizarLogo($rutaLogo, $entidad, $enlace) {
+        $query = "UPDATE " . $this->table . " SET 
+                    ruta_logo = :logo,
+                    entidad = :entidad,
+                    enlace_web = :enlace,
+                    updated_at = NOW()
+                  WHERE id_parametrizacion = 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':logo', $rutaLogo);
+        $stmt->bindParam(':entidad', $entidad);
+        $stmt->bindParam(':enlace', $enlace);
+
+        return $stmt->execute();
+    }
 }
 ?>
