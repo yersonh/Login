@@ -71,11 +71,6 @@ try {
     die("Error al cargar el formulario. Por favor contacte al administrador.");
 }
 ?>
-<?php
-require_once '../../controllers/ContratistaController.php';
-$controller = new ContratistaController();
-$controller->mostrarFormulario();
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
