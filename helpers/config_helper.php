@@ -62,7 +62,7 @@ class ConfigHelper {
     
     // Nuevo método para obtener logo con URL completa
     public static function obtenerLogoUrl($baseUrl = '') {
-        $logoPath = self::obtener('ruta_logo', '/imagenes/logo.png');
+        $logoPath = self::obtener('ruta_logo', '../imagenes/logo.png');
         
         if (strpos($logoPath, 'http') === 0) {
             return $logoPath;

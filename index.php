@@ -620,7 +620,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         <!-- Logo dinámico -->
         <div class="license-logo-container">
             <?php
-            $logoPath = ConfigHelper::obtener('ruta_logo', '/imagenes/logo.png');
+            $logoPath = ConfigHelper::obtener('ruta_logo', 'imagenes/logo.png');
             $logoUrl = (strpos($logoPath, 'http') === 0) 
                 ? $logoPath 
                 : $base_url . ((strpos($logoPath, '/') === 0) ? $logoPath : '/' . $logoPath);
