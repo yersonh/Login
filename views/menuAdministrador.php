@@ -253,7 +253,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
 
             <!-- Footer -->
             <footer class="admin-footer">
-                <img src="../imagenes/logo.png" alt="Logo" class="footer-logo">
+                <img src="../imagenes/gobernacion.png" alt="Logo" class="footer-logo">
                <!--  <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="sisgotech-logo">-->
                 <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía. <small> Reservado por derechos de autor</small></p>
                 <p class="footer-info">

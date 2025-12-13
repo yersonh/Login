@@ -44,7 +44,7 @@ if (empty($configuracion)) {
         'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
         'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
         'telefono' => '(57 -608) 6 818503',
-        'ruta_logo' => '../../imagenes/logo.png',
+        'ruta_logo' => '../../imagenes/gobernacion.png',
         'entidad' => 'Logo Gobernación del Meta',
         'enlace_web' => 'https://www.meta.gov.co'
     ];
@@ -127,7 +127,7 @@ if (!empty($configuracion['valida_hasta'])) {
                         <h3>Logo Actual</h3>
                         <div class="logo-preview">
                             <img id="currentLogo" 
-                                 src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
+                                 src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
                                  alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo actual'); ?>" 
                                  onerror="this.src='https://via.placeholder.com/300x120/004a8d/ffffff?text=LOGO+ACTUAL'">
                         </div>
@@ -262,7 +262,7 @@ if (!empty($configuracion['valida_hasta'])) {
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
-                    <img src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/logo.png'); ?>" 
+                    <img src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
                          alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>" 
                          class="footer-logo" 
                          onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">

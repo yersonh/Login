@@ -147,7 +147,7 @@ if (empty($nombreCompleto)) {
         <footer class="app-footer">
             <div class="footer-left">
                 <div class="footer-logo-container">
-                    <img src="../../imagenes/logo.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <img src="../../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     <div class="developer-info">
                         <img src="../../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
                     </div>
