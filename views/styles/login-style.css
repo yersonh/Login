@@ -561,23 +561,24 @@ input:-webkit-autofill:focus {
 }
 
 
-.license-details-concat {
+/* Estilos para el formato de dos líneas */
+.license-details.two-line-format {
     margin-top: 15px;
-    font-size: 13px;
-    color: #666;
     text-align: center;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.4;
 }
 
-.license-details-concat a {
+.license-line {
+    margin-bottom: 8px;
+    padding: 5px 0;
+}
+
+.license-line:first-child {
+    font-weight: 500;
+}
+
+.license-line:last-child {
+    font-size: 13px;
     color: #555;
-    text-decoration: none;
-}
-
-.license-details-concat a:hover {
-    text-decoration: underline;
-}
-
-.license-details-concat strong {
-    color: #333;
 }

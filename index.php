@@ -629,24 +629,18 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                  onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
         </div>
         
-        <!-- Información pegada al logo -->
-        <div class="license-details">
-            <p><strong>Entidad:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-            <p><strong>Website:</strong> 
-                <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
-                   target="_blank">
-                    <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>
-                </a>
-            </p>
-            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
-            <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
-            <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
-            <!-- NUEVA LÍNEA: Días restantes -->
-            <p><strong>Días restantes:</strong> <?php echo ConfigHelper::obtenerDiasRestantes(); ?></p>
-            <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>
-            <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></p>
-            <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></p>
-            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></p>
+        <!-- Información en formato de dos líneas concatenadas -->
+        <div class="license-details two-line-format">
+            <div class="license-line">
+                © 2026 <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SISGONTech')); ?> Enterprise Premium 1.0® desarrollado por 
+                <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SISGONTech')); ?> Technology
+            </div>
+            <div class="license-line">
+                <?php echo htmlspecialchars(ConfigHelper::obtener('direccion', 'Condominio Madeira Casa 19, Villavicencio, Colombia')); ?> - 
+                Asesores e-Governance Solutions para Entidades Públicas 2026® By: 
+                <?php echo htmlspecialchars(ConfigHelper::obtener('responsable', 'Ing. Rubén Darío González García')); ?> 
+                <?php echo htmlspecialchars(ConfigHelper::obtener('telefono', '(+57) 310 631 02 27')); ?>
+            </div>
         </div>
     </div>
 </div>
