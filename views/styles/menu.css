@@ -215,60 +215,6 @@ body {
     color: var(--gray-color);
 }
 
-/* ========== FOOTER ========== */
-.app-footer {
-    background-color: white;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 30px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.footer-left {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    flex: 1;
-}
-
-.footer-logo-container {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.footer-logo {
-    height: 80px;
-    width: auto;
-    max-width: 200px;
-    object-fit: contain;
-}
-
-.footer-right {
-    text-align: right;
-    flex: 1;
-}
-
-.contact-info {
-    font-size: 14px;
-    color: var(--gray-color);
-}
-
-.contact-info div {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-.copyright {
-    font-size: 12px;
-    color: #adb5bd;
-    margin-top: 10px;
-}
-
 /* ========== BOTÓN CERRAR SESIÓN ========== */
 .logout-btn {
     position: fixed;
@@ -575,10 +521,6 @@ body {
         max-width: 700px;
     }
     
-    .app-footer {
-        padding: 25px 30px;
-    }
-    
     .service-card {
         padding: 28px 22px;
     }
@@ -599,33 +541,6 @@ body {
     .services-grid {
         max-width: 600px;
         gap: 25px;
-    }
-    
-    .app-footer {
-        flex-direction: column;
-        text-align: center;
-        gap: 25px;
-        padding: 25px 30px;
-    }
-    
-    .footer-left, .footer-right {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-    }
-    
-    .footer-left {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
     }
     
     .service-card {
@@ -725,22 +640,6 @@ body {
         font-size: 14px;
     }
     
-    .app-footer {
-        padding: 25px;
-        flex-direction: column;
-        gap: 25px;
-    }
-    
-    .footer-left {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        text-align: center;
-    }
-    
     /* Botones flotantes ajustados */
     .logout-btn {
         bottom: 15px;
@@ -791,7 +690,7 @@ body {
 
 /* ========== RESPONSIVE - MÓVILES MEDIANOS (480px - 576px) ========== */
 @media (max-width: 576px) {
-    .app-header, .app-main, .app-footer {
+    .app-header, .app-main {
         padding: 15px;
     }
     
@@ -835,54 +734,6 @@ body {
     
     .service-card {
         padding: 20px 15px;
-    }
-    
-    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
-    .app-footer {
-        padding: 15px;
-        gap: 20px;
-    }
-    
-    .footer-left {
-        flex-direction: column;
-        gap: 15px;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-    }
-    
-    .footer-logo {
-        height: 70px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .contact-info {
-        font-size: 13px;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .copyright {
-        font-size: 11px;
-        text-align: center;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
     
     /* Botones flotantes */
@@ -1027,52 +878,6 @@ body {
     .service-desc {
         font-size: 13px;
         margin-bottom: 12px;
-    }
-    
-    /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
-    .app-footer {
-        padding: 15px;
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .footer-left {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .footer-logo {
-        height: 60px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .contact-info {
-        font-size: 13px;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .copyright {
-        font-size: 11px;
-        text-align: center;
     }
     
     /* Botones flotantes en móviles pequeños */
@@ -1236,24 +1041,6 @@ body {
     .welcome-section h3 {
         font-size: 18px;
     }
-    
-    /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
-    .app-footer {
-        gap: 15px;
-        padding: 12px;
-    }
-    
-    .footer-logo {
-        height: 50px;
-    }
-    
-    .contact-info {
-        font-size: 12px;
-    }
-    
-    .copyright {
-        font-size: 10px;
-    }
 }
 
 /* ========== MEJORAS DE ACCESIBILIDAD TÁCTIL ========== */
@@ -1384,4 +1171,147 @@ body {
 .clave-input::-ms-reveal,
 .clave-input::-ms-clear {
     display: none; /* Ocultar el ojo nativo de IE/Edge */
+}
+.app-footer {
+    background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.footer-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.license-logo {
+    height: 60px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.footer-center p {
+    margin: 5px 0;
+    color: var(--gray-color);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.footer-center strong {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+/* ========== RESPONSIVE PARA FOOTER ========== */
+
+/* Tablets (768px - 992px) */
+@media (max-width: 992px) {
+    .app-footer {
+        padding: 25px 30px;
+    }
+}
+
+/* Tabletas pequeñas (576px - 768px) */
+@media (max-width: 768px) {
+    .app-footer {
+        padding: 20px;
+    }
+    
+    .license-logo {
+        height: 50px;
+    }
+    
+    .footer-center p {
+        font-size: 13px;
+    }
+}
+
+/* Móviles medianos (480px - 576px) */
+@media (max-width: 576px) {
+    .app-footer {
+        padding: 15px;
+    }
+    
+    .license-logo {
+        height: 50px;
+    }
+    
+    .footer-center p {
+        font-size: 12px;
+    }
+}
+
+/* Móviles pequeños (< 480px) */
+@media (max-width: 480px) {
+    .app-footer {
+        padding: 15px;
+    }
+    
+    .license-logo {
+        height: 40px;
+    }
+    
+    .footer-center {
+        gap: 8px;
+    }
+    
+    .footer-center p {
+        font-size: 11px;
+        margin: 3px 0;
+    }
+}
+
+/* Móviles muy pequeños (< 375px) */
+@media (max-width: 375px) {
+    .app-footer {
+        padding: 12px;
+    }
+    
+    .license-logo {
+        height: 35px;
+    }
+    
+    .footer-center p {
+        font-size: 10px;
+    }
+}
+
+/* Dispositivos con altura limitada */
+@media (max-height: 700px) and (max-width: 768px) {
+    .app-footer {
+        padding: 15px 20px;
+    }
+}
+
+/* Orientación horizontal en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    .app-footer {
+        padding: 15px 20px;
+    }
+}
+
+/* Mejoras de accesibilidad táctil */
+@media (hover: none) and (pointer: coarse) {
+    /* Estilos específicos para dispositivos táctiles si son necesarios */
+}
+
+/* Ajustes para Safari iOS */
+@supports (-webkit-touch-callout: none) {
+    /* Estilos específicos para Safari iOS si son necesarios */
+}
+
+/* Mejoras de rendimiento */
+@media (prefers-reduced-motion: reduce) {
+    .app-footer {
+        transition: none;
+    }
 }
