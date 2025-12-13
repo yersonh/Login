@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/helpers/config_helper.php';
+
 header("Cache-Control: no-cache, no-store, must-revalidate"); 
 header("Pragma: no-cache"); 
 header("Expires: 0"); 
@@ -192,13 +194,24 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Cerrar sesión</span>
                     </button>
+
         <footer class="app-footer">
-            <div class="footer-left">
+
+            <div class="footer-center">
+                <?php
+                $logoUrl= ConfigHelper::obtenerLogoUrl();
+                ?>
+                <div class="footer-logo-container">
+                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                        alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
+                        class="license-logo"
+                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+                </div>
+
+
+            <!-- <div class="footer-left">
                 <div class="footer-logo-container">
                     <img src="../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
-                    <div class="developer-info">
-                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
-                    </div>
                 </div>
             </div>
             <div class="footer-right">
@@ -219,7 +232,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 <div class="copyright">
                     © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
                 </div>
-            </div>
+            </div>-->
         </footer>
     </div>
     
