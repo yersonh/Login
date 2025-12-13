@@ -46,15 +46,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // Mostrar nombre de archivo seleccionado
+    // Mostrar nombre de archivo seleccionado y vista previa
     const newLogoInput = document.getElementById('newLogo');
     if (newLogoInput) {
         newLogoInput.addEventListener('change', function(e) {
             const fileName = document.getElementById('fileName');
             if (e.target.files.length > 0) {
-                fileName.textContent = e.target.files[0].name;
-                // Vista previa de imagen
-                previewImage(e.target.files[0]);
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                
+                // Validar que sea una imagen
+                if (file.type.startsWith('image/')) {
+                    // Vista previa de imagen
+                    previewImage(file);
+                } else {
+                    showError('Por favor seleccione un archivo de imagen');
+                    e.target.value = ''; // Limpiar el input
+                    fileName.textContent = 'Haga clic para seleccionar un archivo';
+                    hideImagePreview();
+                }
             } else {
                 fileName.textContent = 'Haga clic para seleccionar un archivo';
                 hideImagePreview();
@@ -163,6 +173,9 @@ function cargarConfiguracion() {
                     footerLogo.alt = config.entidad || "Logo del sistema";
                 }
             }
+            
+            // Asegurar que el logo actual sea visible
+            hideImagePreview();
         })
         .catch(error => {
             if (successAlert) {
@@ -171,6 +184,132 @@ function cargarConfiguracion() {
             showError("Error al conectar con el servidor: " + error.message);
             console.error("Error:", error);
         });
+}
+
+// =======================================
+// VISTA PREVIA DE IMAGEN (CORREGIDA - SOLO UNA IMAGEN VISIBLE)
+// =======================================
+function previewImage(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Ocultar el logo actual
+        const currentLogo = document.getElementById('currentLogo');
+        if (currentLogo) {
+            currentLogo.style.display = 'none';
+        }
+        
+        // Crear o actualizar elemento de vista previa
+        let preview = document.getElementById('imagePreview');
+        
+        if (!preview) {
+            preview = document.createElement('img');
+            preview.id = 'imagePreview';
+            preview.style.cssText = `
+                max-width: 300px;
+                max-height: 120px;
+                margin: 0 auto;
+                display: block;
+                border: 2px solid #004a8d;
+                border-radius: 5px;
+                padding: 5px;
+                background: white;
+            `;
+            
+            // Insertar en el contenedor del logo
+            const logoPreviewContainer = document.querySelector('.current-logo .logo-preview');
+            if (logoPreviewContainer) {
+                logoPreviewContainer.appendChild(preview);
+            }
+        }
+        
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        preview.alt = 'Vista previa del nuevo logo';
+        
+        // Mostrar etiqueta de "VISTA PREVIA"
+        showPreviewLabel();
+        
+        console.log('Vista previa mostrada correctamente');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function hideImagePreview() {
+    // Mostrar el logo actual
+    const currentLogo = document.getElementById('currentLogo');
+    if (currentLogo) {
+        currentLogo.style.display = 'block';
+    }
+    
+    // Ocultar la vista previa
+    const preview = document.getElementById('imagePreview');
+    if (preview) {
+        preview.style.display = 'none';
+    }
+    
+    // Ocultar etiqueta
+    hidePreviewLabel();
+}
+
+function showPreviewLabel() {
+    let label = document.getElementById('previewLabel');
+    
+    if (!label) {
+        label = document.createElement('div');
+        label.id = 'previewLabel';
+        label.style.cssText = `
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #004a8d;
+            background: #e6f2ff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px dashed #004a8d;
+        `;
+        label.textContent = 'VISTA PREVIA (NO GUARDADO)';
+        
+        const logoPreviewContainer = document.querySelector('.current-logo');
+        if (logoPreviewContainer) {
+            const logoPreview = logoPreviewContainer.querySelector('.logo-preview');
+            if (logoPreview) {
+                logoPreview.appendChild(label);
+            }
+        }
+    }
+    
+    label.style.display = 'block';
+}
+
+function hidePreviewLabel() {
+    const label = document.getElementById('previewLabel');
+    if (label) {
+        label.style.display = 'none';
+    }
+}
+
+// =======================================
+// LIMPIAR DESPUÉS DE GUARDAR
+// =======================================
+function cleanupAfterSave() {
+    // Limpiar campo de archivo
+    document.getElementById('newLogo').value = '';
+    document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
+    
+    // Limpiar vista previa
+    hideImagePreview();
+    
+    // Asegurar que el logo actual sea visible
+    const currentLogo = document.getElementById('currentLogo');
+    if (currentLogo) {
+        currentLogo.style.display = 'block';
+    }
 }
 
 // =======================================
@@ -504,16 +643,15 @@ function executeLogoUpdate(datos) {
             if (data.ruta_logo) {
                 const timestamp = new Date().getTime();
                 document.getElementById('currentLogo').src = data.ruta_logo + '?t=' + timestamp;
+                document.getElementById('currentLogo').style.display = 'block';
                 const footerLogo = document.querySelector(".footer-logo");
                 if (footerLogo) {
                     footerLogo.src = data.ruta_logo + '?t=' + timestamp;
                 }
             }
             
-            // Limpiar campo de archivo
-            document.getElementById('newLogo').value = '';
-            document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
-            hideImagePreview();
+            // Limpiar campo de archivo y vista previa
+            cleanupAfterSave();
             
             // Recargar configuración completa
             setTimeout(cargarConfiguracion, 1000);
@@ -559,14 +697,13 @@ function restaurarLogoPredeterminado() {
             // Actualizar vista
             const timestamp = new Date().getTime();
             document.getElementById('currentLogo').src = data.ruta_logo + '?t=' + timestamp;
+            document.getElementById('currentLogo').style.display = 'block';
             document.querySelector(".footer-logo").src = data.ruta_logo + '?t=' + timestamp;
             document.getElementById('logoAltText').value = data.entidad || 'Logo Gobernación del Meta';
             document.getElementById('logoLink').value = data.enlace_web || 'https://www.meta.gov.co';
             
-            // Limpiar campo de archivo
-            document.getElementById('newLogo').value = '';
-            document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
-            hideImagePreview();
+            // Limpiar campo de archivo y vista previa
+            cleanupAfterSave();
             
             // Recargar configuración
             setTimeout(cargarConfiguracion, 1000);
@@ -632,95 +769,6 @@ function restaurarConfiguracionPredeterminada() {
 }
 
 // =======================================
-// VISTA PREVIA DE IMAGEN
-// =======================================
-function previewImage(file) {
-    if (!file || !file.type.startsWith('image/')) {
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        // Crear o actualizar elemento de vista previa
-        let preview = document.getElementById('imagePreview');
-        
-        if (!preview) {
-            preview = document.createElement('img');
-            preview.id = 'imagePreview';
-            preview.style.cssText = `
-                max-width: 300px;
-                max-height: 120px;
-                margin-top: 10px;
-                border: 2px dashed #004a8d;
-                padding: 5px;
-                border-radius: 5px;
-                display: block;
-            `;
-            
-            const logoPreviewContainer = document.querySelector('.current-logo .logo-preview');
-            if (logoPreviewContainer) {
-                logoPreviewContainer.appendChild(preview);
-            }
-        }
-        
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        preview.alt = 'Vista previa del nuevo logo';
-        
-        // Mostrar badge de "nuevo"
-        showPreviewBadge();
-    };
-    
-    reader.readAsDataURL(file);
-}
-
-function hideImagePreview() {
-    const preview = document.getElementById('imagePreview');
-    if (preview) {
-        preview.style.display = 'none';
-    }
-    hidePreviewBadge();
-}
-
-function showPreviewBadge() {
-    let badge = document.getElementById('previewBadge');
-    
-    if (!badge) {
-        badge = document.createElement('div');
-        badge.id = 'previewBadge';
-        badge.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #28a745;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        `;
-        badge.textContent = 'NUEVO';
-        
-        const logoPreview = document.querySelector('.current-logo');
-        if (logoPreview) {
-            logoPreview.style.position = 'relative';
-            logoPreview.appendChild(badge);
-        }
-    }
-    
-    badge.style.display = 'block';
-}
-
-function hidePreviewBadge() {
-    const badge = document.getElementById('previewBadge');
-    if (badge) {
-        badge.style.display = 'none';
-    }
-}
-
-// =======================================
 // FUNCIONES DE VALIDACIÓN MEJORADAS
 // =======================================
 function isValidUrlImproved(string) {
@@ -756,6 +804,7 @@ function validateUrlInRealTime(input) {
     
     if (url === '') {
         input.style.borderColor = '';
+        input.style.borderWidth = '';
         return;
     }
     
