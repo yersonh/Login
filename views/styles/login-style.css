@@ -561,24 +561,3 @@ input:-webkit-autofill:focus {
 }
 
 
-/* Estilos para el formato de dos líneas */
-.license-details.two-line-format {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.license-line {
-    margin-bottom: 8px;
-    padding: 5px 0;
-}
-
-.license-line:first-child {
-    font-weight: 500;
-}
-
-.license-line:last-child {
-    font-size: 13px;
-    color: #555;
-}
