@@ -565,3 +565,49 @@ input:-webkit-autofill:focus {
         font-size: 1.1rem;
     }
 }
+/* Estilos para el botón "Ver en mapa" */
+.map-button-container {
+    margin-top: 20px;
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.map-button {
+    background: #28a745 !important; /* Color verde para diferenciarlo */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto !important;
+    padding: 10px 25px !important;
+    border-radius: 25px !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 0 !important;
+}
+
+.map-button:hover {
+    background: #218838 !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3) !important;
+}
+
+.map-button:active {
+    transform: translateY(-1px) !important;
+}
+
+.map-button i {
+    font-size: 16px;
+}
+
+/* Responsive para el botón */
+@media (max-width: 768px) {
+    .map-button {
+        padding: 12px 20px !important;
+        font-size: 14px;
+    }
+    
+    .map-button i {
+        font-size: 14px;
+    }
+}

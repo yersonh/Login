@@ -646,9 +646,13 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
             <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></p>
             <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></p>
             <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></p>
+            <div class="map-button-container">
+                <button class="btn map-button" id="verEnMapaBtn">
+                    <i class="fas fa-map-marker-alt"></i> Ver en mapa
+                </button>
+            </div>
         </div>
     </div>
-    <button>Ver en mapa class="btn btn-primary" type="button" data-toggle="modal" data-target="#licenseModal">Ver en mapa</button>
 </div>
 <script>
 if (window.history && window.history.pushState) {
