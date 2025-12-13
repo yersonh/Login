@@ -273,8 +273,6 @@ function showPreviewLabel() {
             border-radius: 4px;
             border: 1px dashed #004a8d;
         `;
-        label.textContent = 'VISTA PREVIA (NO GUARDADO)';
-        
         const logoPreviewContainer = document.querySelector('.current-logo');
         if (logoPreviewContainer) {
             const logoPreview = logoPreviewContainer.querySelector('.logo-preview');
