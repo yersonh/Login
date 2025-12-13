@@ -209,12 +209,11 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 <p>© <?php echo date('Y'); ?>   <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
                 <p><?php echo htmlspecialchars(ConfigHelper::obtenerVersionCompleta()); ?></p>
                 <p>
-                    Desarrollado por:
+                    Desarrollado por
                     <strong><?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></strong>
                 </p>
                 <p>
-                    Dirección:
-                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></strong>
+                    <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?>
                 </p>
                 <p>
                     Contacto:
