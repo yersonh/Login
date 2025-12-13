@@ -336,18 +336,18 @@ body {
     line-height: 1.5;
 }
 
-/* Estilos específicos para el modal de licencia - MODIFICADO */
+/* Estilos específicos para el modal de licencia */
 .license-modal {
     background: white !important;
     color: #333 !important;
-    max-width: 480px !important; /* Corregido: agregué px */
-    padding: 20px 25px 25px 25px !important;
+    max-width: 460 !important;
+    padding: 15px 20px 20px 20px !important;
 }
 
 .license-modal .modal-header {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .license-modal .modal-header h3 {
@@ -364,13 +364,14 @@ body {
 }
 
 .license-modal .modal-body {
-    padding: 0;
+    padding: 0 10px;
 }
 
 .license-logo-container {
     text-align: center;
-    margin: 0 0 15px 0;
-    padding: 0;
+    margin-bottom: 25px;
+    margin: 5px 0 10px 0;
+    padding: 5;
     background: white;
 }
 
@@ -379,7 +380,6 @@ body {
     max-height: 100px;
     width: auto;
     height: auto;
-    object-fit: contain;
 }
 
 .license-info {
@@ -388,68 +388,31 @@ body {
 
 .license-info h4 {
     color: #2c3e50;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 1.4rem;
     line-height: 1.3;
 }
 
-/* MODIFICACIÓN PRINCIPAL: license-details para eliminar espacio enorme */
 .license-details {
     text-align: left;
     background: white;
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .license-details p {
-    margin-bottom: 0; /* Eliminamos el margin-bottom anterior */
+    margin-bottom: 10px;
     font-size: 0.95rem;
     color: #444;
-    display: flex;
-    align-items: flex-start;
-    line-height: 1.4;
-    flex-wrap: wrap;
 }
 
 .license-details strong {
     color: #2c3e50;
-    font-weight: bold;
-    min-width: 100px; /* Reducido de 140px para menos espacio */
-    margin-right: 5px; /* Espacio reducido entre label y valor */
-    white-space: nowrap;
+    min-width: 140px;
     display: inline-block;
 }
 
-.license-details a {
-    color: #1e8ee9;
-    text-decoration: none;
-    transition: color 0.3s;
-    word-break: break-all;
-    display: inline;
-}
 
-.license-details a:hover {
-    text-decoration: underline;
-}
-
-/* Para los enlaces (website) */
-.license-details p:has(a) {
-    display: block; /* Cambiamos a block para enlaces largos */
-}
-
-.license-details p:has(a) strong {
-    display: block;
-    margin-bottom: 2px;
-}
-
-.license-details p:has(a) a {
-    display: inline-block;
-    max-width: 100%;
-    overflow-wrap: break-word;
-}
 
 .btn-secondary {
     background: #1e8ee9 !important;
@@ -471,9 +434,140 @@ input:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s !important;
 }
 
+/* RESPONSIVE GENERAL */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+        height: auto;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+
+    .container {
+        grid-template-columns: 1fr;
+        height: auto;
+        margin: 0;
+    }
+
+    .left, .right {
+        padding: 25px 25px;
+    }
+
+    .left {
+        order: 2;
+        padding: 25px 25px 25px 25px; 
+        min-height: auto; /
+    }
+
+    .right {
+        order: 1;
+    }
+
+    .left h1 {
+        margin: 30px 0;
+    }
+
+    .options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    /* Responsive para modales */
+    .modal {
+        padding: 15px;
+        align-items: flex-start; /* En móvil empieza desde arriba */
+        justify-content: center;
+        padding-top: 50px; /* Espacio para el teclado en móviles */
+    }
+    
+    .modal-content {
+        max-height: 85vh;
+    }
+    
+    .license-modal {
+        max-width: 95% !important;
+        margin-top: 20px;
+    }
+    
+    .license-logo {
+        max-width: 200px;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+    }
+    
+    .license-info h4 {
+        font-size: 1.2rem;
+    }
+    
+    .license-details {
+        padding: 15px;
+    }
+    
+    .license-details p {
+        font-size: 0.9rem;
+    }
+    
+    .license-details strong {
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .left, .right {
+        padding: 30px 20px;
+    }
+
+    .left {
+        padding: 20px 20px 20px 20px;
+    }
+
+    .input-box input {
+        padding: 12px 35px;
+        font-size: 16px;
+    }
+
+    .btn {
+        padding: 12px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .license-modal {
+        padding: 20px !important;
+    }
+    
+    .license-logo {
+        max-width: 200px;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+    }
+    
+    .license-info h4 {
+        font-size: 1.1rem;
+    }
+    
+    .btn-secondary {
+        padding: 10px 20px !important;
+        min-width: 120px;
+    }
+}
+
+/* Ajustes adicionales para el título en móvil */
+@media (max-width: 360px) {
+    .titulo-sgea {
+        font-size: 1.1rem;
+    }
+}
 /* Estilos para el botón "Ver en mapa" */
 .map-button-container {
-    margin-top: 15px;
+    margin-top: 20px;
     text-align: center;
     padding-top: 15px;
     border-top: 1px solid #eee;
@@ -506,217 +600,14 @@ input:-webkit-autofill:focus {
     font-size: 16px;
 }
 
-/* RESPONSIVE GENERAL */
+/* Responsive para el botón */
 @media (max-width: 768px) {
-    body {
-        padding: 15px;
-        height: auto;
-        min-height: 100vh;
-        align-items: flex-start;
-        padding-top: 20px;
-    }
-
-    .container {
-        grid-template-columns: 1fr;
-        height: auto;
-        margin: 0;
-    }
-
-    .left, .right {
-        padding: 25px 25px;
-    }
-
-    .left {
-        order: 2;
-        padding: 25px 25px 25px 25px;
-        min-height: auto;
-    }
-
-    .right {
-        order: 1;
-    }
-
-    .left h1 {
-        margin: 30px 0;
-    }
-
-    .options {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    /* Responsive para modales */
-    .modal {
-        padding: 15px;
-        align-items: flex-start; /* En móvil empieza desde arriba */
-        justify-content: center;
-        padding-top: 50px; /* Espacio para el teclado en móviles */
-    }
-    
-    .modal-content {
-        max-height: 85vh;
-    }
-    
-    /* RESPONSIVE PARA LICENSE MODAL */
-    .license-modal {
-        max-width: 90% !important;
-        padding: 15px 20px 20px 20px !important;
-    }
-    
-    .license-logo {
-        max-width: 180px;
-        max-height: 90px;
-    }
-    
-    .license-info h4 {
-        font-size: 1.2rem;
-    }
-    
-    .license-details {
-        padding: 12px;
-        gap: 6px;
-    }
-    
-    .license-details p {
-        font-size: 0.9rem;
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    
-    .license-details strong {
-        min-width: 90px; /* Más pequeño en móvil */
-        font-size: 0.9rem;
-        margin-right: 3px;
-    }
-    
-    .license-details a {
-        font-size: 0.85rem;
-    }
-    
-    /* Para los enlaces en móvil */
-    .license-details p:has(a) {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .license-details p:has(a) strong {
-        margin-bottom: 2px;
-    }
-    
-    .license-details p:has(a) a {
-        width: 100%;
-        font-size: 0.85rem;
-    }
-    
-    /* Botón Ver en mapa en responsive */
     .map-button {
-        padding: 10px 20px !important;
+        padding: 12px 20px !important;
         font-size: 14px;
     }
     
     .map-button i {
         font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .left, .right {
-        padding: 30px 20px;
-    }
-
-    .left {
-        padding: 20px 20px 20px 20px;
-    }
-
-    .input-box input {
-        padding: 12px 35px;
-        font-size: 16px;
-    }
-
-    .btn {
-        padding: 12px;
-    }
-
-    .modal-content {
-        padding: 20px;
-        width: 95%;
-    }
-    
-    /* LICENSE MODAL EN 480px */
-    .license-modal {
-        padding: 15px !important;
-        max-width: 95% !important;
-    }
-    
-    .license-details {
-        padding: 10px;
-        gap: 5px;
-    }
-    
-    .license-details p {
-        font-size: 0.85rem;
-        flex-wrap: wrap;
-    }
-    
-    .license-details strong {
-        min-width: 80px;
-        font-size: 0.85rem;
-        margin-right: 2px;
-    }
-    
-    .license-logo {
-        max-width: 150px;
-        max-height: 75px;
-    }
-    
-    .license-info h4 {
-        font-size: 1.1rem;
-    }
-    
-    /* Para pantallas muy pequeñas */
-    .license-details p:has(a) a {
-        font-size: 0.8rem;
-    }
-    
-    .btn-secondary {
-        padding: 10px 20px !important;
-        min-width: 120px;
-    }
-    
-    .map-button {
-        padding: 10px 18px !important;
-        font-size: 13px;
-    }
-    
-    .map-button i {
-        font-size: 13px;
-    }
-}
-
-/* Ajustes adicionales para el título en móvil */
-@media (max-width: 360px) {
-    .titulo-sgea {
-        font-size: 1.1rem;
-    }
-    
-    /* LICENSE MODAL EN 360px */
-    .license-details strong {
-        min-width: 70px;
-        font-size: 0.8rem;
-    }
-    
-    .license-details p {
-        font-size: 0.8rem;
-    }
-    
-    .license-logo {
-        max-width: 130px;
-        max-height: 65px;
-    }
-    
-    .license-details p:has(a) a {
-        font-size: 0.75rem;
     }
 }
