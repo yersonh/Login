@@ -53,8 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const fileName = document.getElementById('fileName');
             if (e.target.files.length > 0) {
                 fileName.textContent = e.target.files[0].name;
+                // Vista previa de imagen
+                previewImage(e.target.files[0]);
             } else {
                 fileName.textContent = 'Haga clic para seleccionar un archivo';
+                hideImagePreview();
             }
         });
     }
@@ -75,6 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
             closeModal();
         }
     });
+    
+    // Configurar validación en tiempo real para URL
+    const logoLinkInput = document.getElementById('logoLink');
+    if (logoLinkInput) {
+        logoLinkInput.addEventListener('input', function() {
+            validateUrlInRealTime(this);
+        });
+    }
 });
 
 // =======================================
@@ -306,56 +317,94 @@ function actualizarConfiguracionSistema() {
 }
 
 // =======================================
-// FUNCIÓN CON MODAL: actualizarConfiguracionLogo
+// FUNCIÓN MEJORADA: actualizarConfiguracionLogo
 // =======================================
 function actualizarConfiguracionLogo() {
     const entidad = document.getElementById('logoAltText').value.trim();
     const enlaceWeb = document.getElementById('logoLink').value.trim();
     const logoFile = document.getElementById('newLogo').files[0];
     
-    // Validar que haya al menos un cambio
-    if (!logoFile && entidad === '' && enlaceWeb === '') {
+    // Obtener valores actuales para comparación
+    const currentConfig = window.currentConfig || {};
+    const currentEntidad = currentConfig.entidad || '';
+    const currentEnlaceWeb = currentConfig.enlace_web || '';
+    
+    console.log('Datos actuales:', {
+        entidad, 
+        enlaceWeb, 
+        tieneLogo: !!logoFile,
+        currentEntidad,
+        currentEnlaceWeb
+    });
+    
+    // Validar que haya al menos un cambio REAL
+    const entidadChanged = entidad !== currentEntidad;
+    const enlaceWebChanged = enlaceWeb !== currentEnlaceWeb;
+    const hasFile = !!logoFile;
+    
+    const hasChanges = entidadChanged || enlaceWebChanged || hasFile;
+    
+    if (!hasChanges) {
         showError('No hay cambios para guardar');
         return;
     }
     
-    // Validar URL si se proporciona
-    if (enlaceWeb && !isValidUrl(enlaceWeb)) {
-        showError('Por favor ingrese una URL válida (ej: https://www.ejemplo.com)');
-        return;
+    // Validar URL SOLO si se proporciona y es diferente del actual
+    if (enlaceWeb && enlaceWebChanged) {
+        if (!isValidUrlImproved(enlaceWeb)) {
+            showError('Por favor ingrese una URL válida (ej: ejemplo.com o https://ejemplo.com)');
+            return;
+        }
     }
     
-    // Preparar datos
+    // Validar archivo si se proporciona
+    if (logoFile) {
+        // Validar tamaño del archivo (máx 2MB)
+        if (logoFile.size > 2 * 1024 * 1024) {
+            showError('El archivo es demasiado grande. Máximo 2MB permitido.');
+            return;
+        }
+        
+        // Validar tipo de archivo
+        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/gif'];
+        if (!validTypes.includes(logoFile.type)) {
+            showError('Tipo de archivo no válido. Use PNG, JPG, SVG o GIF.');
+            return;
+        }
+    }
+    
+    // Preparar datos (mantener valores actuales si no hay cambios)
     const datos = {
-        entidad,
-        enlace_web: enlaceWeb,
-        logoFile
+        entidad: entidadChanged ? entidad : currentEntidad,
+        enlace_web: enlaceWebChanged ? enlaceWeb : currentEnlaceWeb,
+        logoFile: hasFile ? logoFile : null
     };
     
     // Preparar lista de cambios
     const changes = [];
-    const currentConfig = window.currentConfig || {};
     
-    if (currentConfig.entidad && entidad !== currentConfig.entidad) {
+    if (entidadChanged) {
         changes.push({ 
             field: 'Nombre entidad', 
-            value: `${currentConfig.entidad} → ${entidad}` 
+            value: `${currentEntidad || '(vacío)'} → ${entidad || '(vacío)'}` 
         });
     }
     
-    if (currentConfig.enlace_web && enlaceWeb !== currentConfig.enlace_web) {
+    if (enlaceWebChanged) {
         changes.push({ 
             field: 'Website', 
-            value: `${currentConfig.enlace_web} → ${enlaceWeb}` 
+            value: `${currentEnlaceWeb || '(vacío)'} → ${enlaceWeb || '(vacío)'}` 
         });
     }
     
-    if (logoFile) {
+    if (hasFile) {
         changes.push({ 
             field: 'Logo', 
             value: `Nuevo archivo: ${logoFile.name} (${formatFileSize(logoFile.size)})` 
         });
     }
+    
+    console.log('Cambios detectados:', changes);
     
     // Mostrar modal de confirmación
     showConfirmationModal('logo', datos, changes);
@@ -464,6 +513,7 @@ function executeLogoUpdate(datos) {
             // Limpiar campo de archivo
             document.getElementById('newLogo').value = '';
             document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
+            hideImagePreview();
             
             // Recargar configuración completa
             setTimeout(cargarConfiguracion, 1000);
@@ -515,6 +565,8 @@ function restaurarLogoPredeterminado() {
             
             // Limpiar campo de archivo
             document.getElementById('newLogo').value = '';
+            document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
+            hideImagePreview();
             
             // Recargar configuración
             setTimeout(cargarConfiguracion, 1000);
@@ -577,6 +629,143 @@ function restaurarConfiguracionPredeterminada() {
         saveBtn.innerHTML = originalText;
         saveBtn.disabled = false;
     });
+}
+
+// =======================================
+// VISTA PREVIA DE IMAGEN
+// =======================================
+function previewImage(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Crear o actualizar elemento de vista previa
+        let preview = document.getElementById('imagePreview');
+        
+        if (!preview) {
+            preview = document.createElement('img');
+            preview.id = 'imagePreview';
+            preview.style.cssText = `
+                max-width: 300px;
+                max-height: 120px;
+                margin-top: 10px;
+                border: 2px dashed #004a8d;
+                padding: 5px;
+                border-radius: 5px;
+                display: block;
+            `;
+            
+            const logoPreviewContainer = document.querySelector('.current-logo .logo-preview');
+            if (logoPreviewContainer) {
+                logoPreviewContainer.appendChild(preview);
+            }
+        }
+        
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        preview.alt = 'Vista previa del nuevo logo';
+        
+        // Mostrar badge de "nuevo"
+        showPreviewBadge();
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function hideImagePreview() {
+    const preview = document.getElementById('imagePreview');
+    if (preview) {
+        preview.style.display = 'none';
+    }
+    hidePreviewBadge();
+}
+
+function showPreviewBadge() {
+    let badge = document.getElementById('previewBadge');
+    
+    if (!badge) {
+        badge = document.createElement('div');
+        badge.id = 'previewBadge';
+        badge.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        `;
+        badge.textContent = 'NUEVO';
+        
+        const logoPreview = document.querySelector('.current-logo');
+        if (logoPreview) {
+            logoPreview.style.position = 'relative';
+            logoPreview.appendChild(badge);
+        }
+    }
+    
+    badge.style.display = 'block';
+}
+
+function hidePreviewBadge() {
+    const badge = document.getElementById('previewBadge');
+    if (badge) {
+        badge.style.display = 'none';
+    }
+}
+
+// =======================================
+// FUNCIONES DE VALIDACIÓN MEJORADAS
+// =======================================
+function isValidUrlImproved(string) {
+    if (!string || string.trim() === '') {
+        return false;
+    }
+    
+    try {
+        // Agregar https:// si no tiene protocolo
+        let urlString = string.trim();
+        if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
+            urlString = 'https://' + urlString;
+        }
+        
+        const url = new URL(urlString);
+        
+        // Validar que tenga un hostname válido
+        const hostname = url.hostname;
+        if (!hostname || hostname.length < 3) {
+            return false;
+        }
+        
+        // Validar formato básico de dominio
+        const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
+        return domainRegex.test(hostname);
+    } catch (_) {
+        return false;
+    }
+}
+
+function validateUrlInRealTime(input) {
+    const url = input.value.trim();
+    
+    if (url === '') {
+        input.style.borderColor = '';
+        return;
+    }
+    
+    if (isValidUrlImproved(url)) {
+        input.style.borderColor = '#28a745';
+        input.style.borderWidth = '2px';
+    } else {
+        input.style.borderColor = '#dc3545';
+        input.style.borderWidth = '2px';
+    }
 }
 
 // =======================================
@@ -648,12 +837,8 @@ function showError(msg) {
 // FUNCIONES AUXILIARES
 // =======================================
 function isValidUrl(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (_) {
-        return false;
-    }
+    // Mantener la antigua para compatibilidad
+    return isValidUrlImproved(string);
 }
 
 function formatFileSize(bytes) {

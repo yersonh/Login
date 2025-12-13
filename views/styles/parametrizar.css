@@ -1279,3 +1279,61 @@ input[readonly].form-control {
     background: #f8f9fa;
     border-radius: 0 0 8px 8px;
 }
+/* Mejoras para vista previa */
+.current-logo {
+    position: relative;
+}
+
+.preview-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #004a8d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.file-input-container {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.file-input-label {
+    display: block;
+    padding: 12px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f9f9f9;
+}
+
+.file-input-label:hover {
+    border-color: #004a8d;
+    background: #f0f8ff;
+}
+
+.file-input-label i {
+    font-size: 24px;
+    color: #004a8d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+#previewThumbnail {
+    transition: all 0.3s ease;
+}
+
+/* Indicador de cambios */
+.has-changes {
+    border-left: 4px solid #28a745 !important;
+}
+
+.no-changes {
+    opacity: 0.7;
+}
