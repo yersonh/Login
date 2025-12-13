@@ -228,11 +228,11 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         </p>
         
         <!-- Información de contacto (opcional, puedes comentarla si no la necesitas) -->
-        <!-- 
+    
         <p>
             Contacto: <strong><?php echo $correo; ?></strong>
         </p>
-        -->
+
     </div>
 </footer>
     </div>
