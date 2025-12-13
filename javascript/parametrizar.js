@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', function () {
         resetConfigBtn.addEventListener('click', restaurarConfiguracionPredeterminada);
     }
     
+    // Event listener para el botón de confirmar en el modal
+    const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+    if (confirmSaveBtn) {
+        confirmSaveBtn.addEventListener('click', executePendingAction);
+    }
+    
     // Actualizar días restantes cuando cambia la fecha
     const validaHastaInput = document.getElementById('validaHasta');
     if (validaHastaInput) {
@@ -52,7 +58,31 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    
+    // Cerrar modal al hacer clic fuera del contenido
+    const modal = document.getElementById('confirmationModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+    
+    // Cerrar modal con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+            closeModal();
+        }
+    });
 });
+
+// =======================================
+// VARIABLES GLOBALES PARA EL MODAL
+// =======================================
+let pendingAction = null; // Guardará la función a ejecutar después de confirmar
+let actionData = null;    // Guardará los datos para la acción
+let actionType = null;    // 'system' o 'logo'
 
 // =======================================
 // Cargar datos desde la BD
@@ -85,6 +115,9 @@ function cargarConfiguracion() {
             }
 
             const config = data.data;
+            
+            // Guardar configuración actual para comparaciones
+            window.currentConfig = config;
             
             // Rellenar todos los campos del formulario con los datos de la BD
             setValueIfExists("version", config.version_sistema);
@@ -132,7 +165,69 @@ function cargarConfiguracion() {
 }
 
 // =======================================
-// Función para actualizar SOLO la configuración del sistema
+// FUNCIONES DEL MODAL
+// =======================================
+function showConfirmationModal(type, data, changes) {
+    // Guardar la acción pendiente
+    pendingAction = type === 'system' ? executeSystemUpdate : executeLogoUpdate;
+    actionData = data;
+    actionType = type;
+    
+    // Configurar mensaje del modal
+    const modal = document.getElementById('confirmationModal');
+    const message = document.getElementById('modalMessage');
+    const details = document.getElementById('modalDetails');
+    const changesList = document.getElementById('changesList');
+    
+    // Mensaje según el tipo
+    if (type === 'system') {
+        message.innerHTML = '<i class="fas fa-cogs"></i> ¿Está seguro de guardar los cambios en la configuración del sistema?';
+    } else {
+        message.innerHTML = '<i class="fas fa-image"></i> ¿Está seguro de guardar los cambios en la configuración del logo?';
+    }
+    
+    // Mostrar detalles de cambios si existen
+    if (changes && changes.length > 0) {
+        details.style.display = 'block';
+        changesList.innerHTML = '';
+        
+        changes.forEach(change => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${change.field}:</strong> ${change.value}`;
+            changesList.appendChild(li);
+        });
+    } else {
+        details.style.display = 'none';
+    }
+    
+    // Mostrar modal
+    modal.style.display = 'flex';
+    
+    // Enfocar el botón de confirmar
+    setTimeout(() => {
+        document.getElementById('confirmSaveBtn').focus();
+    }, 100);
+}
+
+function closeModal() {
+    const modal = document.getElementById('confirmationModal');
+    modal.style.display = 'none';
+    
+    // Limpiar variables
+    pendingAction = null;
+    actionData = null;
+    actionType = null;
+}
+
+function executePendingAction() {
+    if (pendingAction && actionData) {
+        pendingAction(actionData);
+    }
+    closeModal();
+}
+
+// =======================================
+// FUNCIÓN CON MODAL: actualizarConfiguracionSistema
 // =======================================
 function actualizarConfiguracionSistema() {
     // Validar campos requeridos
@@ -153,13 +248,7 @@ function actualizarConfiguracionSistema() {
         return;
     }
     
-    // Mostrar indicador de carga
-    const saveBtn = document.getElementById('saveConfigBtn');
-    const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    saveBtn.disabled = true;
-    
-    // Obtener SOLO datos del SISTEMA (NO logo)
+    // Obtener datos del formulario
     const datos = {
         version_sistema: version,
         tipo_licencia: document.getElementById('tipoLicencia').value.trim(),
@@ -168,10 +257,123 @@ function actualizarConfiguracionSistema() {
         direccion: document.getElementById('direccion').value.trim(),
         correo_contacto: contacto,
         telefono: document.getElementById('telefono').value.trim()
-        // NO incluir: entidad, enlace_web, ruta_logo
     };
     
-    console.log('Enviando datos del SISTEMA:', datos);
+    // Preparar lista de cambios para mostrar en el modal
+    const changes = [];
+    const currentConfig = window.currentConfig || {};
+    
+    // Solo mostrar cambios si tenemos configuración actual
+    if (Object.keys(currentConfig).length > 0) {
+        if (datos.version_sistema !== (currentConfig.version_sistema || '')) {
+            changes.push({ 
+                field: 'Versión', 
+                value: `${currentConfig.version_sistema || 'N/A'} → ${datos.version_sistema}` 
+            });
+        }
+        if (datos.desarrollado_por !== (currentConfig.desarrollado_por || '')) {
+            changes.push({ 
+                field: 'Desarrollado por', 
+                value: `${currentConfig.desarrollado_por || 'N/A'} → ${datos.desarrollado_por}` 
+            });
+        }
+        if (datos.tipo_licencia !== (currentConfig.tipo_licencia || '')) {
+            changes.push({ 
+                field: 'Tipo de licencia', 
+                value: `${currentConfig.tipo_licencia || 'N/A'} → ${datos.tipo_licencia}` 
+            });
+        }
+        if (datos.valida_hasta !== (currentConfig.valida_hasta || '')) {
+            changes.push({ 
+                field: 'Válida hasta', 
+                value: `${currentConfig.valida_hasta || 'N/A'} → ${datos.valida_hasta || 'No definida'}` 
+            });
+        }
+        if (datos.correo_contacto !== (currentConfig.correo_contacto || '')) {
+            changes.push({ 
+                field: 'Correo de contacto', 
+                value: `${currentConfig.correo_contacto || 'N/A'} → ${datos.correo_contacto}` 
+            });
+        }
+        if (datos.telefono !== (currentConfig.telefono || '')) {
+            changes.push({ 
+                field: 'Teléfono', 
+                value: `${currentConfig.telefono || 'N/A'} → ${datos.telefono}` 
+            });
+        }
+    }
+    
+    // Mostrar modal de confirmación
+    showConfirmationModal('system', datos, changes);
+}
+
+// =======================================
+// FUNCIÓN CON MODAL: actualizarConfiguracionLogo
+// =======================================
+function actualizarConfiguracionLogo() {
+    const entidad = document.getElementById('logoAltText').value.trim();
+    const enlaceWeb = document.getElementById('logoLink').value.trim();
+    const logoFile = document.getElementById('newLogo').files[0];
+    
+    // Validar que haya al menos un cambio
+    if (!logoFile && entidad === '' && enlaceWeb === '') {
+        showError('No hay cambios para guardar');
+        return;
+    }
+    
+    // Validar URL si se proporciona
+    if (enlaceWeb && !isValidUrl(enlaceWeb)) {
+        showError('Por favor ingrese una URL válida (ej: https://www.ejemplo.com)');
+        return;
+    }
+    
+    // Preparar datos
+    const datos = {
+        entidad,
+        enlace_web: enlaceWeb,
+        logoFile
+    };
+    
+    // Preparar lista de cambios
+    const changes = [];
+    const currentConfig = window.currentConfig || {};
+    
+    if (currentConfig.entidad && entidad !== currentConfig.entidad) {
+        changes.push({ 
+            field: 'Nombre entidad', 
+            value: `${currentConfig.entidad} → ${entidad}` 
+        });
+    }
+    
+    if (currentConfig.enlace_web && enlaceWeb !== currentConfig.enlace_web) {
+        changes.push({ 
+            field: 'Website', 
+            value: `${currentConfig.enlace_web} → ${enlaceWeb}` 
+        });
+    }
+    
+    if (logoFile) {
+        changes.push({ 
+            field: 'Logo', 
+            value: `Nuevo archivo: ${logoFile.name} (${formatFileSize(logoFile.size)})` 
+        });
+    }
+    
+    // Mostrar modal de confirmación
+    showConfirmationModal('logo', datos, changes);
+}
+
+// =======================================
+// FUNCIONES DE EJECUCIÓN (llamadas después de confirmar)
+// =======================================
+function executeSystemUpdate(datos) {
+    // Mostrar indicador de carga
+    const saveBtn = document.getElementById('saveConfigBtn');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    saveBtn.disabled = true;
+    
+    console.log('Ejecutando actualización del sistema:', datos);
     
     // Enviar datos al servidor
     fetch('../../controllers/parametrizacion_actualizar.php', {
@@ -213,26 +415,7 @@ function actualizarConfiguracionSistema() {
     });
 }
 
-// =======================================
-// Función para actualizar SOLO la configuración del logo
-// =======================================
-function actualizarConfiguracionLogo() {
-    const entidad = document.getElementById('logoAltText').value.trim();
-    const enlaceWeb = document.getElementById('logoLink').value.trim();
-    const logoFile = document.getElementById('newLogo').files[0];
-    
-    // Validar que haya al menos un cambio
-    if (!logoFile && entidad === '' && enlaceWeb === '') {
-        showError('No hay cambios para guardar');
-        return;
-    }
-    
-    // Validar URL si se proporciona
-    if (enlaceWeb && !isValidUrl(enlaceWeb)) {
-        showError('Por favor ingrese una URL válida (ej: https://www.ejemplo.com)');
-        return;
-    }
-    
+function executeLogoUpdate(datos) {
     // Mostrar indicador de carga
     const saveBtn = document.getElementById('saveLogoBtn');
     const originalText = saveBtn.innerHTML;
@@ -242,32 +425,17 @@ function actualizarConfiguracionLogo() {
     // Crear FormData para enviar (permite archivos)
     const formData = new FormData();
     
-    if (logoFile) {
-        // Validar tamaño del archivo (máx 2MB)
-        if (logoFile.size > 2 * 1024 * 1024) {
-            showError('El archivo es demasiado grande. Máximo 2MB permitido.');
-            restoreButtonState(saveBtn, originalText);
-            return;
-        }
-        
-        // Validar tipo de archivo
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/gif'];
-        if (!validTypes.includes(logoFile.type)) {
-            showError('Tipo de archivo no válido. Use PNG, JPG, SVG o GIF.');
-            restoreButtonState(saveBtn, originalText);
-            return;
-        }
-        
-        formData.append('logo', logoFile);
+    if (datos.logoFile) {
+        formData.append('logo', datos.logoFile);
     }
     
-    formData.append('entidad', entidad);
-    formData.append('enlace_web', enlaceWeb);
+    formData.append('entidad', datos.entidad);
+    formData.append('enlace_web', datos.enlace_web);
     
-    console.log('Enviando datos del LOGO:', { 
-        entidad, 
-        enlaceWeb, 
-        tieneArchivo: !!logoFile 
+    console.log('Ejecutando actualización del logo:', { 
+        entidad: datos.entidad, 
+        enlaceWeb: datos.enlace_web, 
+        tieneArchivo: !!datos.logoFile 
     });
     
     // Enviar al servidor
@@ -488,6 +656,14 @@ function isValidUrl(string) {
     } catch (_) {
         return false;
     }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function restoreButtonState(button, originalText) {

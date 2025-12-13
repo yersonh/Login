@@ -34,7 +34,6 @@ require_once __DIR__ . '/../../controllers/ConfiguracionControlador.php';
 $controladorConfig = new ConfiguracionControlador();
 $configuracion = $controladorConfig->obtenerDatos();
 
-
 // Si no hay datos, usar valores por defecto
 if (empty($configuracion)) {
     $configuracion = [
@@ -248,14 +247,42 @@ if (!empty($configuracion['valida_hasta'])) {
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" id="saveConfigBtn" onclick="actualizarConfiguracion()">
+                        <button type="button" class="btn btn-primary" id="saveConfigBtn">
                             <i class="fas fa-save"></i> Guardar Configuración
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetConfigBtn">
+                            <i class="fas fa-redo"></i> Restaurar Valores Predeterminados
                         </button>
                     </div>
                 </form>
             </div>
         </main>
-        
+                <!-- MODAL DE CONFIRMACIÓN -->
+        <div id="confirmationModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-question-circle"></i> Confirmar Cambios</h3>
+                    <button type="button" class="modal-close" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">¿Está seguro de guardar los cambios?</p>
+                    <div class="modal-details" id="modalDetails" style="display: none;">
+                        <h4>Cambios a realizar:</h4>
+                        <ul id="changesList"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirmSaveBtn">
+                        <i class="fas fa-check"></i> Sí, Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- Footer -->
         <footer class="app-footer">
             <div class="footer-left">
