@@ -196,37 +196,45 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </button>
                     
         <footer class="app-footer">
-            <div class="footer-center">
-                <?php
-                $logoUrl= ConfigHelper::obtenerLogoUrl();
-                ?>
-                <div class="footer-logo-container">
-                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                        alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
-                        class="license-logo"
-                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-                </div>
-                <p>© <?php echo date('Y'); ?>   <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-                <p><?php echo htmlspecialchars(ConfigHelper::obtenerVersionCompleta()); ?></p>
-                <p>
-                    Desarrollado por
-                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></strong>
-                </p>
-                <p>
-                    <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?>
-                </p>
-                <p>
-                    Contacto:
-                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></strong>
-                </p>
-                <p>
-                    Teléfono:
-                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></strong>
-                </p>
-
-            </div>
-          
-        </footer>
+    <div class="footer-center">
+        <?php
+        $logoUrl = ConfigHelper::obtenerLogoUrl();
+        $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
+        $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
+        $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
+        $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
+        $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+        $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
+        $anio = date('Y');
+        ?>
+        
+        <div class="footer-logo-container">
+            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                alt="<?php echo $entidad; ?>" 
+                class="license-logo"
+                onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+        </div>
+        
+        <!-- Primera línea concatenada -->
+        <p>
+            © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
+            <strong><?php echo $desarrollador; ?></strong>
+        </p>
+        
+        <!-- Segunda línea concatenada -->
+        <p>
+            <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
+            By: Ing. Rubén Darío González García (57 -608) <?php echo $telefono; ?>
+        </p>
+        
+        <!-- Información de contacto (opcional, puedes comentarla si no la necesitas) -->
+        <!-- 
+        <p>
+            Contacto: <strong><?php echo $correo; ?></strong>
+        </p>
+        -->
+    </div>
+</footer>
     </div>
     
     <!-- MODAL PARA INGRESAR CLAVE -->
