@@ -194,11 +194,14 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Cerrar sesión</span>
                     </button>
-
+                    
         <footer class="app-footer">
-            <!<div class="footer-left">
+            <div class="footer-left">
                 <div class="footer-logo-container">
                     <img src="../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <div class="developer-info">
+                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    </div>
                 </div>
             </div>
             <div class="footer-right">
