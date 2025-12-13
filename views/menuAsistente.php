@@ -224,7 +224,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         <!-- Segunda línea concatenada -->
         <p>
             <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
-            By: Ing. Rubén Darío González García (57 -608) <?php echo $telefono; ?>
+            By: Ing. Rubén Darío González García<?php echo $telefono; ?> Reservados todos los derechos de autor.
         </p>
         
         <!-- Información de contacto (opcional, puedes comentarla si no la necesitas) -->
