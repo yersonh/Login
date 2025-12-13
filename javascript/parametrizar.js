@@ -152,8 +152,6 @@ function cargarConfiguracion() {
                     footerLogo.alt = config.entidad || "Logo del sistema";
                 }
             }
-
-            showSuccess("Configuración cargada correctamente");
         })
         .catch(error => {
             if (successAlert) {
