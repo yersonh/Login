@@ -242,56 +242,44 @@ body {
     100% { transform: translateY(0px); }
 }
 
-/* ========== FOOTER CENTRADO ========== */
+/* ========== FOOTER CENTRADO (NUEVO ESTILO) ========== */
 .app-footer {
     background-color: white;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     padding: 30px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    text-align: center;
 }
 
-.footer-left {
+.footer-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 25px;
+    gap: 15px;
 }
 
 .footer-logo-container {
     display: flex;
-    align-items: center;
-    gap: 25px;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
-.footer-logo {
-    height: 80px;
+.license-logo {
+    height: 60px;
     width: auto;
     max-width: 200px;
     object-fit: contain;
 }
 
-.footer-right {
-    text-align: right;
-}
-
-.contact-info {
-    font-size: 14px;
+.footer-center p {
+    margin: 5px 0;
     color: var(--gray-color);
+    font-size: 14px;
+    line-height: 1.4;
 }
 
-.contact-info div {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-.copyright {
-    font-size: 12px;
-    color: #adb5bd;
-    margin-top: 10px;
+.footer-center strong {
+    color: var(--dark-color);
+    font-weight: 600;
 }
 
 /* ========== MODAL DE CLAVE MEJORADO ========== */
@@ -660,31 +648,7 @@ body {
     
     /* FOOTER CENTRADO PARA TABLETS */
     .app-footer {
-        flex-direction: column;
-        text-align: center;
-        gap: 25px;
         padding: 25px 30px;
-    }
-    
-    .footer-left, .footer-right {
-        width: 100%;
-    }
-    
-    .footer-left {
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .footer-right {
-        text-align: center;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-    }
-    
-    .copyright {
-        text-align: center;
     }
     
     .service-card {
@@ -821,51 +785,14 @@ body {
     /* FOOTER CENTRADO PARA MÓVILES */
     .app-footer {
         padding: 20px;
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
     }
     
-    .footer-left {
-        flex-direction: column;
-        gap: 15px;
-        justify-content: center;
-        align-items: center;
+    .license-logo {
+        height: 50px;
     }
     
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-    }
-    
-    .footer-logo {
-        height: 70px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .contact-info {
-        font-size: 14px;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .copyright {
-        font-size: 12px;
-        text-align: center;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    .footer-center p {
+        font-size: 13px;
     }
     
     /* Modal en tablets pequeñas */
@@ -972,23 +899,14 @@ body {
     /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
     .app-footer {
         padding: 15px;
-        gap: 20px;
     }
     
-    .footer-logo {
-        height: 70px;
+    .license-logo {
+        height: 50px;
     }
     
-    .contact-info {
-        font-size: 13px;
-    }
-    
-    .contact-info div {
-        margin-bottom: 8px;
-    }
-    
-    .copyright {
-        font-size: 11px;
+    .footer-center p {
+        font-size: 12px;
     }
     
     /* Modal en móviles medianos */
@@ -1134,47 +1052,19 @@ body {
     /* FOOTER CENTRADO PARA MÓVILES PEQUEÑOS */
     .app-footer {
         padding: 15px;
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
     }
     
-    .footer-left {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
+    .license-logo {
+        height: 40px;
     }
     
-    .footer-logo-container {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .footer-logo {
-        height: 60px;
-    }
-    
-    .footer-right {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .contact-info {
-        font-size: 13px;
-    }
-    
-    .contact-info div {
-        justify-content: center;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
+    .footer-center {
         gap: 8px;
     }
     
-    .copyright {
+    .footer-center p {
         font-size: 11px;
-        text-align: center;
+        margin: 3px 0;
     }
     
     /* Modal en móviles pequeños */
@@ -1259,19 +1149,14 @@ body {
     
     /* FOOTER CENTRADO PARA MÓVILES EXTRA PEQUEÑOS */
     .app-footer {
-        gap: 15px;
         padding: 12px;
     }
     
-    .footer-logo {
-        height: 50px;
+    .license-logo {
+        height: 35px;
     }
     
-    .contact-info {
-        font-size: 12px;
-    }
-    
-    .copyright {
+    .footer-center p {
         font-size: 10px;
     }
 }
@@ -1577,111 +1462,5 @@ body {
     
     .service-card:hover .service-icon {
         animation: none;
-    }
-}
-.app-footer {
-    background-color: #1a365d;
-    color: white;
-    padding: 25px 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-    width: 100%;
-}
-
-.footer-center {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 0 15px;
-}
-
-.footer-logo-container {
-    margin-bottom: 20px;
-}
-
-.license-logo {
-    height: 70px;
-    width: auto;
-    filter: brightness(0) invert(1);
-    object-fit: contain;
-}
-
-.app-footer p {
-    margin: 8px 0;
-    line-height: 1.5;
-    font-size: 14px;
-    letter-spacing: 0.3px;
-    color: #e2e8f0;
-}
-
-.app-footer strong {
-    color: #90cdf4;
-    font-weight: 600;
-}
-
-/* Para el primer párrafo (copyright) */
-.footer-center p:first-of-type {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 15px;
-    color: #ffffff;
-}
-
-/* Para el segundo párrafo (versión) */
-.footer-center p:nth-of-type(2) {
-    font-size: 13px;
-    color: #cbd5e0;
-    margin-bottom: 15px;
-}
-
-/* Para el desarrollador */
-.footer-center p:nth-of-type(3) {
-    margin: 15px 0;
-    font-size: 14px;
-}
-
-/* Para dirección */
-.footer-center p:nth-of-type(4) {
-    margin: 8px 0;
-    font-size: 14px;
-    color: #cbd5e0;
-}
-
-/* Para contacto (email) */
-.footer-center p:nth-of-type(5) {
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-/* Para teléfono */
-.footer-center p:nth-of-type(6) {
-    margin: 10px 0;
-    font-size: 14px;
-}
-
-/* Línea separadora opcional si quieres agregarla */
-.footer-center p:nth-of-type(5),
-.footer-center p:nth-of-type(6) {
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .app-footer {
-        padding: 20px 0;
-    }
-    
-    .license-logo {
-        height: 60px;
-    }
-    
-    .app-footer p {
-        font-size: 13px;
-        margin: 6px 0;
-    }
-    
-    .footer-center p:first-of-type {
-        font-size: 14px;
     }
 }
