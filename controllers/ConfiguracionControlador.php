@@ -10,11 +10,9 @@ class ConfiguracionControlador {
 
     public function obtenerDatos() {
         $data = $this->modelo->obtenerConfiguracion();
-        // Asegurar que siempre retorne array
-        return is_array($data) ? $data : [];
+        return $data ?: [];
     }
-    
-    public function actualizarDatos($datos) {
+     public function actualizarDatos($datos) {
         try {
             // Validar datos mínimos
             if (empty($datos) || !is_array($datos)) {
@@ -24,20 +22,8 @@ class ConfiguracionControlador {
             // Asegurar que campos requeridos tengan valores
             $datosCompletos = $this->completarDatosFaltantes($datos);
             
-            // Validar datos antes de actualizar
-            $validacion = $this->validarDatos($datosCompletos);
-            if ($validacion !== true) {
-                throw new Exception(implode(', ', $validacion));
-            }
-            
             // Actualizar en el modelo
-            $resultado = $this->modelo->actualizarConfiguracion($datosCompletos);
-            
-            if (!$resultado) {
-                throw new Exception("Error al actualizar en la base de datos");
-            }
-            
-            return $resultado;
+            return $this->modelo->actualizarConfiguracion($datosCompletos);
             
         } catch (Exception $e) {
             error_log("Error en Controlador (actualizarDatos): " . $e->getMessage());
@@ -50,7 +36,7 @@ class ConfiguracionControlador {
     // =======================================
     public function restaurarConfiguracion() {
         try {
-            // Datos predeterminados - NOTA: usar ruta relativa consistente
+            // Datos predeterminados
             $datosPredeterminados = [
                 'version_sistema' => '1.0.0',
                 'tipo_licencia' => 'Evaluación',
@@ -59,7 +45,7 @@ class ConfiguracionControlador {
                 'direccion' => 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta',
                 'correo_contacto' => 'gobernaciondelmeta@meta.gov.co',
                 'telefono' => '(57 -608) 6 818503',
-                'ruta_logo' => 'imagenes/gobernacion.png', // RUTA RELATIVA CORREGIDA
+                'ruta_logo' => '../../imagenes/gobernacion.png',
                 'entidad' => 'Logo Gobernación del Meta',
                 'enlace_web' => 'https://www.meta.gov.co'
             ];
@@ -82,7 +68,7 @@ class ConfiguracionControlador {
             
             // Preparar datos manteniendo la configuración actual excepto el logo
             $datosActualizar = [
-                'ruta_logo' => 'imagenes/gobernacion.png', // RUTA RELATIVA CORREGIDA
+                'ruta_logo' => '../../imagenes/gobernacion.png',
                 'entidad' => 'Logo Gobernación del Meta',
                 'enlace_web' => 'https://www.meta.gov.co'
             ];
@@ -124,10 +110,10 @@ class ConfiguracionControlador {
             'telefono' => '',
             'entidad' => '',
             'enlace_web' => '',
-            'ruta_logo' => 'imagenes/gobernacion.png' // Valor por defecto
+            'ruta_logo' => ''
         ];
         
-        // Combinar: estructura → actual → nuevos datos (nuevos datos tienen prioridad)
+        // Combinar: actual → nuevos datos → estructura
         $datosCompletos = array_merge($estructuraCompleta, $configActual, $datos);
         
         // Limpiar espacios en blanco
