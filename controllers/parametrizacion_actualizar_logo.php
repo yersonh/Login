@@ -1,9 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-
-ob_start();
-
 header("Content-Type: application/json");
 session_start();
 
@@ -17,12 +12,17 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'administra
 }
 
 try {
-    // Incluir el controlador
-    require_once 'ConfiguracionControlador.php';
+    // Incluir el controlador - verifica la ruta correcta
+    require_once __DIR__ . '/ConfiguracionControlador.php';
     $controlador = new ConfiguracionControlador();
     
     // Obtener la configuración actual primero
     $configActual = $controlador->obtenerDatos();
+    
+    // DEBUG: Verifica que obtenga datos
+    if ($configActual === false) {
+        throw new Exception("No se pudo obtener la configuración actual");
+    }
     
     // Preparar datos para actualizar (mantener lo que ya existe)
     $datosActualizar = [
@@ -47,10 +47,18 @@ try {
             throw new Exception("El archivo es demasiado grande. Máximo 2MB permitido.");
         }
         
+        // Verificar si es una imagen real
+        $check = getimagesize($archivo['tmp_name']);
+        if ($check === false) {
+            throw new Exception("El archivo no es una imagen válida.");
+        }
+        
         // Crear directorio si no existe
-        $directorioLogos = '../../imagenes/logos/';
+        $directorioLogos = __DIR__ . '/../../imagenes/logos/';
         if (!file_exists($directorioLogos)) {
-            mkdir($directorioLogos, 0777, true);
+            if (!mkdir($directorioLogos, 0777, true)) {
+                throw new Exception("No se pudo crear el directorio para logos.");
+            }
         }
         
         // Generar nombre único
@@ -59,13 +67,14 @@ try {
         
         // Mover archivo
         if (move_uploaded_file($archivo['tmp_name'], $rutaDestino)) {
-            $datosActualizar['ruta_logo'] = $rutaDestino;
+            // Guardar ruta relativa para la base de datos
+            $datosActualizar['ruta_logo'] = 'imagenes/logos/' . $nombreArchivo;
             
             // Opcional: Eliminar logo anterior si no es el predeterminado
             if (!empty($configActual['ruta_logo']) && 
-                $configActual['ruta_logo'] !== '../../imagenes/gobernacion.png' &&
-                file_exists($configActual['ruta_logo'])) {
-                @unlink($configActual['ruta_logo']);
+                $configActual['ruta_logo'] !== 'imagenes/gobernacion.png' &&
+                file_exists(__DIR__ . '/../../' . $configActual['ruta_logo'])) {
+                @unlink(__DIR__ . '/../../' . $configActual['ruta_logo']);
             }
         } else {
             throw new Exception("Error al subir el archivo.");
@@ -82,6 +91,9 @@ try {
         $datosActualizar['correo_contacto'] = $configActual['correo_contacto'] ?? '';
         $datosActualizar['telefono'] = $configActual['telefono'] ?? '';
     }
+    
+    // DEBUG: Verifica datos antes de actualizar
+    error_log("Datos a actualizar: " . print_r($datosActualizar, true));
     
     // Actualizar en la base de datos
     $resultado = $controlador->actualizarDatos($datosActualizar);
@@ -106,9 +118,13 @@ try {
     }
     
 } catch (Exception $e) {
+    // Log del error para debugging
+    error_log("Error en actualizar_logo.php: " . $e->getMessage());
+    error_log("Trace: " . $e->getTraceAsString());
+    
     echo json_encode([
         "success" => false,
-        "error" => $e->getMessage()
+        "error" => "Error interno del servidor: " . $e->getMessage()
     ]);
+    http_response_code(500);
 }
-?>
