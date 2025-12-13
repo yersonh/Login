@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../../helpers/config_helper.php';
 // Solo administradores
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
