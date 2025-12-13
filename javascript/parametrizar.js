@@ -248,17 +248,8 @@ function hideImagePreview() {
         preview.style.display = 'none';
     }
     
-    // Ocultar etiqueta
-    hidePreviewLabel();
 }
 
-
-function hidePreviewLabel() {
-    const label = document.getElementById('previewLabel');
-    if (label) {
-        label.style.display = 'none';
-    }
-}
 
 // =======================================
 // LIMPIAR DESPUÉS DE GUARDAR
