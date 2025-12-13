@@ -12,5 +12,14 @@ class ConfiguracionControlador {
         $data = $this->modelo->obtenerConfiguracion();
         return $data ?: [];
     }
+    public function actualizarDatos($datos) {
+        try {
+            return $this->modelo->actualizarConfiguracion($datos);
+        } catch (Exception $e) {
+            error_log("Error en Controlador: " . $e->getMessage());
+            return false;
+        }
+    }
 }
+    
 ?>

@@ -34,6 +34,7 @@ require_once __DIR__ . '/../../controllers/ConfiguracionControlador.php';
 $controladorConfig = new ConfiguracionControlador();
 $configuracion = $controladorConfig->obtenerDatos();
 
+
 // Si no hay datos, usar valores por defecto
 if (empty($configuracion)) {
     $configuracion = [
@@ -247,11 +248,8 @@ if (!empty($configuracion['valida_hasta'])) {
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" id="saveConfigBtn">
+                        <button type="button" class="btn btn-primary" id="saveConfigBtn" onclick="actualizarConfiguracion()">
                             <i class="fas fa-save"></i> Guardar Configuración
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="resetConfigBtn">
-                            <i class="fas fa-redo"></i> Restaurar Valores Predeterminados
                         </button>
                     </div>
                 </form>
