@@ -195,7 +195,9 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         <span>Cerrar sesión</span>
                     </button>
 
-        
+        <footer class="app-footer">
+
+           
 
 
             <!-- <div class="footer-left">
