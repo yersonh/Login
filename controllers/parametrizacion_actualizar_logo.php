@@ -1,6 +1,9 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+
+ob_start();
+
 header("Content-Type: application/json");
 session_start();
 
