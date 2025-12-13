@@ -229,10 +229,6 @@ function previewImage(file) {
         preview.src = e.target.result;
         preview.style.display = 'block';
         preview.alt = 'Vista previa del nuevo logo';
-        
-        // Mostrar etiqueta de "VISTA PREVIA"
-        showPreviewLabel();
-        
         console.log('Vista previa mostrada correctamente');
     };
     
@@ -256,34 +252,6 @@ function hideImagePreview() {
     hidePreviewLabel();
 }
 
-function showPreviewLabel() {
-    let label = document.getElementById('previewLabel');
-    
-    if (!label) {
-        label = document.createElement('div');
-        label.id = 'previewLabel';
-        label.style.cssText = `
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #004a8d;
-            background: #e6f2ff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: 1px dashed #004a8d;
-        `;
-        const logoPreviewContainer = document.querySelector('.current-logo');
-        if (logoPreviewContainer) {
-            const logoPreview = logoPreviewContainer.querySelector('.logo-preview');
-            if (logoPreview) {
-                logoPreview.appendChild(label);
-            }
-        }
-    }
-    
-    label.style.display = 'block';
-}
 
 function hidePreviewLabel() {
     const label = document.getElementById('previewLabel');
