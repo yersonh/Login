@@ -196,7 +196,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </button>
                     
         <footer class="app-footer">
-             <div class="footer-center">
+            <div class="footer-center">
                 <?php
                 $logoUrl= ConfigHelper::obtenerLogoUrl();
                 ?>
@@ -205,35 +205,28 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
                         class="license-logo"
                         onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-                    
                 </div>
-           <!-- <div class="footer-left">
-                <div class="footer-logo-container">
-                    <img src="../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
-                    <div class="developer-info">
-                        <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="footer-logo">
-                    </div>
-                </div>
+                <p>© <?php echo date('Y'); ?>   <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
+                <p><?php echo htmlspecialchars(ConfigHelper::obtenerVersionCompleta()); ?></p>
+                <p>
+                    Desarrollado por:
+                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></strong>
+                </p>
+                <p>
+                    Dirección:
+                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></strong>
+                </p>
+                <p>
+                    Contacto:
+                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></strong>
+                </p>
+                <p>
+                    Teléfono:
+                    <strong><?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></strong>
+                </p>
+
             </div>
-            <div class="footer-right">
-                <div class="contact-info">
-                    <div>
-                        <i class="fas fa-phone-alt"></i>
-                        <span>Cel. (57 -608) 6 818503</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-envelope"></i>
-                        <span>gobernaciondelmeta@meta.gov.co</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>+57 (310) 631 0227</span>
-                    </div>
-                </div>
-                <div class="copyright">
-                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
-                </div>
-            </div>-->
+          
         </footer>
     </div>
     
