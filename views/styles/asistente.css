@@ -1579,140 +1579,109 @@ body {
         animation: none;
     }
 }
-/* FOOTER CENTRADO SIMPLE */
 .app-footer {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background-color: #1a365d;
     color: white;
-    padding: 25px 20px;
-    margin-top: auto;
+    padding: 25px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
-    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
-    border-top: 3px solid #1e8ee9;
 }
 
 .footer-center {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-align: center;
-    gap: 12px;
+    padding: 0 15px;
 }
 
-/* Logo */
 .footer-logo-container {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.footer-center .license-logo {
-    max-height: 70px;
+.license-logo {
+    height: 70px;
     width: auto;
+    filter: brightness(0) invert(1);
     object-fit: contain;
-    filter: brightness(0) invert(1); /* Logo blanco */
-    transition: transform 0.3s ease;
 }
 
-.footer-center .license-logo:hover {
-    transform: scale(1.05);
-}
-
-/* Textos */
-.footer-center p {
-    margin: 0;
-    font-size: 15px;
-    color: #e0e0e0;
+.app-footer p {
+    margin: 8px 0;
     line-height: 1.5;
-    max-width: 600px;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    color: #e2e8f0;
 }
 
+.app-footer strong {
+    color: #90cdf4;
+    font-weight: 600;
+}
+
+/* Para el primer párrafo (copyright) */
 .footer-center p:first-of-type {
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #ffffff;
 }
 
-.footer-center strong {
-    color: #1e8ee9;
-    font-weight: 600;
-    margin-left: 5px;
+/* Para el segundo párrafo (versión) */
+.footer-center p:nth-of-type(2) {
+    font-size: 13px;
+    color: #cbd5e0;
+    margin-bottom: 15px;
 }
 
-/* Separador entre secciones (opcional) */
-.footer-center p:not(:first-child):not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
-    width: 100%;
+/* Para el desarrollador */
+.footer-center p:nth-of-type(3) {
+    margin: 15px 0;
+    font-size: 14px;
 }
 
-/* Estilos responsivos */
+/* Para dirección */
+.footer-center p:nth-of-type(4) {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #cbd5e0;
+}
+
+/* Para contacto (email) */
+.footer-center p:nth-of-type(5) {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Para teléfono */
+.footer-center p:nth-of-type(6) {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Línea separadora opcional si quieres agregarla */
+.footer-center p:nth-of-type(5),
+.footer-center p:nth-of-type(6) {
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .app-footer {
-        padding: 20px 15px;
+        padding: 20px 0;
     }
     
-    .footer-center {
-        gap: 10px;
+    .license-logo {
+        height: 60px;
     }
     
-    .footer-center .license-logo {
-        max-height: 60px;
-    }
-    
-    .footer-center p {
-        font-size: 14px;
-    }
-    
-    .footer-center p:first-of-type {
-        font-size: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .app-footer {
-        padding: 18px 12px;
-    }
-    
-    .footer-center {
-        gap: 8px;
-    }
-    
-    .footer-center .license-logo {
-        max-height: 50px;
-    }
-    
-    .footer-center p {
+    .app-footer p {
         font-size: 13px;
-        line-height: 1.4;
+        margin: 6px 0;
     }
     
     .footer-center p:first-of-type {
         font-size: 14px;
-    }
-    
-    /* Para móviles muy pequeños */
-    .footer-center p {
-        word-break: break-word;
-        hyphens: auto;
-    }
-}
-
-/* Para pantallas muy pequeñas */
-@media (max-width: 360px) {
-    .app-footer {
-        padding: 15px 10px;
-    }
-    
-    .footer-center .license-logo {
-        max-height: 45px;
-    }
-    
-    .footer-center p {
-        font-size: 12px;
-    }
-    
-    .footer-center p:first-of-type {
-        font-size: 13px;
     }
 }
