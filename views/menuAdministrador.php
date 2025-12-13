@@ -5,7 +5,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once __DIR__ . '/../config/database.php';
-
+require_once __DIR__ . '/../helpers/config_helper.php';
 $database = new Database();
 $db = $database->conectar();
 
@@ -252,15 +252,41 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             </div>
 
             <!-- Footer -->
-            <footer class="admin-footer">
-                <img src="../imagenes/gobernacion.png" alt="Logo" class="footer-logo">
-               <!--  <img src="../imagenes/sisgoTech.png" alt="Logo Gobernación del Meta" class="sisgotech-logo">-->
-                <p>© <?php echo date('Y'); ?> Gobernación del Meta - Secretaría de Minas y Energía. <small> Reservado por derechos de autor</small></p>
-                <p class="footer-info">
-                    SGEA • Versión 1.0.0 (Runtime) • Desarrollado por SisgonTech 
-                    <a href="#" class="footer-link">Políticas de Uso</a>
-                </p>
-            </footer>
+            <footer class="app-footer">
+    <div class="footer-center">
+        <?php
+        $logoUrl = ConfigHelper::obtenerLogoUrl();
+        $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
+        $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
+        $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
+        $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
+        $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+        $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
+        $anio = date('Y');
+        ?>
+        
+        <div class="footer-logo-container">
+            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                alt="<?php echo $entidad; ?>" 
+                class="license-logo"
+                onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+        </div>
+        
+        <!-- Primera línea concatenada -->
+        <p>
+            © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
+            <strong><?php echo $desarrollador; ?></strong>
+        </p>
+        
+        <!-- Segunda línea concatenada -->
+        <p>
+            <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
+            By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
+        </p>
+        
+
+    </div>
+</footer>
         </main>
         
         <!-- Botón flotante para volver como asistente -->
