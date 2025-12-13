@@ -655,13 +655,107 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
     </div>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const verEnMapaBtn = document.getElementById('verEnMapaBtn');
+    
+    if (verEnMapaBtn) {
+        verEnMapaBtn.addEventListener('click', function() {
+            // Función para extraer la dirección del modal
+            function extraerDireccion() {
+                // Método 1: Buscar por texto específico en los párrafos
+                const parrafos = document.querySelectorAll('.license-details p');
+                
+                for (let p of parrafos) {
+                    const contenido = p.textContent || p.innerText;
+                    
+                    // Buscar "Dirección:" en el texto
+                    if (contenido.toLowerCase().includes('dirección')) {
+                        // Extraer todo después de "Dirección:"
+                        const regex = /dirección:\s*(.+)/i;
+                        const match = contenido.match(regex);
+                        
+                        if (match && match[1]) {
+                            return match[1].trim();
+                        }
+                        
+                        // Si no coincide con regex, intentar extraer manualmente
+                        const partes = contenido.split(':');
+                        if (partes.length > 1) {
+                            return partes.slice(1).join(':').trim();
+                        }
+                    }
+                }
+                
+                // Método 2: Buscar elemento específico por su posición
+                const elementosDireccion = document.querySelectorAll('.license-details p');
+                // El elemento de dirección suele estar en la posición 8 (contando desde 0)
+                if (elementosDireccion.length >= 8) {
+                    const posibleDireccion = elementosDireccion[7].textContent;
+                    const valor = posibleDireccion.replace('Dirección:', '').trim();
+                    if (valor) return valor;
+                }
+                
+                // Método 3: Usar la entidad como referencia
+                const entidadElement = document.querySelector('.license-details p strong');
+                if (entidadElement && entidadElement.textContent.includes('Entidad')) {
+                    const entidad = entidadElement.parentNode.textContent
+                        .replace('Entidad:', '')
+                        .replace('Entidad', '')
+                        .trim();
+                    
+                    return entidad + ', Colombia';
+                }
+                
+                // Si todo falla, devolver dirección por defecto
+                return 'Gobernación del Meta, Villavicencio, Colombia';
+            }
+            
+            // Obtener la dirección
+            const direccion = extraerDireccion();
+            console.log('Dirección extraída:', direccion); // Para debugging
+            
+            // Codificar para URL
+            const direccionCodificada = encodeURIComponent(direccion);
+            
+            // Crear URL de Google Maps
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${direccionCodificada}`;
+            
+            // Abrir en nueva pestaña
+            const nuevaVentana = window.open(mapsUrl, '_blank');
+            
+            // Si el navegador bloquea popups, mostrar alternativa
+            if (!nuevaVentana || nuevaVentana.closed || typeof nuevaVentana.closed == 'undefined') {
+                // Opción alternativa: Redirigir en la misma ventana
+                if (confirm('No se pudo abrir una nueva ventana. ¿Desea abrir Google Maps en esta ventana?')) {
+                    window.location.href = mapsUrl;
+                }
+            }
+            
+            // Feedback visual opcional
+            darFeedbackVisual();
+        });
+        
+        // Función para feedback visual del botón
+        function darFeedbackVisual() {
+            const originalHTML = verEnMapaBtn.innerHTML;
+            verEnMapaBtn.innerHTML = '<i class="fas fa-check"></i> Mapa abierto';
+            verEnMapaBtn.style.background = '#198754 !important';
+            
+            setTimeout(() => {
+                verEnMapaBtn.innerHTML = originalHTML;
+                verEnMapaBtn.style.background = '';
+            }, 1500);
+        }
+    }
+});
+</script>
 if (window.history && window.history.pushState) {
     window.history.pushState(null, null, window.location.href);
     window.onpopstate = function(event) {
         window.history.pushState(null, null, window.location.href);
     };
 }
-</script>
+</>
     <script src="javascript/login-script.js"></script>
 </body>
 </html>
