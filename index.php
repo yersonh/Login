@@ -654,8 +654,8 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         </div>
     </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+<script> 
+    document.addEventListener('DOMContentLoaded', function() {
     const verEnMapaBtn = document.getElementById('verEnMapaBtn');
     
     if (verEnMapaBtn) {
@@ -749,13 +749,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+    
+<script>
 if (window.history && window.history.pushState) {
     window.history.pushState(null, null, window.location.href);
     window.onpopstate = function(event) {
         window.history.pushState(null, null, window.location.href);
     };
 }
-</>
+</script>
     <script src="javascript/login-script.js"></script>
 </body>
 </html>
