@@ -196,11 +196,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </button>
 
         <footer class="app-footer">
-
-           
-
-
-            <!-- <div class="footer-left">
+            <!<div class="footer-left">
                 <div class="footer-logo-container">
                     <img src="../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
                 </div>
@@ -223,7 +219,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 <div class="copyright">
                     © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
                 </div>
-            </div>-->
+            </div>
         </footer>
     </div>
     
