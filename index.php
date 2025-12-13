@@ -620,7 +620,6 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         <!-- Logo dinámico SIMPLIFICADO -->
         <div class="license-logo-container">
             <?php
-            // Método SIMPLE que siempre devuelve ruta correcta
             $logoUrl = ConfigHelper::obtenerLogoUrl();
             ?>
             <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
@@ -649,6 +648,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
             <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></p>
         </div>
     </div>
+    <button>Ver en mapa class="btn btn-primary" type="button" data-toggle="modal" data-target="#licenseModal">Ver en mapa</button>
 </div>
 <script>
 if (window.history && window.history.pushState) {
