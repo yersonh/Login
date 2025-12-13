@@ -285,41 +285,41 @@ if (!empty($configuracion['valida_hasta'])) {
             </div>
         </div>
         <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-left">
-                <div class="footer-logo-container">
-                    <img src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
-                         alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>" 
-                         class="footer-logo" 
-                         onerror="this.src='https://via.placeholder.com/200x80/004a8d/ffffff?text=Gobernación+del+Meta'">
-                    <div class="developer-info">
-                        <div class="developer-name">
-                            <?php echo htmlspecialchars($configuracion['desarrollado_por'] ?? 'SisgonTech'); ?>
-                        </div>
-                        <div>Sistema de Gestión para Gobernación del Meta</div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-right">
-                <div class="contact-info">
-                    <div>
-                        <i class="fas fa-phone-alt"></i>
-                        <span>Cel. <?php echo htmlspecialchars($configuracion['telefono'] ?? '(57 -608) 6 818503'); ?></span>
-                    </div>
-                    <div>
-                        <i class="fas fa-envelope"></i>
-                        <span><?php echo htmlspecialchars($configuracion['correo_contacto'] ?? 'gobernaciondelmeta@meta.gov.co'); ?></span>
-                    </div>
-                    <div>
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>+57 (310) 631 0227</span>
-                    </div>
-                </div>
-                <div class="copyright">
-                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
-                </div>
-            </div>
-        </footer>
+         <footer class="app-footer">
+    <div class="footer-center">
+        <?php
+        $logoUrl = ConfigHelper::obtenerLogoUrl();
+        $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
+        $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
+        $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
+        $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
+        $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+        $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
+        $anio = date('Y');
+        ?>
+        
+        <div class="footer-logo-container">
+            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                alt="<?php echo $entidad; ?>" 
+                class="license-logo"
+                onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+        </div>
+        
+        <!-- Primera línea concatenada -->
+        <p>
+            © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
+            <strong><?php echo $desarrollador; ?></strong>
+        </p>
+        
+        <!-- Segunda línea concatenada -->
+        <p>
+            <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
+            By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
+        </p>
+        
+
+    </div>
+</footer>
     </div>
     
     <!-- Incluir el archivo JavaScript externo -->
