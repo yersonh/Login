@@ -383,41 +383,35 @@ try {
             <span>Volver al Menú</span>
         </button>
         
-         <footer class="app-footer">
-    <div class="footer-center">
-        <?php
-        $logoUrl = ConfigHelper::obtenerLogoUrl();
-        $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
-        $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
-        $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
-        $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
-        $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
-        $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
-        $anio = date('Y');
-        ?>
-        
-        <div class="footer-logo-container">
-            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                alt="<?php echo $entidad; ?>" 
-                class="license-logo"
-                onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-        </div>
-        
-        <!-- Primera línea concatenada -->
-        <p>
-            © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
-            <strong><?php echo $desarrollador; ?></strong>
-        </p>
-        
-        <!-- Segunda línea concatenada -->
-        <p>
-            <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
-            By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
-        </p>
-        
-
-    </div>
-</footer>
+        <footer class="app-footer">
+            <div class="footer-left">
+                <div class="footer-logo-container">
+                    <img src="../../imagenes/gobernacion.png" alt="Logo Gobernación del Meta" class="footer-logo">
+                    <div class="developer-info">
+                        <img src="../../imagenes/sisgoTech.png" alt="Logo SisgoTech" class="footer-logo">
+                    </div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Cel. (57 -608) 6 818503</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope"></i>
+                        <span>gobernaciondelmeta@meta.gov.co</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>+57 (310) 631 0227</span>
+                    </div>
+                </div>
+                <div class="copyright">
+                    © <?php echo date('Y'); ?> Gobernación del Meta • Todos los derechos reservados
+                </div>
+            </div>
+        </footer>
     </div>
     
     <!-- Scripts -->
