@@ -613,43 +613,30 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
     </div>
 
 <!-- Modal de Licencia compacto -->
-<div id="licenseModal" class="modal">
-    <div class="modal-content license-modal">
-        <span class="close">&times;</span>
-        
-        <!-- Logo dinámico SIMPLIFICADO -->
-        <div class="license-logo-container">
-            <?php
-            // Método SIMPLE que siempre devuelve ruta correcta
-            $logoUrl = ConfigHelper::obtenerLogoUrl();
-            ?>
-            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                 alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
-                 class="license-logo"
-                 onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-        </div>
-        
-        <!-- Información pegada al logo -->
-        <div class="license-details">
-            <p><strong>Entidad:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-            <p><strong>Website:</strong> 
-                <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
-                   target="_blank">
-                    <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>
-                </a>
-            </p>
-            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
-            <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
-            <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
-            <!-- NUEVA LÍNEA: Días restantes -->
-            <p><strong>Días restantes:</strong> <?php echo ConfigHelper::obtenerDiasRestantes(); ?></p>
-            <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>
-            <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></p>
-            <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></p>
-            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></p>
-        </div>
-    </div>
+ <div class="license-details-concat">
+    <p>
+        © <?php echo date('Y'); ?>
+        <strong><?php echo ConfigHelper::obtenerVersionCompleta(); ?></strong>
+        desarrollado por
+        <strong><?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por')); ?></strong>
+    </p>
+
+    <p>
+        <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?>,
+        <?php echo htmlspecialchars(ConfigHelper::obtener('entidad')); ?>, Colombia ·
+        Website:
+        <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web')); ?>" target="_blank">
+            <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web')); ?>
+        </a>
+        · Licencia:
+        <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia')); ?>
+        · Válida hasta:
+        <?php echo ConfigHelper::obtenerFechaFormateada(); ?>
+        · Tel:
+        <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?>
+    </p>
 </div>
+
 <script>
 if (window.history && window.history.pushState) {
     window.history.pushState(null, null, window.location.href);
