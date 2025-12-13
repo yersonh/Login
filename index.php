@@ -612,41 +612,106 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         </div>
     </div>
 
-<!-- Modal de Licencia compacto -->
+<!-- Modal de Licencia estilo notificación oficial -->
 <div id="licenseModal" class="modal">
     <div class="modal-content license-modal">
         <span class="close">&times;</span>
         
-        <!-- Logo dinámico SIMPLIFICADO -->
-        <div class="license-logo-container">
-            <?php
-            // Método SIMPLE que siempre devuelve ruta correcta
-            $logoUrl = ConfigHelper::obtenerLogoUrl();
-            ?>
-            <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                 alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
-                 class="license-logo"
-                 onerror="this.onerror=null; this.src='/imagenes/logo.png'">
+        <!-- Megáfono en esquina superior izquierda -->
+        <div class="megafono-container">
+            <img src="/imagenes/megafono.png" alt="Megáfono" class="megafono-icon">
         </div>
         
-        <!-- Información pegada al logo -->
-        <div class="license-details">
-            <p><strong>Entidad:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-            <p><strong>Website:</strong> 
-                <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
-                   target="_blank">
-                    <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>
-                </a>
-            </p>
-            <p><strong>Versión:</strong> <?php echo ConfigHelper::obtenerVersionCompleta(); ?></p>
-            <p><strong>Tipo de Licencia:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></p>
-            <p><strong>Válida hasta:</strong> <?php echo ConfigHelper::obtenerFechaFormateada(); ?></p>
-            <!-- NUEVA LÍNEA: Días restantes -->
-            <p><strong>Días restantes:</strong> <?php echo ConfigHelper::obtenerDiasRestantes(); ?></p>
-            <p><strong>Desarrollado por:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></p>
-            <p><strong>Dirección:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></p>
-            <p><strong>Contacto:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></p>
-            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></p>
+        <!-- Encabezado con "SEÑOR USUARIO" -->
+        <div class="license-header">
+            <h1 class="license-title">SEÑOR USUARIO</h1>
+            <p class="license-subtitle">Información oficial del sistema</p>
+        </div>
+        
+        <!-- Contenido principal -->
+        <div class="license-body">
+            <div class="license-message">
+                <p>Le informamos sobre los detalles de la licencia del sistema actualmente en uso:</p>
+            </div>
+            
+            <!-- Información de la licencia en dos columnas -->
+            <div class="license-info-grid">
+                <div class="info-column">
+                    <div class="info-item">
+                        <span class="info-label">Entidad:</span>
+                        <span class="info-value"><?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Website:</span>
+                        <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
+                           target="_blank" class="info-value link">
+                            <?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>
+                        </a>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Versión:</span>
+                        <span class="info-value"><?php echo ConfigHelper::obtenerVersionCompleta(); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Tipo de Licencia:</span>
+                        <span class="info-value license-type"><?php echo htmlspecialchars(ConfigHelper::obtener('tipo_licencia', 'Evaluación')); ?></span>
+                    </div>
+                </div>
+                
+                <div class="info-column">
+                    <div class="info-item">
+                        <span class="info-label">Válida hasta:</span>
+                        <span class="info-value date-highlight"><?php echo ConfigHelper::obtenerFechaFormateada(); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Días restantes:</span>
+                        <span class="info-value days-remaining"><?php echo ConfigHelper::obtenerDiasRestantes(); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Desarrollado por:</span>
+                        <span class="info-value"><?php echo htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech')); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Contacto:</span>
+                        <span class="info-value"><?php echo htmlspecialchars(ConfigHelper::obtener('correo_contacto')); ?></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="additional-info">
+                <div class="info-item">
+                    <span class="info-label">Dirección:</span>
+                    <span class="info-value"><?php echo htmlspecialchars(ConfigHelper::obtener('direccion')); ?></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Teléfono:</span>
+                    <span class="info-value"><?php echo htmlspecialchars(ConfigHelper::obtener('telefono')); ?></span>
+                </div>
+            </div>
+            
+            <!-- Hashtag similar al de la imagen -->
+            <div class="license-hashtag">
+                #SistemaOficial
+            </div>
+        </div>
+        
+        <!-- Logo de la gobernación en el footer -->
+        <div class="license-footer">
+            <!-- Logo dinámico -->
+            <div class="govern-logo-container">
+                <?php
+                $logoUrl = ConfigHelper::obtenerLogoUrl();
+                ?>
+                <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                     alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
+                     class="govern-logo"
+                     onerror="this.onerror=null; this.src='/imagenes/logo.png'">
+            </div>
+            <div class="footer-text">
+                <div class="entity-name"><?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></div>
+                <div class="entity-handle">@gobernacionmeta</div>
+            </div>
         </div>
     </div>
 </div>
