@@ -272,7 +272,7 @@ function procesarRecuperacion($db, $correoUsuario, $base_url) {
         if ($stmtToken->execute()) {
             $link = "{$base_url}/views/manage/nueva_contraseña.php?token={$token}";
             $nombrePersona = $usuario['nombres'] . ' ' . $usuario['apellidos'];
-            $logo_url = $base_url . "/imagenes/logo.png";
+            $logo_url = $base_url . "/imagenes/gobernacion.png";
 
             $payload = [
                 "sender" => [
@@ -626,7 +626,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
             <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
                  alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
                  class="license-logo"
-                 onerror="this.onerror=null; this.src='/imagenes/logo.png'">
+                 onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
         </div>
         
         <!-- Información pegada al logo -->
