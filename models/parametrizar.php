@@ -26,7 +26,7 @@ public function actualizarConfiguracion($datos) {
         
         if ($existe) {
             // Si existe, actualizar
-            $query = "UPDATE configuracion SET 
+            $query = "UPDATE parametrizar SET 
                       version_sistema = :version_sistema,
                       tipo_licencia = :tipo_licencia,
                       valida_hasta = :valida_hasta,
@@ -69,7 +69,7 @@ public function actualizarConfiguracion($datos) {
             
         } else {
             // Si no existe, crear nuevo
-            $query = "INSERT INTO configuracion (
+            $query = "INSERT INTO parametrizar (
                       version_sistema, tipo_licencia, valida_hasta,
                       desarrollado_por, direccion, correo_contacto,
                       telefono, entidad, enlace_web, ruta_logo,
