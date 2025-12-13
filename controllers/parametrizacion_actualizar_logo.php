@@ -1,15 +1,6 @@
 <?php
 header("Content-Type: application/json");
-session_start();
 
-// Verificar autenticación
-if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'administrador') {
-    echo json_encode([
-        "success" => false,
-        "error" => "Acceso no autorizado"
-    ]);
-    exit;
-}
 
 try {
     // Incluir el controlador
