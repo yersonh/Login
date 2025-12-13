@@ -195,18 +195,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                         <span>Cerrar sesión</span>
                     </button>
 
-        <footer class="app-footer">
-
-            <div class="footer-center">
-                <?php
-                $logoUrl= ConfigHelper::obtenerLogoUrl();
-                ?>
-                <div class="footer-logo-container">
-                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                        alt="<?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?>" 
-                        class="license-logo"
-                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-                </div>
+        
 
 
             <!-- <div class="footer-left">
