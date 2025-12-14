@@ -21,7 +21,7 @@ try {
     $datosActualizar = [
         'entidad'    => trim($_POST['entidad']),
         'enlace_web' => trim($_POST['enlace_web']),
-        'ruta_logo'  => $configActual['ruta_logo'] ?? '../../imagenes/gobernacion.png' 
+        'ruta_logo' => $configActual['ruta_logo'] ?? 'imagenes/gobernacion.png' 
     ];
 
     $logoAntiguoPath = $configActual['ruta_logo'] ?? ''; 
@@ -49,16 +49,16 @@ try {
         $nombreArchivo = 'logo_' . time() . '_' . uniqid() . '.' . $extension;
         $rutaDestinoServidor = $directorioLogos . $nombreArchivo;
         
-        $rutaDestinoDB = '../../imagenes/logos/' . $nombreArchivo; 
+        $rutaDestinoDB = 'imagenes/logos/' . $nombreArchivo;
         
         if (move_uploaded_file($archivo['tmp_name'], $rutaDestinoServidor)) {
             $datosActualizar['ruta_logo'] = $rutaDestinoDB;
             
             if (!empty($logoAntiguoPath) && 
-                $logoAntiguoPath !== '../../imagenes/gobernacion.png' &&
-                file_exists($logoAntiguoPath)) {
+                $logoAntiguoPath !== 'imagenes/gobernacion.png' &&
+                file_exists(__DIR__ . '/../../' . $logoAntiguoPath)) {
                 
-                @unlink($logoAntiguoPath); 
+                @unlink(__DIR__ . '/../../' . $logoAntiguoPath);
             }
         } else {
             throw new Exception("Error desconocido al subir el archivo.");

@@ -1,3 +1,24 @@
+// =======================================
+// CONFIGURACIÓN DE RUTAS BASE
+// =======================================
+// Calculamos la ruta base dinámicamente basada en la ubicación actual
+// Si estamos en: /proyecto/views/administrador/parametrizacion.php
+// Necesitamos: ../../ para llegar a la raíz
+const getBasePath = () => {
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(segment => segment);
+    
+    // Si estamos en una carpeta views/administrador/
+    if (path.includes('/administrador/')) {
+        return '../../'; // Desde views/administrador/ a raíz: ../../
+    }
+    
+    // Si estamos en otra ubicación, ajustar según sea necesario
+    return '../';
+};
+
+const BASE_PATH = getBasePath();
+
 document.addEventListener('DOMContentLoaded', function () {
     // ==========================
     // 1. INICIALIZACIÓN
@@ -55,8 +76,14 @@ window.currentConfig = {}; // Almacena el estado actual de la BD para comparar c
 // 3. CARGAR DATOS (READ)
 // =======================================
 function cargarConfiguracion() {
+    // Ruta corregida: desde views/js/ a api/ = ../../
     fetch("../../api/parametrizacion_obtener.php")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Error HTTP: ${res.status}`);
+            }
+            return res.json();
+        })
         .then(data => {
             if (!data.success) {
                 showError(data.error || "No se pudo cargar la configuración.");
@@ -67,17 +94,17 @@ function cargarConfiguracion() {
             window.currentConfig = config; // Guardar referencia
 
             // Llenar formulario de Sistema
-            setValue('version', config.version_sistema);
-            setValue('tipoLicencia', config.tipo_licencia);
-            setValue('validaHasta', config.valida_hasta);
-            setValue('desarrolladoPor', config.desarrollado_por);
-            setValue('direccion', config.direccion);
-            setValue('contacto', config.correo_contacto);
-            setValue('telefono', config.telefono);
+            setValue('version', config.version_sistema || '');
+            setValue('tipoLicencia', config.tipo_licencia || '');
+            setValue('validaHasta', config.valida_hasta || '');
+            setValue('desarrolladoPor', config.desarrollado_por || '');
+            setValue('direccion', config.direccion || '');
+            setValue('contacto', config.correo_contacto || '');
+            setValue('telefono', config.telefono || '');
 
             // Llenar formulario de Logo
-            setValue('logoAltText', config.entidad);
-            setValue('logoLink', config.enlace_web);
+            setValue('logoAltText', config.entidad || '');
+            setValue('logoLink', config.enlace_web || '');
 
             // Actualizar imagen del logo actual
             if (config.ruta_logo) {
@@ -118,8 +145,8 @@ function actualizarConfiguracionLogo() {
     const changes = [];
     const current = window.currentConfig;
 
-    if (entidad !== current.entidad) changes.push({ field: 'Entidad', value: entidad });
-    if (enlaceWeb !== current.enlace_web) changes.push({ field: 'Web', value: enlaceWeb });
+    if (entidad !== (current.entidad || '')) changes.push({ field: 'Entidad', value: entidad });
+    if (enlaceWeb !== (current.enlace_web || '')) changes.push({ field: 'Web', value: enlaceWeb });
     if (logoFile) changes.push({ field: 'Logo', value: `Nuevo archivo: ${logoFile.name}` });
 
     if (changes.length === 0) {
@@ -141,16 +168,22 @@ function executeLogoUpdate(datos) {
         formData.append('logo', datos.logoFile);
     }
 
+    // Ruta corregida: desde views/js/ a api/ = ../../
     fetch('../../api/parametrizacion_actualizar_logo.php', {
         method: 'POST',
         body: formData
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Error HTTP: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             showSuccess(data.message);
             
-            // Actualizar la imagen en pantalla con la nueva URL (y timestamp para evitar caché)
+            // Actualizar la imagen en pantalla con la nueva URL
             if (data.new_logo_url) {
                 updateLogoImages(data.new_logo_url);
             }
@@ -161,7 +194,10 @@ function executeLogoUpdate(datos) {
             showError(data.error);
         }
     })
-    .catch(err => showError("Error de conexión: " + err.message))
+    .catch(err => {
+        console.error("Error en updateLogo:", err);
+        showError("Error de conexión: " + err.message);
+    })
     .finally(() => setButtonLoading(btn, false, originalText));
 }
 
@@ -196,12 +232,18 @@ function executeSystemUpdate(datos) {
     const btn = document.getElementById('saveConfigBtn');
     const originalText = setButtonLoading(btn, true);
 
+    // Ruta corregida: desde views/js/ a controllers/ = ../../
     fetch('../../controllers/parametrizacion_actualizar.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Error HTTP: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             showSuccess("Configuración del sistema actualizada.");
@@ -210,7 +252,10 @@ function executeSystemUpdate(datos) {
             showError(data.error);
         }
     })
-    .catch(err => showError("Error: " + err.message))
+    .catch(err => {
+        console.error("Error en updateSystem:", err);
+        showError("Error: " + err.message);
+    })
     .finally(() => setButtonLoading(btn, false, originalText));
 }
 
@@ -220,7 +265,7 @@ function executeSystemUpdate(datos) {
 function setupModalEvents() {
     const modal = document.getElementById('confirmationModal');
     const confirmBtn = document.getElementById('confirmSaveBtn');
-    const cancelBtn = document.querySelector('.modal-actions .btn-secondary'); // Asumiendo clase
+    const cancelBtn = document.querySelector('.modal-actions .btn-secondary');
 
     if (!modal) return;
 
@@ -298,8 +343,6 @@ function previewImage(file) {
         
         let preview = document.getElementById('imagePreview');
         if (!preview) {
-            // Crear elemento si no existe en el DOM (Opcional, depende de tu HTML)
-            // Asumimos que existe o lo insertamos dinámicamente
             preview = document.createElement('img');
             preview.id = 'imagePreview';
             document.querySelector('.logo-preview').appendChild(preview);
@@ -324,16 +367,46 @@ function cleanupLogoForm() {
     hideImagePreview();
 }
 
-// Actualizar todas las imágenes del logo en la página
+// Actualizar todas las imágenes del logo en la página - CORREGIDO
 function updateLogoImages(url) {
+    if (!url) return;
+    
     const timestamp = new Date().getTime();
-    const fullUrl = url + '?t=' + timestamp;
+    
+    // CORRECCIÓN: La URL viene como "imagenes/logos/logo.jpg" desde la BD
+    // Necesitamos agregar la ruta base correcta
+    let fullUrl = url;
+    
+    // Si la URL no empieza con http o /, agregar BASE_PATH
+    if (!fullUrl.startsWith('http') && !fullUrl.startsWith('/')) {
+        fullUrl = BASE_PATH + fullUrl;
+    }
+    
+    fullUrl = fullUrl + '?t=' + timestamp;
+    
+    console.log('Actualizando logo con ruta:', fullUrl);
     
     const mainLogo = document.getElementById('currentLogo');
-    if (mainLogo) mainLogo.src = fullUrl;
+    if (mainLogo) {
+        mainLogo.src = fullUrl;
+        mainLogo.onerror = function() {
+            console.error('Error cargando imagen:', fullUrl);
+            // Intentar con ruta absoluta como fallback
+            if (!fullUrl.startsWith('/')) {
+                mainLogo.src = '/' + fullUrl;
+            }
+        };
+    }
 
     const footerLogos = document.querySelectorAll('.footer-logo');
-    footerLogos.forEach(img => img.src = fullUrl);
+    footerLogos.forEach(img => {
+        img.src = fullUrl;
+        img.onerror = function() {
+            if (!fullUrl.startsWith('/')) {
+                img.src = '/' + fullUrl;
+            }
+        };
+    });
 }
 
 // Helpers generales
@@ -372,7 +445,7 @@ function showError(msg) {
     }
 }
 
-// Funciones placeholder para los botones de Restaurar (puedes implementarlas igual que executeLogoUpdate)
+// Funciones placeholder para los botones de Restaurar
 function restaurarLogoPredeterminado() {
     if(!confirm("¿Restaurar logo por defecto?")) return;
     // Fetch a parametrizacion_restaurar_logo.php...
