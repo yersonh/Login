@@ -18,10 +18,14 @@ try {
         throw new Exception("Datos POST incompletos (entidad y enlace web son requeridos).");
     }
 
+    // ❌ CORREGIR ESTO: Debe ser consistente
+    // $datosActualizar['ruta_logo'] = $configActual['ruta_logo'] ?? '../../imagenes/gobernacion.png';
+    
+    // ✅ CORRECTO: Usar misma estructura que el logo viejo
     $datosActualizar = [
         'entidad'    => trim($_POST['entidad']),
         'enlace_web' => trim($_POST['enlace_web']),
-        'ruta_logo' => $configActual['ruta_logo'] ?? '../../imagenes/gobernacion.png' 
+        'ruta_logo'  => $configActual['ruta_logo'] ?? '/imagenes/gobernacion.png' // Con / al inicio
     ];
 
     $logoAntiguoPath = $configActual['ruta_logo'] ?? ''; 
@@ -49,16 +53,25 @@ try {
         $nombreArchivo = 'logo_' . time() . '_' . uniqid() . '.' . $extension;
         $rutaDestinoServidor = $directorioLogos . $nombreArchivo;
         
-        $rutaDestinoDB = '../../imagenes/logos/' . $nombreArchivo;
+        // ❌ CORREGIR ESTO: 
+        // $rutaDestinoDB = '../../imagenes/logos/' . $nombreArchivo;
+        
+        // ✅ CORRECTO: Usar misma estructura (/imagenes/logos/)
+        $rutaDestinoDB = '/imagenes/logos/' . $nombreArchivo;
         
         if (move_uploaded_file($archivo['tmp_name'], $rutaDestinoServidor)) {
             $datosActualizar['ruta_logo'] = $rutaDestinoDB;
             
+            // ❌ CORREGIR ESTO también en la comparación:
+            // if (!empty($logoAntiguoPath) && 
+            //     $logoAntiguoPath !== '../../imagenes/gobernacion.png' &&
+            
+            // ✅ CORRECTO: Comparar con misma ruta
             if (!empty($logoAntiguoPath) && 
-                $logoAntiguoPath !== '../../imagenes/gobernacion.png' &&
-                file_exists(__DIR__ . '/../../' . $logoAntiguoPath)) {
+                $logoAntiguoPath !== '/imagenes/gobernacion.png' &&
+                file_exists(__DIR__ . '/../..' . $logoAntiguoPath)) { // Quitar un /
                 
-                @unlink(__DIR__ . '/../../' . $logoAntiguoPath);
+                @unlink(__DIR__ . '/../..' . $logoAntiguoPath);
             }
         } else {
             throw new Exception("Error desconocido al subir el archivo.");

@@ -326,14 +326,36 @@ function cleanupLogoForm() {
 
 // Actualizar todas las imágenes del logo en la página
 function updateLogoImages(url) {
+    if (!url) return;
+    
     const timestamp = new Date().getTime();
-    const fullUrl = url + '?t=' + timestamp;
+    
+    // ✅ Si ya viene con / al inicio (ej: /imagenes/logos/logo.jpg)
+    // solo agregamos timestamp
+    let fullUrl = url + '?t=' + timestamp;
+    
+    console.log('Actualizando logo con ruta:', fullUrl);
     
     const mainLogo = document.getElementById('currentLogo');
-    if (mainLogo) mainLogo.src = fullUrl;
+    if (mainLogo) {
+        mainLogo.src = fullUrl;
+        // Debug
+        mainLogo.onload = function() {
+            console.log('✅ Logo cargado correctamente:', fullUrl);
+        };
+        mainLogo.onerror = function() {
+            console.error('❌ Error cargando logo:', fullUrl);
+            // Si falla, intentar sin la /
+            if (url.startsWith('/')) {
+                mainLogo.src = url.substring(1) + '?t=' + timestamp;
+            }
+        };
+    }
 
     const footerLogos = document.querySelectorAll('.footer-logo');
-    footerLogos.forEach(img => img.src = fullUrl);
+    footerLogos.forEach(img => {
+        img.src = fullUrl;
+    });
 }
 
 // Helpers generales
