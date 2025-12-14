@@ -1,257 +1,359 @@
 document.addEventListener('DOMContentLoaded', function () {
     // ==========================
-    // CARGAR CONFIGURACIÓN AL INICIAR
+    // 1. INICIALIZACIÓN
     // ==========================
-    cargarConfiguracion();
+    cargarConfiguracion(); // Cargar datos al abrir la página
     
     // ==========================
-    // EVENT LISTENERS PARA CARGA DE DATOS
+    // 2. EVENT LISTENERS (BOTONES Y ACCIONES)
     // ==========================
     
-    // Actualizar días restantes cuando cambia la fecha
-    const validaHastaInput = document.getElementById('validaHasta');
-    if (validaHastaInput) {
-        validaHastaInput.addEventListener('change', function() {
-            actualizarDiasRestantesUI(this.value);
-        });
+    // --- Botón Guardar: Configuración del SISTEMA ---
+    const saveConfigBtn = document.getElementById('saveConfigBtn');
+    if (saveConfigBtn) {
+        saveConfigBtn.addEventListener('click', actualizarConfiguracionSistema);
     }
     
-    // Mostrar nombre de archivo seleccionado y vista previa
+    // --- Botón Guardar: Configuración del LOGO ---
+    const saveLogoBtn = document.getElementById('saveLogoBtn');
+    if (saveLogoBtn) {
+        saveLogoBtn.addEventListener('click', actualizarConfiguracionLogo);
+    }
+    
+    // --- Botón Restaurar: Logo Predeterminado ---
+    const restoreLogoBtn = document.getElementById('restoreLogoBtn');
+    if (restoreLogoBtn) {
+        restoreLogoBtn.addEventListener('click', restaurarLogoPredeterminado);
+    }
+    
+    // --- Botón Restaurar: Configuración de Fábrica ---
+    const resetConfigBtn = document.getElementById('resetConfigBtn');
+    if (resetConfigBtn) {
+        resetConfigBtn.addEventListener('click', restaurarConfiguracionPredeterminada);
+    }
+
+    // --- Input File: Vista previa al seleccionar imagen ---
     const newLogoInput = document.getElementById('newLogo');
     if (newLogoInput) {
         newLogoInput.addEventListener('change', function(e) {
-            const fileName = document.getElementById('fileName');
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                fileName.textContent = file.name;
-                
-                // Validar que sea una imagen
-                if (file.type.startsWith('image/')) {
-                    // Vista previa de imagen
-                    previewImage(file);
-                } else {
-                    showError('Por favor seleccione un archivo de imagen');
-                    e.target.value = ''; // Limpiar el input
-                    fileName.textContent = 'Haga clic para seleccionar un archivo';
-                    hideImagePreview();
-                }
-            } else {
-                fileName.textContent = 'Haga clic para seleccionar un archivo';
-                hideImagePreview();
-            }
+            handleFileSelection(e);
         });
     }
+
+    // --- Modal: Eventos de cierre y confirmación ---
+    setupModalEvents();
 });
 
 // =======================================
-// Cargar datos desde la BD
+// VARIABLES GLOBALES
+// =======================================
+let pendingAction = null; // Almacena la función a ejecutar tras confirmar en el modal
+let actionData = null;    // Almacena los datos para esa función
+window.currentConfig = {}; // Almacena el estado actual de la BD para comparar cambios
+
+// =======================================
+// 3. CARGAR DATOS (READ)
 // =======================================
 function cargarConfiguracion() {
-    // Mostrar indicador de carga
-    const successAlert = document.getElementById("successAlert");
-    if (successAlert) {
-        successAlert.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando configuración...';
-        successAlert.style.display = "block";
-    }
-    
-    // Llamar al endpoint
     fetch("../../controllers/parametrizacion_obtener.php")
-        .then(res => {
-            if (!res.ok) {
-                throw new Error(`Error HTTP: ${res.status}`);
-            }
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            // Ocultar indicador de carga
-            if (successAlert) {
-                successAlert.style.display = "none";
-            }
-            
             if (!data.success) {
                 showError(data.error || "No se pudo cargar la configuración.");
                 return;
             }
 
             const config = data.data;
-            
-            // Guardar configuración actual para comparaciones
-            window.currentConfig = config;
-            
-            // Rellenar todos los campos del formulario con los datos de la BD
-            setValueIfExists("version", config.version_sistema);
-            setValueIfExists("tipoLicencia", config.tipo_licencia);
-            setValueIfExists("validaHasta", config.valida_hasta);
-            setValueIfExists("desarrolladoPor", config.desarrollado_por);
-            setValueIfExists("direccion", config.direccion);
-            setValueIfExists("contacto", config.correo_contacto);
-            setValueIfExists("telefono", config.telefono);
-            setValueIfExists("logoAltText", config.entidad);
-            setValueIfExists("logoLink", config.enlace_web);
+            window.currentConfig = config; // Guardar referencia
 
-            // Actualizar días restantes
-            if (config.valida_hasta) {
-                actualizarDiasRestantesUI(config.valida_hasta);
-            } else if (config.dias_restantes) {
-                document.getElementById('diasRestantes').value = config.dias_restantes + ' días';
-            }
+            // Llenar formulario de Sistema
+            setValue('version', config.version_sistema);
+            setValue('tipoLicencia', config.tipo_licencia);
+            setValue('validaHasta', config.valida_hasta);
+            setValue('desarrolladoPor', config.desarrollado_por);
+            setValue('direccion', config.direccion);
+            setValue('contacto', config.correo_contacto);
+            setValue('telefono', config.telefono);
 
-            // Actualizar logo si existe
+            // Llenar formulario de Logo
+            setValue('logoAltText', config.entidad);
+            setValue('logoLink', config.enlace_web);
+
+            // Actualizar imagen del logo actual
             if (config.ruta_logo) {
-                const currentLogo = document.getElementById("currentLogo");
-                if (currentLogo) {
-                    currentLogo.src = config.ruta_logo;
-                    currentLogo.alt = config.entidad || "Logo del sistema";
-                }
-                
-                // También actualizar logo del footer si existe
-                const footerLogo = document.querySelector(".footer-logo");
-                if (footerLogo) {
-                    footerLogo.src = config.ruta_logo;
-                    footerLogo.alt = config.entidad || "Logo del sistema";
-                }
+                updateLogoImages(config.ruta_logo);
             }
             
-            // Asegurar que el logo actual sea visible
+            // UI Limpia
             hideImagePreview();
         })
         .catch(error => {
-            if (successAlert) {
-                successAlert.style.display = "none";
-            }
-            showError("Error al conectar con el servidor: " + error.message);
-            console.error("Error:", error);
+            console.error("Error cargando config:", error);
+            showError("Error de conexión al cargar datos.");
         });
 }
 
 // =======================================
-// VISTA PREVIA DE IMAGEN (CORREGIDA - SOLO UNA IMAGEN VISIBLE)
+// 4. LÓGICA DE ACTUALIZACIÓN DEL LOGO
 // =======================================
-function previewImage(file) {
-    if (!file || !file.type.startsWith('image/')) {
+function actualizarConfiguracionLogo() {
+    const entidad = document.getElementById('logoAltText').value.trim();
+    const enlaceWeb = document.getElementById('logoLink').value.trim();
+    const logoFile = document.getElementById('newLogo').files[0];
+
+    // Validaciones
+    if (!entidad || !enlaceWeb) {
+        showError('La Entidad y el Enlace Web son campos obligatorios.');
         return;
     }
+
+    // Datos a enviar
+    const datos = {
+        entidad: entidad,
+        enlace_web: enlaceWeb,
+        logoFile: logoFile || null
+    };
+
+    // Detectar cambios para el resumen del modal
+    const changes = [];
+    const current = window.currentConfig;
+
+    if (entidad !== current.entidad) changes.push({ field: 'Entidad', value: entidad });
+    if (enlaceWeb !== current.enlace_web) changes.push({ field: 'Web', value: enlaceWeb });
+    if (logoFile) changes.push({ field: 'Logo', value: `Nuevo archivo: ${logoFile.name}` });
+
+    if (changes.length === 0) {
+        showError('No hay cambios para guardar.');
+        return;
+    }
+
+    showConfirmationModal('logo', datos, changes);
+}
+
+function executeLogoUpdate(datos) {
+    const btn = document.getElementById('saveLogoBtn');
+    const originalText = setButtonLoading(btn, true);
+
+    const formData = new FormData();
+    formData.append('entidad', datos.entidad);
+    formData.append('enlace_web', datos.enlace_web);
+    if (datos.logoFile) {
+        formData.append('logo', datos.logoFile);
+    }
+
+    fetch('../../controllers/parametrizacion_actualizar_logo.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message);
+            
+            // Actualizar la imagen en pantalla con la nueva URL (y timestamp para evitar caché)
+            if (data.new_logo_url) {
+                updateLogoImages(data.new_logo_url);
+            }
+            
+            cleanupLogoForm(); // Limpiar input file y preview
+            cargarConfiguracion(); // Refrescar datos globales
+        } else {
+            showError(data.error);
+        }
+    })
+    .catch(err => showError("Error de conexión: " + err.message))
+    .finally(() => setButtonLoading(btn, false, originalText));
+}
+
+// =======================================
+// 5. LÓGICA DE ACTUALIZACIÓN DEL SISTEMA
+// =======================================
+function actualizarConfiguracionSistema() {
+    // Recolectar datos
+    const datos = {
+        version_sistema: document.getElementById('version').value.trim(),
+        tipo_licencia: document.getElementById('tipoLicencia').value.trim(),
+        valida_hasta: document.getElementById('validaHasta').value,
+        desarrollado_por: document.getElementById('desarrolladoPor').value.trim(),
+        direccion: document.getElementById('direccion').value.trim(),
+        correo_contacto: document.getElementById('contacto').value.trim(),
+        telefono: document.getElementById('telefono').value.trim()
+    };
+
+    // Validación básica
+    if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto) {
+        showError('Complete los campos obligatorios (Versión, Desarrollador, Contacto).');
+        return;
+    }
+
+    // Detectar cambios (Simplificado)
+    const changes = [{ field: 'Configuración', value: 'Actualización general del sistema' }];
+
+    showConfirmationModal('system', datos, changes);
+}
+
+function executeSystemUpdate(datos) {
+    const btn = document.getElementById('saveConfigBtn');
+    const originalText = setButtonLoading(btn, true);
+
+    fetch('../../controllers/parametrizacion_actualizar.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess("Configuración del sistema actualizada.");
+            cargarConfiguracion();
+        } else {
+            showError(data.error);
+        }
+    })
+    .catch(err => showError("Error: " + err.message))
+    .finally(() => setButtonLoading(btn, false, originalText));
+}
+
+// =======================================
+// 6. GESTIÓN DEL MODAL
+// =======================================
+function setupModalEvents() {
+    const modal = document.getElementById('confirmationModal');
+    const confirmBtn = document.getElementById('confirmSaveBtn');
+    const cancelBtn = document.querySelector('.modal-actions .btn-secondary'); // Asumiendo clase
+
+    if (!modal) return;
+
+    // Click fuera cierra
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
     
+    // ESC cierra
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // Botones
+    if (confirmBtn) confirmBtn.addEventListener('click', executePendingAction);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+}
+
+function showConfirmationModal(type, data, changes) {
+    // Configurar acción
+    if (type === 'logo') pendingAction = executeLogoUpdate;
+    else if (type === 'system') pendingAction = executeSystemUpdate;
+    
+    actionData = data;
+
+    // Llenar UI del Modal
+    const changesList = document.getElementById('changesList');
+    changesList.innerHTML = '';
+    
+    changes.forEach(c => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${c.field}:</strong> ${c.value}`;
+        changesList.appendChild(li);
+    });
+
+    document.getElementById('modalDetails').style.display = changes.length ? 'block' : 'none';
+    document.getElementById('confirmationModal').style.display = 'flex';
+}
+
+function executePendingAction() {
+    if (pendingAction && actionData) pendingAction(actionData);
+    closeModal();
+}
+
+function closeModal() {
+    document.getElementById('confirmationModal').style.display = 'none';
+    pendingAction = null;
+    actionData = null;
+}
+
+// =======================================
+// 7. UTILIDADES Y AYUDAS UI
+// =======================================
+
+// Manejo de Input File y Preview
+function handleFileSelection(e) {
+    const file = e.target.files[0];
+    const fileNameDisplay = document.getElementById('fileName');
+    
+    if (file) {
+        fileNameDisplay.textContent = file.name;
+        if (file.type.startsWith('image/')) {
+            previewImage(file);
+        } else {
+            showError("Por favor seleccione un archivo de imagen válido.");
+            e.target.value = ''; // Reset
+            hideImagePreview();
+        }
+    } else {
+        fileNameDisplay.textContent = "Seleccionar archivo...";
+        hideImagePreview();
+    }
+}
+
+function previewImage(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
-        // Ocultar el logo actual
-        const currentLogo = document.getElementById('currentLogo');
-        if (currentLogo) {
-            currentLogo.style.display = 'none';
-        }
+        document.getElementById('currentLogo').style.display = 'none'; // Ocultar actual
         
-        // Crear o actualizar elemento de vista previa
         let preview = document.getElementById('imagePreview');
-        
         if (!preview) {
+            // Crear elemento si no existe en el DOM (Opcional, depende de tu HTML)
+            // Asumimos que existe o lo insertamos dinámicamente
             preview = document.createElement('img');
             preview.id = 'imagePreview';
-            preview.style.cssText = `
-                max-width: 300px;
-                max-height: 120px;
-                margin: 0 auto;
-                display: block;
-                border: 2px solid #004a8d;
-                border-radius: 5px;
-                padding: 5px;
-                background: white;
-            `;
-            
-            // Insertar en el contenedor del logo
-            const logoPreviewContainer = document.querySelector('.current-logo .logo-preview');
-            if (logoPreviewContainer) {
-                logoPreviewContainer.appendChild(preview);
-            }
+            document.querySelector('.logo-preview').appendChild(preview);
         }
-        
         preview.src = e.target.result;
         preview.style.display = 'block';
-        preview.alt = 'Vista previa del nuevo logo';
-        console.log('Vista previa mostrada correctamente');
     };
-    
     reader.readAsDataURL(file);
 }
 
 function hideImagePreview() {
-    // Mostrar el logo actual
-    const currentLogo = document.getElementById('currentLogo');
-    if (currentLogo) {
-        currentLogo.style.display = 'block';
-    }
-    
-    // Ocultar la vista previa
     const preview = document.getElementById('imagePreview');
-    if (preview) {
-        preview.style.display = 'none';
-    }
+    if (preview) preview.style.display = 'none';
+    
+    const current = document.getElementById('currentLogo');
+    if (current) current.style.display = 'block';
 }
 
-// =======================================
-// LIMPIAR DESPUÉS DE GUARDAR
-// =======================================
-function cleanupAfterSave() {
-    // Limpiar campo de archivo
+function cleanupLogoForm() {
     document.getElementById('newLogo').value = '';
-    document.getElementById('fileName').textContent = 'Haga clic para seleccionar un archivo';
-    
-    // Limpiar vista previa
+    document.getElementById('fileName').textContent = 'Seleccionar archivo...';
     hideImagePreview();
-    
-    // Asegurar que el logo actual sea visible
-    const currentLogo = document.getElementById('currentLogo');
-    if (currentLogo) {
-        currentLogo.style.display = 'block';
-    }
 }
 
-// =======================================
-// Función para actualizar días restantes en la UI
-// =======================================
-function actualizarDiasRestantesUI(fechaValidaHasta) {
-    const diasElement = document.getElementById('diasRestantes');
-    if (!diasElement || !fechaValidaHasta) {
-        if (diasElement) diasElement.value = 'N/A';
-        return;
-    }
+// Actualizar todas las imágenes del logo en la página
+function updateLogoImages(url) {
+    const timestamp = new Date().getTime();
+    const fullUrl = url + '?t=' + timestamp;
     
-    const hoy = new Date();
-    const validaHasta = new Date(fechaValidaHasta);
-    
-    // Validar fecha
-    if (isNaN(validaHasta.getTime())) {
-        diasElement.value = 'Fecha inválida';
-        return;
-    }
-    
-    const diferenciaTiempo = validaHasta.getTime() - hoy.getTime();
-    const dias = Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
-    
-    let textoDias;
-    if (dias > 0) {
-        textoDias = dias + ' días';
-    } else if (dias === 0) {
-        textoDias = 'Hoy expira';
+    const mainLogo = document.getElementById('currentLogo');
+    if (mainLogo) mainLogo.src = fullUrl;
+
+    const footerLogos = document.querySelectorAll('.footer-logo');
+    footerLogos.forEach(img => img.src = fullUrl);
+}
+
+// Helpers generales
+function setValue(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+}
+
+function setButtonLoading(btn, isLoading, originalText = '') {
+    if (isLoading) {
+        const text = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        btn.disabled = true;
+        return text;
     } else {
-        textoDias = '0 días (Expirada)';
-    }
-    
-    diasElement.value = textoDias;
-}
-
-// =======================================
-// Función auxiliar para establecer valores
-// =======================================
-function setValueIfExists(elementId, value) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.value = value || "";
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 }
 
-// =======================================
-// ALERTAS
-// =======================================
 function showSuccess(msg) {
     const alert = document.getElementById("successAlert");
     if (alert) {
@@ -264,19 +366,19 @@ function showSuccess(msg) {
 function showError(msg) {
     const alert = document.getElementById("errorAlert");
     if (alert) {
-        alert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
+        alert.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${msg}`;
         alert.style.display = "block";
         setTimeout(() => alert.style.display = "none", 5000);
     }
 }
 
-// =======================================
-// FUNCIONES AUXILIARES
-// =======================================
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+// Funciones placeholder para los botones de Restaurar (puedes implementarlas igual que executeLogoUpdate)
+function restaurarLogoPredeterminado() {
+    if(!confirm("¿Restaurar logo por defecto?")) return;
+    // Fetch a parametrizacion_restaurar_logo.php...
+}
+
+function restaurarConfiguracionPredeterminada() {
+    if(!confirm("¿Restaurar toda la configuración?")) return;
+    // Fetch a parametrizacion_restaurar.php...
 }
