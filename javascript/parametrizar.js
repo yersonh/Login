@@ -55,7 +55,7 @@ window.currentConfig = {}; // Almacena el estado actual de la BD para comparar c
 // 3. CARGAR DATOS (READ)
 // =======================================
 function cargarConfiguracion() {
-    fetch("../../controllers/parametrizacion_obtener.php")
+    fetch("../../api/parametrizacion_obtener.php")
         .then(res => res.json())
         .then(data => {
             if (!data.success) {
@@ -141,7 +141,7 @@ function executeLogoUpdate(datos) {
         formData.append('logo', datos.logoFile);
     }
 
-    fetch('../../controllers/parametrizacion_actualizar_logo.php', {
+    fetch('../../api/parametrizacion_actualizar_logo.php', {
         method: 'POST',
         body: formData
     })
