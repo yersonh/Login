@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=utf-8");
 
-require_once '/../controllers/ConfiguracionControlador.php';
+require_once __DIR__ . '/../controllers/ConfiguracionControlador.php';
 
 try {
 
