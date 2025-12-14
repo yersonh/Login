@@ -22,7 +22,8 @@ class ConfigHelper {
                     'telefono' => '(57 -608) 6 818503',
                     'ruta_logo' => 'imagenes/logo.png',        // ← SIN / al inicio
                     'entidad' => 'Gobernación del Meta',
-                    'enlace_web' => 'https://www.meta.gov.co'
+                    'enlace_web' => 'https://www.meta.gov.co',
+                    'NIT' => '892000148-8'
                 ];
             }
         }
