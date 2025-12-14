@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'administra
 }
 
 try {
-    require_once __DIR__ . '/ConfiguracionControlador.php';
+    require_once __DIR__ . '/../controllers/ConfiguracionControlador.php';
     $controlador = new ConfiguracionControlador();
     
     $configActual = $controlador->obtenerDatos();
