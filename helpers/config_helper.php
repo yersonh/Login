@@ -98,10 +98,10 @@ class ConfigHelper {
             } elseif ($diferencia->days === 1) {
                 return '1 día restante';
             } elseif ($diferencia->days < 30) {
-                return $diferencia->days . ' días restantes';
+                return $diferencia->days . ' días';
             } elseif ($diferencia->days < 365) {
                 $meses = floor($diferencia->days / 30);
-                return $meses . ' mes' . ($meses > 1 ? 'es' : '') . ' restantes';
+                return $meses . ' mes' . ($meses > 1 ? 'es' : '') ;
             } else {
                 $anios = floor($diferencia->days / 365);
                 $meses = floor(($diferencia->days % 365) / 30);
