@@ -17,12 +17,18 @@ try {
     // Obtener datos del formulario
     $entidad = isset($_POST['entidad']) ? trim($_POST['entidad']) : '';
     $enlaceWeb = isset($_POST['enlace_web']) ? trim($_POST['enlace_web']) : '';
+    $nit = isset($_POST['nit']) ? trim($_POST['nit']) : '';
 
     // Validar campos requeridos
     if (empty($entidad)) {
         throw new Exception('El campo entidad es requerido');
     }
-
+    if (empty($enlaceWeb)) {
+        throw new Exception('El campo enlace web es requerido');
+    }
+    if (empty($nit)) {
+        throw new Exception('El campo NIT es requerido');
+    }
     // Obtener información del archivo
     $file = $_FILES['logo'];
     $fileName = basename($file['name']);
@@ -43,7 +49,7 @@ try {
     // Actualizar usando el controlador
     $controlador = new ConfiguracionControlador();
     
-    if ($controlador->actualizarLogo($rutaRelativa, $entidad, $enlaceWeb)) {
+    if ($controlador->actualizarLogo($rutaRelativa, $entidad, $nit, $enlaceWeb)) {
         echo json_encode([
             'success' => true,
             'message' => 'Configuración actualizada correctamente'

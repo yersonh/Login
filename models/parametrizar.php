@@ -19,11 +19,12 @@ class Configuracion {
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function actualizarLogoYDatos(string $rutaLogo, string $entidad, string $enlaceWeb): bool {
+    public function actualizarLogoYDatos(string $rutaLogo, string $entidad, string $nit, string $enlaceWeb): bool {
         
         $query = "UPDATE " . $this->table . " SET 
                     ruta_logo = :logo, 
                     entidad = :entidad, 
+                    nit = 'nit',
                     enlace_web = :enlace, 
                     updated_at = NOW() 
                   WHERE id_parametrizacion = 1"; // Asume que la configuración a modificar es el ID 1
@@ -32,6 +33,7 @@ class Configuracion {
         
         $stmt->bindParam(':logo', $rutaLogo);
         $stmt->bindParam(':entidad', $entidad);
+        $stmt->bindParam(':nit', $nit);
         $stmt->bindParam(':enlace', $enlaceWeb);
 
         try {
