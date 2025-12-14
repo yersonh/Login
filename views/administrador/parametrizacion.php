@@ -157,6 +157,12 @@ if (!empty($configuracion['valida_hasta'])) {
                                        value="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>" 
                                        maxlength="100">
                             </div>
+                            <div class="form-group">
+                                <label for="logoAltText">NIT:</label>
+                                <input type="text" id="logoAltText" class="form-control" 
+                                       value="<?php echo htmlspecialchars($configuracion['NIT'] ?? '892000148-8'); ?>" 
+                                       maxlength="100">
+                            </div>
                             
                             <div class="form-group">
                                 <label for="logoLink">Website:</label>
