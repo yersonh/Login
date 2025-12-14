@@ -665,7 +665,9 @@ body {
     
     /* Modal en tablets */
     .modal-clave {
+        width: 95%;
         max-width: 380px;
+        margin: 10px;
     }
     
     .modal-header {
@@ -798,8 +800,8 @@ body {
     /* Modal en tablets pequeñas */
     .modal-clave {
         width: 95%;
-        max-width: 360px;
-        margin: 15px;
+        max-width: 380px;
+        margin: 10px;
     }
     
     .modal-header {
@@ -1191,8 +1193,9 @@ body {
     
     /* Ajustar modal para altura pequeña */
     .modal-clave {
-        max-height: 90vh;
-        overflow-y: auto;
+        width: 95%;
+        max-width: 380px;
+        margin: 10px;
     }
 }
 
@@ -1218,7 +1221,9 @@ body {
     
     /* Modal en horizontal */
     .modal-clave {
-        max-width: 320px;
+        width: 95%;
+        max-width: 380px;
+        margin: 10px;
     }
     
     .modal-body {
@@ -1457,7 +1462,9 @@ body {
     }
     
     .modal-clave {
-        transform: none;
+        width: 95%;
+        max-width: 380px;
+        margin: 10px;
     }
     
     .service-card:hover .service-icon {
