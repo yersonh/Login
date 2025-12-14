@@ -416,93 +416,35 @@ function actualizarConfiguracionSistema() {
 // FUNCIÓN MEJORADA: actualizarConfiguracionLogo
 // =======================================
 function actualizarConfiguracionLogo() {
-    const entidad = document.getElementById('logoAltText').value.trim();
-    const enlaceWeb = document.getElementById('logoLink').value.trim();
-    const logoFile = document.getElementById('newLogo').files[0];
-    
-    // Obtener valores actuales para comparación
-    const currentConfig = window.currentConfig || {};
-    const currentEntidad = currentConfig.entidad || '';
-    const currentEnlaceWeb = currentConfig.enlace_web || '';
-    
-    console.log('Datos actuales:', {
-        entidad, 
-        enlaceWeb, 
-        tieneLogo: !!logoFile,
-        currentEntidad,
-        currentEnlaceWeb
-    });
-    
-    // Validar que haya al menos un cambio REAL
-    const entidadChanged = entidad !== currentEntidad;
-    const enlaceWebChanged = enlaceWeb !== currentEnlaceWeb;
-    const hasFile = !!logoFile;
-    
-    const hasChanges = entidadChanged || enlaceWebChanged || hasFile;
-    
-    if (!hasChanges) {
-        showError('No hay cambios para guardar');
+    // Obtener elementos del DOM
+    const entidadInput = document.getElementById('logoAltText');
+    const enlaceInput = document.getElementById('logoLink');
+    const fileInput = document.getElementById('newLogo');
+
+    const entidad = entidadInput.value.trim();
+    const enlaceWeb = enlaceInput.value.trim();
+    const logoFile = fileInput.files[0];
+
+    // Validaciones básicas antes de enviar
+    if (!entidad || !enlaceWeb) {
+        showError('La Entidad y el Enlace Web son obligatorios.');
         return;
     }
-    
-    // Validar URL SOLO si se proporciona y es diferente del actual
-    if (enlaceWeb && enlaceWebChanged) {
-        if (!isValidUrlImproved(enlaceWeb)) {
-            showError('Por favor ingrese una URL válida (ej: ejemplo.com o https://ejemplo.com)');
-            return;
-        }
-    }
-    
-    // Validar archivo si se proporciona
-    if (logoFile) {
-        // Validar tamaño del archivo (máx 2MB)
-        if (logoFile.size > 2 * 1024 * 1024) {
-            showError('El archivo es demasiado grande. Máximo 2MB permitido.');
-            return;
-        }
-        
-        // Validar tipo de archivo
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/gif'];
-        if (!validTypes.includes(logoFile.type)) {
-            showError('Tipo de archivo no válido. Use PNG, JPG, SVG o GIF.');
-            return;
-        }
-    }
-    
-    // Preparar datos (mantener valores actuales si no hay cambios)
+
+    // Datos a pasar a la función de envío
     const datos = {
-        entidad: entidadChanged ? entidad : currentEntidad,
-        enlace_web: enlaceWebChanged ? enlaceWeb : currentEnlaceWeb,
-        logoFile: hasFile ? logoFile : null
+        entidad: entidad,
+        enlace_web: enlaceWeb,
+        logoFile: logoFile || null // Si no hay archivo, va null
     };
-    
-    // Preparar lista de cambios
+
+    // Preparar mensaje de cambios para el modal (Estético)
     const changes = [];
-    
-    if (entidadChanged) {
-        changes.push({ 
-            field: 'Nombre entidad', 
-            value: `${currentEntidad || '(vacío)'} → ${entidad || '(vacío)'}` 
-        });
+    changes.push({ field: 'Entidad', value: entidad });
+    changes.push({ field: 'Enlace Web', value: enlaceWeb });
+    if (logoFile) {
+        changes.push({ field: 'Nuevo Logo', value: logoFile.name });
     }
-    
-    if (enlaceWebChanged) {
-        changes.push({ 
-            field: 'Website', 
-            value: `${currentEnlaceWeb || '(vacío)'} → ${enlaceWeb || '(vacío)'}` 
-        });
-    }
-    
-    if (hasFile) {
-        changes.push({ 
-            field: 'Logo', 
-            value: `Nuevo archivo: ${logoFile.name} (${formatFileSize(logoFile.size)})` 
-        });
-    }
-    
-    console.log('Cambios detectados:', changes);
-    
-    // Mostrar modal de confirmación
     showConfirmationModal('logo', datos, changes);
 }
 
@@ -559,68 +501,70 @@ function executeSystemUpdate(datos) {
 }
 
 function executeLogoUpdate(datos) {
-    // Mostrar indicador de carga
     const saveBtn = document.getElementById('saveLogoBtn');
     const originalText = saveBtn.innerHTML;
+    
+    // UI: Mostrar carga
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     saveBtn.disabled = true;
     
-    // Crear FormData para enviar (permite archivos)
+    // Preparar FormData (Necesario para enviar archivos)
     const formData = new FormData();
+    formData.append('entidad', datos.entidad);
+    formData.append('enlace_web', datos.enlace_web);
     
     if (datos.logoFile) {
         formData.append('logo', datos.logoFile);
     }
     
-    formData.append('entidad', datos.entidad);
-    formData.append('enlace_web', datos.enlace_web);
-    
-    console.log('Ejecutando actualización del logo:', { 
-        entidad: datos.entidad, 
-        enlaceWeb: datos.enlace_web, 
-        tieneArchivo: !!datos.logoFile 
-    });
-    
-    // Enviar al servidor
+    // ENVIAR AL NUEVO ENDPOINT
     fetch('../../controllers/parametrizacion_actualizar_logo.php', {
         method: 'POST',
         body: formData
     })
     .then(res => {
-        if (!res.ok) {
-            throw new Error(`Error HTTP: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
         return res.json();
     })
     .then(data => {
         if (data.success) {
-            showSuccess('Configuración del logo actualizada correctamente');
+            showSuccess(data.message || 'Configuración actualizada correctamente');
             
-            // Actualizar vista del logo si hay nueva imagen
-            if (data.ruta_logo) {
-                const timestamp = new Date().getTime();
-                document.getElementById('currentLogo').src = data.ruta_logo + '?t=' + timestamp;
-                document.getElementById('currentLogo').style.display = 'block';
+            // --- CORRECCIÓN CLAVE AQUÍ ---
+            // Usamos 'new_logo_url' que es lo que devuelve tu PHP
+            if (data.new_logo_url) {
+                const timestamp = new Date().getTime(); // Cache busting
+                
+                // Actualizar imagen principal
+                const currentLogo = document.getElementById('currentLogo');
+                if (currentLogo) {
+                    currentLogo.src = data.new_logo_url + '?t=' + timestamp;
+                    currentLogo.style.display = 'block';
+                }
+                
+                // Actualizar logo del footer si existe
                 const footerLogo = document.querySelector(".footer-logo");
                 if (footerLogo) {
-                    footerLogo.src = data.ruta_logo + '?t=' + timestamp;
+                    footerLogo.src = data.new_logo_url + '?t=' + timestamp;
                 }
             }
             
-            // Limpiar campo de archivo y vista previa
+            // Limpiar formulario
             cleanupAfterSave();
             
-            // Recargar configuración completa
+            // Recargar configuración global (Opcional, para asegurar consistencia)
             setTimeout(cargarConfiguracion, 1000);
+            
         } else {
-            showError(data.error || 'Error al actualizar el logo');
+            showError(data.error || 'Error desconocido al actualizar');
         }
     })
     .catch(error => {
-        showError('Error de conexión: ' + error.message);
         console.error('Error:', error);
+        showError('Error de conexión: ' + error.message);
     })
     .finally(() => {
+        // Restaurar botón
         restoreButtonState(saveBtn, originalText);
     });
 }
