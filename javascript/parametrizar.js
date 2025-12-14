@@ -150,13 +150,11 @@ function executeLogoUpdate(datos) {
         if (data.success) {
             showSuccess(data.message);
             
-            // Actualizar la imagen en pantalla con la nueva URL (y timestamp para evitar caché)
-            if (data.new_logo_url) {
-                updateLogoImages(data.new_logo_url);
-            }
+            // Solo refrescar los datos - cargarConfiguracion() ya actualiza el logo
+            // No necesitamos data.new_logo_url porque no existe en la respuesta
             
             cleanupLogoForm(); // Limpiar input file y preview
-            cargarConfiguracion(); // Refrescar datos globales
+            cargarConfiguracion(); // Refrescar datos globales (línea 139)
         } else {
             showError(data.error);
         }
