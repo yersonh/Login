@@ -1,5 +1,5 @@
 <?php
-require_once 'Persona.php';
+require_once __DIR__ . 'Persona.php';
 require_once 'Usuario.php';
 
 class ContratistaModel {
