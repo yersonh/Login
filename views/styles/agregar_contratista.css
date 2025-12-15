@@ -245,7 +245,6 @@ select.form-control {
     border-radius: 8px;
     border: 1px solid #dee2e6;
     font-size: 20px;
-    font-weight: 500;
     color: var(--dark-color);
     margin-bottom: 20px;
     display: inline-block;
