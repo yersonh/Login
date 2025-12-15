@@ -111,8 +111,6 @@ try {
             </div>
             
             <div class="form-container">
-                <h2 class="form-title">Datos del contratista</h2>
-                
                 <div class="consecutivo-display">
                     <strong>Contratista N°:</strong>
                     <span class="consecutivo-number"><?php echo $consecutivo; ?></span>
