@@ -32,7 +32,7 @@ class Configuracion {
     
     $stmt->bindParam(':logo', $rutaLogo);
     $stmt->bindParam(':entidad', $entidad);
-    $stmt->bindParam(':nit', $nit);     // Ahora sí funcionará este bind
+    $stmt->bindParam(':nit', $nit);
     $stmt->bindParam(':enlace', $enlaceWeb);
 
     try {
