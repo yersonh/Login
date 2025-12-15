@@ -168,7 +168,15 @@ function executeLogoUpdate(datos) {
 // =======================================
 function actualizarConfiguracionSistema() {
     // Recolectar datos
-    const datos = {
+    const version_sistema = document.getElementById('version').value.trim();
+    const tipo_licencia = document.getElementById('tipoLicencia').value.trim();
+    const valida_hasta = document.getElementById('validaHasta').value;
+    const desarrollado_por = document.getElementById('desarrolladoPor').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    const correo_contacto = document.getElementById('contacto').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    
+    /*const datos = {
         version_sistema: document.getElementById('version').value.trim(),
         tipo_licencia: document.getElementById('tipoLicencia').value.trim(),
         valida_hasta: document.getElementById('validaHasta').value,
@@ -176,16 +184,37 @@ function actualizarConfiguracionSistema() {
         direccion: document.getElementById('direccion').value.trim(),
         correo_contacto: document.getElementById('contacto').value.trim(),
         telefono: document.getElementById('telefono').value.trim()
+    };*/
+    const datos = {
+        version_sistema: version_sistema,
+        tipo_licencia: tipo_licencia,
+        valida_hasta: valida_hasta,
+        desarrollado_por: desarrollado_por,
+        direccion: direccion,
+        correo_contacto: correo_contacto,
+        telefono: telefono
     };
-
     // Validación básica
     if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto) {
         showError('Complete los campos obligatorios (Versión, Desarrollador, Contacto).');
         return;
     }
+    const changes = [];
+    const current = window.currentConfig;
 
-    // Detectar cambios (Simplificado)
-    const changes = [{ field: 'Configuración', value: 'Actualización general del sistema' }];
+    if(entidad !== current.entidad) changes.push({ field: 'Versión del Sistema', value: version_sistema });
+    if(tipo_licencia !== current.tipo_licencia) changes.push({ field: 'Tipo de Licencia', value: tipo_licencia });
+    if(valida_hasta !== current.valida_hasta) changes.push({ field: 'Válida Hasta', value: valida_hasta });
+    if(desarrollado_por !== current.desarrollado_por) changes.push({ field: 'Desarrollado Por', value: desarrollado_por });
+    if(direccion !== current.direccion) changes.push({ field: 'Dirección', value: direccion });
+    if(correo_contacto !== current.correo_contacto) changes.push({ field: 'Correo de Contacto', value: correo_contacto });
+    if(telefono !== current.telefono) changes.push({ field: 'Teléfono', value: telefono });
+
+    if (changes.length === 0) {
+        showError('No hay cambios para guardar.');
+        return;
+    }
+    /*const changes = [{ field: 'Configuración', value: 'Actualización general del sistema' }];*/
 
     showConfirmationModal('system', datos, changes);
 }

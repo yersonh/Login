@@ -214,12 +214,16 @@ try {
                 </div>
                 
                 <div class="table-responsive">
-                    <table class="contratistas-table" id="contratistasTable">
+                        <table class="contratistas-table" id="contratistasTable">
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>Información Personal</th>
-                                <th>Información del Contrato</th>
+                                <th>Nombres</th>
+                                <th>Cédula</th>
+                                <th>Número de contrato</th>
+                                <th>Fecha del contrato</th>
+                                <th>Fecha inicio</th>
+                                <th>Fecha final</th>
                                 <th>Ubicación</th>
                                 <th>Contacto</th>
                                 <th>Estado</th>
@@ -238,116 +242,9 @@ try {
                                     </td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach ($contratistas as $index => $contratista): 
-                                    $fechaInicio = isset($contratista['fecha_inicio']) ? date('d/m/Y', strtotime($contratista['fecha_inicio'])) : 'N/A';
-                                    $fechaFinal = isset($contratista['fecha_final']) ? date('d/m/Y', strtotime($contratista['fecha_final'])) : 'N/A';
-                                    $estadoUsuario = isset($contratista['usuario_activo']) && $contratista['usuario_activo'] ? 'activo' : 'inactivo';
-                                    
-                                    // Determinar estado del contrato
-                                    $estadoContrato = 'indefinido';
-                                    if (isset($contratista['fecha_final'])) {
-                                        try {
-                                            $fechaFin = new DateTime($contratista['fecha_final']);
-                                            $hoy = new DateTime();
-                                            $estadoContrato = $fechaFin > $hoy ? 'vigente' : 'vencido';
-                                        } catch (Exception $e) {
-                                            $estadoContrato = 'indefinido';
-                                        }
-                                    }
-                                ?>
-                                    <tr class="contratista-row" 
-                                        data-estado-usuario="<?php echo $estadoUsuario; ?>"
-                                        data-estado-contrato="<?php echo $estadoContrato; ?>"
-                                        data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>">
-                                        <td class="text-center"><?php echo $index + 1; ?></td>
-                                        
-                                        <td class="personal-info">
-                                            <div class="info-main">
-                                                <strong><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></strong>
-                                            </div>
-                                            <div class="info-secondary">
-                                                <i class="fas fa-id-card"></i> 
-                                                <?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?>
-                                            </div>
-                                        </td>
-                                        
-                                        <td class="contract-info">
-                                            <div class="info-main">
-                                                <strong><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></strong>
-                                            </div>
-                                            <div class="info-secondary">
-                                                <i class="fas fa-calendar-alt"></i> 
-                                                <?php echo $fechaInicio; ?> - <?php echo $fechaFinal; ?>
-                                            </div>
-                                        </td>
-                                        
-                                        <td class="location-info">
-                                            <div class="info-main">
-                                                <strong><?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?></strong>
-                                            </div>
-                                            <div class="info-secondary">
-                                                <i class="fas fa-map-marker-alt"></i> 
-                                                <?php echo htmlspecialchars($contratista['municipio_principal'] ?? 'N/A'); ?>
-                                                <?php if ($contratista['tipo_vinculacion']): ?>
-                                                    <br><i class="fas fa-link"></i> 
-                                                    <?php echo htmlspecialchars($contratista['tipo_vinculacion']); ?>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                        
-                                        <td class="contact-info">
-                                            <div class="info-main">
-                                                <strong><?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?></strong>
-                                            </div>
-                                            <div class="info-secondary">
-                                                <i class="fas fa-phone"></i> 
-                                                <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?>
-                                            </div>
-                                        </td>
-                                        
-                                        <td class="status-info">
-                                            <div class="status-badges">
-                                                <?php if ($estadoUsuario === 'activo'): ?>
-                                                    <span class="badge badge-success">
-                                                        <i class="fas fa-user-check"></i> Activo
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-warning">
-                                                        <i class="fas fa-user-times"></i> Inactivo
-                                                    </span>
-                                                <?php endif; ?>
-                                                
-                                                <?php if ($estadoContrato === 'vigente'): ?>
-                                                    <span class="badge badge-primary">
-                                                        <i class="fas fa-check-circle"></i> Vigente
-                                                    </span>
-                                                <?php elseif ($estadoContrato === 'vencido'): ?>
-                                                    <span class="badge badge-danger">
-                                                        <i class="fas fa-exclamation-circle"></i> Vencido
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                        
-                                        <td class="actions-cell text-center">
-                                            <div class="action-buttons">
-                                                <button class="btn-action btn-view" 
-                                                        onclick="verDetalle('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Ver detalles">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn-action btn-edit" 
-                                                        onclick="editarContratista('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Editar">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
