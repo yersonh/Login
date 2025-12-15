@@ -274,6 +274,10 @@ if (!empty($configuracion['valida_hasta'])) {
                     </button>
                 </div>
                 <div class="modal-body">
+                    <p id="modalMessage">Señor(ar)</p>
+                    <strong style="font-size: 25px; font-weight: bold;">
+                            <?php echo htmlspecialchars($nombreCompleto); ?>
+                    </strong>
                     <p id="modalMessage">¿Está seguro de guardar los cambios?</p>
                     <div class="modal-details" id="modalDetails" style="display: none;">
                         <h4>Cambios a realizar:</h4>
