@@ -274,7 +274,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalMessage">Señor(ar)</p>
+                    <span>Señor(ar) </span>
                     <strong style="font-size: 18px; font-weight: bold;">
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                     </strong>
