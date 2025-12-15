@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/Persona.php';
-require_once __DIR__ . '/Usuario.php';
+require_once __DIR__ . '/persona.php';
+require_once __DIR__ . '/usuario.php';
 
 class ContratistaModel {
     private $conn;
