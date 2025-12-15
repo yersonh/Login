@@ -41,6 +41,19 @@ body {
     display: flex;
     flex-direction: column;
 }
+@media (min-width: 1201px) {
+    .app-container {
+        max-width: 1400px;
+    }
+    
+    .services-grid {
+        gap: 30px;
+    }
+    
+    .service-card {
+        min-height: 220px;
+    }
+}
 
 /* Header moderno SIN LOGO */
 .app-header {
