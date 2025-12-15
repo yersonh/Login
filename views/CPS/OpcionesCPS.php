@@ -116,26 +116,6 @@ if (empty($nombreCompleto)) {
                     <div class="service-desc">Generación de reportes y estadísticas</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
-                
-                <!-- Opción 5: Gestión visitas -->
-                <div class="service-card" id="visitas-card">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="service-name">Gestión de Visitas</div>
-                    <div class="service-desc">Programación y seguimiento de visitas</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
-                
-                <!-- Opción 6: Programar -->
-                <div class="service-card" id="programar-card">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="service-name">Programar</div>
-                    <div class="service-desc">Programación de actividades y eventos</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
             </div>
         </main>
         
