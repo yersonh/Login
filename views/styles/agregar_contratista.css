@@ -224,6 +224,7 @@ select.form-control {
 
 /* ========== DISPLAY DE CONSECUTIVO Y FECHA ========== */
 .consecutivo-display {
+    background-color: #f0f7ff;
     border: 2px dashed var(--primary-color);
     padding: 15px;
     border-radius: 8px;
