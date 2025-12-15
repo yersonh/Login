@@ -23,7 +23,7 @@ class ConfigHelper {
                     'ruta_logo' => 'imagenes/logo.png',        // ← SIN / al inicio
                     'entidad' => 'Gobernación del Meta',
                     'enlace_web' => 'https://www.meta.gov.co',
-                    'NIT' => '892000148-8'
+                    'nit' => '892000148-8'
                 ];
             }
         }
