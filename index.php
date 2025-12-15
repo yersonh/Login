@@ -586,7 +586,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                 </div>
 
                 <div class="sisgonTech">
-                    <small>Desarrollado por SisgonTech 2026. Version de prueba Runtime</small>
+                    <small>Desarrollado por SisgonTech © <?php echo $anio; ?>. Version de prueba Runtime</small>
                 </div>
             </form>
         </div>
