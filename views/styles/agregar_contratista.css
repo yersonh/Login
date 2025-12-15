@@ -1123,273 +1123,97 @@ select.form-control {
         transition: none;
     }
 }
-/* ========== ESTILOS PARA SUBIDA DE ARCHIVOS ========== */
-
-.form-group.full-width {
-    grid-column: 1 / -1;
+/* Estilos para campo de archivo simple */
+.file-input-container {
+    position: relative;
+    overflow: hidden;
+    margin-top: 4px;
 }
 
-.file-upload-container {
-    margin-top: 8px;
+.file-input-control {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
 }
 
-.file-drop-area {
-    border: 2px dashed #dee2e6;
-    border-radius: 12px;
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #f8f9fa;
+.file-input-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
-.file-drop-area:hover {
+.file-input-info:hover {
     border-color: #004a8d;
-    background-color: #e9f2ff;
+    background-color: #f8f9fa;
 }
 
-.file-drop-area.dragover {
-    border-color: #28a745;
-    background-color: #d4edda;
-    transform: scale(1.02);
+.file-input-text {
+    color: #495057;
+    font-size: 15px;
 }
 
-.file-drop-content {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.file-drop-icon {
-    font-size: 48px;
+.file-input-icon {
     color: #6c757d;
-    margin-bottom: 15px;
+    font-size: 16px;
 }
 
-.file-drop-area:hover .file-drop-icon {
+.file-input-container:hover .file-input-icon {
     color: #004a8d;
 }
 
-.file-drop-title {
-    font-size: 18px;
-    color: #212529;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.file-drop-subtitle {
-    font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 15px;
-}
-
-.file-drop-info {
-    font-size: 13px;
-    color: #6c757d;
-    background-color: #e9ecef;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-file-select {
-    background: linear-gradient(135deg, #004a8d, #003366);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-file-select:hover {
-    background: linear-gradient(135deg, #003366, #00264d);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 74, 141, 0.2);
-}
-
-/* Vista previa del archivo */
-.file-preview {
-    margin-top: 20px;
+/* Vista previa simple */
+.file-preview-simple {
+    background-color: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    padding: 10px 15px;
 }
 
-.file-preview-content {
+.preview-content {
     display: flex;
     align-items: center;
-    padding: 15px;
-    gap: 15px;
+    gap: 10px;
 }
 
-.file-icon {
-    font-size: 32px;
+.preview-icon {
     color: #dc3545;
-    background-color: #f8d7da;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 20px;
 }
 
-.file-icon .fa-file-pdf { color: #dc3545; }
-.file-icon .fa-file-word { color: #2b579a; }
-.file-icon .fa-file { color: #6c757d; }
-
-.file-info {
+.preview-filename {
     flex: 1;
-}
-
-.file-name {
-    font-weight: 600;
+    font-size: 14px;
     color: #212529;
-    margin-bottom: 4px;
     word-break: break-all;
 }
 
-.file-size {
-    font-size: 13px;
-    color: #6c757d;
-    margin-bottom: 8px;
-}
-
-.file-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-file-action {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
-    background-color: white;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-file-action:hover {
-    background-color: #f8f9fa;
-}
-
-.btn-file-action.btn-view:hover {
-    color: #17a2b8;
-    border-color: #17a2b8;
-}
-
-.btn-file-action.btn-remove:hover {
+.preview-remove {
+    background: none;
+    border: none;
     color: #dc3545;
-    border-color: #dc3545;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-/* Badges de estado */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status-ready {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.status-uploading {
-    background-color: #cce5ff;
-    color: #004085;
-    border: 1px solid #b8daff;
-}
-
-.status-error {
+.preview-remove:hover {
     background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
 }
 
-/* Barra de progreso */
-.upload-progress {
-    padding: 15px;
-    border-top: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-}
-
-.progress-bar {
-    height: 8px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #28a745, #20c997);
-    border-radius: 4px;
-    transition: width 0.3s ease;
-}
-
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #6c757d;
-}
-
-/* Ayuda específica para archivos */
-.form-help.file-help {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 10px 15px;
-    background-color: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 6px;
-    color: #856404;
-}
-
-.form-help.file-help i {
-    color: #ffc107;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .file-preview-content {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
-    
-    .file-actions {
-        margin-top: 15px;
-        justify-content: center;
-    }
-    
-    .file-drop-area {
-        padding: 30px 15px;
-    }
-    
-    .file-drop-icon {
-        font-size: 36px;
-    }
+/* Icono en el label */
+.form-label .fa-file-pdf {
+    color: #dc3545;
+    margin-right: 5px;
 }

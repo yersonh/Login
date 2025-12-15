@@ -362,92 +362,38 @@ try {
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
 
-                        <!-- Sección 4: Documentación Adjunta -->
-<div class="form-section">
-    <h3 class="form-subtitle">DOCUMENTACIÓN ADJUNTA</h3>
-    
-    <div class="info-section">
-        <p><strong>Nota:</strong> Adjunte el Curriculum Vitae del contratista en formato PDF</p>
-    </div>
-    
-    <div class="form-grid">
-        <div class="form-group full-width">
-            <label class="form-label" for="adjuntar_cv">
-                <i class="fas fa-file-pdf"></i> Curriculum Vitae (CV) 
-                <span class="optional">(Opcional)</span>
-            </label>
-            
-            <div class="file-upload-container">
-                <!-- Input oculto para el archivo -->
-                <input type="file" 
-                       id="adjuntar_cv" 
-                       name="adjuntar_cv" 
-                       class="file-input" 
-                       accept=".pdf,.doc,.docx"
-                       style="display: none;">
-                
-                <!-- Área de arrastrar y soltar -->
-                <div class="file-drop-area" id="fileDropArea">
-                    <div class="file-drop-content">
-                        <i class="fas fa-cloud-upload-alt file-drop-icon"></i>
-                        <h4 class="file-drop-title">Arrastra y suelta tu archivo aquí</h4>
-                        <p class="file-drop-subtitle">o haz clic para seleccionar</p>
-                        <p class="file-drop-info">
-                            <i class="fas fa-info-circle"></i>
-                            Formatos permitidos: PDF, DOC, DOCX (Máx. 5MB)
-                        </p>
-                        <button type="button" class="btn-file-select" id="btnSelectFile">
-                            <i class="fas fa-folder-open"></i> Seleccionar archivo
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Vista previa del archivo seleccionado -->
-                <div class="file-preview" id="filePreview" style="display: none;">
-                    <div class="file-preview-content">
-                        <div class="file-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <div class="file-info">
-                            <div class="file-name" id="fileName">nombre_del_archivo.pdf</div>
-                            <div class="file-size" id="fileSize">2.5 MB</div>
-                            <div class="file-status">
-                                <span class="status-badge status-ready">
-                                    <i class="fas fa-check-circle"></i> Listo para subir
-                                </span>
+                        <div class="form-group">
+                            <label class="form-label" for="adjuntar_cv">
+                                <i class="fas fa-file-pdf"></i> Adjuntar CV
+                            </label>
+                            <div class="file-input-container">
+                                <input type="file" 
+                                    id="adjuntar_cv" 
+                                    name="adjuntar_cv" 
+                                    class="file-input-control" 
+                                    accept=".pdf,.doc,.docx">
+                                <div class="file-input-info">
+                                    <span class="file-input-text">Seleccionar archivo...</span>
+                                    <span class="file-input-icon">
+                                        <i class="fas fa-paperclip"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-help">
+                                <i class="fas fa-info-circle"></i> Formatos permitidos: PDF, DOC, DOCX (Máx. 5MB)
+                            </div>
+                            
+                            <!-- Vista previa simple (opcional) -->
+                            <div class="file-preview-simple" id="cvPreview" style="display: none; margin-top: 8px;">
+                                <div class="preview-content">
+                                    <i class="fas fa-file-pdf preview-icon"></i>
+                                    <span class="preview-filename" id="cvFilename"></span>
+                                    <button type="button" class="preview-remove" onclick="removeCV()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="file-actions">
-                            <button type="button" class="btn-file-action btn-view" title="Vista previa">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button type="button" class="btn-file-action btn-remove" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Barra de progreso (para cuando se implemente la subida) -->
-                    <div class="upload-progress" style="display: none;">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-info">
-                            <span class="progress-text">Subiendo...</span>
-                            <span class="progress-percent">0%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Ayuda -->
-                <div class="form-help">
-                    <i class="fas fa-lightbulb"></i> 
-                    Recomendamos subir el CV en formato PDF. El tamaño máximo es 5MB.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
                     </div>
                 </div>
                 
