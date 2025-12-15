@@ -581,7 +581,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     </div>
                 <?php endif; ?>
 
-                <div class="signup" style="visibility;">
+                <div class="signup"">
                     ¿No tienes cuenta? <a href="<?php echo $base_url; ?>/views/registrarusuario.php">Regístrate</a>
                 </div>
 
