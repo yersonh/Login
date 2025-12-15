@@ -119,7 +119,7 @@ try {
                 </div>
                 
                 <div class="datetime-display">
-                    <i class="fas fa-clock"></i> Hora Actual: 
+                    <i class="fas fa-clock"></i> Fecha/Hora Actual: 
                     <?php echo date('d/m/Y h:i:s A'); ?>
                 </div>
                 
