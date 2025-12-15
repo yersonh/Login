@@ -186,8 +186,8 @@ function actualizarConfiguracionSistema() {
         telefono: telefono
     };
     // Validación básica
-    if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto) {
-        showError('Complete los campos obligatorios (Versión, Desarrollador, Contacto).');
+    if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto || !datos.telefono || !datos.direccion || !datos.valida_hasta || !datos.tipo_licencia) {
+        showError('Complete los campos obligatorios.');
         return;
     }
     const changes = [];
