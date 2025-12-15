@@ -175,16 +175,7 @@ function actualizarConfiguracionSistema() {
     const direccion = document.getElementById('direccion').value.trim();
     const correo_contacto = document.getElementById('contacto').value.trim();
     const telefono = document.getElementById('telefono').value.trim();
-    
-    /*const datos = {
-        version_sistema: document.getElementById('version').value.trim(),
-        tipo_licencia: document.getElementById('tipoLicencia').value.trim(),
-        valida_hasta: document.getElementById('validaHasta').value,
-        desarrollado_por: document.getElementById('desarrolladoPor').value.trim(),
-        direccion: document.getElementById('direccion').value.trim(),
-        correo_contacto: document.getElementById('contacto').value.trim(),
-        telefono: document.getElementById('telefono').value.trim()
-    };*/
+
     const datos = {
         version_sistema: version_sistema,
         tipo_licencia: tipo_licencia,
@@ -201,8 +192,7 @@ function actualizarConfiguracionSistema() {
     }
     const changes = [];
     const current = window.currentConfig;
-
-    if(entidad !== current.entidad) changes.push({ field: 'Versión del Sistema', value: version_sistema });
+    if(version_sistema !== current.version_sistema) changes.push({ field: 'Versión del Sistema', value: version_sistema });
     if(tipo_licencia !== current.tipo_licencia) changes.push({ field: 'Tipo de Licencia', value: tipo_licencia });
     if(valida_hasta !== current.valida_hasta) changes.push({ field: 'Válida Hasta', value: valida_hasta });
     if(desarrollado_por !== current.desarrollado_por) changes.push({ field: 'Desarrollado Por', value: desarrollado_por });
@@ -214,7 +204,6 @@ function actualizarConfiguracionSistema() {
         showError('No hay cambios para guardar.');
         return;
     }
-    /*const changes = [{ field: 'Configuración', value: 'Actualización general del sistema' }];*/
 
     showConfirmationModal('system', datos, changes);
 }

@@ -214,7 +214,7 @@ try {
                 </div>
                 
                 <div class="table-responsive">
-                        <table class="contratistas-table" id="contratistasTable">
+                    <table class="contratistas-table" id="contratistasTable">
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
@@ -233,7 +233,7 @@ try {
                         <tbody>
                             <?php if (empty($contratistas)): ?>
                                 <tr class="empty-row">
-                                    <td colspan="7">
+                                    <td colspan="11">
                                         <div class="empty-state">
                                             <i class="fas fa-users-slash"></i>
                                             <h5>No hay contratistas registrados</h5>
@@ -242,9 +242,90 @@ try {
                                     </td>
                                 </tr>
                             <?php else: ?>
+                                <?php foreach ($contratistas as $index => $contratista): 
+                                    $fechaInicio = isset($contratista['fecha_inicio']) ? date('d/m/Y', strtotime($contratista['fecha_inicio'])) : 'N/A';
+                                    $fechaFinal = isset($contratista['fecha_final']) ? date('d/m/Y', strtotime($contratista['fecha_final'])) : 'N/A';
+                                    $estadoUsuario = isset($contratista['usuario_activo']) && $contratista['usuario_activo'] ? 'activo' : 'inactivo';
+                                    
+                                    // Determinar estado del contrato
+                                    $estadoContrato = 'indefinido';
+                                    if (isset($contratista['fecha_final'])) {
+                                        try {
+                                            $fechaFin = new DateTime($contratista['fecha_final']);
+                                            $hoy = new DateTime();
+                                            $estadoContrato = $fechaFin > $hoy ? 'vigente' : 'vencido';
+                                        } catch (Exception $e) {
+                                            $estadoContrato = 'indefinido';
+                                        }
+                                    }
+                                ?>
+                                    <tr class="contratista-row" 
+                                        data-estado-usuario="<?php echo $estadoUsuario; ?>"
+                                        data-estado-contrato="<?php echo $estadoContrato; ?>"
+                                        data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>">
+                                        <td class="text-center"><?php echo $index + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></td>
+                                        <td><?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></td>
+                                        <td><?php echo isset($contratista['fecha_contrato']) ? date('d/m/Y', strtotime($contratista['fecha_contrato'])) : 'N/A'; ?></td>
+                                        <td><?php echo $fechaInicio; ?></td>
+                                        <td><?php echo $fechaFinal; ?></td>
+                                        <td>
+                                            <?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?><br>
+                                            <small class="info-secondary">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <?php echo htmlspecialchars($contratista['municipio_principal'] ?? 'N/A'); ?>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?><br>
+                                            <small class="info-secondary">
+                                                <i class="fas fa-phone"></i>
+                                                <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="status-badges">
+                                                <?php if ($estadoUsuario === 'activo'): ?>
+                                                    <span class="badge badge-success">
+                                                        <i class="fas fa-user-check"></i> Activo
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-warning">
+                                                        <i class="fas fa-user-times"></i> Inactivo
+                                                    </span>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($estadoContrato === 'vigente'): ?>
+                                                    <span class="badge badge-primary">
+                                                        <i class="fas fa-check-circle"></i> Vigente
+                                                    </span>
+                                                <?php elseif ($estadoContrato === 'vencido'): ?>
+                                                    <span class="badge badge-danger">
+                                                        <i class="fas fa-exclamation-circle"></i> Vencido
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="action-buttons">
+                                                <button class="btn-action btn-view" 
+                                                        onclick="verDetalle('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-action btn-edit" 
+                                                        onclick="editarContratista('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
         </main>
@@ -339,7 +420,7 @@ try {
                     const tbody = document.querySelector('#contratistasTable tbody');
                     tbody.innerHTML = `
                         <tr class="empty-row">
-                            <td colspan="7">
+                            <td colspan="11">
                                 <div class="empty-state">
                                     <i class="fas fa-search"></i>
                                     <h5>No se encontraron resultados</h5>
