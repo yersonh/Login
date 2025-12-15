@@ -122,8 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        const sej = document.querySelector('.consecutivo-number').textContent.trim();
-        formData.append('sej', sej);
+        // ⬇️ ELIMINADO: No enviar 'sej' ya que no existe en la base de datos
+        // const sej = document.querySelector('.consecutivo-number').textContent.trim();
+        // formData.append('sej', sej);
         
         try {
             const response = await fetch('../../controllers/procesar_contratista.php', {
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultado = await response.json();
             
             if (resultado.success) {
-                alert(`¡Contratista registrado exitosamente!\n\nSEJ: ${sej}\n\nSe ha creado automáticamente el usuario con acceso al sistema.`);
+                alert(`¡Contratista registrado exitosamente!\n\nSe ha creado automáticamente el usuario con acceso al sistema.`);
                 
                 setTimeout(() => {
                     window.location.href = 'menuContratistas.php';

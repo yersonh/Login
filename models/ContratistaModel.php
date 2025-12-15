@@ -37,10 +37,6 @@ class ContratistaModel {
 
             $id_detalle = $this->insertarDetalleContrato($id_persona, $datos);
             $credenciales = $this->crearUsuarioAutomatico($id_persona, $datos['correo']);
-            
-            if (isset($datos['sej'])) {
-                $this->actualizarSEJ($id_detalle, $datos['sej']);
-            }
 
             $this->conn->commit();
             
@@ -183,15 +179,6 @@ class ContratistaModel {
         }
         
         return $fecha;
-    }
-
-    private function actualizarSEJ($id_detalle, $sej) {
-        $sql = "UPDATE detalle_contrato SET sej = :sej WHERE id_detalle = :id_detalle";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':sej', $sej);
-        $stmt->bindParam(':id_detalle', $id_detalle);
-        
-        return $stmt->execute();
     }
 
     public function obtenerTodosContratistas() {

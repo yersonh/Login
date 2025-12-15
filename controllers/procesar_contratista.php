@@ -54,8 +54,7 @@ try {
         'fecha_final' => $_POST['fecha_final'],
         'duracion_contrato' => trim($_POST['duracion_contrato']),
         'numero_registro_presupuestal' => isset($_POST['numero_registro_presupuestal']) ? trim($_POST['numero_registro_presupuestal']) : '',
-        'fecha_rp' => isset($_POST['fecha_rp']) ? $_POST['fecha_rp'] : '',
-        'sej' => isset($_POST['sej']) ? trim($_POST['sej']) : ''
+        'fecha_rp' => isset($_POST['fecha_rp']) ? $_POST['fecha_rp'] : ''
     ];
     
     if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {

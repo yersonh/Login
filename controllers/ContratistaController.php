@@ -52,10 +52,6 @@ class ContratistaController {
             return ['success' => false, 'error' => 'Datos inválidos o incompletos'];
         }
 
-        if (!isset($datosValidados['sej'])) {
-            $datosValidados['sej'] = $this->generarConsecutivo();
-        }
-
         $resultado = $this->contratistaModel->registrarContratistaCompleto($datosValidados);
 
         return $resultado;
@@ -92,7 +88,7 @@ class ContratistaController {
             'fecha_final' => $datos['fecha_final'],
             'duracion_contrato' => trim($datos['duracion_contrato']),
             'numero_registro_presupuestal' => isset($datos['numero_registro_presupuestal']) ? trim($datos['numero_registro_presupuestal']) : '',
-            'fecha_rp' => isset($datos['fecha_rp']) ? $datos['fecha_rp'] : '',
+            'fecha_rp' => isset($datos['fecha_rp']) ? $datos['fecha_rp'] : ''
         ];
 
         if (!filter_var($validados['correo'], FILTER_VALIDATE_EMAIL)) {
@@ -104,25 +100,6 @@ class ContratistaController {
         }
 
         return $validados;
-    }
-
-    private function generarConsecutivo() {
-        $anio = date('Y');
-        $mes = date('m');
-        
-        $sql = "SELECT COUNT(*) as total FROM detalle_contrato 
-                WHERE EXTRACT(YEAR FROM created_at) = :anio 
-                AND EXTRACT(MONTH FROM created_at) = :mes";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':anio', $anio);
-        $stmt->bindParam(':mes', $mes);
-        $stmt->execute();
-        
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-        $numero = $resultado['total'] + 1;
-        
-        return "SEJ-{$anio}{$mes}-" . str_pad($numero, 4, '0', STR_PAD_LEFT);
     }
 
     public function listarContratistas() {
