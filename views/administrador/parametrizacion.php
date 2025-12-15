@@ -278,6 +278,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     <strong style="font-size: 18px; font-weight: bold;">
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                     </strong>
+                    <span>, usted está a punto de realizar los siguientes cambios en la parametrización del sistema:</span>
                     <p id="modalMessage">¿Está seguro de guardar los cambios?</p>
                     <div class="modal-details" id="modalDetails" style="display: none;">
                         <h4>Cambios a realizar:</h4>
