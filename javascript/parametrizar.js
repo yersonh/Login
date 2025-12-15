@@ -194,7 +194,7 @@ function executeSystemUpdate(datos) {
     const btn = document.getElementById('saveConfigBtn');
     const originalText = setButtonLoading(btn, true);
 
-    fetch('../../controllers/parametrizacion_actualizar.php', {
+    fetch('../../api/parametrizacion_actualizar.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)

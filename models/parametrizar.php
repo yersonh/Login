@@ -43,5 +43,34 @@ class Configuracion {
             return false;
         }
     }
+    public function actualizarDatos(string $version, string $tipo_licencia, string $valida_hasta, string $desarrollado_por, string $direccion, string $correo_contacto, string $telefono): bool {
+        $query = "UPDATE " . $this->table . " SET 
+                    version_sistema = :version,
+                    tipo_licencia = :tipo_licencia,
+                    valida_hasta = :valida_hasta,
+                    desarrollado_por = :desarrollado_por,
+                    direccion = :direccion, 
+                    correo_contacto = :correo_contacto, 
+                    telefono = :telefono, 
+                    updated_at = NOW() 
+                  WHERE id_parametrizacion = 1"; // Asume que la configuración a modificar es el ID 1
+
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(':version', $version);
+        $stmt->bindParam(':tipo_licencia', $tipo_licencia);
+        $stmt->bindParam(':valida_hasta', $valida_hasta);
+        $stmt->bindParam(':desarrollado_por', $desarrollado_por);
+        $stmt->bindParam(':direccion', $direccion);
+        $stmt->bindParam(':correo_contacto', $correo_contacto);
+        $stmt->bindParam(':telefono', $telefono);
+
+        try {
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            error_log($e->getMessage()); 
+            return false;
+        }
+    }
 }
 ?>
