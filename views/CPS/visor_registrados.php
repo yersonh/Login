@@ -48,120 +48,6 @@ try {
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
-    <style>
-        /* Estilos básicos para la tabla */
-        .contratistas-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-        
-        .contratistas-table thead {
-            background-color: #2c3e50;
-            color: white;
-        }
-        
-        .contratistas-table th,
-        .contratistas-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .contratistas-table tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .contratistas-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .status-activo {
-            color: #28a745;
-            font-weight: bold;
-        }
-        
-        .status-inactivo {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .badge-primary {
-            background-color: #007bff;
-            color: white;
-        }
-        
-        .badge-success {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .badge-warning {
-            background-color: #ffc107;
-            color: black;
-        }
-        
-        .search-container {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .search-btn {
-            padding: 10px 20px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .search-btn:hover {
-            background-color: #34495e;
-        }
-        
-        .stats-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            flex: 1;
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            border-left: 4px solid #2c3e50;
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-    </style>
 </head>
 <body>
     
@@ -192,132 +78,277 @@ try {
             </div>
             
             <!-- Estadísticas -->
-            <div class="stats-container">
+            <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number"><?php echo count($contratistas); ?></div>
-                    <div class="stat-label">Total de Contratistas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">
-                        <?php 
-                        $activos = array_filter($contratistas, function($c) {
-                            return isset($c['usuario_activo']) && $c['usuario_activo'] == true;
-                        });
-                        echo count($activos);
-                        ?>
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-label">Usuarios Activos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">
-                        <?php 
-                        $contratosVigentes = array_filter($contratistas, function($c) {
-                            if (!isset($c['fecha_final'])) return false;
-                            $fechaFinal = DateTime::createFromFormat('Y-m-d', $c['fecha_final']);
-                            $hoy = new DateTime();
-                            return $fechaFinal && $fechaFinal > $hoy;
-                        });
-                        echo count($contratosVigentes);
-                        ?>
+                    <div class="stat-content">
+                        <div class="stat-number"><?php echo count($contratistas); ?></div>
+                        <div class="stat-label">Total Contratistas</div>
                     </div>
-                    <div class="stat-label">Contratos Vigentes</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">
+                            <?php 
+                            $activos = array_filter($contratistas, function($c) {
+                                return isset($c['usuario_activo']) && $c['usuario_activo'] == true;
+                            });
+                            echo count($activos);
+                            ?>
+                        </div>
+                        <div class="stat-label">Usuarios Activos</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">
+                            <?php 
+                            $contratosVigentes = array_filter($contratistas, function($c) {
+                                if (!isset($c['fecha_final'])) return false;
+                                try {
+                                    $fechaFinal = new DateTime($c['fecha_final']);
+                                    $hoy = new DateTime();
+                                    return $fechaFinal > $hoy;
+                                } catch (Exception $e) {
+                                    return false;
+                                }
+                            });
+                            echo count($contratosVigentes);
+                            ?>
+                        </div>
+                        <div class="stat-label">Contratos Vigentes</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">
+                            <?php 
+                            $contratosVencidos = array_filter($contratistas, function($c) {
+                                if (!isset($c['fecha_final'])) return false;
+                                try {
+                                    $fechaFinal = new DateTime($c['fecha_final']);
+                                    $hoy = new DateTime();
+                                    return $fechaFinal < $hoy;
+                                } catch (Exception $e) {
+                                    return false;
+                                }
+                            });
+                            echo count($contratosVencidos);
+                            ?>
+                        </div>
+                        <div class="stat-label">Contratos Vencidos</div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Barra de búsqueda -->
-            <div class="search-container">
-                <input type="text" 
-                       id="searchInput" 
-                       class="search-input" 
-                       placeholder="Buscar por nombre, cédula, contrato o municipio...">
-                <button id="searchBtn" class="search-btn">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-                <button id="refreshBtn" class="search-btn">
-                    <i class="fas fa-sync-alt"></i> Actualizar
-                </button>
+            <!-- Herramientas de búsqueda -->
+            <div class="tools-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" 
+                               id="searchInput" 
+                               class="search-input" 
+                               placeholder="Buscar por nombre, cédula, contrato...">
+                    </div>
+                    <div class="search-actions">
+                        <button id="searchBtn" class="btn-search">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <button id="refreshBtn" class="btn-refresh">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filter-container">
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Usuarios Activos</option>
+                        <option value="inactivo">Usuarios Inactivos</option>
+                        <option value="vigente">Contratos Vigentes</option>
+                        <option value="vencido">Contratos Vencidos</option>
+                    </select>
+                    
+                    <select id="filterArea" class="filter-select">
+                        <option value="">Todas las áreas</option>
+                        <?php 
+                        $areasUnicas = [];
+                        foreach ($contratistas as $c) {
+                            if (isset($c['area']) && !in_array($c['area'], $areasUnicas)) {
+                                $areasUnicas[] = $c['area'];
+                            }
+                        }
+                        sort($areasUnicas);
+                        foreach ($areasUnicas as $area): 
+                        ?>
+                            <option value="<?php echo htmlspecialchars($area); ?>">
+                                <?php echo htmlspecialchars($area); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
             
             <!-- Tabla de contratistas -->
-            <div class="table-responsive">
-                <table class="contratistas-table" id="contratistasTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Información Personal</th>
-                            <th>Contrato</th>
-                            <th>Ubicación</th>
-                            <th>Contacto</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($contratistas)): ?>
+            <div class="table-container">
+                <div class="table-header">
+                    <h4>Listado de Contratistas</h4>
+                    <div class="table-count">
+                        Mostrando <span id="rowCount"><?php echo count($contratistas); ?></span> registros
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="contratistas-table" id="contratistasTable">
+                        <thead>
                             <tr>
-                                <td colspan="7" style="text-align: center; padding: 40px;">
-                                    <i class="fas fa-users" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
-                                    <p style="color: #666;">No hay contratistas registrados</p>
-                                </td>
+                                <th class="text-center">#</th>
+                                <th>Información Personal</th>
+                                <th>Información del Contrato</th>
+                                <th>Ubicación</th>
+                                <th>Contacto</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($contratistas as $index => $contratista): ?>
-                                <tr>
-                                    <td><?php echo $index + 1; ?></td>
-                                    <td>
-                                        <strong><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></strong><br>
-                                        <small>Cédula: <?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></small>
-                                    </td>
-                                    <td>
-                                        <strong>Contrato: <?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></strong><br>
-                                        <small>
-                                            Inicio: <?php echo isset($contratista['fecha_inicio']) ? date('d/m/Y', strtotime($contratista['fecha_inicio'])) : 'N/A'; ?><br>
-                                            Fin: <?php echo isset($contratista['fecha_final']) ? date('d/m/Y', strtotime($contratista['fecha_final'])) : 'N/A'; ?>
-                                        </small>
-                                    </td>
-                                    <td>
-                                        <strong><?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?></strong><br>
-                                        <small>
-                                            Municipio: <?php echo htmlspecialchars($contratista['municipio_principal'] ?? 'N/A'); ?><br>
-                                            Tipo: <?php echo htmlspecialchars($contratista['tipo_vinculacion'] ?? 'N/A'); ?>
-                                        </small>
-                                    </td>
-                                    <td>
-                                        <strong>Email: <?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?></strong><br>
-                                        <small>Tel: <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></small>
-                                    </td>
-                                    <td>
-                                        <?php if (isset($contratista['usuario_activo']) && $contratista['usuario_activo']): ?>
-                                            <span class="status-activo">● Activo</span><br>
-                                            <span class="badge badge-success">Usuario Activo</span>
-                                        <?php else: ?>
-                                            <span class="status-inactivo">● Inactivo</span><br>
-                                            <span class="badge badge-warning">Usuario Inactivo</span>
-                                        <?php endif; ?>
-                                        
-                                        <?php if (isset($contratista['fecha_final'])): 
-                                            $fechaFinal = new DateTime($contratista['fecha_final']);
-                                            $hoy = new DateTime();
-                                            if ($fechaFinal < $hoy): ?>
-                                                <br><span class="badge badge-warning">Contrato Vencido</span>
-                                            <?php else: ?>
-                                                <br><span class="badge badge-primary">Contrato Vigente</span>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <button class="btn-view" onclick="verDetalle(<?php echo $contratista['id_detalle'] ?? 0; ?>)">
-                                            <i class="fas fa-eye"></i> Ver
-                                        </button>
-                                        <button class="btn-edit" onclick="editarContratista(<?php echo $contratista['id_detalle'] ?? 0; ?>)">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($contratistas)): ?>
+                                <tr class="empty-row">
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="fas fa-users-slash"></i>
+                                            <h5>No hay contratistas registrados</h5>
+                                            <p>Comienza agregando un nuevo contratista desde el menú principal.</p>
+                                        </div>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($contratistas as $index => $contratista): 
+                                    $fechaInicio = isset($contratista['fecha_inicio']) ? date('d/m/Y', strtotime($contratista['fecha_inicio'])) : 'N/A';
+                                    $fechaFinal = isset($contratista['fecha_final']) ? date('d/m/Y', strtotime($contratista['fecha_final'])) : 'N/A';
+                                    $estadoUsuario = isset($contratista['usuario_activo']) && $contratista['usuario_activo'] ? 'activo' : 'inactivo';
+                                    
+                                    // Determinar estado del contrato
+                                    $estadoContrato = 'indefinido';
+                                    if (isset($contratista['fecha_final'])) {
+                                        try {
+                                            $fechaFin = new DateTime($contratista['fecha_final']);
+                                            $hoy = new DateTime();
+                                            $estadoContrato = $fechaFin > $hoy ? 'vigente' : 'vencido';
+                                        } catch (Exception $e) {
+                                            $estadoContrato = 'indefinido';
+                                        }
+                                    }
+                                ?>
+                                    <tr class="contratista-row" 
+                                        data-estado-usuario="<?php echo $estadoUsuario; ?>"
+                                        data-estado-contrato="<?php echo $estadoContrato; ?>"
+                                        data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>">
+                                        <td class="text-center"><?php echo $index + 1; ?></td>
+                                        
+                                        <td class="personal-info">
+                                            <div class="info-main">
+                                                <strong><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></strong>
+                                            </div>
+                                            <div class="info-secondary">
+                                                <i class="fas fa-id-card"></i> 
+                                                <?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="contract-info">
+                                            <div class="info-main">
+                                                <strong><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></strong>
+                                            </div>
+                                            <div class="info-secondary">
+                                                <i class="fas fa-calendar-alt"></i> 
+                                                <?php echo $fechaInicio; ?> - <?php echo $fechaFinal; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="location-info">
+                                            <div class="info-main">
+                                                <strong><?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?></strong>
+                                            </div>
+                                            <div class="info-secondary">
+                                                <i class="fas fa-map-marker-alt"></i> 
+                                                <?php echo htmlspecialchars($contratista['municipio_principal'] ?? 'N/A'); ?>
+                                                <?php if ($contratista['tipo_vinculacion']): ?>
+                                                    <br><i class="fas fa-link"></i> 
+                                                    <?php echo htmlspecialchars($contratista['tipo_vinculacion']); ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="contact-info">
+                                            <div class="info-main">
+                                                <strong><?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?></strong>
+                                            </div>
+                                            <div class="info-secondary">
+                                                <i class="fas fa-phone"></i> 
+                                                <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="status-info">
+                                            <div class="status-badges">
+                                                <?php if ($estadoUsuario === 'activo'): ?>
+                                                    <span class="badge badge-success">
+                                                        <i class="fas fa-user-check"></i> Activo
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-warning">
+                                                        <i class="fas fa-user-times"></i> Inactivo
+                                                    </span>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($estadoContrato === 'vigente'): ?>
+                                                    <span class="badge badge-primary">
+                                                        <i class="fas fa-check-circle"></i> Vigente
+                                                    </span>
+                                                <?php elseif ($estadoContrato === 'vencido'): ?>
+                                                    <span class="badge badge-danger">
+                                                        <i class="fas fa-exclamation-circle"></i> Vencido
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="actions-cell text-center">
+                                            <div class="action-buttons">
+                                                <button class="btn-action btn-view" 
+                                                        onclick="verDetalle('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-action btn-edit" 
+                                                        onclick="editarContratista('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
         
@@ -361,125 +392,117 @@ try {
         </footer>
     </div>
     
-    <!-- Modal para ver detalles -->
-    <div id="detalleModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div id="modalContent">
-                <!-- Contenido cargado por AJAX -->
-            </div>
-        </div>
-    </div>
-    
     <!-- Scripts -->
     <script>
         // Función para buscar en la tabla
-        document.getElementById('searchBtn').addEventListener('click', function() {
+        function filtrarTabla() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#contratistasTable tbody tr');
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterArea = document.getElementById('filterArea').value;
+            const rows = document.querySelectorAll('.contratista-row');
+            let visibleCount = 0;
             
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                const estadoUsuario = row.getAttribute('data-estado-usuario');
+                const estadoContrato = row.getAttribute('data-estado-contrato');
+                const area = row.getAttribute('data-area');
+                
+                let matchesSearch = text.includes(searchTerm);
+                let matchesStatus = true;
+                let matchesArea = true;
+                
+                // Filtrar por estado
+                if (filterStatus) {
+                    if (filterStatus === 'activo' && estadoUsuario !== 'activo') matchesStatus = false;
+                    if (filterStatus === 'inactivo' && estadoUsuario !== 'inactivo') matchesStatus = false;
+                    if (filterStatus === 'vigente' && estadoContrato !== 'vigente') matchesStatus = false;
+                    if (filterStatus === 'vencido' && estadoContrato !== 'vencido') matchesStatus = false;
+                }
+                
+                // Filtrar por área
+                if (filterArea && area.toLowerCase() !== filterArea.toLowerCase()) {
+                    matchesArea = false;
+                }
+                
+                if (matchesSearch && matchesStatus && matchesArea) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('rowCount').textContent = visibleCount;
+            
+            // Mostrar mensaje si no hay resultados
+            const emptyRow = document.querySelector('.empty-row');
+            if (visibleCount === 0 && rows.length > 0) {
+                if (!emptyRow) {
+                    const tbody = document.querySelector('#contratistasTable tbody');
+                    tbody.innerHTML = `
+                        <tr class="empty-row">
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-search"></i>
+                                    <h5>No se encontraron resultados</h5>
+                                    <p>Intenta con otros términos de búsqueda o filtros.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else if (emptyRow && visibleCount > 0) {
+                emptyRow.remove();
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Buscar
+            document.getElementById('searchInput').addEventListener('input', filtrarTabla);
+            document.getElementById('searchBtn').addEventListener('click', filtrarTabla);
+            
+            // Filtros
+            document.getElementById('filterStatus').addEventListener('change', filtrarTabla);
+            document.getElementById('filterArea').addEventListener('change', filtrarTabla);
+            
+            // Actualizar
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                location.reload();
+            });
+            
+            // Volver al menú
+            document.getElementById('volverBtn').addEventListener('click', function() {
+                window.location.href = 'menuContratistas.php';
+            });
+            
+            // Permitir buscar con Enter
+            document.getElementById('searchInput').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    filtrarTabla();
+                }
             });
         });
         
-        // Permitir buscar con Enter
-        document.getElementById('searchInput').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                document.getElementById('searchBtn').click();
-            }
-        });
-        
-        // Actualizar tabla
-        document.getElementById('refreshBtn').addEventListener('click', function() {
-            location.reload();
-        });
-        
-        // Volver al menú
-        document.getElementById('volverBtn').addEventListener('click', function() {
-            window.location.href = 'menuContratistas.php';
-        });
-        
-        // Ver detalle del contratista
+        // Funciones placeholder para acciones
         function verDetalle(idDetalle) {
-            if (!idDetalle) {
+            if (!idDetalle || idDetalle === '0') {
                 alert('Error: ID no válido');
                 return;
             }
-            
-            fetch(`../../controllers/obtener_detalle_contratista.php?id_detalle=${idDetalle}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const contratista = data.data;
-                        let contenido = `
-                            <h3>Detalle del Contratista</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div>
-                                    <h4>Información Personal</h4>
-                                    <p><strong>Nombre:</strong> ${contratista.nombres} ${contratista.apellidos}</p>
-                                    <p><strong>Cédula:</strong> ${contratista.cedula}</p>
-                                    <p><strong>Teléfono:</strong> ${contratista.telefono || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <h4>Información del Contrato</h4>
-                                    <p><strong>Contrato:</strong> ${contratista.numero_contrato}</p>
-                                    <p><strong>Inicio:</strong> ${new Date(contratista.fecha_inicio).toLocaleDateString('es-ES')}</p>
-                                    <p><strong>Fin:</strong> ${new Date(contratista.fecha_final).toLocaleDateString('es-ES')}</p>
-                                    <p><strong>Duración:</strong> ${contratista.duracion_contrato || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <h4>Ubicación</h4>
-                                    <p><strong>Área:</strong> ${contratista.area_nombre || 'N/A'}</p>
-                                    <p><strong>Tipo Vinculación:</strong> ${contratista.tipo_vinculacion_nombre || 'N/A'}</p>
-                                    <p><strong>Municipio Principal:</strong> ${contratista.municipio_principal_nombre || 'N/A'}</p>
-                                    <p><strong>Municipio Secundario:</strong> ${contratista.municipio_secundario_nombre || 'N/A'}</p>
-                                    <p><strong>Municipio Terciario:</strong> ${contratista.municipio_terciario_nombre || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <h4>Contacto</h4>
-                                    <p><strong>Email:</strong> ${contratista.correo || 'N/A'}</p>
-                                    <p><strong>Dirección:</strong> ${contratista.direccion || 'N/A'}</p>
-                                    <p><strong>Estado Usuario:</strong> ${contratista.usuario_activo ? 'Activo' : 'Inactivo'}</p>
-                                </div>
-                            </div>
-                            <div style="margin-top: 20px; padding: 10px; background-color: #f5f5f5; border-radius: 4px;">
-                                <p><strong>N° Registro Presupuestal:</strong> ${contratista.numero_registro_presupuestal || 'N/A'}</p>
-                                <p><strong>Fecha RP:</strong> ${contratista.fecha_rp ? new Date(contratista.fecha_rp).toLocaleDateString('es-ES') : 'N/A'}</p>
-                            </div>
-                        `;
-                        
-                        document.getElementById('modalContent').innerHTML = contenido;
-                        document.getElementById('detalleModal').style.display = 'block';
-                    } else {
-                        alert('Error al cargar los detalles: ' + (data.error || 'Error desconocido'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error de conexión');
-                });
+            alert(`Ver detalle del contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
+            // window.location.href = `ver_detalle.php?id_detalle=${idDetalle}`;
         }
         
-        // Editar contratista
         function editarContratista(idDetalle) {
-            // Aquí rediriges al formulario de edición
-            window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
-        }
-        
-        // Cerrar modal
-        document.querySelector('.close-modal').addEventListener('click', function() {
-            document.getElementById('detalleModal').style.display = 'none';
-        });
-        
-        // Cerrar modal al hacer clic fuera
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('detalleModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+            if (!idDetalle || idDetalle === '0') {
+                alert('Error: ID no válido');
+                return;
             }
-        });
+            alert(`Editar contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
+            // window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
+        }
     </script>
     
 </body>
