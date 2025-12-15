@@ -17,6 +17,49 @@
     --transition: all 0.3s ease;
 }
 
+/* Estilos generales del contenedor */
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-main {
+    flex: 1;
+    padding: 25px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Sección de bienvenida */
+.welcome-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.welcome-section h3 {
+    color: var(--primary-color);
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.welcome-section p {
+    color: var(--gray-color);
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
 /* ========== ESTILOS PARA ESTADÍSTICAS ========== */
 .stats-grid {
     display: grid;
@@ -235,6 +278,7 @@
     border: 1px solid rgba(0, 0, 0, 0.05);
     overflow: hidden;
     position: relative;
+    margin-bottom: 30px;
 }
 
 .table-container::before {
@@ -276,6 +320,7 @@
 /* ========== TABLA DE CONTRATISTAS ========== */
 .table-responsive {
     overflow-x: auto;
+    padding: 0;
 }
 
 .contratistas-table {
@@ -334,7 +379,7 @@
 
 .contratistas-table td {
     padding: 18px 20px;
-    vertical-align: middle;
+    vertical-align: top;
     border: none;
 }
 
@@ -348,29 +393,35 @@
 }
 
 .info-main {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: 600;
     color: var(--dark-color);
     font-size: 14px;
+    line-height: 1.3;
 }
 
 .info-secondary {
     font-size: 13px;
     color: var(--gray-color);
     display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 4px;
     line-height: 1.4;
 }
 
 .info-secondary i {
     font-size: 12px;
     opacity: 0.7;
-    flex-shrink: 0;
+    margin-right: 6px;
+    width: 14px;
+    text-align: center;
 }
 
 /* ========== BADGES DE ESTADO ========== */
+.status-info {
+    min-width: 150px;
+}
+
 .status-badges {
     display: flex;
     flex-direction: column;
@@ -514,6 +565,33 @@
     color: var(--gray-color);
 }
 
+/* ========== BOTÓN VOLVER ========== */
+.volver-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(0, 74, 141, 0.3);
+    z-index: 100;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.volver-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 74, 141, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
 /* ========== RESPONSIVE ========== */
 
 /* Escritorio grande (> 1200px) */
@@ -536,12 +614,24 @@
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    
+    .app-main {
+        padding: 20px;
+    }
 }
 
 /* Tabletas (768px - 992px) */
 @media (max-width: 992px) {
-    .app-header, .app-main {
-        padding: 20px;
+    .app-main {
+        padding: 15px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 24px;
+    }
+    
+    .welcome-section p {
+        font-size: 16px;
     }
     
     .tools-section {
@@ -556,44 +646,36 @@
     .contratistas-table td {
         padding: 14px 16px;
     }
+    
+    .volver-btn {
+        bottom: 80px;
+        right: 20px;
+    }
 }
 
 /* Tabletas pequeñas (576px - 768px) */
 @media (max-width: 768px) {
     body {
         padding: 10px;
+        background: #f5f7fa;
     }
     
     .app-container {
         min-height: auto;
+        border-radius: var(--border-radius);
+        overflow: hidden;
     }
     
-    .app-header, .app-main {
-        padding: 20px;
-    }
-    
-    .header-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .user-profile {
-        text-align: center;
-        width: 100%;
-    }
-    
-    .welcome-section {
-        margin-bottom: 20px;
+    .app-main {
+        padding: 15px;
     }
     
     .welcome-section h3 {
-        font-size: 24px;
-        margin-bottom: 10px;
+        font-size: 22px;
     }
     
     .welcome-section p {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .stats-grid {
@@ -651,37 +733,47 @@
         height: 32px;
         font-size: 13px;
     }
+    
+    .volver-btn {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        width: 100%;
+        margin-top: 20px;
+        justify-content: center;
+        border-radius: var(--border-radius);
+    }
 }
 
 /* Móviles medianos (480px - 576px) */
 @media (max-width: 576px) {
-    .app-header, .app-main {
-        padding: 15px;
-    }
-    
-    .department-info h1 {
-        font-size: 22px;
-    }
-    
-    .department-info h2 {
-        font-size: 18px;
+    .app-main {
+        padding: 12px;
     }
     
     .welcome-section {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
     
     .welcome-section h3 {
-        font-size: 22px;
+        font-size: 20px;
         margin-bottom: 8px;
     }
     
     .welcome-section p {
-        font-size: 15px;
+        font-size: 14px;
     }
     
     .tools-section {
         padding: 12px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .stat-label {
+        font-size: 13px;
     }
     
     .empty-state i {
@@ -700,43 +792,12 @@
 
 /* Móviles pequeños (< 480px) */
 @media (max-width: 480px) {
-    body {
-        padding: 8px;
-    }
-    
-    .app-container {
-        min-height: calc(100vh - 16px);
-        border-radius: 10px;
-    }
-    
-    .app-header {
-        padding: 15px;
-    }
-    
-    .app-main {
-        padding: 15px;
-    }
-    
-    .department-info h1 {
-        font-size: 20px;
-        margin-bottom: 3px;
-    }
-    
-    .department-info h2 {
+    .welcome-section h3 {
         font-size: 18px;
     }
     
-    .welcome-section {
-        margin-bottom: 20px;
-    }
-    
-    .welcome-section h3 {
-        font-size: 20px;
-        margin-bottom: 6px;
-    }
-    
     .welcome-section p {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .stat-card {
@@ -750,31 +811,12 @@
     }
     
     .stat-number {
-        font-size: 24px;
-    }
-    
-    .stat-label {
-        font-size: 13px;
+        font-size: 22px;
     }
     
     .btn-search, .btn-refresh {
         padding: 10px 15px;
         font-size: 13px;
-    }
-}
-
-/* Móviles muy pequeños (< 375px) */
-@media (max-width: 375px) {
-    .department-info h1 {
-        font-size: 18px;
-    }
-    
-    .department-info h2 {
-        font-size: 16px;
-    }
-    
-    .stat-number {
-        font-size: 22px;
     }
     
     .info-main {
@@ -783,108 +825,5 @@
     
     .info-secondary {
         font-size: 12px;
-    }
-}
-
-/* Dispositivos con altura limitada */
-@media (max-height: 700px) and (max-width: 768px) {
-    body {
-        padding: 5px 0;
-    }
-    
-    .app-container {
-        min-height: 100vh;
-        border-radius: 0;
-    }
-    
-    .app-main {
-        padding: 10px 15px;
-    }
-    
-    .stats-grid {
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-    
-    .tools-section {
-        margin-bottom: 15px;
-    }
-}
-
-/* Orientación horizontal en móviles */
-@media (max-width: 768px) and (orientation: landscape) {
-    body {
-        padding: 5px;
-    }
-    
-    .app-container {
-        min-height: auto;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-}
-
-/* ========== MEJORAS DE ACCESIBILIDAD TÁCTIL ========== */
-@media (hover: none) and (pointer: coarse) {
-    .stat-card:hover,
-    .btn-search:hover,
-    .btn-refresh:hover,
-    .btn-action:hover {
-        transform: none;
-    }
-    
-    .stat-card:active,
-    .btn-search:active,
-    .btn-refresh:active {
-        transform: scale(0.98);
-    }
-    
-    .btn-action:active {
-        transform: scale(0.95);
-    }
-    
-    .stat-card:hover .stat-icon {
-        animation: none;
-    }
-}
-
-/* ========== AJUSTES PARA SAFARI iOS ========== */
-@supports (-webkit-touch-callout: none) {
-    body {
-        min-height: -webkit-fill-available;
-    }
-    
-    .app-container {
-        min-height: -webkit-fill-available;
-    }
-    
-    .stat-card,
-    .btn-search,
-    .btn-refresh,
-    .btn-action {
-        -webkit-tap-highlight-color: transparent;
-    }
-}
-
-/* ========== MEJORAS DE RENDIMIENTO ========== */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-    
-    .stat-card:hover,
-    .btn-search:hover,
-    .btn-refresh:hover,
-    .btn-action:hover {
-        transform: none;
-    }
-    
-    .stat-card:hover .stat-icon {
-        animation: none;
     }
 }
