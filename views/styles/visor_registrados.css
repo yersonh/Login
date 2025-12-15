@@ -1,4 +1,6 @@
-/* styles/visor_registrados.css */
+/* styles/visor_registrados.css - Estilos para el visor de contratistas registrados */
+
+/* Variables CSS base (consistentes con asistente.css) */
 :root {
     --primary-color: #004a8d;
     --secondary-color: #003366;
@@ -15,7 +17,7 @@
     --transition: all 0.3s ease;
 }
 
-/* Estadísticas */
+/* ========== ESTILOS PARA ESTADÍSTICAS ========== */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -28,17 +30,36 @@
     border-radius: var(--border-radius);
     padding: 20px;
     box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     gap: 15px;
     transition: var(--transition);
+    position: relative;
+    overflow: hidden;
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     border-color: var(--primary-color);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
 }
 
 .stat-icon {
@@ -51,6 +72,11 @@
     justify-content: center;
     color: white;
     font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-card:hover .stat-icon {
+    animation: float 1.5s ease-in-out infinite;
 }
 
 .stat-content {
@@ -71,14 +97,32 @@
     font-weight: 500;
 }
 
-/* Herramientas de búsqueda y filtros */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+/* ========== HERRAMIENTAS DE BÚSQUEDA Y FILTROS ========== */
 .tools-section {
     background: white;
     border-radius: var(--border-radius);
     padding: 20px;
     box-shadow: var(--shadow);
     margin-bottom: 25px;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.tools-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }
 
 .search-container {
@@ -105,10 +149,11 @@
 .search-input {
     width: 100%;
     padding: 12px 15px 12px 45px;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
     font-size: 14px;
     transition: var(--transition);
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .search-input:focus {
@@ -133,6 +178,7 @@
     gap: 8px;
     transition: var(--transition);
     font-size: 14px;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .btn-search {
@@ -143,17 +189,19 @@
 .btn-refresh {
     background: var(--light-color);
     color: var(--dark-color);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
 }
 
 .btn-search:hover {
     background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 74, 141, 0.2);
 }
 
 .btn-refresh:hover {
     background: #e9ecef;
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .filter-container {
@@ -164,12 +212,13 @@
 .filter-select {
     flex: 1;
     padding: 12px 15px;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
     font-size: 14px;
     background: white;
     cursor: pointer;
     transition: var(--transition);
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .filter-select:focus {
@@ -178,13 +227,24 @@
     box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
 }
 
-/* Contenedor de tabla */
+/* ========== CONTENEDOR DE TABLA ========== */
 .table-container {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    position: relative;
+}
+
+.table-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 }
 
 .table-header {
@@ -213,7 +273,7 @@
     color: var(--primary-color);
 }
 
-/* Tabla */
+/* ========== TABLA DE CONTRATISTAS ========== */
 .table-responsive {
     overflow-x: auto;
 }
@@ -237,6 +297,22 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border: none;
+    position: relative;
+}
+
+.contratistas-table th::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 60%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.contratistas-table th:last-child::after {
+    display: none;
 }
 
 .contratistas-table th.text-center {
@@ -266,7 +342,7 @@
     text-align: center;
 }
 
-/* Estilos para celdas de información */
+/* ========== ESTILOS PARA CELDAS DE INFORMACIÓN ========== */
 .personal-info, .contract-info, .location-info, .contact-info {
     min-width: 200px;
 }
@@ -275,6 +351,7 @@
     margin-bottom: 5px;
     font-weight: 600;
     color: var(--dark-color);
+    font-size: 14px;
 }
 
 .info-secondary {
@@ -284,14 +361,16 @@
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
+    line-height: 1.4;
 }
 
 .info-secondary i {
     font-size: 12px;
     opacity: 0.7;
+    flex-shrink: 0;
 }
 
-/* Badges de estado */
+/* ========== BADGES DE ESTADO ========== */
 .status-badges {
     display: flex;
     flex-direction: column;
@@ -308,6 +387,7 @@
     font-weight: 600;
     width: fit-content;
     white-space: nowrap;
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .badge i {
@@ -338,7 +418,7 @@
     border: 1px solid rgba(220, 53, 69, 0.2);
 }
 
-/* Botones de acción */
+/* ========== BOTONES DE ACCIÓN ========== */
 .actions-cell {
     min-width: 120px;
 }
@@ -360,34 +440,49 @@
     cursor: pointer;
     transition: var(--transition);
     font-size: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s;
+}
+
+.btn-action:hover::before {
+    left: 100%;
 }
 
 .btn-view {
-    background: rgba(23, 162, 184, 0.1);
-    color: #17a2b8;
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
 }
 
 .btn-edit {
-    background: rgba(255, 193, 7, 0.1);
-    color: #d39e00;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: white;
 }
 
 .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-view:hover {
-    background: #17a2b8;
-    color: white;
+    background: linear-gradient(135deg, #138496, #117a8b);
 }
 
 .btn-edit:hover {
-    background: #ffc107;
-    color: black;
+    background: linear-gradient(135deg, #e0a800, #d39e00);
 }
 
-/* Estado vacío */
+/* ========== ESTADO VACÍO ========== */
 .empty-row td {
     padding: 60px 20px;
 }
@@ -403,6 +498,7 @@
     font-size: 60px;
     margin-bottom: 20px;
     opacity: 0.3;
+    color: var(--gray-color);
 }
 
 .empty-state h5 {
@@ -415,18 +511,94 @@
 .empty-state p {
     font-size: 14px;
     line-height: 1.5;
+    color: var(--gray-color);
 }
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
+
+/* Escritorio grande (> 1200px) */
+@media (min-width: 1201px) {
+    .app-container {
+        max-width: 1400px;
+    }
+    
+    .stats-grid {
+        gap: 30px;
+    }
+    
+    .stat-card {
+        min-height: 100px;
+    }
+}
+
+/* Tablets (992px - 1200px) */
 @media (max-width: 1200px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
+/* Tabletas (768px - 992px) */
+@media (max-width: 992px) {
+    .app-header, .app-main {
+        padding: 20px;
+    }
+    
+    .tools-section {
+        padding: 15px;
+    }
+    
+    .table-header {
+        padding: 15px 20px;
+    }
+    
+    .contratistas-table th,
+    .contratistas-table td {
+        padding: 14px 16px;
+    }
+}
+
+/* Tabletas pequeñas (576px - 768px) */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .app-header, .app-main {
+        padding: 20px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .welcome-section {
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-section p {
+        font-size: 16px;
+    }
+    
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .search-container {
@@ -451,9 +623,7 @@
         gap: 10px;
         align-items: flex-start;
     }
-}
-
-@media (max-width: 480px) {
+    
     .info-secondary {
         flex-direction: column;
         align-items: flex-start;
@@ -461,8 +631,14 @@
     }
     
     .status-badges {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .badge {
+        font-size: 11px;
+        padding: 4px 8px;
     }
     
     .action-buttons {
@@ -473,5 +649,242 @@
     .btn-action {
         width: 32px;
         height: 32px;
+        font-size: 13px;
+    }
+}
+
+/* Móviles medianos (480px - 576px) */
+@media (max-width: 576px) {
+    .app-header, .app-main {
+        padding: 15px;
+    }
+    
+    .department-info h1 {
+        font-size: 22px;
+    }
+    
+    .department-info h2 {
+        font-size: 18px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 15px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+    
+    .welcome-section p {
+        font-size: 15px;
+    }
+    
+    .tools-section {
+        padding: 12px;
+    }
+    
+    .empty-state i {
+        font-size: 50px;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state h5 {
+        font-size: 16px;
+    }
+    
+    .empty-state p {
+        font-size: 13px;
+    }
+}
+
+/* Móviles pequeños (< 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+    
+    .app-container {
+        min-height: calc(100vh - 16px);
+        border-radius: 10px;
+    }
+    
+    .app-header {
+        padding: 15px;
+    }
+    
+    .app-main {
+        padding: 15px;
+    }
+    
+    .department-info h1 {
+        font-size: 20px;
+        margin-bottom: 3px;
+    }
+    
+    .department-info h2 {
+        font-size: 18px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 20px;
+    }
+    
+    .welcome-section h3 {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+    
+    .welcome-section p {
+        font-size: 14px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .stat-label {
+        font-size: 13px;
+    }
+    
+    .btn-search, .btn-refresh {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+/* Móviles muy pequeños (< 375px) */
+@media (max-width: 375px) {
+    .department-info h1 {
+        font-size: 18px;
+    }
+    
+    .department-info h2 {
+        font-size: 16px;
+    }
+    
+    .stat-number {
+        font-size: 22px;
+    }
+    
+    .info-main {
+        font-size: 13px;
+    }
+    
+    .info-secondary {
+        font-size: 12px;
+    }
+}
+
+/* Dispositivos con altura limitada */
+@media (max-height: 700px) and (max-width: 768px) {
+    body {
+        padding: 5px 0;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .app-main {
+        padding: 10px 15px;
+    }
+    
+    .stats-grid {
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .tools-section {
+        margin-bottom: 15px;
+    }
+}
+
+/* Orientación horizontal en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+/* ========== MEJORAS DE ACCESIBILIDAD TÁCTIL ========== */
+@media (hover: none) and (pointer: coarse) {
+    .stat-card:hover,
+    .btn-search:hover,
+    .btn-refresh:hover,
+    .btn-action:hover {
+        transform: none;
+    }
+    
+    .stat-card:active,
+    .btn-search:active,
+    .btn-refresh:active {
+        transform: scale(0.98);
+    }
+    
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+    
+    .stat-card:hover .stat-icon {
+        animation: none;
+    }
+}
+
+/* ========== AJUSTES PARA SAFARI iOS ========== */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+    
+    .stat-card,
+    .btn-search,
+    .btn-refresh,
+    .btn-action {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* ========== MEJORAS DE RENDIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .stat-card:hover,
+    .btn-search:hover,
+    .btn-refresh:hover,
+    .btn-action:hover {
+        transform: none;
+    }
+    
+    .stat-card:hover .stat-icon {
+        animation: none;
     }
 }
