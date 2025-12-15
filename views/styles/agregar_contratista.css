@@ -227,6 +227,7 @@ select.form-control {
     background-color: #f0f7ff;
     padding: 15px;
     border-radius: 8px;
+    border: 1px solid #dee2e6;
     display: inline-block;
     margin-bottom: 20px;
 }
