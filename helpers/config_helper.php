@@ -74,49 +74,35 @@ class ConfigHelper {
     
     // NUEVO: Método para obtener días restantes
     public static function obtenerDiasRestantes() {
-        $fechaValidez = self::obtener('valida_hasta', '2026-03-31');
-        
-        if (empty($fechaValidez)) {
-            return 'No definida';
-        }
-        
-        try {
-            $hoy = new DateTime();
-            $fechaValida = new DateTime($fechaValidez);
-            
-            // Si la fecha ya pasó
-            if ($fechaValida < $hoy) {
-                $diferencia = $hoy->diff($fechaValida);
-                return 'Expirada hace ' . abs($diferencia->days) . ' días';
-            }
-            
-            // Si la fecha está vigente
-            $diferencia = $hoy->diff($fechaValida);
-            
-            // Formatear según cantidad de días
-            if ($diferencia->days === 0) {
-                return 'Hoy expira';
-            } elseif ($diferencia->days === 1) {
-                return '1 día restante';
-            } elseif ($diferencia->days < 30) {
-                return $diferencia->days . ' días';
-            } elseif ($diferencia->days < 365) {
-                $meses = floor($diferencia->days / 30);
-                return $meses . ' mes' . ($meses > 1 ? 'es' : '') ;
-            } else {
-                $anios = floor($diferencia->days / 365);
-                $meses = floor(($diferencia->days % 365) / 30);
-                $resultado = $anios . ' año' . ($anios > 1 ? 's' : '');
-                if ($meses > 0) {
-                    $resultado .= ' y ' . $meses . ' mes' . ($meses > 1 ? 'es' : '');
-                }
-                return $resultado . ' restantes';
-            }
-            
-        } catch (Exception $e) {
-            return 'Error en fecha';
-        }
+    $fechaValidez = self::obtener('valida_hasta', '2026-03-31');
+
+    if (empty($fechaValidez)) {
+        return 'No definida';
     }
+
+    try {
+        $hoy = new DateTime();
+        $fechaValida = new DateTime($fechaValidez);
+
+        $diferencia = $hoy->diff($fechaValida);
+        $diasTotales = $diferencia->days;
+
+        if ($fechaValida < $hoy) {
+            return 'Expirada hace ' . $diasTotales . ' días';
+        }
+
+        if ($diasTotales === 0) {
+            return 'Hoy expira';
+        } elseif ($diasTotales === 1) {
+            return '1 día restante';
+        } else {
+            return $diasTotales . ' días restantes';
+        }
+
+    } catch (Exception $e) {
+        return 'Error en fecha';
+    }
+}
     
     // O versión más simple (opcional):
     public static function obtenerDiasRestantesSimple() {
