@@ -9,11 +9,6 @@ try {
         throw new Exception('Método no permitido');
     }
 
-    // Verificar si se recibió el archivo
-    if (!isset($_FILES['logo']) || $_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('No se recibió el archivo de imagen');
-    }
-
     // Obtener datos del formulario
     $entidad = isset($_POST['entidad']) ? trim($_POST['entidad']) : '';
     $enlaceWeb = isset($_POST['enlace_web']) ? trim($_POST['enlace_web']) : '';
@@ -29,22 +24,39 @@ try {
     if (empty($nit)) {
         throw new Exception('El campo NIT es requerido');
     }
-    // Obtener información del archivo
-    $file = $_FILES['logo'];
-    $fileName = basename($file['name']);
-    $fileTmpName = $file['tmp_name'];
+
+    // Manejo del archivo de logo (OPCIONAL)
+    $rutaRelativa = null;
     
-    // Ruta de destino (en /imagenes/ con el nombre original)
-    $uploadDir = __DIR__ . '/../imagenes/';
-    $destination = $uploadDir . $fileName;
-    
-    // Mover el archivo a la carpeta de destino
-    if (!move_uploaded_file($fileTmpName, $destination)) {
-        throw new Exception('Error al guardar el archivo');
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+        // Obtener información del archivo
+        $file = $_FILES['logo'];
+        $fileName = basename($file['name']);
+        $fileTmpName = $file['tmp_name'];
+        
+        // Ruta de destino (en /imagenes/ con el nombre original)
+        $uploadDir = __DIR__ . '/../imagenes/';
+        $destination = $uploadDir . $fileName;
+        
+        // Asegurar que la carpeta existe
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        // Mover el archivo a la carpeta de destino
+        if (!move_uploaded_file($fileTmpName, $destination)) {
+            throw new Exception('Error al guardar el archivo');
+        }
+        
+        // Ruta relativa para la base de datos
+        $rutaRelativa = '/imagenes/' . $fileName;
+    } else {
+        // Si no se envió un nuevo logo, mantener el existente
+        // Necesitarás obtener la ruta actual de la base de datos
+        $controlador = new ConfiguracionControlador();
+        $configActual = $controlador->obtenerDatos();
+        $rutaRelativa = $configActual['ruta_logo'] ?? null;
     }
-    
-    // Ruta relativa para la base de datos
-    $rutaRelativa = '/imagenes/' . $fileName;
     
     // Actualizar usando el controlador
     $controlador = new ConfiguracionControlador();
