@@ -611,3 +611,35 @@ input:-webkit-autofill:focus {
         font-size: 14px;
     }
 }
+
+/* Estilo del Contenedor (opcional, para centrar o dar padding) */
+.quienesSomos {
+    /* Si necesitas centrar el texto dentro del div */
+    text-align: center; 
+    margin: 20px 0;
+}
+
+/* Estilo para el Enlace Clickable */
+.quienesSomos a {
+    /* Asegurar que el enlace sea un bloque para que el padding funcione bien */
+    display: inline-block; 
+    
+    /* Diseño: */
+    background-color: #f8f9fa; /* Fondo gris claro (similar a tu datetime-display) */
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    
+    /* Tipografía: */
+    font-size: 16px;
+    font-weight: 600; /* Negrita */
+    color: var(--primary-color, #007bff); /* Color principal de tu tema, o azul por defecto */
+    text-decoration: none; /* Quita la línea de subrayado */
+    transition: background-color 0.3s ease; /* Transición suave al pasar el mouse */
+}
+
+/* Efecto Hover (al pasar el ratón) */
+.quienesSomos a:hover {
+    background-color: #e9ecef; /* Oscurece un poco el fondo */
+    text-decoration: underline; /* Muestra el subrayado al interactuar */
+}
