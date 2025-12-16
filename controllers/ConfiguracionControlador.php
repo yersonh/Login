@@ -12,7 +12,7 @@ class ConfiguracionControlador {
         $data = $this->modelo->obtenerConfiguracion();
         return $data ?: [];
     }
-    public function actualizarLogo(string $rutaLogo, string $entidad, string $nit, string $enlaceWebm): bool {
+    public function actualizarLogo(string $rutaLogo, string $entidad, string $nit, string $enlaceWeb): bool {
         return $this->modelo->actualizarLogoYDatos($rutaLogo, $entidad, $nit, $enlaceWeb);
     }
     public function actualizarDatos(string $version, string $tipo_licencia, string $valida_hasta, string $desarrollado_por, string $direccion, string $correo_contacto, string $telefono): bool {
