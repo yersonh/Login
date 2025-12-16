@@ -78,6 +78,7 @@ function cargarConfiguracion() {
             // Llenar formulario de Logo
             setValue('logoAltText', config.entidad);
             setValue('logoLink', config.enlace_web);
+            setValue('nit', config.nit);
 
             // Actualizar imagen del logo actual
             if (config.ruta_logo) {
@@ -98,11 +99,12 @@ function cargarConfiguracion() {
 // =======================================
 function actualizarConfiguracionLogo() {
     const entidad = document.getElementById('logoAltText').value.trim();
+    const nit= document.getElementById('nit').value.trim();
     const enlaceWeb = document.getElementById('logoLink').value.trim();
     const logoFile = document.getElementById('newLogo').files[0];
 
     // Validaciones
-    if (!entidad || !enlaceWeb) {
+    if (!entidad ||!nit||!enlaceWeb) {
         showError('La Entidad y el Enlace Web son campos obligatorios.');
         return;
     }
@@ -110,6 +112,7 @@ function actualizarConfiguracionLogo() {
     // Datos a enviar
     const datos = {
         entidad: entidad,
+        nit: nit,
         enlace_web: enlaceWeb,
         logoFile: logoFile || null
     };
@@ -137,6 +140,7 @@ function executeLogoUpdate(datos) {
     const formData = new FormData();
     formData.append('entidad', datos.entidad);
     formData.append('enlace_web', datos.enlace_web);
+    formData.append('nit', datos.nit);
     if (datos.logoFile) {
         formData.append('logo', datos.logoFile);
     }
