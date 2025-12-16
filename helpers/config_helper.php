@@ -96,7 +96,7 @@ class ConfigHelper {
         } elseif ($diasTotales === 1) {
             return '1 día restante';
         } else {
-            return $diasTotales . ' días restantes';
+            return $diasTotales . ' días';
         }
 
     } catch (Exception $e) {
