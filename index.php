@@ -17,6 +17,7 @@ use PHPMailer\PHPMailer\Exception;
 $database = new Database();
 $db = $database->conectar();
 $sesionControlador = new SesionControlador($db);
+$anio = date("Y");
 
 // Generar token CSRF si no existe
 if (empty($_SESSION['csrf_token'])) {
