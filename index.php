@@ -631,7 +631,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
         <!-- Información pegada al logo -->
         <div class="license-details">
             <p><strong>Entidad:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta')); ?></p>
-            <p><strong>NIT:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('NIT', '892000148-8')); ?></p>
+            <p><strong>NIT:</strong> <?php echo htmlspecialchars(ConfigHelper::obtener('nit', '892000148-8')); ?></p>
             <p><strong>Website:</strong> 
                 <a href="<?php echo htmlspecialchars(ConfigHelper::obtener('enlace_web', 'https://www.meta.gov.co')); ?>" 
                    target="_blank">
