@@ -116,6 +116,10 @@ try {
                     <span class="consecutivo-number"><?php echo $consecutivo; ?></span>
                 </div>
                 
+                <div class="datetime-display">
+                    <i class="fas fa-clock"></i> Ahora: 
+                    <?php echo date('d/m/Y h:i:s A'); ?>
+                </div>
                 
                 <!-- Sección 1: Datos Personales -->
                 <div class="form-section">
