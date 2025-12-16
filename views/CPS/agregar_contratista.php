@@ -112,7 +112,7 @@ try {
             
             <div class="form-container">
                 <div class="consecutivo-display">
-                    <strong>Contratista N°:</strong>
+                    <i class="fa-solid fa-user"></i> <strong>Contratista N°:</strong>
                     <span class="consecutivo-number"><?php echo $consecutivo; ?></span>
                 </div>
                 
