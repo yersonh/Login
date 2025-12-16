@@ -116,13 +116,9 @@ try {
                     <span class="consecutivo-number"><?php echo $consecutivo; ?></span>
                 </div>
                 
-                
                 <div class="datetime-display">
-                    <i class="fa-solid fa-calendar-days"></i> 
-                    <span id="fechaActual"></span> | 
-                    <i class="fa-solid fa-clock"></i> 
-                    <span id="horaActual"></span>
-            
+                    <i class="fas fa-clock"></i> Ahora: 
+                    <?php echo date('d/m/Y h:i:s A'); ?>
                 </div>
                 
                 <!-- Sección 1: Datos Personales -->

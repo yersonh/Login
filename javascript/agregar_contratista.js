@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         const fechaHora = now.toLocaleDateString('es-ES', options).replace(',', '');
         document.querySelector('.datetime-display').innerHTML = 
-            `<i class="fas fa-clock"></i> Fecha/Hora Actual: ${fechaHora}`;
+            `<i class="fas fa-clock"></i>: ${fechaHora}`;
     }
     
     setInterval(actualizarHora, 1000);
