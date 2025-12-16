@@ -122,6 +122,7 @@ function actualizarConfiguracionLogo() {
     const current = window.currentConfig;
 
     if (entidad !== current.entidad) changes.push({ field: 'Entidad', value: entidad });
+    if (nit !== current.nit) changes.push({ field: 'NIT', value: nit });
     if (enlaceWeb !== current.enlace_web) changes.push({ field: 'Web', value: enlaceWeb });
     if (logoFile) changes.push({ field: 'Logo', value: `Nuevo archivo: ${logoFile.name}` });
 
