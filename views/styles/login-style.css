@@ -238,6 +238,9 @@ body {
     margin-bottom: 5px;
     margin-top: 5px;
 }
+.sisgonTech small {
+    margin: 0;
+}
 
 .titulo-sgea {
     font-size: 1.8rem;
