@@ -78,7 +78,7 @@ function cargarConfiguracion() {
             // Llenar formulario de Logo
             setValue('logoAltText', config.entidad);
             setValue('logoLink', config.enlace_web);
-            setValue('nit', config.nit);
+            setValue('logoNit', config.nit);
 
             // Actualizar imagen del logo actual
             if (config.ruta_logo) {
@@ -99,7 +99,7 @@ function cargarConfiguracion() {
 // =======================================
 function actualizarConfiguracionLogo() {
     const entidad = document.getElementById('logoAltText').value.trim();
-    const nit= document.getElementById('nit').value.trim();
+    const nit= document.getElementById('logoNit').value.trim();
     const enlaceWeb = document.getElementById('logoLink').value.trim();
     const logoFile = document.getElementById('newLogo').files[0];
 
