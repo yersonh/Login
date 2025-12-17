@@ -102,7 +102,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <div class="service-name">Sitios Asignados</div>
+                    <div class="service-sider">Sitios Asignados</div>
                     <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
