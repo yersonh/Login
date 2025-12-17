@@ -287,8 +287,9 @@ if (!empty($configuracion['valida_hasta'])) {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre Municipio</th>
+                            <th>Municipio</th>
                             <th>Código DANE</th>
+                            <th>Departamento</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -296,7 +297,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     <tbody id="municipiosTable">
                         <!-- Datos cargados por JavaScript -->
                         <tr class="loading-row">
-                            <td colspan="5">Cargando municipios...</td>
+                            <td colspan="6">Cargando municipios...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -398,7 +399,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     
                     <div id="municipioFields" class="form-fields">
                         <div class="form-group">
-                            <label for="nombreMunicipio">Nombre del Municipio:</label>
+                            <label for="nombreMunicipio">Municipio:</label>
                             <input type="text" id="nombreMunicipio" class="form-control" 
                                    placeholder="Ej: Villavicencio" maxlength="100" required>
                         </div>
@@ -407,6 +408,14 @@ if (!empty($configuracion['valida_hasta'])) {
                             <input type="text" id="codigoDane" class="form-control" 
                                    placeholder="Ej: 50001" maxlength="10" required>
                         </div>
+
+                        <div class="form-group">
+                            <label for="departamentoMunicipio">Departamento:</label>
+                            <input type="text" id="departamentoMunicipio" class="form-control" 
+                                value="Meta">
+                            <small class="form-text">Departamento fijo (Meta)</small>
+                        </div>
+
                         <div class="form-group">
                             <label for="estadoMunicipio">Estado:</label>
                             <select id="estadoMunicipio" class="form-control" required>
