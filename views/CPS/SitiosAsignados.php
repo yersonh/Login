@@ -51,7 +51,7 @@
     
     <!-- Pequeña barra informativa -->
     <div class="barra-superior">
-        🇨🇴 Colombia | OpenStreetMap
+        Sitios Asignados - OpenStreetMap
     </div>
     
     <script>
