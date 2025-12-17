@@ -77,39 +77,6 @@
             
             console.log('Mapa de Colombia cargado');
             
-            // 3. Añadir marcadores en ciudades principales
-            var ciudades = [
-                {
-                    nombre: "Bogotá",
-                    lat: 4.6097,
-                    lng: -74.0817,
-                    desc: "Capital de Colombia"
-                },
-                {
-                    nombre: "Medellín",
-                    lat: 6.2442,
-                    lng: -75.5812,
-                    desc: "Ciudad de la eterna primavera"
-                },
-                {
-                    nombre: "Cali",
-                    lat: 3.4516,
-                    lng: -76.5320,
-                    desc: "Capital de la salsa"
-                },
-                {
-                    nombre: "Barranquilla",
-                    lat: 10.9639,
-                    lng: -74.7964,
-                    desc: "Puerta de oro de Colombia"
-                },
-                {
-                    nombre: "Cartagena",
-                    lat: 10.3910,
-                    lng: -75.4794,
-                    desc: "Ciudad amurallada"
-                }
-            ];
             
             // Añadir marcadores
             ciudades.forEach(function(ciudad) {
