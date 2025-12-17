@@ -417,7 +417,7 @@ if (!empty($configuracion['valida_hasta'])) {
                         </div>
 
                         <div class="form-group">
-                            <label for="estadoMunicipio">Estado:</label>
+                            <label for="estadoMunicipio">ESTADO:</label>
                             <select id="estadoMunicipio" class="form-control" required>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
