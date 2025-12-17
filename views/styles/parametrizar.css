@@ -142,22 +142,32 @@ body {
 }
 
 .back-button {
-    background-color: var(--gray-color);
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    transition: var(--transition);
+    gap: 10px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .back-button:hover {
-    background-color: #5a6268;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+.back-button i {
+    font-size: 18px;
 }
 
 /* ========== MENSAJES DE ALERTA ========== */
