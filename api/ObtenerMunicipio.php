@@ -26,6 +26,7 @@ try {
                 'id_municipio' => (int)$municipio['id_municipio'],
                 'nombre' => htmlspecialchars($municipio['nombre']),
                 'departamento' => htmlspecialchars($municipio['departamento'] ?? 'Meta'),
+                'codigo_dane' => htmlspecialchars($municipio['codigo_dane'] ?? ''),
                 'activo' => (bool)$municipio['activo'],
                 'estado' => $municipio['activo'] ? 'Activo' : 'Inactivo'
             ];

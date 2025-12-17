@@ -61,11 +61,13 @@ class MunicipioController {
             }
             
             $activo = isset($data['activo']) ? (bool)$data['activo'] : true;
+            $codigo_dane = $data['codigo_dane'] ?? null;
             
             $id = $this->model->crearMunicipio(
                 trim($data['nombre']),
                 trim($data['departamento']),
-                $activo
+                $activo,
+                $codigo_dane
             );
             
             if ($id) {
@@ -105,12 +107,14 @@ class MunicipioController {
             }
             
             $activo = isset($data['activo']) ? (bool)$data['activo'] : true;
+            $codigo_dane = $data['codigo_dane'] ?? null;
             
             $resultado = $this->model->actualizarMunicipio(
                 $id,
                 trim($data['nombre']),
                 trim($data['departamento']),
-                $activo
+                $activo,
+                $codigo_dane
             );
             
             if ($resultado) {

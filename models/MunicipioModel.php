@@ -9,7 +9,7 @@ class MunicipioModel {
     }
     
     public function obtenerTodosMunicipios() {
-        $sql = "SELECT id_municipio, nombre, departamento, activo 
+        $sql = "SELECT id_municipio, nombre, departamento, activo, codigo_dane 
                 FROM municipio 
                 ORDER BY nombre";
         
@@ -18,6 +18,7 @@ class MunicipioModel {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     
     public function obtenerMunicipiosActivos() {
         $sql = "SELECT id_municipio, nombre FROM municipio 
@@ -49,15 +50,16 @@ class MunicipioModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function crearMunicipio($nombre, $departamento, $activo) {
-        $sql = "INSERT INTO municipio (nombre, departamento, activo) 
-                VALUES (:nombre, :departamento, :activo) 
+    public function crearMunicipio($nombre, $departamento, $activo, $codigo_dane = null) {
+        $sql = "INSERT INTO municipio (nombre, departamento, activo, codigo_dane) 
+                VALUES (:nombre, :departamento, :activo, :codigo_dane) 
                 RETURNING id_municipio";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':nombre', $nombre);
         $stmt->bindParam(':departamento', $departamento);
         $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindParam(':codigo_dane', $codigo_dane);
         
         if ($stmt->execute()) {
             return $stmt->fetch(PDO::FETCH_ASSOC)['id_municipio'];
@@ -66,11 +68,12 @@ class MunicipioModel {
         return false;
     }
 
-    public function actualizarMunicipio($id_municipio, $nombre, $departamento, $activo) {
+    public function actualizarMunicipio($id_municipio, $nombre, $departamento, $activo, $codigo_dane = null) {
         $sql = "UPDATE municipio 
                 SET nombre = :nombre, 
                     departamento = :departamento, 
-                    activo = :activo
+                    activo = :activo,
+                    codigo_dane = :codigo_dane
                 WHERE id_municipio = :id_municipio";
         
         $stmt = $this->conn->prepare($sql);
@@ -78,10 +81,10 @@ class MunicipioModel {
         $stmt->bindParam(':nombre', $nombre);
         $stmt->bindParam(':departamento', $departamento);
         $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindParam(':codigo_dane', $codigo_dane);
         
         return $stmt->execute();
     }
-
     public function eliminarMunicipio($id_municipio) {
         $sql = "UPDATE municipio 
                 SET activo = false
