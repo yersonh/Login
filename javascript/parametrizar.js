@@ -1,12 +1,18 @@
+// =======================================
+// VARIABLES GLOBALES
+// =======================================
+let pendingAction = null; // Almacena la función a ejecutar tras confirmar en el modal
+let actionData = null;    // Almacena los datos para esa función
+window.currentConfig = {}; // Almacena el estado actual de la BD para comparar cambios
+
+// =======================================
+// INICIALIZACIÓN
+// =======================================
 document.addEventListener('DOMContentLoaded', function () {
-    // ==========================
-    // 1. INICIALIZACIÓN
-    // ==========================
-    cargarConfiguracion(); // Cargar datos al abrir la página
+    // 1. Cargar datos al abrir la página
+    cargarConfiguracion();
     
-    // ==========================
     // 2. EVENT LISTENERS (BOTONES Y ACCIONES)
-    // ==========================
     
     // --- Botón Guardar: Configuración del SISTEMA ---
     const saveConfigBtn = document.getElementById('saveConfigBtn');
@@ -42,17 +48,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Modal: Eventos de cierre y confirmación ---
     setupModalEvents();
+    
+    // 3. EVENT LISTENERS PARA MUNICIPIOS
+    
+    // --- Búsqueda de municipios ---
+    const searchMunicipioInput = document.getElementById('searchMunicipio');
+    if (searchMunicipioInput) {
+        searchMunicipioInput.addEventListener('input', function(e) {
+            buscarMunicipios(e.target.value);
+        });
+    }
+    
+    // --- Botón agregar municipio ---
+    const addMunicipioBtn = document.getElementById('addMunicipioBtn');
+    if (addMunicipioBtn) {
+        addMunicipioBtn.addEventListener('click', function() {
+            alert('Función de agregar municipio en desarrollo');
+        });
+    }
+    
+    // 4. CARGAR DATOS DINÁMICOS
+    
+    // Cargar municipios después de cargar la configuración
+    setTimeout(cargarMunicipios, 500);
 });
 
 // =======================================
-// VARIABLES GLOBALES
-// =======================================
-let pendingAction = null; // Almacena la función a ejecutar tras confirmar en el modal
-let actionData = null;    // Almacena los datos para esa función
-window.currentConfig = {}; // Almacena el estado actual de la BD para comparar cambios
-
-// =======================================
-// 3. CARGAR DATOS (READ)
+// 1. CARGAR DATOS DE CONFIGURACIÓN
 // =======================================
 function cargarConfiguracion() {
     fetch("../../api/parametrizacion_obtener.php")
@@ -95,17 +117,17 @@ function cargarConfiguracion() {
 }
 
 // =======================================
-// 4. LÓGICA DE ACTUALIZACIÓN DEL LOGO
+// 2. LÓGICA DE ACTUALIZACIÓN DEL LOGO
 // =======================================
 function actualizarConfiguracionLogo() {
     const entidad = document.getElementById('logoAltText').value.trim();
-    const nit= document.getElementById('logoNit').value.trim();
+    const nit = document.getElementById('logoNit').value.trim();
     const enlaceWeb = document.getElementById('logoLink').value.trim();
     const logoFile = document.getElementById('newLogo').files[0];
 
     // Validaciones
-    if (!entidad ||!nit||!enlaceWeb) {
-        showError('La Entidad y el Enlace Web son campos obligatorios.');
+    if (!entidad || !nit || !enlaceWeb) {
+        showError('La Entidad, NIT y el Enlace Web son campos obligatorios.');
         return;
     }
 
@@ -154,12 +176,8 @@ function executeLogoUpdate(datos) {
     .then(data => {
         if (data.success) {
             showSuccess(data.message);
-            
-            // Solo refrescar los datos - cargarConfiguracion() ya actualiza el logo
-            // No necesitamos data.new_logo_url porque no existe en la respuesta
-            
-            cleanupLogoForm(); // Limpiar input file y preview
-            cargarConfiguracion(); // Refrescar datos globales (línea 139)
+            cleanupLogoForm();
+            cargarConfiguracion();
         } else {
             showError(data.error);
         }
@@ -169,10 +187,9 @@ function executeLogoUpdate(datos) {
 }
 
 // =======================================
-// 5. LÓGICA DE ACTUALIZACIÓN DEL SISTEMA
+// 3. LÓGICA DE ACTUALIZACIÓN DEL SISTEMA
 // =======================================
 function actualizarConfiguracionSistema() {
-    // Recolectar datos
     const version_sistema = document.getElementById('version').value.trim();
     const tipo_licencia = document.getElementById('tipoLicencia').value.trim();
     const valida_hasta = document.getElementById('validaHasta').value;
@@ -190,13 +207,17 @@ function actualizarConfiguracionSistema() {
         correo_contacto: correo_contacto,
         telefono: telefono
     };
+    
     // Validación básica
-    if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto || !datos.telefono || !datos.direccion || !datos.valida_hasta || !datos.tipo_licencia) {
+    if (!datos.version_sistema || !datos.desarrollado_por || !datos.correo_contacto || 
+        !datos.telefono || !datos.direccion || !datos.valida_hasta || !datos.tipo_licencia) {
         showError('Complete los campos obligatorios.');
         return;
     }
+    
     const changes = [];
     const current = window.currentConfig;
+    
     if(version_sistema !== current.version_sistema) changes.push({ field: 'Versión del Sistema', value: version_sistema });
     if(tipo_licencia !== current.tipo_licencia) changes.push({ field: 'Tipo de Licencia', value: tipo_licencia });
     if(valida_hasta !== current.valida_hasta) changes.push({ field: 'Válida Hasta', value: valida_hasta });
@@ -236,20 +257,24 @@ function executeSystemUpdate(datos) {
 }
 
 // =======================================
-// 6. GESTIÓN DEL MODAL
+// 4. GESTIÓN DEL MODAL DE CONFIRMACIÓN
 // =======================================
 function setupModalEvents() {
     const modal = document.getElementById('confirmationModal');
     const confirmBtn = document.getElementById('confirmSaveBtn');
-    const cancelBtn = document.querySelector('.modal-actions .btn-secondary'); // Asumiendo clase
+    const cancelBtn = document.querySelector('.modal-actions .btn-secondary');
 
     if (!modal) return;
 
     // Click fuera cierra
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) closeModal(); 
+    });
     
     // ESC cierra
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') closeModal(); 
+    });
 
     // Botones
     if (confirmBtn) confirmBtn.addEventListener('click', executePendingAction);
@@ -257,13 +282,11 @@ function setupModalEvents() {
 }
 
 function showConfirmationModal(type, data, changes) {
-    // Configurar acción
     if (type === 'logo') pendingAction = executeLogoUpdate;
     else if (type === 'system') pendingAction = executeSystemUpdate;
     
     actionData = data;
 
-    // Llenar UI del Modal
     const changesList = document.getElementById('changesList');
     changesList.innerHTML = '';
     
@@ -289,7 +312,115 @@ function closeModal() {
 }
 
 // =======================================
-// 7. UTILIDADES Y AYUDAS UI
+// 5. LÓGICA PARA MUNICIPIOS
+// =======================================
+function cargarMunicipios() {
+    const tablaBody = document.getElementById('municipiosTable');
+    if (!tablaBody) return;
+    
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Cargando municipios...</td></tr>';
+    
+    fetch('../../api/ObtenerMunicipio.php')
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">${data.error || 'Error al cargar municipios'}</td></tr>`;
+                return;
+            }
+            
+            if (data.data.length === 0) {
+                tablaBody.innerHTML = '<tr><td colspan="6" class="empty-row">No hay municipios registrados</td></tr>';
+                return;
+            }
+            
+            // Generar filas de la tabla
+            tablaBody.innerHTML = '';
+            data.data.forEach(municipio => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${municipio.id_municipio}</td>
+                    <td>${municipio.nombre}</td>
+                    <td>${municipio.codigo_dane}</td>
+                    <td>${municipio.departamento}</td>
+                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.estado}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando municipios:', error);
+            tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error de conexión</td></tr>`;
+        });
+}
+
+function buscarMunicipios(termino) {
+    const tablaBody = document.getElementById('municipiosTable');
+    if (!tablaBody) return;
+    
+    if (!termino || termino.trim() === '') {
+        cargarMunicipios();
+        return;
+    }
+    
+    const filas = tablaBody.querySelectorAll('tr');
+    let resultados = 0;
+    
+    filas.forEach(fila => {
+        const celdas = fila.querySelectorAll('td');
+        if (celdas.length >= 2) {
+            const nombreMunicipio = celdas[1].textContent.toLowerCase();
+            const codigoDane = celdas[2].textContent;
+            
+            if (nombreMunicipio.includes(termino.toLowerCase()) || 
+                codigoDane.includes(termino)) {
+                fila.style.display = '';
+                resultados++;
+            } else {
+                fila.style.display = 'none';
+            }
+        }
+    });
+    
+    // Mostrar mensaje si no hay resultados
+    if (resultados === 0 && filas.length > 0) {
+        const mensajeAnterior = tablaBody.querySelector('.no-results-message');
+        if (mensajeAnterior) mensajeAnterior.remove();
+        
+        const mensajeFila = document.createElement('tr');
+        mensajeFila.classList.add('no-results-message');
+        mensajeFila.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+            No se encontraron municipios con "${termino}"
+        </td>`;
+        tablaBody.appendChild(mensajeFila);
+    }
+}
+
+function editarMunicipio(id) {
+    console.log('Editar municipio ID:', id);
+    alert('Función de editar en desarrollo. ID: ' + id);
+}
+
+function eliminarMunicipio(id) {
+    console.log('Eliminar municipio ID:', id);
+    if (!confirm('¿Está seguro de que desea eliminar este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).')) {
+        return;
+    }
+    alert('Función de eliminar en desarrollo. ID: ' + id);
+}
+
+// =======================================
+// 6. UTILIDADES Y AYUDAS UI
 // =======================================
 
 // Manejo de Input File y Preview
@@ -303,7 +434,7 @@ function handleFileSelection(e) {
             previewImage(file);
         } else {
             showError("Por favor seleccione un archivo de imagen válido.");
-            e.target.value = ''; // Reset
+            e.target.value = '';
             hideImagePreview();
         }
     } else {
@@ -315,12 +446,10 @@ function handleFileSelection(e) {
 function previewImage(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
-        document.getElementById('currentLogo').style.display = 'none'; // Ocultar actual
+        document.getElementById('currentLogo').style.display = 'none';
         
         let preview = document.getElementById('imagePreview');
         if (!preview) {
-            // Crear elemento si no existe en el DOM (Opcional, depende de tu HTML)
-            // Asumimos que existe o lo insertamos dinámicamente
             preview = document.createElement('img');
             preview.id = 'imagePreview';
             document.querySelector('.logo-preview').appendChild(preview);
@@ -345,28 +474,16 @@ function cleanupLogoForm() {
     hideImagePreview();
 }
 
-// Actualizar todas las imágenes del logo en la página
 function updateLogoImages(url) {
     if (!url) return;
     
     const timestamp = new Date().getTime();
-    
-    // ✅ Si ya viene con / al inicio (ej: /imagenes/logos/logo.jpg)
-    // solo agregamos timestamp
     let fullUrl = url + '?t=' + timestamp;
-    
-    console.log('Actualizando logo con ruta:', fullUrl);
     
     const mainLogo = document.getElementById('currentLogo');
     if (mainLogo) {
         mainLogo.src = fullUrl;
-        // Debug
-        mainLogo.onload = function() {
-            console.log('✅ Logo cargado correctamente:', fullUrl);
-        };
         mainLogo.onerror = function() {
-            console.error('❌ Error cargando logo:', fullUrl);
-            // Si falla, intentar sin la /
             if (url.startsWith('/')) {
                 mainLogo.src = url.substring(1) + '?t=' + timestamp;
             }
@@ -415,7 +532,7 @@ function showError(msg) {
     }
 }
 
-// Funciones placeholder para los botones de Restaurar (puedes implementarlas igual que executeLogoUpdate)
+// Funciones placeholder para los botones de Restaurar
 function restaurarLogoPredeterminado() {
     if(!confirm("¿Restaurar logo por defecto?")) return;
     // Fetch a parametrizacion_restaurar_logo.php...
