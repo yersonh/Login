@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMunicipioBtn = document.getElementById('addMunicipioBtn');
     if (addMunicipioBtn) {
         addMunicipioBtn.addEventListener('click', function() {
-            alert('Función de agregar municipio en desarrollo');
         });
     }
     
@@ -350,8 +349,8 @@ function cargarMunicipios() {
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Eliminar">
-                            <i class="fas fa-trash"></i> Eliminar
+                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Dar de baja">
+                            <i class="fas fa-trash"></i> Dar de baja
                         </button>
                     </td>
                 `;
