@@ -11,7 +11,7 @@ class MunicipioModel {
     public function obtenerTodosMunicipios() {
         $sql = "SELECT id_municipio, nombre, departamento, activo, codigo_dane 
                 FROM municipio 
-                ORDER BY nombre";
+                ORDER BY id_municipio ASC";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
