@@ -94,7 +94,7 @@ if (empty($nombreCompleto)) {
                     </div>
                     <div class="service-name">Consulta General</div>
                     <div class="service-desc">Búsqueda y consulta de información CPS</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">Disponible</div>
                 </div>
                 
                 <!-- Opción 3: Municipios asignados -->
@@ -102,7 +102,7 @@ if (empty($nombreCompleto)) {
                     <div class="service-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <div class="service-name">Municipios Asignados</div>
+                    <div class="service-name">Sitios Asignados</div>
                     <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
@@ -114,7 +114,7 @@ if (empty($nombreCompleto)) {
                     </div>
                     <div class="service-name">Reportes</div>
                     <div class="service-desc">Generación de reportes y estadísticas</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">Disponible</div>
                 </div>
             </div>
         </main>

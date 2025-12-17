@@ -201,6 +201,10 @@ body {
     background-color: rgba(40, 167, 69, 0.1);
     color: var(--accent-color);
 }
+.status-unavailable {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: var(--gray-color);
+}
 
 /* ========== EFECTO DE ONDA EN HOVER PARA TARJETAS ========== */
 .service-card::before {
