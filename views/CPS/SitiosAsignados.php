@@ -1,5 +1,5 @@
 <?php
-// SitiosAsignados.php - Mapa OSM centrado en Colombia
+// SitiosAsignados.php - Mapa OSM centrado en el Meta
 ?>
 
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sitios Asignados - Colombia</title>
+    <title>Sitios Asignados - Meta</title>
     
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -37,37 +37,66 @@
             left: 10px;
             z-index: 1000;
             background: white;
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-size: 12px;
+            font-size: 14px;
             color: #333;
+            font-weight: bold;
+        }
+        
+        /* Botón personalizado */
+        .btn-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-control:hover {
+            background: #f5f5f5;
         }
     </style>
 </head>
 <body>
-    <!-- Solo el mapa, sin títulos -->
+    <!-- Solo el mapa -->
     <div id="mapa"></div>
     
-    <!-- Pequeña barra informativa -->
+    <!-- Barra informativa -->
     <div class="barra-superior">
-        Sitios Asignados - OpenStreetMap
+        🗺️ Departamento del Meta - Colombia
     </div>
     
+    <!-- Botón para centrar en Villavicencio -->
+    <button class="btn-control" onclick="centrarVillavicencio()">
+        📍 Villavicencio
+    </button>
+    
     <script>
-        // JavaScript para mapa centrado en Colombia
+        // JavaScript para mapa centrado en el Meta
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof L === 'undefined') {
                 console.error('Leaflet no está cargado');
                 return;
             }
             
-            // Coordenadas de Colombia (centro del país)
-            const centroColombia = [4.5709, -74.2973]; // Cerca de Bogotá
-            const zoomInicial = 6; // Zoom para ver todo el país
+            // Coordenadas del Meta
+            const centroMeta = [3.9026, -73.0769]; // Centro aproximado del departamento
+            const villavicencio = [4.1420, -73.6266]; // Capital del Meta
+            const zoomInicial = 10; // Zoom para ver el departamento
             
-            // 1. Crear el mapa centrado en Colombia
-            var mapa = L.map('mapa').setView(centroColombia, zoomInicial);
+            // 1. Crear el mapa centrado en el Meta
+            var mapa = L.map('mapa').setView(villavicencio, zoomInicial);
             
             // 2. Añadir capa de OpenStreetMap
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -75,15 +104,65 @@
                 attribution: '&copy; OpenStreetMap'
             }).addTo(mapa);
             
-            console.log('Mapa de Colombia cargado');
+            console.log('Mapa del Meta cargado');
             
+            // 3. Añadir marcadores principales del Meta
+            var municipios = [
+                {
+                    nombre: "Villavicencio",
+                    lat: 4.1420,
+                    lng: -73.6266,
+                    desc: "Capital del departamento del Meta",
+                    tipo: "capital"
+                },
+                {
+                    nombre: "Acacías",
+                    lat: 3.9880,
+                    lng: -73.7582,
+                    desc: "Municipio del Meta",
+                    tipo: "municipio"
+                },
+                {
+                    nombre: "Granada",
+                    lat: 3.5431,
+                    lng: -73.7064,
+                    desc: "Municipio del Meta",
+                    tipo: "municipio"
+                },
+                {
+                    nombre: "Puerto López",
+                    lat: 4.0833,
+                    lng: -72.9667,
+                    desc: "Municipio del Meta - Puerto fluvial",
+                    tipo: "municipio"
+                },
+                {
+                    nombre: "Puerto Gaitán",
+                    lat: 4.3133,
+                    lng: -72.0825,
+                    desc: "Municipio del Meta",
+                    tipo: "municipio"
+                }
+            ];
             
-            // Añadir marcadores
-            ciudades.forEach(function(ciudad) {
-                var marcador = L.marker([ciudad.lat, ciudad.lng]).addTo(mapa);
+            // Crear marcadores
+            municipios.forEach(function(municipio) {
+                // Color diferente para la capital
+                var icono = L.divIcon({
+                    className: 'custom-marker',
+                    html: municipio.tipo === "capital" ? 
+                        '<div style="background:#e74c3c;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-weight:bold">V</div>' :
+                        '<div style="background:#3498db;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px">●</div>',
+                    iconSize: [25, 25],
+                    iconAnchor: [12, 25]
+                });
+                
+                var marcador = L.marker([municipio.lat, municipio.lng], {icon: icono}).addTo(mapa);
                 marcador.bindPopup(
-                    `<b>${ciudad.nombre}</b><br>${ciudad.desc}<br>
-                     <small>Lat: ${ciudad.lat.toFixed(4)}<br>Lng: ${ciudad.lng.toFixed(4)}</small>`
+                    `<b>${municipio.nombre}</b><br>
+                     ${municipio.desc}<br>
+                     <small>📌 Lat: ${municipio.lat.toFixed(4)}<br>
+                     📌 Lng: ${municipio.lng.toFixed(4)}</small>`
                 );
             });
             
@@ -92,28 +171,53 @@
                 L.popup()
                     .setLatLng(e.latlng)
                     .setContent(
-                        `<b>Coordenadas</b><br>
+                        `<b>📍 Ubicación seleccionada</b><br>
                          Latitud: ${e.latlng.lat.toFixed(6)}<br>
                          Longitud: ${e.latlng.lng.toFixed(6)}<br>
-                         <small>Haz doble clic para cerrar</small>`
+                         <small>Departamento del Meta, Colombia</small>`
                     )
                     .openOn(mapa);
             });
             
             // 5. Añadir controles básicos
             L.control.scale().addTo(mapa);
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(mapa);
             
-            // Opcional: Añadir botón para centrar en Colombia
-            var botonCentrar = L.control({position: 'topright'});
-            botonCentrar.onAdd = function() {
-                var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                div.innerHTML = '<button style="padding:5px;background:white;border:1px solid #ccc;cursor:pointer">📍 Centrar Colombia</button>';
-                div.onclick = function() {
-                    mapa.setView(centroColombia, zoomInicial);
-                };
-                return div;
+            // 6. Función para centrar en Villavicencio
+            window.centrarVillavicencio = function() {
+                mapa.setView(villavicencio, 13);
+                // Abrir popup de Villavicencio
+                setTimeout(function() {
+                    var layers = mapa._layers;
+                    for (var id in layers) {
+                        if (layers[id].getLatLng && 
+                            layers[id].getLatLng().lat === villavicencio[0] && 
+                            layers[id].getLatLng().lng === villavicencio[1]) {
+                            layers[id].openPopup();
+                            break;
+                        }
+                    }
+                }, 500);
             };
-            botonCentrar.addTo(mapa);
+            
+            // 7. Añadir polígono aproximado del Meta (opcional)
+            var polygon = L.polygon([
+                [4.5, -74.0],   // Noroeste
+                [4.5, -71.5],   // Noreste
+                [2.0, -71.5],   // Sureste
+                [2.0, -74.0],   // Suroeste
+                [4.5, -74.0]    // Cerrar polígono
+            ], {
+                color: 'blue',
+                weight: 2,
+                opacity: 0.5,
+                fillOpacity: 0.1,
+                fillColor: 'blue'
+            }).addTo(mapa);
+            
+            polygon.bindPopup("Área aproximada del Departamento del Meta");
         });
     </script>
 </body>
