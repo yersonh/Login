@@ -98,10 +98,10 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Opción 3: Municipios asignados -->
-                <div class="service-card" id="municipios-card">
+                <div class="service-card"  id="municipios-card" onclick ="window.location.href='SitiosAsignados.php'">
                     <div class="service-icon">
                         <i class="fas fa-map-marker-alt"></i>
-                    </div>
+                </div> 
                     <div class="service-name">Sitios Asignados</div>
                     <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
                     <div class="service-status status-available">Disponible</div>
