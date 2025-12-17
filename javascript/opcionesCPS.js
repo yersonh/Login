@@ -23,15 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function handleServiceClick(card) {
         const serviceName = card.querySelector('.service-name').textContent;
-        const serviceSider = card.querySelector('.service-sider').textContent;
         const statusElement = card.querySelector('.service-status');
 
         if (card === aomCard && statusElement.classList.contains('status-available')) {
             irAOM();
-            return;
-        }
-        if (serviceSider === 'Sitios Asignados' && statusElement.classList.contains('status-available')) {
-            window.location.href = 'SitiosAsignados.php';
             return;
         }
         if (statusElement.classList.contains('status-available')) {
