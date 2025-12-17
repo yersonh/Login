@@ -106,7 +106,7 @@ if (!empty($configuracion['valida_hasta'])) {
     <div class="page-title">
         <h1><i class="fas fa-sliders-h"></i> Panel de Parametrización</h1>
         <button class="back-button" onclick="window.location.href='../menuAdministrador.php'">
-            <i class="fas fa-arrow-left"></i> Volver
+            <i class="fas fa-arrow-left"></i> Volver al Menú
         </button>
     </div>
     
