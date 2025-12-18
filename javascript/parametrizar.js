@@ -63,12 +63,39 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMunicipioBtn = document.getElementById('addMunicipioBtn');
     if (addMunicipioBtn) {
         addMunicipioBtn.addEventListener('click', function() {
+            abrirModalMunicipio('agregar');
         });
     }
     
-    // 4. CARGAR DATOS DINÁMICOS
+    // --- Botón Guardar en Modal CRUD ---
+    const saveCrudBtn = document.getElementById('saveCrudBtn');
+    if (saveCrudBtn) {
+        saveCrudBtn.addEventListener('click', guardarMunicipio);
+    }
     
-    // Cargar municipios después de cargar la configuración
+    // --- Botón Cerrar Modal CRUD ---
+    const modalCloseBtn = document.querySelector('#crudModal .modal-close');
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeCrudModal);
+    }
+    
+    // --- Click fuera del modal para cerrar ---
+    const crudModal = document.getElementById('crudModal');
+    if (crudModal) {
+        crudModal.addEventListener('click', function(e) {
+            if (e.target === crudModal) closeCrudModal();
+        });
+    }
+    
+    // --- ESC para cerrar modal CRUD ---
+    document.addEventListener('keydown', function(e) {
+        const crudModal = document.getElementById('crudModal');
+        if (e.key === 'Escape' && crudModal && crudModal.style.display === 'flex') {
+            closeCrudModal();
+        }
+    });
+    
+    // 4. CARGAR DATOS DINÁMICOS
     setTimeout(cargarMunicipios, 500);
 });
 
@@ -319,7 +346,7 @@ function cargarMunicipios() {
     
     tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Cargando municipios...</td></tr>';
     
-    fetch('../../api/ObtenerMunicipio.php')
+    fetch('../../api/GestionMunicipio.php')
         .then(res => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return res.json();
@@ -330,7 +357,7 @@ function cargarMunicipios() {
                 return;
             }
             
-            if (data.data.length === 0) {
+            if (!data.data || data.data.length === 0) {
                 tablaBody.innerHTML = '<tr><td colspan="6" class="empty-row">No hay municipios registrados</td></tr>';
                 return;
             }
@@ -338,20 +365,34 @@ function cargarMunicipios() {
             // Generar filas de la tabla
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
+                // Determinar botón según estado
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+                
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
                     <td>${municipio.id_municipio}</td>
                     <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane}</td>
+                    <td>${municipio.codigo_dane || '--'}</td>
                     <td>${municipio.departamento}</td>
-                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.estado}</span></td>
+                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">
+                        ${municipio.activo ? 'Activo' : 'Inactivo'}
+                    </span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Dar de baja">
-                            <i class="fas fa-trash"></i> Dar de baja
-                        </button>
+                        ${botonEstado}
                     </td>
                 `;
                 tablaBody.appendChild(fila);
@@ -372,42 +413,58 @@ function buscarMunicipios(termino) {
         return;
     }
     
-    const filas = tablaBody.querySelectorAll('tr');
-    let resultados = 0;
+    // Mostrar estado de carga
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Buscando municipios...</td></tr>';
     
-    filas.forEach(fila => {
-        const celdas = fila.querySelectorAll('td');
-        if (celdas.length >= 2) {
-            const nombreMunicipio = celdas[1].textContent.toLowerCase();
-            const codigoDane = celdas[2].textContent;
-            
-            if (nombreMunicipio.includes(termino.toLowerCase()) || 
-                codigoDane.includes(termino)) {
-                fila.style.display = '';
-                resultados++;
-            } else {
-                fila.style.display = 'none';
+    fetch(`../../api/GestionMunicipio.php?buscar=${encodeURIComponent(termino)}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data.success || !data.data || data.data.length === 0) {
+                tablaBody.innerHTML = `<tr><td colspan="6" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
+                return;
             }
-        }
-    });
-    
-    // Mostrar mensaje si no hay resultados
-    if (resultados === 0 && filas.length > 0) {
-        const mensajeAnterior = tablaBody.querySelector('.no-results-message');
-        if (mensajeAnterior) mensajeAnterior.remove();
-        
-        const mensajeFila = document.createElement('tr');
-        mensajeFila.classList.add('no-results-message');
-        mensajeFila.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-            No se encontraron municipios con "${termino}"
-        </td>`;
-        tablaBody.appendChild(mensajeFila);
-    }
-}
-
-function editarMunicipio(id) {
-    console.log('Editar municipio ID:', id);
-    alert('Función de editar en desarrollo. ID: ' + id);
+            
+            // Mostrar resultados de búsqueda
+            tablaBody.innerHTML = '';
+            data.data.forEach(municipio => {
+                // Determinar botón según estado
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+                
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${municipio.id_municipio}</td>
+                    <td>${municipio.nombre}</td>
+                    <td>${municipio.codigo_dane || '--'}</td>
+                    <td>${municipio.departamento}</td>
+                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${botonEstado}
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error buscando municipios:', error);
+            tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error en la búsqueda</td></tr>`;
+        });
 }
 
 function cambiarEstadoMunicipio(id, activar) {
@@ -451,7 +508,149 @@ function cambiarEstadoMunicipio(id, activar) {
 }
 
 // =======================================
-// 6. UTILIDADES Y AYUDAS UI
+// 6. CRUD PARA MUNICIPIOS
+// =======================================
+
+// Abrir modal para agregar/editar municipio
+function abrirModalMunicipio(modo = 'agregar', id = null) {
+    const modal = document.getElementById('crudModal');
+    const titulo = document.getElementById('modalTitle');
+    const municipioFields = document.getElementById('municipioFields');
+    const recordId = document.getElementById('recordId');
+    const recordType = document.getElementById('recordType');
+    
+    // Ocultar otros formularios y mostrar solo el de municipios
+    document.querySelectorAll('.form-fields').forEach(field => {
+        field.style.display = 'none';
+        field.classList.remove('active');
+    });
+    
+    municipioFields.style.display = 'block';
+    municipioFields.classList.add('active');
+    
+    // Limpiar formulario
+    document.getElementById('nombreMunicipio').value = '';
+    document.getElementById('codigoDane').value = '';
+    document.getElementById('departamentoMunicipio').value = 'Meta';
+    document.getElementById('estadoMunicipio').value = '1';
+    
+    if (modo === 'agregar') {
+        titulo.textContent = 'Agregar Nuevo Municipio';
+        recordId.value = '';
+        recordType.value = 'municipio';
+    } else if (modo === 'editar' && id) {
+        titulo.textContent = 'Editar Municipio';
+        recordId.value = id;
+        recordType.value = 'municipio';
+        
+        // Cargar datos del municipio
+        cargarDatosMunicipio(id);
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function editarMunicipio(id) {
+    abrirModalMunicipio('editar', id);
+}
+
+function cargarDatosMunicipio(id) {
+    fetch(`../../api/GestionMunicipio.php?id=${id}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (data.success && data.data) {
+                const municipio = data.data;
+                document.getElementById('nombreMunicipio').value = municipio.nombre || '';
+                document.getElementById('codigoDane').value = municipio.codigo_dane || '';
+                document.getElementById('departamentoMunicipio').value = municipio.departamento || 'Meta';
+                document.getElementById('estadoMunicipio').value = municipio.activo ? '1' : '0';
+            } else {
+                showError(data.error || 'Error al cargar datos del municipio');
+                closeCrudModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Error de conexión al cargar municipio');
+            closeCrudModal();
+        });
+}
+
+function guardarMunicipio() {
+    const recordId = document.getElementById('recordId').value;
+    const recordType = document.getElementById('recordType').value;
+    const btn = document.getElementById('saveCrudBtn');
+    const originalText = btn.innerHTML;
+    
+    if (recordType !== 'municipio') return;
+    
+    // Obtener datos del formulario
+    const datos = {
+        nombre: document.getElementById('nombreMunicipio').value.trim(),
+        codigo_dane: document.getElementById('codigoDane').value.trim(),
+        departamento: document.getElementById('departamentoMunicipio').value.trim(),
+        activo: document.getElementById('estadoMunicipio').value === '1'
+    };
+    
+    // Validaciones
+    if (!datos.nombre) {
+        showError('El nombre del municipio es requerido');
+        return;
+    }
+    
+    if (!datos.departamento) {
+        showError('El departamento es requerido');
+        return;
+    }
+    
+    // Configurar petición
+    const url = '../../api/GestionMunicipio.php';
+    const metodo = recordId ? 'PUT' : 'POST';
+    const bodyData = recordId ? { ...datos, id: recordId } : datos;
+    
+    // Mostrar estado de carga
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    btn.disabled = true;
+    
+    fetch(url, {
+        method: metodo,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Municipio guardado exitosamente');
+            closeCrudModal();
+            cargarMunicipios(); // Recargar la tabla
+        } else {
+            showError(data.error || 'Error al guardar municipio');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Error de conexión al guardar municipio');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function closeCrudModal() {
+    document.getElementById('crudModal').style.display = 'none';
+}
+
+// =======================================
+// 7. UTILIDADES Y AYUDAS UI
 // =======================================
 
 // Manejo de Input File y Preview
@@ -573,297 +772,3 @@ function restaurarConfiguracionPredeterminada() {
     if(!confirm("¿Restaurar toda la configuración?")) return;
     // Fetch a parametrizacion_restaurar.php...
 }
-// =======================================
-// 7. CRUD COMPLETO PARA MUNICIPIOS
-// =======================================
-
-// Abrir modal para agregar/editar municipio
-function abrirModalMunicipio(modo = 'agregar', id = null) {
-    const modal = document.getElementById('crudModal');
-    const titulo = document.getElementById('modalTitle');
-    const municipioFields = document.getElementById('municipioFields');
-    const recordId = document.getElementById('recordId');
-    const recordType = document.getElementById('recordType');
-    
-    // Ocultar otros formularios y mostrar solo el de municipios
-    document.querySelectorAll('.form-fields').forEach(field => {
-        field.style.display = 'none';
-        field.classList.remove('active');
-    });
-    
-    municipioFields.style.display = 'block';
-    municipioFields.classList.add('active');
-    
-    // Limpiar formulario
-    document.getElementById('nombreMunicipio').value = '';
-    document.getElementById('codigoDane').value = '';
-    document.getElementById('departamentoMunicipio').value = 'Meta';
-    document.getElementById('estadoMunicipio').value = '1';
-    
-    if (modo === 'agregar') {
-        titulo.textContent = 'Agregar Nuevo Municipio';
-        recordId.value = '';
-        recordType.value = 'municipio';
-    } else if (modo === 'editar' && id) {
-        titulo.textContent = 'Editar Municipio';
-        recordId.value = id;
-        recordType.value = 'municipio';
-        
-        // Cargar datos del municipio
-        cargarDatosMunicipio(id);
-    }
-    
-    modal.style.display = 'flex';
-}
-
-// Cargar datos de municipio para editar
-function cargarDatosMunicipio(id) {
-    fetch(`../../api/GestionMunicipio.php?id=${id}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (data.success && data.data) {
-                const municipio = data.data;
-                document.getElementById('nombreMunicipio').value = municipio.nombre || '';
-                document.getElementById('codigoDane').value = municipio.codigo_dane || '';
-                document.getElementById('departamentoMunicipio').value = municipio.departamento || 'Meta';
-                document.getElementById('estadoMunicipio').value = municipio.activo ? '1' : '0';
-            } else {
-                showError(data.error || 'Error al cargar datos del municipio');
-                closeCrudModal();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Error de conexión al cargar municipio');
-            closeCrudModal();
-        });
-}
-
-// Guardar municipio (crear o actualizar)
-function guardarMunicipio() {
-    const recordId = document.getElementById('recordId').value;
-    const recordType = document.getElementById('recordType').value;
-    const btn = document.getElementById('saveCrudBtn');
-    const originalText = btn.innerHTML;
-    
-    if (recordType !== 'municipio') return;
-    
-    // Obtener datos del formulario
-    const datos = {
-        nombre: document.getElementById('nombreMunicipio').value.trim(),
-        codigo_dane: document.getElementById('codigoDane').value.trim(),
-        departamento: document.getElementById('departamentoMunicipio').value.trim(),
-        activo: document.getElementById('estadoMunicipio').value === '1'
-    };
-    
-    // Validaciones
-    if (!datos.nombre) {
-        showError('El nombre del municipio es requerido');
-        return;
-    }
-    
-    if (!datos.departamento) {
-        showError('El departamento es requerido');
-        return;
-    }
-    
-    // Configurar petición
-    const url = '../../api/GestionMunicipio.php';
-    const metodo = recordId ? 'PUT' : 'POST';
-    const bodyData = recordId ? { ...datos, id: recordId } : datos;
-    
-    // Mostrar estado de carga
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    btn.disabled = true;
-    
-    fetch(url, {
-        method: metodo,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bodyData)
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        if (data.success) {
-            showSuccess(data.message || 'Municipio guardado exitosamente');
-            closeCrudModal();
-            cargarMunicipios(); // Recargar la tabla
-        } else {
-            showError(data.error || 'Error al guardar municipio');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('Error de conexión al guardar municipio');
-    })
-    .finally(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    });
-}
-
-// Actualizar funciones editarMunicipio y eliminarMunicipio
-function editarMunicipio(id) {
-    abrirModalMunicipio('editar', id);
-}
-
-function eliminarMunicipio(id) {
-    if (!confirm('¿Está seguro de que desea eliminar este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).')) {
-        return;
-    }
-    
-    fetch(`../../api/GestionMunicipio.php?id=${id}`, {
-        method: 'DELETE'
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        if (data.success) {
-            showSuccess(data.message || 'Municipio eliminado exitosamente');
-            cargarMunicipios(); // Recargar la tabla
-        } else {
-            showError(data.error || 'Error al eliminar municipio');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('Error de conexión al eliminar municipio');
-    });
-}
-
-// Cerrar modal CRUD
-function closeCrudModal() {
-    document.getElementById('crudModal').style.display = 'none';
-}
-
-// Búsqueda mejorada usando el endpoint
-function buscarMunicipios(termino) {
-    const tablaBody = document.getElementById('municipiosTable');
-    if (!tablaBody) return;
-    
-    if (!termino || termino.trim() === '') {
-        cargarMunicipios();
-        return;
-    }
-    
-    // Mostrar estado de carga
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Buscando municipios...</td></tr>';
-    
-    fetch(`../../api/GestionMunicipio.php?buscar=${encodeURIComponent(termino)}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (!data.success || !data.data || data.data.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="6" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
-                return;
-            }
-            
-            // Mostrar resultados de búsqueda
-            tablaBody.innerHTML = '';
-            data.data.forEach(municipio => {
-                const fila = document.createElement('tr');
-                
-                // Determinar botón según estado
-                let botonEstado = '';
-                if (municipio.activo) {
-                    botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
-                        </button>`;
-                } else {
-                    botonEstado = `
-                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
-                        </button>`;
-                }
-                
-                fila.innerHTML = `
-                    <td>${municipio.id_municipio}</td>
-                    <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane}</td>
-                    <td>${municipio.departamento}</td>
-                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        ${botonEstado}
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
-        })
-        .catch(error => {
-            console.error('Error buscando municipios:', error);
-            tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error en la búsqueda</td></tr>`;
-        });
-}
-
-// =======================================
-// 8. ACTUALIZAR EVENT LISTENERS
-// =======================================
-
-// Actualiza tu DOMContentLoaded para incluir estos listeners (reemplaza la parte de municipios):
-document.addEventListener('DOMContentLoaded', function () {
-    // ... tu código existente hasta la línea 90 ...
-    
-    // 3. EVENT LISTENERS PARA MUNICIPIOS (ACTUALIZADO)
-    
-    // --- Búsqueda de municipios ---
-    const searchMunicipioInput = document.getElementById('searchMunicipio');
-    if (searchMunicipioInput) {
-        searchMunicipioInput.addEventListener('input', function(e) {
-            buscarMunicipios(e.target.value);
-        });
-    }
-    
-    // --- Botón agregar municipio ---
-    const addMunicipioBtn = document.getElementById('addMunicipioBtn');
-    if (addMunicipioBtn) {
-        addMunicipioBtn.addEventListener('click', function() {
-            abrirModalMunicipio('agregar');
-        });
-    }
-    
-    // --- Botón Guardar en Modal CRUD ---
-    const saveCrudBtn = document.getElementById('saveCrudBtn');
-    if (saveCrudBtn) {
-        saveCrudBtn.addEventListener('click', guardarMunicipio);
-    }
-    
-    // --- Botón Cerrar Modal CRUD ---
-    const modalCloseBtn = document.querySelector('#crudModal .modal-close');
-    if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', closeCrudModal);
-    }
-    
-    // --- Click fuera del modal para cerrar ---
-    const crudModal = document.getElementById('crudModal');
-    if (crudModal) {
-        crudModal.addEventListener('click', function(e) {
-            if (e.target === crudModal) closeCrudModal();
-        });
-    }
-    
-    // --- ESC para cerrar modal CRUD ---
-    document.addEventListener('keydown', function(e) {
-        const crudModal = document.getElementById('crudModal');
-        if (e.key === 'Escape' && crudModal && crudModal.style.display === 'flex') {
-            closeCrudModal();
-        }
-    });
-    
-    // 4. CARGAR DATOS DINÁMICOS
-    setTimeout(cargarMunicipios, 500);
-});
