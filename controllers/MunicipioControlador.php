@@ -133,27 +133,29 @@ class MunicipioController {
         }
     }
 
-    public function eliminar($id) {
+     public function cambiarEstado($id, $activo) {
         try {
             $municipio = $this->model->obtenerPorId($id);
             if (!$municipio) {
                 return ['success' => false, 'error' => 'Municipio no encontrado'];
             }
             
-            $resultado = $this->model->eliminarMunicipio($id);
+            // Usar el nuevo método del modelo
+            $resultado = $this->model->cambiarEstadoMunicipio($id, (bool)$activo);
             
             if ($resultado) {
+                $estadoTexto = $activo ? 'activado' : 'desactivado';
                 return [
                     'success' => true,
-                    'message' => 'Municipio eliminado exitosamente'
+                    'message' => "Municipio {$estadoTexto} exitosamente"
                 ];
             } else {
-                return ['success' => false, 'error' => 'Error al eliminar municipio'];
+                return ['success' => false, 'error' => 'Error al cambiar estado del municipio'];
             }
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Error al eliminar municipio: ' . $e->getMessage()
+                'error' => 'Error al cambiar estado: ' . $e->getMessage()
             ];
         }
     }

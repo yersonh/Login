@@ -410,12 +410,44 @@ function editarMunicipio(id) {
     alert('Función de editar en desarrollo. ID: ' + id);
 }
 
-function eliminarMunicipio(id) {
-    console.log('Eliminar municipio ID:', id);
-    if (!confirm('¿Está seguro de que desea eliminar este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).')) {
+function cambiarEstadoMunicipio(id, activar) {
+    const accion = activar ? 'activar' : 'desactivar';
+    const mensaje = activar ? 
+        `¿Está seguro de que desea ACTIVAR este municipio?\n\nEl municipio volverá a estar disponible en el sistema.` :
+        `¿Está seguro de que desea DESACTIVAR este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).`;
+    
+    if (!confirm(mensaje)) {
         return;
     }
-    alert('Función de eliminar en desarrollo. ID: ' + id);
+    
+    // Datos a enviar
+    const datos = {
+        activo: activar
+    };
+    
+    fetch(`../../api/GestionMunicipio.php?id=${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'cambiarEstado', activo: activar })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || `Municipio ${accion}do exitosamente`);
+            cargarMunicipios(); // Recargar la tabla para actualizar botones
+        } else {
+            showError(data.error || `Error al ${accion} municipio`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError(`Error de conexión al ${accion} municipio`);
+    });
 }
 
 // =======================================
@@ -741,19 +773,32 @@ function buscarMunicipios(termino) {
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
                 const fila = document.createElement('tr');
+                
+                // Determinar botón según estado
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+                
                 fila.innerHTML = `
                     <td>${municipio.id_municipio}</td>
                     <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane || '--'}</td>
+                    <td>${municipio.codigo_dane}</td>
                     <td>${municipio.departamento}</td>
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Eliminar">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
+                        ${botonEstado}
                     </td>
                 `;
                 tablaBody.appendChild(fila);

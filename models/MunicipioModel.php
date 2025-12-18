@@ -85,13 +85,14 @@ class MunicipioModel {
         
         return $stmt->execute();
     }
-    public function eliminarMunicipio($id_municipio) {
+    public function cambiarEstadoMunicipio($id_municipio, $activo) {
         $sql = "UPDATE municipio 
-                SET activo = false
+                SET activo = :activo
                 WHERE id_municipio = :id_municipio";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id_municipio', $id_municipio, PDO::PARAM_INT);
+        $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
         
         return $stmt->execute();
     }
