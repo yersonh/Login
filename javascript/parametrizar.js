@@ -420,7 +420,7 @@ function mostrarConfirmacionEstado(id, activar, nombre, codigoDane, departamento
     const accion = activar ? 'activar' : 'desactivar';
     const mensaje = activar ? 
         '¿Está seguro de que desea ACTIVAR este municipio?<br><br>El municipio volverá a estar disponible en el sistema.' :
-        '¿Está seguro de que desea DESACTIVAR este municipio?<br><br>Nota: Se realizará un borrado lógico (cambiará a estado inactivo).';
+        '¿Está seguro de que desea DESACTIVAR este municipio?<br>';
     
     // Actualizar mensaje del modal
     document.getElementById('estadoMensaje').innerHTML = mensaje;
