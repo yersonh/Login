@@ -519,6 +519,37 @@ if (!empty($configuracion['valida_hasta'])) {
                 </div>
             </div>
         </div>
+        <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR MUNICIPIOS -->
+        <div id="confirmEstadoModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-question-circle"></i> Confirmar Cambio de Estado</h3>
+                    <button type="button" class="modal-close" onclick="closeEstadoModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span>Señor(ar) </span>
+                    <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombre">
+                        <?php echo htmlspecialchars($nombreCompleto); ?>
+                    </strong>
+                    <span>, </span>
+                    <p id="estadoMensaje">¿Está seguro de cambiar el estado de este municipio?</p>
+                    <div class="modal-details">
+                        <h4>Detalles del municipio:</h4>
+                        <ul id="municipioDetails"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEstadoModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirmEstadoBtn">
+                        <i class="fas fa-check"></i> Sí, Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- Footer -->
          <footer class="app-footer">
     <div class="footer-center">

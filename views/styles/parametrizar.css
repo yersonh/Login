@@ -1702,3 +1702,45 @@ input[readonly].form-control {
         justify-content: center;
     }
 }
+/* Modal de confirmación de estado */
+#confirmEstadoModal .modal-details {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+#confirmEstadoModal .modal-details h4 {
+    margin-top: 0;
+    color: #495057;
+    font-size: 16px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+#confirmEstadoModal .modal-details ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+#confirmEstadoModal .modal-details li {
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+#confirmEstadoModal .modal-details li:last-child {
+    border-bottom: none;
+}
+
+#confirmEstadoModal .modal-details strong {
+    color: #495057;
+    min-width: 120px;
+    display: inline-block;
+}
+
+#estadoMensaje {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 15px 0;
+}
