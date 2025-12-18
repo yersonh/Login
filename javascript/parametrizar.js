@@ -5,6 +5,10 @@ let pendingAction = null; // Almacena la función a ejecutar tras confirmar en e
 let actionData = null;    // Almacena los datos para esa función
 window.currentConfig = {}; // Almacena el estado actual de la BD para comparar cambios
 
+// Variables para el estado del municipio
+let municipioEstadoId = null;
+let municipioEstadoAction = null;
+
 // =======================================
 // INICIALIZACIÓN
 // =======================================
@@ -49,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Modal: Eventos de cierre y confirmación ---
     setupModalEvents();
+    setupEstadoModalEvents();
     
     // 3. EVENT LISTENERS PARA MUNICIPIOS
     
@@ -372,12 +377,12 @@ function cargarMunicipios() {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Desactivar">
                             <i class="fas fa-ban"></i> Desactivar
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Activar">
                             <i class="fas fa-check-circle"></i> Activar
                         </button>`;
                 }
@@ -405,26 +410,48 @@ function cargarMunicipios() {
 }
 
 // =======================================
-// 6. FUNCIÓN PARA CAMBIAR ESTADO DE MUNICIPIOS
+// 6. FUNCIÓN PARA CAMBIAR ESTADO DE MUNICIPIOS (CON MODAL)
 // =======================================
-function cambiarEstadoMunicipio(id, activar) {
+function mostrarConfirmacionEstado(id, activar, nombre, codigoDane, departamento) {
+    // Guardar datos para usar después
+    municipioEstadoId = id;
+    municipioEstadoAction = activar;
+    
     const accion = activar ? 'activar' : 'desactivar';
     const mensaje = activar ? 
-        `¿Está seguro de que desea ACTIVAR este municipio?\n\nEl municipio volverá a estar disponible en el sistema.` :
-        `¿Está seguro de que desea DESACTIVAR este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).`;
+        '¿Está seguro de que desea ACTIVAR este municipio?<br><br>El municipio volverá a estar disponible en el sistema.' :
+        '¿Está seguro de que desea DESACTIVAR este municipio?<br><br>Nota: Se realizará un borrado lógico (cambiará a estado inactivo).';
     
-    if (!confirm(mensaje)) {
+    // Actualizar mensaje del modal
+    document.getElementById('estadoMensaje').innerHTML = mensaje;
+    
+    // Actualizar detalles del municipio
+    const detailsList = document.getElementById('municipioDetails');
+    detailsList.innerHTML = `
+        <li><strong>Municipio:</strong> ${nombre}</li>
+        <li><strong>Código DANE:</strong> ${codigoDane || '--'}</li>
+        <li><strong>Departamento:</strong> ${departamento}</li>
+        <li><strong>Estado nuevo:</strong> <span class="${activar ? 'status-active' : 'status-inactive'}">${activar ? 'Activo' : 'Inactivo'}</span></li>
+    `;
+    
+    // Mostrar modal
+    document.getElementById('confirmEstadoModal').style.display = 'flex';
+}
+
+function ejecutarCambioEstado() {
+    if (!municipioEstadoId || municipioEstadoAction === null) {
+        showError('No se pudo completar la acción');
         return;
     }
     
-    // Datos a enviar usando PATCH (formato correcto según endpoint)
+    const accion = municipioEstadoAction ? 'activar' : 'desactivar';
     const datos = {
-        id: id,
-        activo: activar
+        id: municipioEstadoId,
+        activo: municipioEstadoAction
     };
     
     fetch(`../../api/GestionMunicipio.php`, {
-        method: 'PATCH',  // ✅ Usando PATCH como definiste en el endpoint
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -445,7 +472,39 @@ function cambiarEstadoMunicipio(id, activar) {
     .catch(error => {
         console.error('Error:', error);
         showError(`Error de conexión al ${accion} municipio`);
+    })
+    .finally(() => {
+        closeEstadoModal();
     });
+}
+
+function closeEstadoModal() {
+    document.getElementById('confirmEstadoModal').style.display = 'none';
+    municipioEstadoId = null;
+    municipioEstadoAction = null;
+}
+
+// Configurar eventos del modal de estado
+function setupEstadoModalEvents() {
+    const modal = document.getElementById('confirmEstadoModal');
+    const confirmBtn = document.getElementById('confirmEstadoBtn');
+    
+    if (!modal) return;
+
+    // Click fuera cierra
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) closeEstadoModal(); 
+    });
+    
+    // ESC cierra
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeEstadoModal();
+        }
+    });
+
+    // Botón confirmar
+    if (confirmBtn) confirmBtn.addEventListener('click', ejecutarCambioEstado);
 }
 
 // =======================================
@@ -744,12 +803,12 @@ function buscarMunicipios(termino) {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Desactivar">
                             <i class="fas fa-ban"></i> Desactivar
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Activar">
                             <i class="fas fa-check-circle"></i> Activar
                         </button>`;
                 }
