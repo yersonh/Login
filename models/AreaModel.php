@@ -75,8 +75,13 @@ class AreaModel {
                 WHERE id_area = :id_area";
         
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_area', $id_area);
-        $stmt->bindParam(':activo', $activo);
+        
+        // Convertir a booleano explícitamente
+        $activo_bool = filter_var($activo, FILTER_VALIDATE_BOOLEAN);
+        
+        // Usar PDO::PARAM_BOOL para especificar el tipo de dato
+        $stmt->bindParam(':id_area', $id_area, PDO::PARAM_INT);
+        $stmt->bindParam(':activo', $activo_bool, PDO::PARAM_BOOL);
         
         return $stmt->execute();
     }

@@ -135,7 +135,6 @@ function manejarPUT($areaController) {
 }
 
 function manejarPATCH($areaController) {
-    // Cambiar estado de área
     $data = json_decode(file_get_contents('php://input'), true);
     
     // Validaciones básicas
@@ -156,6 +155,9 @@ function manejarPATCH($areaController) {
         ]);
         return;
     }
+    
+    // Convertir activo a booleano
+    $data['activo'] = filter_var($data['activo'], FILTER_VALIDATE_BOOLEAN);
     
     $result = $areaController->cambiarEstado($data);
     
