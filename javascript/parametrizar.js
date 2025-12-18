@@ -1,17 +1,13 @@
 // =======================================
 // VARIABLES GLOBALES
 // =======================================
-let pendingAction = null;
-let actionData = null;
-window.currentConfig = {};
+let pendingAction = null; // Almacena la función a ejecutar tras confirmar en el modal
+let actionData = null;    // Almacena los datos para esa función
+window.currentConfig = {}; // Almacena el estado actual de la BD para comparar cambios
 
 // Variables para el estado del municipio
 let municipioEstadoId = null;
 let municipioEstadoAction = null;
-
-// Variables para el estado del área
-let areaEstadoId = null;
-let areaEstadoAction = null;
 
 // =======================================
 // INICIALIZACIÓN
@@ -58,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Modal: Eventos de cierre y confirmación ---
     setupModalEvents();
     setupEstadoModalEvents();
-    setupEstadoAreaModalEvents();
     
     // 3. EVENT LISTENERS PARA MUNICIPIOS
     
@@ -78,30 +73,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // 4. EVENT LISTENERS PARA ÁREAS
-    
-    // --- Búsqueda de áreas ---
-    const searchAreaInput = document.getElementById('searchArea');
-    if (searchAreaInput) {
-        searchAreaInput.addEventListener('input', function(e) {
-            buscarAreas(e.target.value);
-        });
-    }
-    
-    // --- Botón agregar área ---
-    const addAreaBtn = document.getElementById('addAreaBtn');
-    if (addAreaBtn) {
-        addAreaBtn.addEventListener('click', function() {
-            abrirModalArea('agregar');
-        });
-    }
-    
-    // 5. EVENT LISTENERS GENERALES
-    
     // --- Botón Guardar en Modal CRUD ---
     const saveCrudBtn = document.getElementById('saveCrudBtn');
     if (saveCrudBtn) {
-        saveCrudBtn.addEventListener('click', guardarCrud);
+        saveCrudBtn.addEventListener('click', guardarMunicipio);
     }
     
     // --- Botón Cerrar Modal CRUD ---
@@ -126,11 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
-    // 6. CARGAR DATOS DINÁMICOS
-    setTimeout(() => {
-        cargarMunicipios();
-        cargarAreas();
-    }, 500);
+    // 4. CARGAR DATOS DINÁMICOS
+    setTimeout(cargarMunicipios, 500);
 });
 
 // =======================================
@@ -535,554 +507,7 @@ function setupEstadoModalEvents() {
 }
 
 // =======================================
-// 7. FUNCIONES PARA GESTIÓN DE ÁREAS
-// =======================================
-
-function cargarAreas() {
-    const tablaBody = document.getElementById('areasTable');
-    if (!tablaBody) return;
-    
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Cargando áreas...</td></tr>';
-    
-    fetch('../../api/areas.php')
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (!data.success) {
-                tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">${data.error || 'Error al cargar áreas'}</td></tr>`;
-                return;
-            }
-            
-            if (data.data.length === 0) {
-                tablaBody.innerHTML = '<tr><td colspan="5" class="empty-row">No hay áreas registradas</td></tr>';
-                return;
-            }
-            
-            // Generar filas de la tabla
-            tablaBody.innerHTML = '';
-            data.data.forEach(area => {
-                const fila = document.createElement('tr');
-                
-                // Determinar botón según estado
-                let botonEstado = '';
-                if (area.activo) {
-                    botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, false, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
-                        </button>`;
-                } else {
-                    botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, true, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
-                        </button>`;
-                }
-                
-                // Truncar descripción si es muy larga
-                const descripcionCorta = area.descripcion && area.descripcion.length > 50 ? 
-                    area.descripcion.substring(0, 50) + '...' : 
-                    (area.descripcion || '');
-                
-                fila.innerHTML = `
-                    <td>${area.nombre}</td>
-                    <td>${area.codigo_area}</td>
-                    <td title="${area.descripcion || ''}">${descripcionCorta}</td>
-                    <td><span class="status-badge ${area.activo ? 'status-active' : 'status-inactive'}">${area.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editarArea(${area.id_area})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        ${botonEstado}
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
-        })
-        .catch(error => {
-            console.error('Error cargando áreas:', error);
-            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error de conexión</td></tr>`;
-        });
-}
-
-function buscarAreas(termino) {
-    const tablaBody = document.getElementById('areasTable');
-    if (!tablaBody) return;
-    
-    if (!termino || termino.trim() === '') {
-        cargarAreas();
-        return;
-    }
-    
-    // Mostrar estado de carga
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando áreas...</td></tr>';
-    
-    // Por ahora usaremos filtrado en el cliente
-    fetch('../../api/areas.php')
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (!data.success || !data.data || data.data.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron áreas</td></tr>`;
-                return;
-            }
-            
-            // Filtrar áreas en el cliente
-            const terminoLower = termino.toLowerCase();
-            const areasFiltradas = data.data.filter(area => 
-                area.nombre.toLowerCase().includes(terminoLower) ||
-                area.codigo_area.toLowerCase().includes(terminoLower) ||
-                (area.descripcion && area.descripcion.toLowerCase().includes(terminoLower))
-            );
-            
-            if (areasFiltradas.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron áreas con "${termino}"</td></tr>`;
-                return;
-            }
-            
-            // Mostrar resultados filtrados
-            tablaBody.innerHTML = '';
-            areasFiltradas.forEach(area => {
-                const fila = document.createElement('tr');
-                let botonEstado = '';
-                if (area.activo) {
-                    botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, false, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
-                        </button>`;
-                } else {
-                    botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, true, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
-                        </button>`;
-                }
-
-                const descripcionCorta = area.descripcion && area.descripcion.length > 50 ? 
-                    area.descripcion.substring(0, 50) + '...' : 
-                    (area.descripcion || '');
-
-                fila.innerHTML = `
-                    <td>${area.nombre}</td>
-                    <td>${area.codigo_area}</td>
-                    <td title="${area.descripcion || ''}">${descripcionCorta}</td>
-                    <td><span class="status-badge ${area.activo ? 'status-active' : 'status-inactive'}">${area.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editarArea(${area.id_area})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        ${botonEstado}
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
-        })
-        .catch(error => {
-            console.error('Error buscando áreas:', error);
-            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
-        });
-}
-
-// =======================================
-// 8. MODALES Y FUNCIONES PARA ÁREAS
-// =======================================
-
-// Abrir modal para agregar/editar área
-function abrirModalArea(modo = 'agregar', id = null) {
-    const modal = document.getElementById('crudModal');
-    const titulo = document.getElementById('modalTitle');
-    const areaFields = document.getElementById('areaFields');
-    const recordId = document.getElementById('recordId');
-    const recordType = document.getElementById('recordType');
-    
-    // Ocultar otros formularios y mostrar solo el de áreas
-    document.querySelectorAll('.form-fields').forEach(field => {
-        field.style.display = 'none';
-        field.classList.remove('active');
-    });
-    
-    areaFields.style.display = 'block';
-    areaFields.classList.add('active');
-    
-    // Limpiar formulario
-    document.getElementById('nombreArea').value = '';
-    document.getElementById('codigoArea').value = '';
-    document.getElementById('descripcionArea').value = '';
-    document.getElementById('estadoArea').value = '1';
-    
-    if (modo === 'agregar') {
-        titulo.textContent = 'Agregar Nueva Área';
-        recordId.value = '';
-        recordType.value = 'area';
-    } else if (modo === 'editar' && id) {
-        titulo.textContent = 'Editar Área';
-        recordId.value = id;
-        recordType.value = 'area';
-        
-        // Cargar datos del área
-        cargarDatosArea(id);
-    }
-    
-    modal.style.display = 'flex';
-}
-
-// Cargar datos de área para editar
-function cargarDatosArea(id) {
-    fetch(`../../api/areas.php?id=${id}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (data.success && data.data) {
-                const area = data.data;
-                document.getElementById('nombreArea').value = area.nombre || '';
-                document.getElementById('codigoArea').value = area.codigo_area || '';
-                document.getElementById('descripcionArea').value = area.descripcion || '';
-                document.getElementById('estadoArea').value = area.activo ? '1' : '0';
-            } else {
-                showError(data.error || 'Error al cargar datos del área');
-                closeCrudModal();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Error de conexión al cargar área');
-            closeCrudModal();
-        });
-}
-
-// Función para mostrar confirmación de cambio de estado de área
-function mostrarConfirmacionEstadoArea(id, activar, nombre, codigo) {
-    // Guardar datos para usar después
-    areaEstadoId = id;
-    areaEstadoAction = activar;
-    
-    const accion = activar ? 'activar' : 'desactivar';
-    const mensaje = activar ? 
-        '¿Está seguro de que desea ACTIVAR esta área?<br><br>El área volverá a estar disponible en el sistema.' :
-        '¿Está seguro de que desea DESACTIVAR esta área?<br><br>Nota: Se realizará un borrado lógico (cambiará a estado inactivo).';
-    
-    // Actualizar mensaje del modal
-    document.getElementById('estadoAreaMensaje').innerHTML = mensaje;
-    
-    // Actualizar detalles del área
-    const detailsList = document.getElementById('areaDetails');
-    detailsList.innerHTML = `
-        <li><strong>Área:</strong> ${nombre}</li>
-        <li><strong>Código:</strong> ${codigo || '--'}</li>
-        <li><strong>Estado nuevo:</strong> <span class="${activar ? 'status-active' : 'status-inactive'}">${activar ? 'Activo' : 'Inactivo'}</span></li>
-    `;
-    
-    // Mostrar modal
-    document.getElementById('confirmEstadoAreaModal').style.display = 'flex';
-}
-
-// Ejecutar cambio de estado de área
-function ejecutarCambioEstadoArea() {
-    if (!areaEstadoId || areaEstadoAction === null) {
-        showError('No se pudo completar la acción');
-        return;
-    }
-    
-    const accion = areaEstadoAction ? 'activar' : 'desactivar';
-    // TODO: Cambiar a endpoint real cuando lo creemos
-    console.log(`Cambiando estado del área ${areaEstadoId} a ${areaEstadoAction}`);
-    
-    // Por ahora solo recargamos la tabla y mostramos mensaje de simulación
-    showSuccess(`Área ${accion}da exitosamente (simulación)`);
-    cargarAreas(); // Recargar la tabla
-    closeEstadoAreaModal();
-}
-
-// Cerrar modal de estado de área
-function closeEstadoAreaModal() {
-    document.getElementById('confirmEstadoAreaModal').style.display = 'none';
-    areaEstadoId = null;
-    areaEstadoAction = null;
-}
-
-// Configurar eventos del modal de estado de área
-function setupEstadoAreaModalEvents() {
-    const modal = document.getElementById('confirmEstadoAreaModal');
-    const confirmBtn = document.getElementById('confirmEstadoAreaBtn');
-    
-    if (!modal) return;
-
-    // Click fuera cierra
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) closeEstadoAreaModal(); 
-    });
-    
-    // ESC cierra
-    document.addEventListener('keydown', (e) => { 
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            closeEstadoAreaModal();
-        }
-    });
-
-    // Botón confirmar
-    if (confirmBtn) confirmBtn.addEventListener('click', ejecutarCambioEstadoArea);
-}
-
-// =======================================
-// 9. FUNCIONES CRUD UNIFICADAS
-// =======================================
-
-// Función unificada para guardar (municipios y áreas)
-function guardarCrud() {
-    const recordId = document.getElementById('recordId').value;
-    const recordType = document.getElementById('recordType').value;
-    const btn = document.getElementById('saveCrudBtn');
-    const originalText = btn.innerHTML;
-    
-    if (recordType === 'municipio') {
-        guardarMunicipio(recordId, btn, originalText);
-    } else if (recordType === 'area') {
-        guardarArea(recordId, btn, originalText);
-    }
-}
-
-// Función específica para guardar área
-function guardarArea(recordId, btn, originalText) {
-    // Obtener datos del formulario
-    const datos = {
-        nombre: document.getElementById('nombreArea').value.trim(),
-        codigo_area: document.getElementById('codigoArea').value.trim(),
-        descripcion: document.getElementById('descripcionArea').value.trim(),
-        activo: document.getElementById('estadoArea').value === '1'
-    };
-    
-    // Validaciones
-    if (!datos.nombre) {
-        showError('El nombre del área es requerido');
-        return;
-    }
-    
-    if (!datos.codigo_area) {
-        showError('El código del área es requerido');
-        return;
-    }
-    
-    // TODO: Configurar petición real cuando creemos el endpoint
-    console.log('Guardando área:', datos);
-    
-    // Simulación por ahora
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    btn.disabled = true;
-    
-    setTimeout(() => {
-        showSuccess('Área guardada exitosamente (simulación)');
-        closeCrudModal();
-        cargarAreas(); // Recargar la tabla
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }, 1000);
-}
-
-function editarArea(id) {
-    abrirModalArea('editar', id);
-}
-
-// =======================================
-// 10. CRUD COMPLETO PARA MUNICIPIOS
-// =======================================
-
-// Abrir modal para agregar/editar municipio
-function abrirModalMunicipio(modo = 'agregar', id = null) {
-    const modal = document.getElementById('crudModal');
-    const titulo = document.getElementById('modalTitle');
-    const municipioFields = document.getElementById('municipioFields');
-    const recordId = document.getElementById('recordId');
-    const recordType = document.getElementById('recordType');
-    
-    // Ocultar otros formularios y mostrar solo el de municipios
-    document.querySelectorAll('.form-fields').forEach(field => {
-        field.style.display = 'none';
-        field.classList.remove('active');
-    });
-    
-    municipioFields.style.display = 'block';
-    municipioFields.classList.add('active');
-    
-    // Limpiar formulario
-    document.getElementById('nombreMunicipio').value = '';
-    document.getElementById('codigoDane').value = '';
-    document.getElementById('departamentoMunicipio').value = 'Meta';
-    
-    if (modo === 'agregar') {
-        titulo.textContent = 'Agregar Nuevo Municipio';
-        recordId.value = '';
-        recordType.value = 'municipio';
-    } else if (modo === 'editar' && id) {
-        titulo.textContent = 'Editar Municipio';
-        recordId.value = id;
-        recordType.value = 'municipio';
-        
-        // Cargar datos del municipio
-        cargarDatosMunicipio(id);
-    }
-    
-    modal.style.display = 'flex';
-}
-
-// Cargar datos de municipio para editar
-function cargarDatosMunicipio(id) {
-    fetch(`../../api/GestionMunicipio.php?id=${id}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (data.success && data.data) {
-                const municipio = data.data;
-                document.getElementById('nombreMunicipio').value = municipio.nombre || '';
-                document.getElementById('codigoDane').value = municipio.codigo_dane || '';
-                document.getElementById('departamentoMunicipio').value = municipio.departamento || 'Meta';
-            } else {
-                showError(data.error || 'Error al cargar datos del municipio');
-                closeCrudModal();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Error de conexión al cargar municipio');
-            closeCrudModal();
-        });
-}
-
-// Guardar municipio (crear o actualizar)
-function guardarMunicipio(recordId, btn, originalText) {
-    // Obtener datos del formulario
-    const datos = {
-        nombre: document.getElementById('nombreMunicipio').value.trim(),
-        codigo_dane: document.getElementById('codigoDane').value.trim(),
-        departamento: document.getElementById('departamentoMunicipio').value.trim(),
-        activo: true
-    };
-    
-    // Validaciones
-    if (!datos.nombre) {
-        showError('El nombre del municipio es requerido');
-        return;
-    }
-    
-    if (!datos.departamento) {
-        showError('El departamento es requerido');
-        return;
-    }
-    
-    // Configurar petición
-    const url = '../../api/GestionMunicipio.php';
-    const metodo = recordId ? 'PUT' : 'POST';
-    const bodyData = recordId ? { ...datos, id: parseInt(recordId) } : datos;
-    
-    // Mostrar estado de carga
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    btn.disabled = true;
-    
-    fetch(url, {
-        method: metodo,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bodyData)
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        if (data.success) {
-            showSuccess(data.message || 'Municipio guardado exitosamente');
-            closeCrudModal();
-            cargarMunicipios(); // Recargar la tabla
-        } else {
-            showError(data.error || 'Error al guardar municipio');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('Error de conexión al guardar municipio');
-    })
-    .finally(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    });
-}
-
-function editarMunicipio(id) {
-    abrirModalMunicipio('editar', id);
-}
-
-function closeCrudModal() {
-    document.getElementById('crudModal').style.display = 'none';
-}
-
-function buscarMunicipios(termino) {
-    const tablaBody = document.getElementById('municipiosTable');
-    if (!tablaBody) return;
-    
-    if (!termino || termino.trim() === '') {
-        cargarMunicipios();
-        return;
-    }
-    
-    // Mostrar estado de carga
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando municipios...</td></tr>';
-    
-    fetch(`../../api/GestionMunicipio.php?buscar=${encodeURIComponent(termino)}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-        })
-        .then(data => {
-            if (!data.success || !data.data || data.data.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
-                return;
-            }
-            
-            // Mostrar resultados de búsqueda
-            tablaBody.innerHTML = '';
-            data.data.forEach(municipio => {
-                const fila = document.createElement('tr');
-                let botonEstado = '';
-                if (municipio.activo) {
-                    botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
-                        </button>`;
-                } else {
-                    botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
-                        </button>`;
-                }
-
-                fila.innerHTML = `
-                    <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane || '--'}</td>
-                    <td>${municipio.departamento}</td>
-                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        ${botonEstado}
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
-        })
-        .catch(error => {
-            console.error('Error buscando municipios:', error);
-            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
-        });
-}
-
-// =======================================
-// 11. UTILIDADES Y AYUDAS UI
+// 7. UTILIDADES Y AYUDAS UI
 // =======================================
 
 // Manejo de Input File y Preview
@@ -1203,4 +628,207 @@ function restaurarLogoPredeterminado() {
 function restaurarConfiguracionPredeterminada() {
     if(!confirm("¿Restaurar toda la configuración?")) return;
     // Fetch a parametrizacion_restaurar.php...
+}
+
+// =======================================
+// 8. CRUD COMPLETO PARA MUNICIPIOS
+// =======================================
+
+// Abrir modal para agregar/editar municipio
+function abrirModalMunicipio(modo = 'agregar', id = null) {
+    const modal = document.getElementById('crudModal');
+    const titulo = document.getElementById('modalTitle');
+    const municipioFields = document.getElementById('municipioFields');
+    const recordId = document.getElementById('recordId');
+    const recordType = document.getElementById('recordType');
+    
+    // Ocultar otros formularios y mostrar solo el de municipios
+    document.querySelectorAll('.form-fields').forEach(field => {
+        field.style.display = 'none';
+        field.classList.remove('active');
+    });
+    
+    municipioFields.style.display = 'block';
+    municipioFields.classList.add('active');
+    
+    // Limpiar formulario
+    document.getElementById('nombreMunicipio').value = '';
+    document.getElementById('codigoDane').value = '';
+    document.getElementById('departamentoMunicipio').value = 'Meta';
+    
+    if (modo === 'agregar') {
+        titulo.textContent = 'Agregar Nuevo Municipio';
+        recordId.value = '';
+        recordType.value = 'municipio';
+    } else if (modo === 'editar' && id) {
+        titulo.textContent = 'Editar Municipio';
+        recordId.value = id;
+        recordType.value = 'municipio';
+        
+        // Cargar datos del municipio
+        cargarDatosMunicipio(id);
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Cargar datos de municipio para editar
+function cargarDatosMunicipio(id) {
+    fetch(`../../api/GestionMunicipio.php?id=${id}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (data.success && data.data) {
+                const municipio = data.data;
+                document.getElementById('nombreMunicipio').value = municipio.nombre || '';
+                document.getElementById('codigoDane').value = municipio.codigo_dane || '';
+                document.getElementById('departamentoMunicipio').value = municipio.departamento || 'Meta';
+            } else {
+                showError(data.error || 'Error al cargar datos del municipio');
+                closeCrudModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Error de conexión al cargar municipio');
+            closeCrudModal();
+        });
+}
+
+// Guardar municipio (crear o actualizar)
+function guardarMunicipio() {
+    const recordId = document.getElementById('recordId').value;
+    const recordType = document.getElementById('recordType').value;
+    const btn = document.getElementById('saveCrudBtn');
+    const originalText = btn.innerHTML;
+    
+    if (recordType !== 'municipio') return;
+    
+    // Obtener datos del formulario
+    const datos = {
+        nombre: document.getElementById('nombreMunicipio').value.trim(),
+        codigo_dane: document.getElementById('codigoDane').value.trim(),
+        departamento: document.getElementById('departamentoMunicipio').value.trim(),
+        activo: true
+        };
+        
+    // Validaciones
+    if (!datos.nombre) {
+        showError('El nombre del municipio es requerido');
+        return;
+    }
+    
+    if (!datos.departamento) {
+        showError('El departamento es requerido');
+        return;
+    }
+    
+    // Configurar petición
+    const url = '../../api/GestionMunicipio.php';
+    const metodo = recordId ? 'PUT' : 'POST';
+    const bodyData = recordId ? { ...datos, id: parseInt(recordId) } : datos;
+    
+    // Mostrar estado de carga
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    btn.disabled = true;
+    
+    fetch(url, {
+        method: metodo,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Municipio guardado exitosamente');
+            closeCrudModal();
+            cargarMunicipios(); // Recargar la tabla
+        } else {
+            showError(data.error || 'Error al guardar municipio');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Error de conexión al guardar municipio');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function editarMunicipio(id) {
+    abrirModalMunicipio('editar', id);
+}
+
+function closeCrudModal() {
+    document.getElementById('crudModal').style.display = 'none';
+}
+
+function buscarMunicipios(termino) {
+    const tablaBody = document.getElementById('municipiosTable');
+    if (!tablaBody) return;
+    
+    if (!termino || termino.trim() === '') {
+        cargarMunicipios();
+        return;
+    }
+    
+    // Mostrar estado de carga
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando municipios...</td></tr>';
+    
+    fetch(`../../api/GestionMunicipio.php?buscar=${encodeURIComponent(termino)}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data.success || !data.data || data.data.length === 0) {
+                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
+                return;
+            }
+            
+            // Mostrar resultados de búsqueda
+            tablaBody.innerHTML = '';
+            data.data.forEach(municipio => {
+                const fila = document.createElement('tr');
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+
+                fila.innerHTML = `
+                    <td>${municipio.nombre}</td>
+                    <td>${municipio.codigo_dane || '--'}</td>
+                    <td>${municipio.departamento}</td>
+                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${botonEstado}
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error buscando municipios:', error);
+            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
+        });
 }
