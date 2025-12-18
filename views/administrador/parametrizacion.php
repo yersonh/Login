@@ -296,7 +296,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     <tbody id="municipiosTable">
                         <!-- Datos cargados por JavaScript -->
                         <tr class="loading-row">
-                            <td colspan="6">Cargando municipios...</td>
+                            <td colspan="5">Cargando municipios...</td>
                         </tr>
                     </tbody>
                 </table>

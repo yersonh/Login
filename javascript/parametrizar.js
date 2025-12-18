@@ -405,7 +405,7 @@ function cargarMunicipios() {
         })
         .catch(error => {
             console.error('Error cargando municipios:', error);
-            tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error de conexión</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error de conexión</td></tr>`;
         });
 }
 
