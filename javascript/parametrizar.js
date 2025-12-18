@@ -631,7 +631,6 @@ function cargarDatosMunicipio(id) {
                 document.getElementById('nombreMunicipio').value = municipio.nombre || '';
                 document.getElementById('codigoDane').value = municipio.codigo_dane || '';
                 document.getElementById('departamentoMunicipio').value = municipio.departamento || 'Meta';
-                document.getElementById('estadoMunicipio').value = municipio.activo ? '1' : '0';
             } else {
                 showError(data.error || 'Error al cargar datos del municipio');
                 closeCrudModal();
