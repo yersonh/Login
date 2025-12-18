@@ -363,48 +363,6 @@ function cargarMunicipios() {
         });
 }
 
-function buscarMunicipios(termino) {
-    const tablaBody = document.getElementById('municipiosTable');
-    if (!tablaBody) return;
-    
-    if (!termino || termino.trim() === '') {
-        cargarMunicipios();
-        return;
-    }
-    
-    const filas = tablaBody.querySelectorAll('tr');
-    let resultados = 0;
-    
-    filas.forEach(fila => {
-        const celdas = fila.querySelectorAll('td');
-        if (celdas.length >= 2) {
-            const nombreMunicipio = celdas[1].textContent.toLowerCase();
-            const codigoDane = celdas[2].textContent;
-            
-            if (nombreMunicipio.includes(termino.toLowerCase()) || 
-                codigoDane.includes(termino)) {
-                fila.style.display = '';
-                resultados++;
-            } else {
-                fila.style.display = 'none';
-            }
-        }
-    });
-    
-    // Mostrar mensaje si no hay resultados
-    if (resultados === 0 && filas.length > 0) {
-        const mensajeAnterior = tablaBody.querySelector('.no-results-message');
-        if (mensajeAnterior) mensajeAnterior.remove();
-        
-        const mensajeFila = document.createElement('tr');
-        mensajeFila.classList.add('no-results-message');
-        mensajeFila.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-            No se encontraron municipios con "${termino}"
-        </td>`;
-        tablaBody.appendChild(mensajeFila);
-    }
-}
-
 function editarMunicipio(id) {
     console.log('Editar municipio ID:', id);
     alert('Función de editar en desarrollo. ID: ' + id);
