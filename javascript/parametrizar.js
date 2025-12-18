@@ -657,9 +657,9 @@ function guardarMunicipio() {
         nombre: document.getElementById('nombreMunicipio').value.trim(),
         codigo_dane: document.getElementById('codigoDane').value.trim(),
         departamento: document.getElementById('departamentoMunicipio').value.trim(),
-        activo: document.getElementById('estadoMunicipio').value === '1'
-    };
-    
+        activo: true
+        };
+        
     // Validaciones
     if (!datos.nombre) {
         showError('El nombre del municipio es requerido');

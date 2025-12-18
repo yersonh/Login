@@ -399,7 +399,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     
                     <div id="municipioFields" class="form-fields">
                         <div class="form-group">
-                            <label for="nombreMunicipio">Municipio:</label>
+                            <label for="nombreMunicipio">Sitio:</label>
                             <input type="text" id="nombreMunicipio" class="form-control" 
                                    placeholder="Ej: Villavicencio" maxlength="100" required>
                         </div>
@@ -414,14 +414,6 @@ if (!empty($configuracion['valida_hasta'])) {
                             <input type="text" id="departamentoMunicipio" class="form-control" 
                                 value="Meta">
                             <small class="form-text">Departamento fijo (Meta)</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="estadoMunicipio">Estado:</label>
-                            <select id="estadoMunicipio" class="form-control" required>
-                                <option value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
                         </div>
                     </div>
                     
@@ -440,6 +432,13 @@ if (!empty($configuracion['valida_hasta'])) {
                             <label for="descripcionArea">Descripción:</label>
                             <textarea id="descripcionArea" class="form-control" rows="3" 
                                       placeholder="Descripción del área..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoArea">Estado:</label>
+                            <select id="estadoArea" class="form-control" required>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
                         </div>
                     </div>
                     
