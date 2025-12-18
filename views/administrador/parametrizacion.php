@@ -413,7 +413,6 @@ if (!empty($configuracion['valida_hasta'])) {
                             <label for="departamentoMunicipio">Departamento:</label>
                             <input type="text" id="departamentoMunicipio" class="form-control" 
                                 value="Meta">
-                            <small class="form-text">Departamento fijo (Meta)</small>
                         </div>
                     </div>
                     
