@@ -23,7 +23,7 @@ class MunicipioModel {
     public function obtenerMunicipiosActivos() {
         $sql = "SELECT id_municipio, nombre FROM municipio 
                 WHERE activo = true 
-                ORDER BY nombre";
+                ORDER BY id_municipio ASC";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();

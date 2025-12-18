@@ -1,15 +1,28 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
 class AreaModel {
     private $conn;
 
-    public function __construct($db) {
-        $this->conn = $db;
+    public function __construct() {
+        $database = new Database();
+        $this->conn = $database->conectar();
+    }
+
+    public function obtenerTodasAreas() {
+        $sql = "SELECT id_area, nombre, codigo_area, descripcion, activo 
+                FROM area 
+                ORDER BY id_area ASC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function obtenerAreasActivas() {
         $sql = "SELECT id_area, nombre FROM area 
                 WHERE activo = true 
-                ORDER BY nombre";
+                ORDER BY id_area ASC";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
@@ -26,13 +39,81 @@ class AreaModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function crearArea($nombre) {
-        $sql = "INSERT INTO area (nombre) VALUES (:nombre) RETURNING id_area";
+    public function crearArea($data) {
+        $sql = "INSERT INTO area (nombre, codigo_area, descripcion, activo) 
+                VALUES (:nombre, :codigo_area, :descripcion, :activo) 
+                RETURNING id_area";
+        
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':nombre', $nombre);
+        $stmt->bindParam(':nombre', $data['nombre']);
+        $stmt->bindParam(':codigo_area', $data['codigo_area']);
+        $stmt->bindParam(':descripcion', $data['descripcion']);
+        $stmt->bindParam(':activo', $data['activo']);
         $stmt->execute();
         
         return $stmt->fetch(PDO::FETCH_ASSOC)['id_area'];
+    }
+    public function actualizarArea($id_area, $data) {
+        $sql = "UPDATE area 
+                SET nombre = :nombre, 
+                    codigo_area = :codigo_area, 
+                    descripcion = :descripcion
+                WHERE id_area = :id_area";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_area', $id_area);
+        $stmt->bindParam(':nombre', $data['nombre']);
+        $stmt->bindParam(':codigo_area', $data['codigo_area']);
+        $stmt->bindParam(':descripcion', $data['descripcion']);
+        
+        return $stmt->execute();
+    }
+
+    public function cambiarEstadoArea($id_area, $activo) {
+        $sql = "UPDATE area 
+                SET activo = :activo 
+                WHERE id_area = :id_area";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_area', $id_area);
+        $stmt->bindParam(':activo', $activo);
+        
+        return $stmt->execute();
+    }
+
+    public function buscarAreas($termino) {
+        $sql = "SELECT id_area, nombre, codigo_area, descripcion, activo 
+                FROM area 
+                WHERE nombre ILIKE :termino 
+                   OR codigo_area ILIKE :termino 
+                   OR descripcion ILIKE :termino
+                ORDER BY nombre";
+        
+        $stmt = $this->conn->prepare($sql);
+        $terminoBusqueda = "%" . $termino . "%";
+        $stmt->bindParam(':termino', $terminoBusqueda);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function existeCodigoArea($codigo_area, $id_area_excluir = null) {
+        $sql = "SELECT COUNT(*) FROM area 
+                WHERE codigo_area = :codigo_area";
+        
+        if ($id_area_excluir) {
+            $sql .= " AND id_area != :id_area_excluir";
+        }
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':codigo_area', $codigo_area);
+        
+        if ($id_area_excluir) {
+            $stmt->bindParam(':id_area_excluir', $id_area_excluir);
+        }
+        
+        $stmt->execute();
+        
+        return $stmt->fetchColumn() > 0;
     }
 }
 ?>
