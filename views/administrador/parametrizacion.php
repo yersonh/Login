@@ -441,13 +441,6 @@ if (!empty($configuracion['valida_hasta'])) {
                             <textarea id="descripcionArea" class="form-control" rows="3" 
                                       placeholder="Descripción del área..."></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="estadoArea">Estado:</label>
-                            <select id="estadoArea" class="form-control" required>
-                                <option value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
-                        </div>
                     </div>
                     
                     <div id="vinculacionFields" class="form-fields">

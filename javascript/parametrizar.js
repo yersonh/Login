@@ -601,7 +601,6 @@ function abrirModalMunicipio(modo = 'agregar', id = null) {
     document.getElementById('nombreMunicipio').value = '';
     document.getElementById('codigoDane').value = '';
     document.getElementById('departamentoMunicipio').value = 'Meta';
-    document.getElementById('estadoMunicipio').value = '1';
     
     if (modo === 'agregar') {
         titulo.textContent = 'Agregar Nuevo Municipio';
