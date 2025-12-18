@@ -617,34 +617,21 @@ function buscarAreas(termino) {
     // Mostrar estado de carga
     tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando áreas...</td></tr>';
     
-    // Por ahora usaremos filtrado en el cliente
-    fetch('../../api/areas.php')
+    // Usar endpoint de búsqueda del backend
+    fetch(`../../api/areas.php?buscar=${encodeURIComponent(termino)}`)
         .then(res => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return res.json();
         })
         .then(data => {
             if (!data.success || !data.data || data.data.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron áreas</td></tr>`;
-                return;
-            }
-            
-            // Filtrar áreas en el cliente
-            const terminoLower = termino.toLowerCase();
-            const areasFiltradas = data.data.filter(area => 
-                area.nombre.toLowerCase().includes(terminoLower) ||
-                area.codigo_area.toLowerCase().includes(terminoLower) ||
-                (area.descripcion && area.descripcion.toLowerCase().includes(terminoLower))
-            );
-            
-            if (areasFiltradas.length === 0) {
                 tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron áreas con "${termino}"</td></tr>`;
                 return;
             }
             
-            // Mostrar resultados filtrados
+            // Mostrar resultados de búsqueda
             tablaBody.innerHTML = '';
-            areasFiltradas.forEach(area => {
+            data.data.forEach(area => {
                 const fila = document.createElement('tr');
                 let botonEstado = '';
                 if (area.activo) {
@@ -728,6 +715,7 @@ function abrirModalArea(modo = 'agregar', id = null) {
 }
 
 // Cargar datos de área para editar
+// Cargar datos de área para editar (YA ESTÁ CORRECTA)
 function cargarDatosArea(id) {
     fetch(`../../api/areas.php?id=${id}`)
         .then(res => {
@@ -780,6 +768,7 @@ function mostrarConfirmacionEstadoArea(id, activar, nombre, codigo) {
 }
 
 // Ejecutar cambio de estado de área
+// Ejecutar cambio de estado de área (ACTUALIZADA)
 function ejecutarCambioEstadoArea() {
     if (!areaEstadoId || areaEstadoAction === null) {
         showError('No se pudo completar la acción');
@@ -787,13 +776,37 @@ function ejecutarCambioEstadoArea() {
     }
     
     const accion = areaEstadoAction ? 'activar' : 'desactivar';
-    // TODO: Cambiar a endpoint real cuando lo creemos
-    console.log(`Cambiando estado del área ${areaEstadoId} a ${areaEstadoAction}`);
+    const datos = {
+        id: areaEstadoId,
+        activo: areaEstadoAction
+    };
     
-    // Por ahora solo recargamos la tabla y mostramos mensaje de simulación
-    showSuccess(`Área ${accion}da exitosamente (simulación)`);
-    cargarAreas(); // Recargar la tabla
-    closeEstadoAreaModal();
+    fetch(`../../api/areas.php`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || `Área ${accion}da exitosamente`);
+            cargarAreas(); // Recargar la tabla para actualizar botones
+        } else {
+            showError(data.error || `Error al ${accion} área`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError(`Error de conexión al ${accion} área`);
+    })
+    .finally(() => {
+        closeEstadoAreaModal();
+    });
 }
 
 // Cerrar modal de estado de área
@@ -845,6 +858,7 @@ function guardarCrud() {
 }
 
 // Función específica para guardar área
+// Función específica para guardar área (ACTUALIZADA)
 function guardarArea(recordId, btn, originalText) {
     // Obtener datos del formulario
     const datos = {
@@ -865,20 +879,43 @@ function guardarArea(recordId, btn, originalText) {
         return;
     }
     
-    // TODO: Configurar petición real cuando creemos el endpoint
-    console.log('Guardando área:', datos);
+    // Configurar petición
+    const url = '../../api/areas.php';
+    const metodo = recordId ? 'PUT' : 'POST';
+    const bodyData = recordId ? { ...datos, id: parseInt(recordId) } : datos;
     
-    // Simulación por ahora
+    // Mostrar estado de carga
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     btn.disabled = true;
     
-    setTimeout(() => {
-        showSuccess('Área guardada exitosamente (simulación)');
-        closeCrudModal();
-        cargarAreas(); // Recargar la tabla
+    fetch(url, {
+        method: metodo,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Área guardada exitosamente');
+            closeCrudModal();
+            cargarAreas(); // Recargar la tabla
+        } else {
+            showError(data.error || 'Error al guardar área');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Error de conexión al guardar área');
+    })
+    .finally(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
-    }, 1000);
+    });
 }
 
 function editarArea(id) {
