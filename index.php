@@ -590,7 +590,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     <small>Desarrollado por SisgonTech © <?php echo $anio; ?>. Version de prueba Runtime</small>
                 </div>
                 <div class="quienesSomos">
-                    <a href="https://sga-solucion-gestora-administrativa.webnode.com.co/" target="_blank">¿Que es SGA - Sistema de Gestión Administrativo?</a>
+                    <a href="https://sistema-de-gestion-administrativo-v1-1.webnode.com.co/" target="_blank">¿Que es SGA - Sistema de Gestión Administrativo?</a>
                 </div>
             </form>
         </div>
