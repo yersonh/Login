@@ -1592,30 +1592,171 @@ input[readonly].form-control {
     opacity: 0.5;
     display: block;
 }
-/* Estilos para botones de estado */
+/* =======================================
+   ESTILOS PARA BOTONES DE ESTADO
+   Versión profesional y minimalista
+======================================== */
+
+/* Botón Activar - Verde profesional */
 .btn-activate {
-    background-color: #28a745 !important;
+    background-color: #10b981 !important;
     color: white !important;
-    border-color: #28a745 !important;
+    border: 1px solid #10b981 !important;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(16, 185, 129, 0.1);
 }
 
 .btn-activate:hover {
-    background-color: #218838 !important;
-    border-color: #1e7e34 !important;
+    background-color: #0da271 !important;
+    border-color: #0da271 !important;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    transform: translateY(-1px);
 }
 
+.btn-activate:active {
+    background-color: #0b8a61 !important;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Botón Desactivar - Rojo profesional */
 .btn-deactivate {
-    background-color: #dc3545 !important;
+    background-color: #ef4444 !important;
     color: white !important;
-    border-color: #dc3545 !important;
+    border: 1px solid #ef4444 !important;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
 }
 
 .btn-deactivate:hover {
-    background-color: #c82333 !important;
-    border-color: #bd2130 !important;
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    transform: translateY(-1px);
 }
 
-/* También puedes mantener el viejo btn-delete por compatibilidad */
-.btn-delete {
-    background-color: #6c757d !important;
+.btn-deactivate:active {
+    background-color: #b91c1c !important;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Botón Editar - Azul profesional */
+.btn-edit {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border: 1px solid #3b82f6 !important;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(59, 130, 246, 0.1);
+}
+
+.btn-edit:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-edit:active {
+    background-color: #1d4ed8 !important;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Contenedor de botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+/* Estados deshabilitados */
+.btn-activate:disabled,
+.btn-deactivate:disabled,
+.btn-edit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Iconos dentro de los botones */
+.btn-activate i,
+.btn-deactivate i,
+.btn-edit i {
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+/* =======================================
+   BADGES DE ESTADO MEJORADOS
+======================================== */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-active {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.status-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* =======================================
+   EFECTO DE CARGA MEJORADO
+======================================== */
+.btn-action .fa-spinner {
+    margin-right: 6px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* =======================================
+   RESPONSIVE PARA BOTONES
+======================================== */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .btn-activate,
+    .btn-deactivate,
+    .btn-edit {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-activate i,
+    .btn-deactivate i,
+    .btn-edit i {
+        margin-right: 6px;
+    }
 }
