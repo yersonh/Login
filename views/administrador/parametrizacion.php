@@ -175,9 +175,9 @@ if (!empty($configuracion['valida_hasta'])) {
                         <button type="button" class="btn btn-primary" id="saveLogoBtn">
                             <i class="fas fa-save"></i> Guardar Cambios del Logo
                         </button>
-                       <!-- <button type="button" class="btn btn-secondary" id="restoreLogoBtn">
+                        <!-- <button type="button" class="btn btn-secondary" id="restoreLogoBtn">
                             <i class="fas fa-undo"></i> Restaurar Logo Predeterminado
-                        </button>-->
+                        </button> -->
                     </div>
                 </form>
             </div>
