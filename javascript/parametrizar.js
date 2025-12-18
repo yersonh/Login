@@ -408,6 +408,49 @@ function cargarMunicipios() {
         });
 }
 
+// =======================================
+// 6. FUNCIÓN PARA CAMBIAR ESTADO DE MUNICIPIOS
+// =======================================
+function cambiarEstadoMunicipio(id, activar) {
+    const accion = activar ? 'activar' : 'desactivar';
+    const mensaje = activar ? 
+        `¿Está seguro de que desea ACTIVAR este municipio?\n\nEl municipio volverá a estar disponible en el sistema.` :
+        `¿Está seguro de que desea DESACTIVAR este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).`;
+    
+    if (!confirm(mensaje)) {
+        return;
+    }
+    
+    // Datos a enviar usando PATCH (formato correcto según endpoint)
+    const datos = {
+        id: id,
+        activo: activar
+    };
+    
+    fetch(`../../api/GestionMunicipio.php`, {
+        method: 'PATCH',  // ✅ Usando PATCH como definiste en el endpoint
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || `Municipio ${accion}do exitosamente`);
+            cargarMunicipios(); // Recargar la tabla para actualizar botones
+        } else {
+            showError(data.error || `Error al ${accion} municipio`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError(`Error de conexión al ${accion} municipio`);
+    });
+}
 
 // =======================================
 // 7. UTILIDADES Y AYUDAS UI
