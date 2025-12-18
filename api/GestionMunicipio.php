@@ -35,11 +35,13 @@ try {
             echo json_encode($resultado);
             break;
             
-        case 'DELETE':
-            // Eliminar municipio
-            $id = $_GET['id'] ?? null;
-            if (!$id) throw new Exception('ID requerido');
-            $resultado = $controlador->eliminar($id);
+        case 'PATCH':
+            // Cambiar estado (activar/desactivar)
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (empty($input['id'])) throw new Exception('ID requerido');
+            if (!isset($input['activo'])) throw new Exception('Estado (activo) requerido');
+            
+            $resultado = $controlador->cambiarEstado($input['id'], (bool)$input['activo']);
             echo json_encode($resultado);
             break;
             

@@ -63,12 +63,39 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMunicipioBtn = document.getElementById('addMunicipioBtn');
     if (addMunicipioBtn) {
         addMunicipioBtn.addEventListener('click', function() {
+            abrirModalMunicipio('agregar');
         });
     }
     
-    // 4. CARGAR DATOS DINÁMICOS
+    // --- Botón Guardar en Modal CRUD ---
+    const saveCrudBtn = document.getElementById('saveCrudBtn');
+    if (saveCrudBtn) {
+        saveCrudBtn.addEventListener('click', guardarMunicipio);
+    }
     
-    // Cargar municipios después de cargar la configuración
+    // --- Botón Cerrar Modal CRUD ---
+    const modalCloseBtn = document.querySelector('#crudModal .modal-close');
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeCrudModal);
+    }
+    
+    // --- Click fuera del modal para cerrar ---
+    const crudModal = document.getElementById('crudModal');
+    if (crudModal) {
+        crudModal.addEventListener('click', function(e) {
+            if (e.target === crudModal) closeCrudModal();
+        });
+    }
+    
+    // --- ESC para cerrar modal CRUD ---
+    document.addEventListener('keydown', function(e) {
+        const crudModal = document.getElementById('crudModal');
+        if (e.key === 'Escape' && crudModal && crudModal.style.display === 'flex') {
+            closeCrudModal();
+        }
+    });
+    
+    // 4. CARGAR DATOS DINÁMICOS
     setTimeout(cargarMunicipios, 500);
 });
 
@@ -376,11 +403,9 @@ function cargarMunicipios() {
         });
 }
 
-function editarMunicipio(id) {
-    console.log('Editar municipio ID:', id);
-    alert('Función de editar en desarrollo. ID: ' + id);
-}
-
+// =======================================
+// 6. FUNCIÓN PARA CAMBIAR ESTADO DE MUNICIPIOS
+// =======================================
 function cambiarEstadoMunicipio(id, activar) {
     const accion = activar ? 'activar' : 'desactivar';
     const mensaje = activar ? 
@@ -391,17 +416,18 @@ function cambiarEstadoMunicipio(id, activar) {
         return;
     }
     
-    // Datos a enviar
+    // Datos a enviar usando PATCH (formato correcto según endpoint)
     const datos = {
+        id: id,
         activo: activar
     };
     
-    fetch(`../../api/GestionMunicipio.php?id=${id}`, {
-        method: 'POST',
+    fetch(`../../api/GestionMunicipio.php`, {
+        method: 'PATCH',  // ✅ Usando PATCH como definiste en el endpoint
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action: 'cambiarEstado', activo: activar })
+        body: JSON.stringify(datos)
     })
     .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -422,7 +448,7 @@ function cambiarEstadoMunicipio(id, activar) {
 }
 
 // =======================================
-// 6. UTILIDADES Y AYUDAS UI
+// 7. UTILIDADES Y AYUDAS UI
 // =======================================
 
 // Manejo de Input File y Preview
@@ -544,8 +570,9 @@ function restaurarConfiguracionPredeterminada() {
     if(!confirm("¿Restaurar toda la configuración?")) return;
     // Fetch a parametrizacion_restaurar.php...
 }
+
 // =======================================
-// 7. CRUD COMPLETO PARA MUNICIPIOS
+// 8. CRUD COMPLETO PARA MUNICIPIOS
 // =======================================
 
 // Abrir modal para agregar/editar municipio
@@ -644,7 +671,7 @@ function guardarMunicipio() {
     // Configurar petición
     const url = '../../api/GestionMunicipio.php';
     const metodo = recordId ? 'PUT' : 'POST';
-    const bodyData = recordId ? { ...datos, id: recordId } : datos;
+    const bodyData = recordId ? { ...datos, id: parseInt(recordId) } : datos;
     
     // Mostrar estado de carga
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
@@ -680,18 +707,14 @@ function guardarMunicipio() {
     });
 }
 
-// Actualizar funciones editarMunicipio
 function editarMunicipio(id) {
     abrirModalMunicipio('editar', id);
 }
 
-
-// Cerrar modal CRUD
 function closeCrudModal() {
     document.getElementById('crudModal').style.display = 'none';
 }
 
-// Búsqueda mejorada usando el endpoint
 function buscarMunicipios(termino) {
     const tablaBody = document.getElementById('municipiosTable');
     if (!tablaBody) return;
@@ -739,13 +762,10 @@ function buscarMunicipios(termino) {
                     <td>${municipio.departamento}</td>
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
-                    
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-
                         ${botonEstado}
-
                     </td>
                 `;
                 tablaBody.appendChild(fila);
@@ -756,61 +776,3 @@ function buscarMunicipios(termino) {
             tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error en la búsqueda</td></tr>`;
         });
 }
-
-// =======================================
-// 8. ACTUALIZAR EVENT LISTENERS
-// =======================================
-
-// Actualiza tu DOMContentLoaded para incluir estos listeners (reemplaza la parte de municipios):
-document.addEventListener('DOMContentLoaded', function () {
-    // ... tu código existente hasta la línea 90 ...
-    
-    // 3. EVENT LISTENERS PARA MUNICIPIOS (ACTUALIZADO)
-    
-    // --- Búsqueda de municipios ---
-    const searchMunicipioInput = document.getElementById('searchMunicipio');
-    if (searchMunicipioInput) {
-        searchMunicipioInput.addEventListener('input', function(e) {
-            buscarMunicipios(e.target.value);
-        });
-    }
-    
-    // --- Botón agregar municipio ---
-    const addMunicipioBtn = document.getElementById('addMunicipioBtn');
-    if (addMunicipioBtn) {
-        addMunicipioBtn.addEventListener('click', function() {
-            abrirModalMunicipio('agregar');
-        });
-    }
-    
-    // --- Botón Guardar en Modal CRUD ---
-    const saveCrudBtn = document.getElementById('saveCrudBtn');
-    if (saveCrudBtn) {
-        saveCrudBtn.addEventListener('click', guardarMunicipio);
-    }
-    
-    // --- Botón Cerrar Modal CRUD ---
-    const modalCloseBtn = document.querySelector('#crudModal .modal-close');
-    if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', closeCrudModal);
-    }
-    
-    // --- Click fuera del modal para cerrar ---
-    const crudModal = document.getElementById('crudModal');
-    if (crudModal) {
-        crudModal.addEventListener('click', function(e) {
-            if (e.target === crudModal) closeCrudModal();
-        });
-    }
-    
-    // --- ESC para cerrar modal CRUD ---
-    document.addEventListener('keydown', function(e) {
-        const crudModal = document.getElementById('crudModal');
-        if (e.key === 'Escape' && crudModal && crudModal.style.display === 'flex') {
-            closeCrudModal();
-        }
-    });
-    
-    // 4. CARGAR DATOS DINÁMICOS
-    setTimeout(cargarMunicipios, 500);
-});
