@@ -338,37 +338,37 @@ function cargarMunicipios() {
             // Generar filas de la tabla
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
-    const fila = document.createElement('tr');
-    
-    // Determinar botón según estado
-    let botonEstado = '';
-    if (municipio.activo) {
-        botonEstado = `
-            <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
-                <i class="fas fa-ban"></i> Desactivar
-            </button>`;
-    } else {
-        botonEstado = `
-            <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
-                <i class="fas fa-check-circle"></i> Activar
-            </button>`;
-    }
-    
-    fila.innerHTML = `
-        <td>${municipio.id_municipio}</td>
-        <td>${municipio.nombre}</td>
-        <td>${municipio.codigo_dane}</td>
-        <td>${municipio.departamento}</td>
-        <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
-        <td class="action-buttons">
-            <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                <i class="fas fa-edit"></i> Editar
-            </button>
-            ${botonEstado}
-        </td>
-    `;
-    tablaBody.appendChild(fila);
-});
+                const fila = document.createElement('tr');
+                
+                // Determinar botón según estado
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+                
+                fila.innerHTML = `
+                    <td>${municipio.id_municipio}</td>
+                    <td>${municipio.nombre}</td>
+                    <td>${municipio.codigo_dane}</td>
+                    <td>${municipio.departamento}</td>
+                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${botonEstado}
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
         })
         .catch(error => {
             console.error('Error cargando municipios:', error);
@@ -719,6 +719,19 @@ function buscarMunicipios(termino) {
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
                 const fila = document.createElement('tr');
+                let botonEstado = '';
+                if (municipio.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+
                 fila.innerHTML = `
                     <td>${municipio.id_municipio}</td>
                     <td>${municipio.nombre}</td>
@@ -726,9 +739,13 @@ function buscarMunicipios(termino) {
                     <td>${municipio.departamento}</td>
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
+                    
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
                             <i class="fas fa-edit"></i> Editar
                         </button>
+
+                        ${botonEstado}
+
                     </td>
                 `;
                 tablaBody.appendChild(fila);
