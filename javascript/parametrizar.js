@@ -374,7 +374,7 @@ function closeModal() {
 // =======================================
 // 5. LÓGICA PARA MUNICIPIOS
 // =======================================
-function cargarMunicipios() {
+function cargarMunicipios(scrollPosition = null) {
     const tablaBody = document.getElementById('municipiosTable');
     if (!tablaBody) return;
     
@@ -429,10 +429,24 @@ function cargarMunicipios() {
                 `;
                 tablaBody.appendChild(fila);
             });
+            
+            // Restaurar posición de scroll si se proporcionó
+            if (scrollPosition !== null) {
+                setTimeout(() => {
+                    window.scrollTo(0, scrollPosition);
+                }, 50);
+            }
         })
         .catch(error => {
             console.error('Error cargando municipios:', error);
             tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error de conexión</td></tr>`;
+            
+            // Restaurar scroll incluso en error
+            if (scrollPosition !== null) {
+                setTimeout(() => {
+                    window.scrollTo(0, scrollPosition);
+                }, 50);
+            }
         });
 }
 
@@ -477,6 +491,9 @@ function ejecutarCambioEstado() {
         activo: municipioEstadoAction
     };
     
+    // Guardar la posición actual de desplazamiento
+    const scrollPosition = window.scrollY;
+    
     fetch(`../../api/GestionMunicipio.php`, {
         method: 'PATCH',
         headers: {
@@ -491,7 +508,8 @@ function ejecutarCambioEstado() {
     .then(data => {
         if (data.success) {
             showSuccess(data.message || `Municipio ${accion}do exitosamente`);
-            cargarMunicipios(); // Recargar la tabla para actualizar botones
+            // Recargar la tabla pasando la posición de scroll
+            cargarMunicipios(scrollPosition);
         } else {
             showError(data.error || `Error al ${accion} municipio`);
         }
@@ -1010,6 +1028,9 @@ function guardarMunicipio(recordId, btn, originalText) {
         return;
     }
     
+    // Guardar posición de scroll
+    const scrollPosition = window.scrollY;
+    
     // Configurar petición
     const url = '../../api/GestionMunicipio.php';
     const metodo = recordId ? 'PUT' : 'POST';
@@ -1034,7 +1055,8 @@ function guardarMunicipio(recordId, btn, originalText) {
         if (data.success) {
             showSuccess(data.message || 'Municipio guardado exitosamente');
             closeCrudModal();
-            cargarMunicipios(); // Recargar la tabla
+            // Recargar manteniendo posición
+            cargarMunicipios(scrollPosition);
         } else {
             showError(data.error || 'Error al guardar municipio');
         }
@@ -1061,8 +1083,12 @@ function buscarMunicipios(termino) {
     const tablaBody = document.getElementById('municipiosTable');
     if (!tablaBody) return;
     
+    // Guardar posición de scroll antes de buscar
+    const scrollPosition = window.scrollY;
+    
     if (!termino || termino.trim() === '') {
-        cargarMunicipios();
+        // Usar recarga con scroll
+        cargarMunicipios(scrollPosition);
         return;
     }
     
@@ -1077,6 +1103,10 @@ function buscarMunicipios(termino) {
         .then(data => {
             if (!data.success || !data.data || data.data.length === 0) {
                 tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
+                // Restaurar scroll
+                setTimeout(() => {
+                    window.scrollTo(0, scrollPosition);
+                }, 50);
                 return;
             }
             
@@ -1111,10 +1141,19 @@ function buscarMunicipios(termino) {
                 `;
                 tablaBody.appendChild(fila);
             });
+            
+            // Restaurar posición de scroll
+            setTimeout(() => {
+                window.scrollTo(0, scrollPosition);
+            }, 50);
         })
         .catch(error => {
             console.error('Error buscando municipios:', error);
             tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
+            // Restaurar scroll incluso en error
+            setTimeout(() => {
+                window.scrollTo(0, scrollPosition);
+            }, 50);
         });
 }
 
