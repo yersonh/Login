@@ -286,7 +286,7 @@ if (!empty($configuracion['valida_hasta'])) {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Municipio</th>
+                            <th>Sitios</th>
                             <th>Código DANE</th>
                             <th>Departamento</th>
                             <th>Estado</th>

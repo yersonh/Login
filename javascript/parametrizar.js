@@ -350,7 +350,7 @@ function cargarMunicipios() {
     const tablaBody = document.getElementById('municipiosTable');
     if (!tablaBody) return;
     
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Cargando municipios...</td></tr>';
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Cargando municipios...</td></tr>';
     
     fetch('../../api/ObtenerMunicipio.php')
         .then(res => {
@@ -359,16 +359,16 @@ function cargarMunicipios() {
         })
         .then(data => {
             if (!data.success) {
-                tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">${data.error || 'Error al cargar municipios'}</td></tr>`;
+                tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">${data.error || 'Error al cargar municipios'}</td></tr>`;
                 return;
             }
             
             if (data.data.length === 0) {
-                tablaBody.innerHTML = '<tr><td colspan="6" class="empty-row">No hay municipios registrados</td></tr>';
+                tablaBody.innerHTML = '<tr><td colspan="5" class="empty-row">No hay municipios registrados</td></tr>';
                 return;
             }
             
-            // Generar filas de la tabla
+            // Generar filas de la tabla (sin columna ID)
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
                 const fila = document.createElement('tr');
@@ -377,20 +377,19 @@ function cargarMunicipios() {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Desactivar">
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
                             <i class="fas fa-ban"></i> Desactivar
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Activar">
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
                             <i class="fas fa-check-circle"></i> Activar
                         </button>`;
                 }
                 
                 fila.innerHTML = `
-                    <td>${municipio.id_municipio}</td>
                     <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane}</td>
+                    <td>${municipio.codigo_dane || '--'}</td>
                     <td>${municipio.departamento}</td>
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
@@ -428,7 +427,7 @@ function mostrarConfirmacionEstado(id, activar, nombre, codigoDane, departamento
     // Actualizar detalles del municipio
     const detailsList = document.getElementById('municipioDetails');
     detailsList.innerHTML = `
-        <li><strong>Municipio:</strong> ${nombre}</li>
+        <li><strong>Sitios:</strong> ${nombre}</li>
         <li><strong>Código DANE:</strong> ${codigoDane || '--'}</li>
         <li><strong>Departamento:</strong> ${departamento}</li>
         <li><strong>Estado nuevo:</strong> <span class="${activar ? 'status-active' : 'status-inactive'}">${activar ? 'Activo' : 'Inactivo'}</span></li>
@@ -783,7 +782,7 @@ function buscarMunicipios(termino) {
     }
     
     // Mostrar estado de carga
-    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="6">Buscando municipios...</td></tr>';
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando municipios...</td></tr>';
     
     fetch(`../../api/GestionMunicipio.php?buscar=${encodeURIComponent(termino)}`)
         .then(res => {
@@ -792,7 +791,7 @@ function buscarMunicipios(termino) {
         })
         .then(data => {
             if (!data.success || !data.data || data.data.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="6" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
+                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron municipios con "${termino}"</td></tr>`;
                 return;
             }
             
@@ -803,18 +802,17 @@ function buscarMunicipios(termino) {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Desactivar">
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
                             <i class="fas fa-ban"></i> Desactivar
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre}', '${municipio.codigo_dane}', '${municipio.departamento}')" title="Activar">
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
                             <i class="fas fa-check-circle"></i> Activar
                         </button>`;
                 }
 
                 fila.innerHTML = `
-                    <td>${municipio.id_municipio}</td>
                     <td>${municipio.nombre}</td>
                     <td>${municipio.codigo_dane || '--'}</td>
                     <td>${municipio.departamento}</td>
@@ -831,6 +829,6 @@ function buscarMunicipios(termino) {
         })
         .catch(error => {
             console.error('Error buscando municipios:', error);
-            tablaBody.innerHTML = `<tr><td colspan="6" class="error-row">Error en la búsqueda</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
         });
 }
