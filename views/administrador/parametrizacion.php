@@ -324,8 +324,7 @@ if (!empty($configuracion['valida_hasta'])) {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Nombre Área</th>
+                            <th>Área</th>
                             <th>Código</th>
                             <th>Descripción</th>
                             <th>Estado</th>
@@ -335,7 +334,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     <tbody id="areasTable">
                         <!-- Datos cargados por JavaScript -->
                         <tr class="loading-row">
-                            <td colspan="6">Cargando áreas...</td>
+                            <td colspan="5">Cargando áreas...</td>
                         </tr>
                     </tbody>
                 </table>
