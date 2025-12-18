@@ -362,7 +362,6 @@ if (!empty($configuracion['valida_hasta'])) {
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Tipo de Vinculación</th>
                             <th>Código</th>
                             <th>Descripción</th>
@@ -373,7 +372,7 @@ if (!empty($configuracion['valida_hasta'])) {
                     <tbody id="vinculacionesTable">
                         <!-- Datos cargados por JavaScript -->
                         <tr class="loading-row">
-                            <td colspan="6">Cargando tipos de vinculación...</td>
+                            <td colspan="5">Cargando tipos de vinculación...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -565,6 +564,43 @@ if (!empty($configuracion['valida_hasta'])) {
                         <i class="fas fa-times"></i> Cancelar
                     </button>
                     <button type="button" class="btn btn-primary" id="confirmEstadoAreaBtn">
+                        <i class="fas fa-check"></i> Sí, Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR Tipo vinculacion -->
+        <!-- Modal para Cambio de Estado - Tipo Vinculación -->
+        <div id="confirmEstadoVinculacionModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
+                    <button type="button" class="modal-close" onclick="closeEstadoVinculacionModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span>Señor(a) </span>
+                    <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombreVinculacion">
+                        <?php echo htmlspecialchars($nombreCompleto); ?>
+                    </strong>
+                    <span>, </span>
+                    <p id="estadoVinculacionMensaje">¿Está seguro de cambiar el estado de este tipo de vinculación?</p>
+                    <div class="modal-details">
+                        <h4>Detalles del tipo de vinculación:</h4>
+                        <ul id="vinculacionDetails">
+                            <li><strong>Tipo:</strong> <span id="detailNombre"></span></li>
+                            <li><strong>Código:</strong> <span id="detailCodigo"></span></li>
+                            <li><strong>Estado Actual:</strong> <span id="detailEstadoActual"></span></li>
+                            <li><strong>Nuevo Estado:</strong> <span id="detailNuevoEstado"></span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEstadoVinculacionModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirmEstadoVinculacionBtn">
                         <i class="fas fa-check"></i> Sí, Confirmar
                     </button>
                 </div>
