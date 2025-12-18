@@ -338,24 +338,37 @@ function cargarMunicipios() {
             // Generar filas de la tabla
             tablaBody.innerHTML = '';
             data.data.forEach(municipio => {
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${municipio.id_municipio}</td>
-                    <td>${municipio.nombre}</td>
-                    <td>${municipio.codigo_dane}</td>
-                    <td>${municipio.departamento}</td>
-                    <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.estado}</span></td>
-                    <td class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn-action btn-delete" onclick="eliminarMunicipio(${municipio.id_municipio})" title="Dar de baja">
-                            <i class="fas fa-trash"></i> Dar de baja
-                        </button>
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
+    const fila = document.createElement('tr');
+    
+    // Determinar botón según estado
+    let botonEstado = '';
+    if (municipio.activo) {
+        botonEstado = `
+            <button class="btn-action btn-deactivate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, false)" title="Desactivar">
+                <i class="fas fa-ban"></i> Desactivar
+            </button>`;
+    } else {
+        botonEstado = `
+            <button class="btn-action btn-activate" onclick="cambiarEstadoMunicipio(${municipio.id_municipio}, true)" title="Activar">
+                <i class="fas fa-check-circle"></i> Activar
+            </button>`;
+    }
+    
+    fila.innerHTML = `
+        <td>${municipio.id_municipio}</td>
+        <td>${municipio.nombre}</td>
+        <td>${municipio.codigo_dane}</td>
+        <td>${municipio.departamento}</td>
+        <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
+        <td class="action-buttons">
+            <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
+                <i class="fas fa-edit"></i> Editar
+            </button>
+            ${botonEstado}
+        </td>
+    `;
+    tablaBody.appendChild(fila);
+});
         })
         .catch(error => {
             console.error('Error cargando municipios:', error);
@@ -667,36 +680,11 @@ function guardarMunicipio() {
     });
 }
 
-// Actualizar funciones editarMunicipio y eliminarMunicipio
+// Actualizar funciones editarMunicipio
 function editarMunicipio(id) {
     abrirModalMunicipio('editar', id);
 }
 
-function eliminarMunicipio(id) {
-    if (!confirm('¿Está seguro de que desea eliminar este municipio?\n\nNota: Se realizará un borrado lógico (cambiará a estado inactivo).')) {
-        return;
-    }
-    
-    fetch(`../../api/GestionMunicipio.php?id=${id}`, {
-        method: 'DELETE'
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
-        if (data.success) {
-            showSuccess(data.message || 'Municipio eliminado exitosamente');
-            cargarMunicipios(); // Recargar la tabla
-        } else {
-            showError(data.error || 'Error al eliminar municipio');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showError('Error de conexión al eliminar municipio');
-    });
-}
 
 // Cerrar modal CRUD
 function closeCrudModal() {
