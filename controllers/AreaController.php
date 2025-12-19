@@ -144,46 +144,46 @@ class AreaController {
     }
     
     // Método para cambiar estado de área
-   public function cambiarEstado($data) {
-    try {
-        // Validar que el área exista
-        $areaExistente = $this->areaModel->obtenerPorId($data['id']);
-        if (!$areaExistente) {
+    public function cambiarEstado($data) {
+        try {
+            // Validar que el área exista
+            $areaExistente = $this->areaModel->obtenerPorId($data['id']);
+            if (!$areaExistente) {
+                return [
+                    'success' => false,
+                    'error' => 'Área no encontrada'
+                ];
+            }
+            
+            // Asegurarse de que activo sea booleano
+            $activo = filter_var($data['activo'], FILTER_VALIDATE_BOOLEAN);
+            
+            // Actualizar los datos con el valor booleano
+            $data['activo'] = $activo;
+            
+            // Cambiar estado
+            $resultado = $this->areaModel->cambiarEstadoArea($data['id'], $data['activo']);
+            
+            if ($resultado) {
+                $accion = $activo ? 'activada' : 'desactivada';
+                return [
+                    'success' => true,
+                    'message' => "Área {$accion} exitosamente"
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'No se pudo cambiar el estado del área'
+                ];
+            }
+            
+        } catch (Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Área no encontrada'
+                'error' => 'Error al cambiar estado: ' . $e->getMessage()
             ];
         }
-        
-        // Asegurarse de que activo sea booleano
-        $activo = filter_var($data['activo'], FILTER_VALIDATE_BOOLEAN);
-        
-        // Actualizar los datos con el valor booleano
-        $data['activo'] = $activo;
-        
-        // Cambiar estado
-        $resultado = $this->areaModel->cambiarEstadoArea($data['id'], $data['activo']);
-        
-        if ($resultado) {
-            $accion = $activo ? 'activada' : 'desactivada';
-            return [
-                'success' => true,
-                'message' => "Área {$accion} exitosamente"
-            ];
-        } else {
-            return [
-                'success' => false,
-                'error' => 'No se pudo cambiar el estado del área'
-            ];
-        }
-        
-    } catch (Exception $e) {
-        return [
-            'success' => false,
-            'error' => 'Error al cambiar estado: ' . $e->getMessage()
-        ];
     }
-}
     
     // Método para buscar áreas
     public function buscar($termino) {

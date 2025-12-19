@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/persona.php';
-require_once __DIR__ . '/usuario.php';
+/*require_once __DIR__ . '/usuario.php';*/
 
 class ContratistaModel {
     private $conn;
@@ -10,6 +10,7 @@ class ContratistaModel {
     public function __construct($db) {
         $this->conn = $db;
         $this->personaModel = new Persona($db);
+        // Se mantiene la instancia por si se usa en otras partes del sistema
         $this->usuarioModel = new Usuario($db);
     }
 
@@ -36,16 +37,14 @@ class ContratistaModel {
             }
 
             $id_detalle = $this->insertarDetalleContrato($id_persona, $datos);
-            $credenciales = $this->crearUsuarioAutomatico($id_persona, $datos['correo']);
-
+            
             $this->conn->commit();
             
             return [
                 'success' => true,
                 'id_persona' => $id_persona,
                 'id_detalle' => $id_detalle,
-                'id_usuario' => $credenciales['id_usuario'],
-                'password_temporal' => $credenciales['password_temporal']
+                'mensaje' => 'Contratista registrado exitosamente'
             ];
             
         } catch (Exception $e) {
@@ -133,6 +132,9 @@ class ContratistaModel {
         return $resultado['id_detalle'];
     }
 
+    /*
+    ⬇️ MÉTODOS ELIMINADOS (COMENTADOS PARA REFERENCIA):
+    
     private function crearUsuarioAutomatico($id_persona, $correo) {
         if ($this->usuarioModel->existeCorreo($correo)) {
             throw new Exception('El correo electrónico ya está registrado en el sistema');
@@ -169,6 +171,7 @@ class ContratistaModel {
         
         return $password;
     }
+    */
 
     private function formatearFecha($fecha) {
         if (empty($fecha)) return null;
@@ -186,14 +189,14 @@ class ContratistaModel {
                     p.id_persona, p.cedula, p.nombres, p.apellidos, p.telefono,
                     dc.id_detalle, dc.numero_contrato, dc.fecha_inicio, dc.fecha_final,
                     a.nombre AS area, tv.nombre AS tipo_vinculacion,
-                    m1.nombre AS municipio_principal,
-                    u.correo, u.activo AS usuario_activo
+                    m1.nombre AS municipio_principal
+                    // ⬇️ ELIMINADO: u.correo, u.activo AS usuario_activo
                 FROM detalle_contrato dc
                 JOIN persona p ON dc.id_persona = p.id_persona
                 LEFT JOIN area a ON dc.id_area = a.id_area
                 LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
                 LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
-                LEFT JOIN usuario u ON p.id_persona = u.id_persona
+                // ⬇️ ELIMINADO: LEFT JOIN usuario u ON p.id_persona = u.id_persona
                 ORDER BY dc.created_at DESC";
         
         $stmt = $this->conn->prepare($sql);
@@ -209,8 +212,8 @@ class ContratistaModel {
                     tv.nombre AS tipo_vinculacion_nombre,
                     m1.nombre AS municipio_principal_nombre,
                     m2.nombre AS municipio_secundario_nombre,
-                    m3.nombre AS municipio_terciario_nombre,
-                    u.correo, u.activo AS usuario_activo
+                    m3.nombre AS municipio_terciario_nombre
+                    // ⬇️ ELIMINADO: u.correo, u.activo AS usuario_activo
                 FROM detalle_contrato dc
                 JOIN persona p ON dc.id_persona = p.id_persona
                 LEFT JOIN area a ON dc.id_area = a.id_area
@@ -218,7 +221,7 @@ class ContratistaModel {
                 LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
                 LEFT JOIN municipio m2 ON dc.id_municipio_secundario = m2.id_municipio
                 LEFT JOIN municipio m3 ON dc.id_municipio_terciario = m3.id_municipio
-                LEFT JOIN usuario u ON p.id_persona = u.id_persona
+                // ⬇️ ELIMINADO: LEFT JOIN usuario u ON p.id_persona = u.id_persona
                 WHERE dc.id_detalle = :id_detalle";
         
         $stmt = $this->conn->prepare($sql);

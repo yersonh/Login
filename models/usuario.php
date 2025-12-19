@@ -8,9 +8,10 @@ class Usuario {
 
     public function insertar($id_persona, $correo, $password, $tipo_usuario = 'contratista', $activo = true) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
+        $fecha_registro = date('Y-m-d H:i:s');
 
-        $sql = "INSERT INTO usuario (id_persona, correo, contrasena, tipo_usuario, activo)
-                VALUES (:id_persona, :correo, :password, :tipo_usuario, :activo)";
+        $sql = "INSERT INTO usuario (id_persona, correo, contrasena, tipo_usuario, activo, fecha_registro)
+                VALUES (:id_persona, :correo, :password, :tipo_usuario, :activo, :fecha_registro)";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id_persona', $id_persona);
@@ -18,6 +19,7 @@ class Usuario {
         $stmt->bindParam(':password', $hash);
         $stmt->bindParam(':tipo_usuario', $tipo_usuario);
         $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+        $stmt->bindParam(':fecha_registro', $fecha_registro);
 
         try {
             return $stmt->execute();
@@ -42,38 +44,23 @@ class Usuario {
     }
 
     public function obtenerPorCorreo($correo) {
-    // Agregamos u.reset_password y u.fecha_creacion
-    $sql = "SELECT u.*, u.reset_password, u.fecha_creacion, 
-                   p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
-            FROM usuario u
-            JOIN persona p ON u.id_persona = p.id_persona
-            WHERE u.correo = :correo";
+        $sql = "SELECT u.*, u.fecha_registro, u.fecha_creacion, 
+                       p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
+                FROM usuario u
+                JOIN persona p ON u.id_persona = p.id_persona
+                WHERE u.correo = :correo";
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':correo', $correo);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':correo', $correo);
 
-    try {
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Error al obtener usuario por correo: " . $e->getMessage());
-        return false;
+        try {
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener usuario por correo: " . $e->getMessage());
+            return false;
+        }
     }
-}
-public function marcarClaveEstablecida($id_usuario) {
-    $sql = "UPDATE usuario SET reset_password = FALSE 
-            WHERE id_usuario = :id_usuario";
-
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':id_usuario', $id_usuario);
-
-    try {
-        return $stmt->execute();
-    } catch (PDOException $e) {
-        error_log("Error al marcar clave como establecida: " . $e->getMessage());
-        return false;
-    }
-}
 
     public function actualizarTipoUsuario($id_usuario, $tipo_usuario) {
         $sql = "UPDATE usuario SET tipo_usuario = :tipo_usuario 
@@ -92,7 +79,7 @@ public function marcarClaveEstablecida($id_usuario) {
     }
 
     public function obtenerTodos() {
-        $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo,
+        $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
                        p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
                 FROM usuario u
                 JOIN persona p ON u.id_persona = p.id_persona
@@ -109,3 +96,4 @@ public function marcarClaveEstablecida($id_usuario) {
         }
     }
 }
+?>
