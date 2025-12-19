@@ -617,6 +617,13 @@ body {
         flex-direction: column;
         gap: 10px;
     }
+    .back-button {
+        margin-top: 8px;
+        padding: 12px 18px;
+        font-size: 14px;
+        bottom: 15px;
+        right: 15px;
+    }
 }
 
 /* ========== RESPONSIVE - MÓVILES PEQUEÑOS (< 480px) ========== */
@@ -692,8 +699,11 @@ body {
     }
     
     .back-button {
-        padding: 8px 15px;
+        margin-top: 8px;
+        padding: 12px 18px;
         font-size: 14px;
+        bottom: 15px;
+        right: 15px;
     }
     
     /* FORMULARIO RESPONSIVE */

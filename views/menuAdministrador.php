@@ -114,6 +114,32 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 right: 15px;
             }
         }
+        @media (max-width: 576px) {
+            .return-assistant-btn {
+                margin-top: 6px;
+                padding: 10px 15px;
+                font-size: 13px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .return-assistant-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-height: 700px) and (max-width: 768px) {
+            .return-assistant-btn {
+                bottom: 8px;
+                right: 8px;
+                padding: 8px 10px;
+            }
+        }
         /* Indicador en el sidebar */
         .session-info {
             margin-top: 15px;
