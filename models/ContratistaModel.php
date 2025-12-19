@@ -9,8 +9,6 @@ class ContratistaModel {
     public function __construct($db) {
         $this->conn = $db;
         $this->personaModel = new Persona($db);
-        // Se mantiene la instancia por si se usa en otras partes del sistema
-        $this->usuarioModel = new Usuario($db);
     }
 
     public function registrarContratistaCompleto($datos) {
