@@ -748,68 +748,89 @@ $anio = date('Y');
     }
 
     // Función para actualizar el modal con datos en tiempo real
-    function actualizarModalResumen() {
-        // Obtener los valores actuales de los campos del formulario
-        const version = document.getElementById('version')?.value || '1.0.0';
-        const tipoLicencia = document.getElementById('tipoLicencia')?.value || 'Evaluación';
-        const desarrolladoPor = document.getElementById('desarrolladoPor')?.value || 'SisgonTech';
-        const validaHasta = document.getElementById('validaHasta')?.value || '2026-03-31';
-        const direccion = document.getElementById('direccion')?.value || 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta';
-        const contacto = document.getElementById('contacto')?.value || 'gobernaciondelmeta@meta.gov.co';
-        const telefono = document.getElementById('telefono')?.value || '(57 -608) 6 818503';
-        const diasRestantes = document.getElementById('diasRestantes')?.value || '90 días';
-        const logoUrl = document.getElementById('currentLogo')?.src || '../../imagenes/gobernacion.png';
-        const entidad = document.getElementById('logoAltText')?.value || 'Logo Gobernación del Meta';
+    // Función para actualizar el modal con datos en tiempo real
+function actualizarModalResumen() {
+    // Obtener los valores actuales de los campos del formulario
+    const version = document.getElementById('version')?.value || '1.0.0';
+    const tipoLicencia = document.getElementById('tipoLicencia')?.value || 'Evaluación';
+    const desarrolladoPor = document.getElementById('desarrolladoPor')?.value || 'SisgonTech';
+    const validaHasta = document.getElementById('validaHasta')?.value || '2026-03-31';
+    const direccion = document.getElementById('direccion')?.value || 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta';
+    const contacto = document.getElementById('contacto')?.value || 'gobernaciondelmeta@meta.gov.co';
+    const telefono = document.getElementById('telefono')?.value || '(57 -608) 6 818503';
+    const diasRestantes = document.getElementById('diasRestantes')?.value || '90 días';
+    const logoUrl = document.getElementById('currentLogo')?.src || '../../imagenes/gobernacion.png';
+    const entidad = document.getElementById('logoAltText')?.value || 'Logo Gobernación del Meta';
+    
+    const anio = new Date().getFullYear();
+    
+    // Calcular fecha formateada
+    let fechaFormateada = '31/03/2026';
+    if (validaHasta) {
+        const fecha = new Date(validaHasta);
+        fechaFormateada = fecha.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+    
+    // Actualizar logo
+    const modalLogo = document.getElementById('modalLogo');
+    if (modalLogo) {
+        modalLogo.src = logoUrl;
+        modalLogo.alt = entidad;
+    }
+    
+    // Actualizar primera línea
+    const modalLinea1 = document.getElementById('modalLinea1');
+    if (modalLinea1) {
+        modalLinea1.innerHTML = `© ${anio} ${version}® desarrollado por <strong>${desarrolladoPor}</strong> - Tipo de Licencia: ${tipoLicencia}`;
+    }
+    
+    // Actualizar segunda línea
+    const modalLinea2 = document.getElementById('modalLinea2');
+    if (modalLinea2) {
+        modalLinea2.innerHTML = `${direccion} - Asesores e-Governance Solutions para Entidades Públicas ${anio}® By: Ing. Rubén Darío González García ${telefono}. Contacto: <strong>${contacto}</strong>`;
+    }
+    
+    // Actualizar información adicional
+    const modalValidaHasta = document.getElementById('modalValidaHasta');
+    if (modalValidaHasta) {
+        modalValidaHasta.textContent = fechaFormateada;
+    }
+    
+    const modalDiasRestantes = document.getElementById('modalDiasRestantes');
+    if (modalDiasRestantes) {
+        modalDiasRestantes.textContent = diasRestantes;
         
-        const anio = new Date().getFullYear();
+        // CORRECCIÓN: Extraer el número de días para evaluar correctamente
+        const diasTexto = diasRestantes;
+        let esRojo = false;
         
-        // Calcular fecha formateada
-        let fechaFormateada = '31/03/2026';
-        if (validaHasta) {
-            const fecha = new Date(validaHasta);
-            fechaFormateada = fecha.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
-        
-        // Actualizar logo
-        const modalLogo = document.getElementById('modalLogo');
-        if (modalLogo) {
-            modalLogo.src = logoUrl;
-            modalLogo.alt = entidad;
-        }
-        
-        // Actualizar primera línea
-        const modalLinea1 = document.getElementById('modalLinea1');
-        if (modalLinea1) {
-            modalLinea1.innerHTML = `© ${anio} ${version}® desarrollado por <strong>${desarrolladoPor}</strong> - Tipo de Licencia: ${tipoLicencia}`;
-        }
-        
-        // Actualizar segunda línea
-        const modalLinea2 = document.getElementById('modalLinea2');
-        if (modalLinea2) {
-            modalLinea2.innerHTML = `${direccion} - Asesores e-Governance Solutions para Entidades Públicas ${anio}® By: Ing. Rubén Darío González García ${telefono}. Contacto: <strong>${contacto}</strong>`;
-        }
-        
-        // Actualizar información adicional
-        const modalValidaHasta = document.getElementById('modalValidaHasta');
-        if (modalValidaHasta) {
-            modalValidaHasta.textContent = fechaFormateada;
-        }
-        
-        const modalDiasRestantes = document.getElementById('modalDiasRestantes');
-        if (modalDiasRestantes) {
-            modalDiasRestantes.textContent = diasRestantes;
-            // Cambiar color según días restantes
-            if (diasRestantes.includes('0 días') || diasRestantes.includes('Expirada')) {
-                modalDiasRestantes.className = 'resumen-valor text-danger';
-            } else {
-                modalDiasRestantes.className = 'resumen-valor text-success';
+        // Si contiene "Expirada" → Rojo
+        if (diasTexto.includes('Expirada')) {
+            esRojo = true;
+        } else {
+            // Extraer el número del texto (ej: "70 días" → 70)
+            const match = diasTexto.match(/(\d+)/);
+            if (match) {
+                const numDias = parseInt(match[1]);
+                // Rojo solo si hay 0 días
+                if (numDias === 0 || diasTexto.includes('0 días')) {
+                    esRojo = true;
+                }
             }
         }
+        
+        // Aplicar clase según evaluación
+        if (esRojo) {
+            modalDiasRestantes.className = 'resumen-valor text-danger';
+        } else {
+            modalDiasRestantes.className = 'resumen-valor text-success';
+        }
     }
+}
 
     // Modificar la función para abrir el modal para que primero actualice los datos
     function openResumenModal() {
