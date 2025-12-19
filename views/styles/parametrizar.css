@@ -1895,8 +1895,8 @@ input[readonly].form-control {
 }
 
 #resumenModal .btn-primary:hover {
-    background-color: #444;
-    border-color: #444;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 /* Ajustes para el modal en dispositivos móviles */
