@@ -89,18 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ========== 5. AUTO-FOCUS EN PASSWORD ==========
-    if (emailInput && passwordField) {
-        emailInput.addEventListener('input', function() {
-            if (this.value.length > 3) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (emailRegex.test(this.value)) {
-                    passwordField.focus();
-                }
-            }
-        });
-    }
-
     // ========== 6. MODAL DE RECUPERACIÓN ==========
     const openBtn = document.getElementById('openRecoveryModal');
     
