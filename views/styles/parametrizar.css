@@ -1887,16 +1887,16 @@ input[readonly].form-control {
 }
 
 #resumenModal .btn-primary {
-    background-color: #333;
-    border-color: #333;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
     padding: 6px 12px;
     font-size: 12px;
     min-width: 80px;
 }
 
 #resumenModal .btn-primary:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
 
 /* Ajustes para el modal en dispositivos móviles */
