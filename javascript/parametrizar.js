@@ -408,148 +408,50 @@ function setupEstadoVinculacionModalEvents() {
 }
 
 // Abrir modal para agregar/editar tipo vinculación
-function guardarVinculacion(recordId, btn, originalText) {
-    // Limpiar mensajes de error previos
-    limpiarErroresVinculacion();
+function abrirModalVinculacion(modo = 'agregar', id = null) {
+    const modal = document.getElementById('crudModal');
+    const titulo = document.getElementById('modalTitle');
+    const vinculacionFields = document.getElementById('vinculacionFields');
+    const recordId = document.getElementById('recordId');
+    const recordType = document.getElementById('recordType');
     
-    // Obtener datos del formulario
-    const datos = {
-        nombre: document.getElementById('nombreVinculacion').value.trim(),
-        codigo: document.getElementById('codigoVinculacion').value.trim(),
-        descripcion: document.getElementById('descripcionVinculacion').value.trim(),
-        activo: document.getElementById('estadoVinculacion').value === '1'
-    };
-    
-    // Validaciones básicas
-    if (!datos.nombre) {
-        mostrarErrorCampo('nombreVinculacion', 'El nombre del tipo es requerido');
-        return;
-    }
-    
-    if (!datos.codigo) {
-        mostrarErrorCampo('codigoVinculacion', 'El código del tipo es requerido');
-        return;
-    }
-    
-    // Configurar petición
-    const url = '../../api/tipo_vinculacion.php';
-    const metodo = recordId ? 'PUT' : 'POST';
-    const bodyData = recordId ? { ...datos, id_tipo: parseInt(recordId) } : datos;
-    
-    // Mostrar estado de carga
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-    btn.disabled = true;
-    
-    fetch(url, {
-        method: metodo,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bodyData)
-    })
-    .then(res => {
-        return res.json().then(data => ({
-            status: res.status,
-            data: data
-        }));
-    })
-    .then(result => {
-        const { status, data } = result;
-        
-        if (status === 409) {
-            // Error de conflicto (duplicado)
-            mostrarErrorCampo('nombreVinculacion', 'Por favor ingrese un tipo diferente, no se permiten duplicados');
-            return;
-        }
-        
-        if (!data.success) {
-            // Otros errores del backend
-            if (data.error && data.error.includes('Ya existe')) {
-                mostrarErrorCampo('nombreVinculacion', 'Por favor ingrese un tipo diferente, no se permiten duplicados');
-            } else {
-                mostrarErrorCampo('nombreVinculacion', data.error || 'Error al guardar');
-            }
-            return;
-        }
-        
-        // Éxito
-        showSuccess(data.message || 'Tipo de vinculación guardado exitosamente');
-        closeCrudModal();
-        cargarTiposVinculacion(); // Recargar la tabla
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        mostrarErrorCampo('nombreVinculacion', 'Error de conexión');
-    })
-    .finally(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+    // Ocultar otros formularios y mostrar solo el de tipos vinculación
+    document.querySelectorAll('.form-fields').forEach(field => {
+        field.style.display = 'none';
+        field.classList.remove('active');
     });
-}
-// Función para mostrar error en un campo específico
-function mostrarErrorCampo(campoId, mensaje) {
-    const errorElement = document.getElementById(campoId + 'Error');
-    const inputElement = document.getElementById(campoId);
     
-    if (errorElement) {
-        errorElement.textContent = mensaje;
-        errorElement.style.display = 'block';
-        
-        // Resaltar el input con borde rojo
-        if (inputElement) {
-            inputElement.style.borderColor = '#dc3545';
-            inputElement.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
-            
-            // Quitar el resaltado después de 3 segundos
-            setTimeout(() => {
-                if (inputElement) {
-                    inputElement.style.borderColor = '';
-                    inputElement.style.boxShadow = '';
-                }
-            }, 3000);
-        }
-        
-        // Hacer scroll al campo con error
-        if (inputElement) {
-            inputElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    } else {
-        // Fallback: usar el alert global
-        showError(mensaje);
+    // Crear el contenedor de campos si no existe
+    if (!vinculacionFields) {
+        crearCamposVinculacion();
     }
+    
+    const camposVinculacion = document.getElementById('vinculacionFields');
+    camposVinculacion.style.display = 'block';
+    camposVinculacion.classList.add('active');
+    
+    // Limpiar formulario
+    document.getElementById('nombreVinculacion').value = '';
+    document.getElementById('codigoVinculacion').value = '';
+    document.getElementById('descripcionVinculacion').value = '';
+    document.getElementById('estadoVinculacion').value = '1';
+    
+    if (modo === 'agregar') {
+        titulo.textContent = 'Agregar Nuevo Tipo de Vinculación';
+        recordId.value = '';
+        recordType.value = 'vinculacion';
+    } else if (modo === 'editar' && id) {
+        titulo.textContent = 'Editar Tipo de Vinculación';
+        recordId.value = id;
+        recordType.value = 'vinculacion';
+        
+        // Cargar datos del tipo
+        cargarDatosVinculacion(id);
+    }
+    
+    modal.style.display = 'flex';
 }
 
-// Función para limpiar errores del formulario de vinculación
-function limpiarErroresVinculacion() {
-    const errorElements = [
-        'nombreVinculacionError',
-        'codigoVinculacionError'
-    ];
-    
-    errorElements.forEach(elementId => {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.style.display = 'none';
-            element.textContent = '';
-        }
-    });
-    
-    // Restaurar estilos de los inputs
-    const inputs = [
-        'nombreVinculacion',
-        'codigoVinculacion',
-        'descripcionVinculacion'
-    ];
-    
-    inputs.forEach(inputId => {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.style.borderColor = '';
-            input.style.boxShadow = '';
-        }
-    });
-}
 // Crear campos para tipo vinculación (si no existen en el HTML)
 function crearCamposVinculacion() {
     const campos = `
@@ -1834,45 +1736,5 @@ function restaurarLogoPredeterminado() {
 
 function restaurarConfiguracionPredeterminada() {
     if(!confirm("¿Restaurar toda la configuración?")) return;
-
-}
-function abrirModalVinculacion(modo = 'agregar', id = null) {
-    const modal = document.getElementById('crudModal');
-    const titulo = document.getElementById('modalTitle');
-    const vinculacionFields = document.getElementById('vinculacionFields');
-    const recordId = document.getElementById('recordId');
-    const recordType = document.getElementById('recordType');
-    
-    // Ocultar otros formularios y mostrar solo el de tipos vinculación
-    document.querySelectorAll('.form-fields').forEach(field => {
-        field.style.display = 'none';
-        field.classList.remove('active');
-    });
-    
-    vinculacionFields.style.display = 'block';
-    vinculacionFields.classList.add('active');
-    
-    // Limpiar errores previos
-    limpiarErroresVinculacion();
-    
-    // Limpiar formulario
-    document.getElementById('nombreVinculacion').value = '';
-    document.getElementById('codigoVinculacion').value = '';
-    document.getElementById('descripcionVinculacion').value = '';
-    document.getElementById('estadoVinculacion').value = '1';
-    
-    if (modo === 'agregar') {
-        titulo.textContent = 'Agregar Nuevo Tipo de Vinculación';
-        recordId.value = '';
-        recordType.value = 'vinculacion';
-    } else if (modo === 'editar' && id) {
-        titulo.textContent = 'Editar Tipo de Vinculación';
-        recordId.value = id;
-        recordType.value = 'vinculacion';
-        
-        // Cargar datos del tipo
-        cargarDatosVinculacion(id);
-    }
-    
-    modal.style.display = 'flex';
+    // Fetch a parametrizacion_restaurar.php...
 }

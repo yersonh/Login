@@ -442,19 +442,17 @@ if (!empty($configuracion['valida_hasta'])) {
                         <div class="form-group">
                             <label for="nombreVinculacion">Tipo de Vinculación:</label>
                             <input type="text" id="nombreVinculacion" class="form-control" 
-                                placeholder="Ej: Contratista" maxlength="100" required>
-                            <div id="nombreVinculacionError" class="error-message" style="display: none; color: #dc3545; font-size: 14px; margin-top: 5px;"></div>
+                                   placeholder="Ej: Contratista" maxlength="100" required>
                         </div>
                         <div class="form-group">
                             <label for="codigoVinculacion">Código:</label>
                             <input type="text" id="codigoVinculacion" class="form-control" 
-                                placeholder="Ej: CON-001" maxlength="20" required>
-                            <div id="codigoVinculacionError" class="error-message" style="display: none; color: #dc3545; font-size: 14px; margin-top: 5px;"></div>
+                                   placeholder="Ej: CON-001" maxlength="20" required>
                         </div>
                         <div class="form-group">
                             <label for="descripcionVinculacion">Descripción:</label>
                             <textarea id="descripcionVinculacion" class="form-control" rows="3" 
-                                    placeholder="Descripción del tipo de vinculación..."></textarea>
+                                      placeholder="Descripción del tipo de vinculación..."></textarea>
                         </div>
                         <div class="form-group">
                             <label for="estadoVinculacion">Estado:</label>
