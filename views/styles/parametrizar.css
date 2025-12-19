@@ -1773,3 +1773,112 @@ input[readonly].form-control {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
+/* Estilos para el modal de resumen */
+.resumen-container {
+    padding: 20px;
+}
+
+.resumen-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #004a8d;
+    padding-bottom: 15px;
+}
+
+.resumen-header img {
+    max-height: 80px;
+    margin-bottom: 10px;
+}
+
+.resumen-header h2 {
+    color: #004a8d;
+    margin: 0;
+    font-size: 24px;
+}
+
+.resumen-datos {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #004a8d;
+}
+
+.resumen-linea {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.resumen-linea:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.resumen-linea p {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
+    font-size: 14px;
+}
+
+.resumen-linea strong {
+    color: #004a8d;
+}
+
+.resumen-extra {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #ccc;
+}
+
+.resumen-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.resumen-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+}
+
+.resumen-valor {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.resumen-usuario {
+    background: #e8f4fd;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+    margin-top: 20px;
+}
+
+.resumen-usuario p {
+    margin: 0;
+    color: #0c5460;
+}
+
+.resumen-usuario strong {
+    color: #004a8d;
+    font-size: 16px;
+}

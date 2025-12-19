@@ -105,7 +105,8 @@ if (!empty($configuracion['valida_hasta'])) {
 <main class="app-main">
     <div class="page-title">
         <h1><i class="fas fa-sliders-h"></i> Panel de Parametrización</h1>
-        <button class="back-button" onclick="window.location.href='../menuAdministrador.php'">
+        <!-- Botón modificado para abrir modal -->
+        <button class="back-button" id="btnVolverMenu">
             <i class="fas fa-arrow-left"></i> Volver al Menú
         </button>
     </div>
@@ -175,9 +176,6 @@ if (!empty($configuracion['valida_hasta'])) {
                         <button type="button" class="btn btn-primary" id="saveLogoBtn">
                             <i class="fas fa-save"></i> Guardar Cambios del Logo
                         </button>
-                        <!-- <button type="button" class="btn btn-secondary" id="restoreLogoBtn">
-                            <i class="fas fa-undo"></i> Restaurar Logo Predeterminado
-                        </button> -->
                     </div>
                 </form>
             </div>
@@ -257,9 +255,6 @@ if (!empty($configuracion['valida_hasta'])) {
                 <button type="button" class="btn btn-primary" id="saveConfigBtn">
                     <i class="fas fa-save"></i> Guardar Configuración
                 </button>
-                <!--<button type="button" class="btn btn-secondary" id="resetConfigBtn">
-                    <i class="fas fa-redo"></i> Restaurar Valores Predeterminados
-                </button>-->
             </div>
         </form>
     </div>
@@ -476,139 +471,243 @@ if (!empty($configuracion['valida_hasta'])) {
     </div>
     
 </main>
-                <!-- MODAL DE CONFIRMACIÓN -->
-        <div id="confirmationModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-question-circle"></i> Confirmar Cambios</h3>
-                    <button type="button" class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
+
+<!-- MODAL DE RESUMEN AL VOLVER -->
+<div id="resumenModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-info-circle"></i> Resumen de Configuración</h3>
+            <button type="button" class="modal-close" onclick="closeResumenModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="resumen-container">
+                <!-- Logo y Encabezado -->
+                <div class="resumen-header">
+                    <img id="resumenLogo" 
+                         src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
+                         alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>"
+                         onerror="this.onerror=null; this.src='../../imagenes/gobernacion.png'">
+                    <h2>GOBERNACIÓN DEL META</h2>
                 </div>
-                <div class="modal-body">
-                    <span>Señor(ar) </span>
-                    <strong style="font-size: 18px; font-weight: bold;">
-                            <?php echo htmlspecialchars($nombreCompleto); ?>
-                    </strong>
-                    <span>, usted está a punto de realizar los siguientes cambios en la parametrización del sistema:</span>
-                    <p id="modalMessage">¿Está seguro de guardar los cambios?</p>
-                    <div class="modal-details" id="modalDetails" style="display: none;">
-                        <h4>Cambios a realizar:</h4>
-                        <ul id="changesList"></ul>
+                
+                <!-- Datos Parametrizados en dos renglones -->
+                <div class="resumen-datos">
+                    <div class="resumen-linea">
+                        <p>
+                            <?php
+                            $version = htmlspecialchars($configuracion['version_sistema'] ?? '1.0.0');
+                            $tipoLicencia = htmlspecialchars($configuracion['tipo_licencia'] ?? 'Evaluación');
+                            $desarrolladoPor = htmlspecialchars($configuracion['desarrollado_por'] ?? 'SisgonTech');
+                            $anio = date('Y');
+                            
+                            echo "© {$anio} {$version}® desarrollado por <strong>{$desarrolladoPor}</strong> - Tipo de Licencia: {$tipoLicencia}";
+                            ?>
+                        </p>
+                    </div>
+                    
+                    <div class="resumen-linea">
+                        <p>
+                            <?php
+                            $direccion = htmlspecialchars($configuracion['direccion'] ?? 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta');
+                            $correo = htmlspecialchars($configuracion['correo_contacto'] ?? 'gobernaciondelmeta@meta.gov.co');
+                            $telefono = htmlspecialchars($configuracion['telefono'] ?? '(57 -608) 6 818503');
+                            
+                            echo "{$direccion} - Asesores e-Governance Solutions para Entidades Públicas {$anio}® By: Ing. Rubén Darío González García {$telefono}. Contacto: <strong>{$correo}</strong>";
+                            ?>
+                        </p>
+                    </div>
+                    
+                    <!-- Información adicional -->
+                    <div class="resumen-extra">
+                        <div class="resumen-item">
+                            <span class="resumen-label">Válido hasta:</span>
+                            <span class="resumen-valor">
+                                <?php
+                                if (!empty($configuracion['valida_hasta'])) {
+                                    $fecha = new DateTime($configuracion['valida_hasta']);
+                                    echo $fecha->format('d/m/Y');
+                                } else {
+                                    echo '31/03/2026';
+                                }
+                                ?>
+                            </span>
+                        </div>
+                        
+                        <div class="resumen-item">
+                            <span class="resumen-label">Días restantes:</span>
+                            <span class="resumen-valor <?php echo ($diasRestantes == '0 días (Expirada)') ? 'text-danger' : 'text-success'; ?>">
+                                <?php echo htmlspecialchars($diasRestantes); ?>
+                            </span>
+                        </div>
+                        
+                        <div class="resumen-item">
+                            <span class="resumen-label">Estado:</span>
+                            <span class="resumen-valor text-success">
+                                <i class="fas fa-check-circle"></i> Configuración Guardada
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmSaveBtn">
-                        <i class="fas fa-check"></i> Sí, Guardar Cambios
-                    </button>
+                
+                <!-- Mensaje del usuario -->
+                <div class="resumen-usuario">
+                    <p>
+                        <span>Señor(a) </span>
+                        <strong><?php echo htmlspecialchars($nombreCompleto); ?></strong>
+                        <span>, la parametrización del sistema ha sido completada exitosamente.</span>
+                    </p>
                 </div>
             </div>
         </div>
-        <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR MUNICIPIOS -->
-        <div id="confirmEstadoModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-question-circle"></i> Confirmar Cambio de Estado</h3>
-                    <button type="button" class="modal-close" onclick="closeEstadoModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <span>Señor(ar) </span>
-                    <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombre">
-                        <?php echo htmlspecialchars($nombreCompleto); ?>
-                    </strong>
-                    <span>, </span>
-                    <p id="estadoMensaje">¿Está seguro de cambiar el estado de este municipio?</p>
-                    <div class="modal-details">
-                        <h4>Detalles del municipio:</h4>
-                        <ul id="municipioDetails"></ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeEstadoModal()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmEstadoBtn">
-                        <i class="fas fa-check"></i> Sí, Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR ÁREAS -->
-        <div id="confirmEstadoAreaModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-question-circle"></i> Confirmar Cambio de Estado</h3>
-                    <button type="button" class="modal-close" onclick="closeEstadoAreaModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <span>Señor(ar) </span>
-                    <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombre">
-                        <?php echo htmlspecialchars($nombreCompleto); ?>
-                    </strong>
-                    <span>, </span>
-                    <p id="estadoAreaMensaje">¿Está seguro de cambiar el estado de esta área?</p>
-                    <div class="modal-details">
-                        <h4>Detalles del área:</h4>
-                        <ul id="areaDetails"></ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeEstadoAreaModal()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmEstadoAreaBtn">
-                        <i class="fas fa-check"></i> Sí, Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR Tipo vinculacion -->
-        <!-- Modal para Cambio de Estado - Tipo Vinculación -->
-    <div id="confirmEstadoVinculacionModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
-                <button type="button" class="modal-close" onclick="closeEstadoVinculacionModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <span>Señor(a) </span>
-                <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombreVinculacion">
-                    <?php echo htmlspecialchars($nombreCompleto); ?>
-                </strong>
-                <span>, </span>
-                <p id="estadoVinculacionMensaje">¿Está seguro de cambiar el estado de este tipo de vinculación?</p>
-                <div class="modal-details">
-                    <h4>Detalles del tipo de vinculación:</h4>
-                    <ul id="vinculacionDetails">
-                        <li><strong>Tipo:</strong> <span id="detailNombre"></span></li>
-                        <li><strong>Código:</strong> <span id="detailCodigo"></span></li>
-                        <li><strong>Descripción:</strong> <span id="detailDescripcion"></span></li>
-                        <li><strong>Estado Actual:</strong> <span id="detailEstadoActual" class="estado-badge"></span></li>
-                        <li><strong>Nuevo Estado:</strong> <span id="detailNuevoEstado" class="estado-badge"></span></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeEstadoVinculacionModal()">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
-                <button type="button" class="btn btn-primary" id="confirmEstadoVinculacionBtn">
-                    <i class="fas fa-check"></i> Sí, Confirmar
-                </button>
-            </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeResumenModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmVolverBtn">
+                <i class="fas fa-check"></i> Confirmar y Volver al Menú
+            </button>
         </div>
     </div>
-        <!-- Footer -->
-         <footer class="app-footer">
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div id="confirmationModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Confirmar Cambios</h3>
+            <button type="button" class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <span>Señor(ar) </span>
+            <strong style="font-size: 18px; font-weight: bold;">
+                    <?php echo htmlspecialchars($nombreCompleto); ?>
+            </strong>
+            <span>, usted está a punto de realizar los siguientes cambios en la parametrización del sistema:</span>
+            <p id="modalMessage">¿Está seguro de guardar los cambios?</p>
+            <div class="modal-details" id="modalDetails" style="display: none;">
+                <h4>Cambios a realizar:</h4>
+                <ul id="changesList"></ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmSaveBtn">
+                <i class="fas fa-check"></i> Sí, Guardar Cambios
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR MUNICIPIOS -->
+<div id="confirmEstadoModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Confirmar Cambio de Estado</h3>
+            <button type="button" class="modal-close" onclick="closeEstadoModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <span>Señor(ar) </span>
+            <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombre">
+                <?php echo htmlspecialchars($nombreCompleto); ?>
+            </strong>
+            <span>, </span>
+            <p id="estadoMensaje">¿Está seguro de cambiar el estado de este municipio?</p>
+            <div class="modal-details">
+                <h4>Detalles del municipio:</h4>
+                <ul id="municipioDetails"></ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEstadoModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmEstadoBtn">
+                <i class="fas fa-check"></i> Sí, Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR ÁREAS -->
+<div id="confirmEstadoAreaModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Confirmar Cambio de Estado</h3>
+            <button type="button" class="modal-close" onclick="closeEstadoAreaModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <span>Señor(ar) </span>
+            <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombre">
+                <?php echo htmlspecialchars($nombreCompleto); ?>
+            </strong>
+            <span>, </span>
+            <p id="estadoAreaMensaje">¿Está seguro de cambiar el estado de esta área?</p>
+            <div class="modal-details">
+                <h4>Detalles del área:</h4>
+                <ul id="areaDetails"></ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEstadoAreaModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmEstadoAreaBtn">
+                <i class="fas fa-check"></i> Sí, Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR Tipo vinculacion -->
+<div id="confirmEstadoVinculacionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
+            <button type="button" class="modal-close" onclick="closeEstadoVinculacionModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <span>Señor(a) </span>
+            <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombreVinculacion">
+                <?php echo htmlspecialchars($nombreCompleto); ?>
+            </strong>
+            <span>, </span>
+            <p id="estadoVinculacionMensaje">¿Está seguro de cambiar el estado de este tipo de vinculación?</p>
+            <div class="modal-details">
+                <h4>Detalles del tipo de vinculación:</h4>
+                <ul id="vinculacionDetails">
+                    <li><strong>Tipo:</strong> <span id="detailNombre"></span></li>
+                    <li><strong>Código:</strong> <span id="detailCodigo"></span></li>
+                    <li><strong>Descripción:</strong> <span id="detailDescripcion"></span></li>
+                    <li><strong>Estado Actual:</strong> <span id="detailEstadoActual" class="estado-badge"></span></li>
+                    <li><strong>Nuevo Estado:</strong> <span id="detailNuevoEstado" class="estado-badge"></span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeEstadoVinculacionModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="confirmEstadoVinculacionBtn">
+                <i class="fas fa-check"></i> Sí, Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="app-footer">
     <div class="footer-center">
         <?php
         $logoUrl = ConfigHelper::obtenerLogoUrl();
@@ -639,13 +738,51 @@ if (!empty($configuracion['valida_hasta'])) {
             <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
             By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
         </p>
-        
-
     </div>
 </footer>
     </div>
     
     <!-- Incluir el archivo JavaScript externo -->
     <script src="../../javascript/parametrizar.js"></script>
+    
+    <!-- Script para el modal de resumen -->
+    <script>
+    // Función para abrir el modal de resumen
+    function openResumenModal() {
+        document.getElementById('resumenModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Función para cerrar el modal de resumen
+    function closeResumenModal() {
+        document.getElementById('resumenModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Evento para el botón "Volver al Menú"
+    document.getElementById('btnVolverMenu').addEventListener('click', openResumenModal);
+
+    // Evento para el botón "Confirmar y Volver al Menú"
+    document.getElementById('confirmVolverBtn').addEventListener('click', function() {
+        // Cerrar el modal
+        closeResumenModal();
+        // Redirigir al menú del administrador
+        window.location.href = '../menuAdministrador.php';
+    });
+
+    // Cerrar modal si se hace clic fuera del contenido
+    document.getElementById('resumenModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeResumenModal();
+        }
+    });
+
+    // Cerrar modal con la tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('resumenModal').style.display === 'block') {
+            closeResumenModal();
+        }
+    });
+    </script>
 </body>
 </html>
