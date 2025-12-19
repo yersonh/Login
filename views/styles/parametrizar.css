@@ -1744,3 +1744,14 @@ input[readonly].form-control {
     line-height: 1.5;
     margin: 15px 0;
 }
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+}
+
+.form-control.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
