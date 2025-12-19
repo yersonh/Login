@@ -571,41 +571,42 @@ if (!empty($configuracion['valida_hasta'])) {
         </div>
         <!-- MODAL DE CONFIRMACIÓN PARA ACTIVAR/DESACTIVAR Tipo vinculacion -->
         <!-- Modal para Cambio de Estado - Tipo Vinculación -->
-        <div id="confirmEstadoVinculacionModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
-                    <button type="button" class="modal-close" onclick="closeEstadoVinculacionModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <span>Señor(a) </span>
-                    <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombreVinculacion">
-                        <?php echo htmlspecialchars($nombreCompleto); ?>
-                    </strong>
-                    <span>, </span>
-                    <p id="estadoVinculacionMensaje">¿Está seguro de cambiar el estado de este tipo de vinculación?</p>
-                    <div class="modal-details">
-                        <h4>Detalles del tipo de vinculación:</h4>
-                        <ul id="vinculacionDetails">
-                            <li><strong>Tipo:</strong> <span id="detailNombre"></span></li>
-                            <li><strong>Código:</strong> <span id="detailCodigo"></span></li>
-                            <li><strong>Estado Actual:</strong> <span id="detailEstadoActual"></span></li>
-                            <li><strong>Nuevo Estado:</strong> <span id="detailNuevoEstado"></span></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeEstadoVinculacionModal()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-primary" id="confirmEstadoVinculacionBtn">
-                        <i class="fas fa-check"></i> Sí, Confirmar
-                    </button>
+    <div id="confirmEstadoVinculacionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
+                <button type="button" class="modal-close" onclick="closeEstadoVinculacionModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span>Señor(a) </span>
+                <strong style="font-size: 18px; font-weight: bold;" id="usuarioNombreVinculacion">
+                    <?php echo htmlspecialchars($nombreCompleto); ?>
+                </strong>
+                <span>, </span>
+                <p id="estadoVinculacionMensaje">¿Está seguro de cambiar el estado de este tipo de vinculación?</p>
+                <div class="modal-details">
+                    <h4>Detalles del tipo de vinculación:</h4>
+                    <ul id="vinculacionDetails">
+                        <li><strong>Tipo:</strong> <span id="detailNombre"></span></li>
+                        <li><strong>Código:</strong> <span id="detailCodigo"></span></li>
+                        <li><strong>Descripción:</strong> <span id="detailDescripcion"></span></li>
+                        <li><strong>Estado Actual:</strong> <span id="detailEstadoActual" class="estado-badge"></span></li>
+                        <li><strong>Nuevo Estado:</strong> <span id="detailNuevoEstado" class="estado-badge"></span></li>
+                    </ul>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEstadoVinculacionModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmEstadoVinculacionBtn">
+                    <i class="fas fa-check"></i> Sí, Confirmar
+                </button>
+            </div>
         </div>
+    </div>
         <!-- Footer -->
          <footer class="app-footer">
     <div class="footer-center">
