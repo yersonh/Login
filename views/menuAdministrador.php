@@ -105,6 +105,15 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             font-size: 18px;
         }
         
+        @media (max-width: 768px) {
+            .logout-btn {
+                margin-top: 8px;
+                padding: 12px 18px;
+                font-size: 14px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
         /* Indicador en el sidebar */
         .session-info {
             margin-top: 15px;
