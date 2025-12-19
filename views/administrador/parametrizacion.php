@@ -63,6 +63,9 @@ if (!empty($configuracion['valida_hasta'])) {
         $diasRestantes = '0 días (Expirada)';
     }
 }
+
+// Obtener año actual
+$anio = date('Y');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -472,9 +475,9 @@ if (!empty($configuracion['valida_hasta'])) {
     
 </main>
 
-<!-- MODAL DE RESUMEN AL VOLVER -->
+<!-- MODAL DE RESUMEN AL VOLVER - ACTUALIZADO PARA TIEMPO REAL -->
 <div id="resumenModal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 700px;">
+    <div class="modal-content" style="max-width: 500px;">
         <div class="modal-header">
             <h3><i class="fas fa-info-circle"></i> Resumen de Configuración</h3>
             <button type="button" class="modal-close" onclick="closeResumenModal()">
@@ -485,65 +488,37 @@ if (!empty($configuracion['valida_hasta'])) {
             <div class="resumen-container">
                 <!-- Logo y Encabezado -->
                 <div class="resumen-header">
-                    <img id="resumenLogo" 
-                         src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
-                         alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>"
+                    <img id="modalLogo" 
+                         src="" 
+                         alt="Logo"
                          onerror="this.onerror=null; this.src='../../imagenes/gobernacion.png'">
                 </div>
                 
                 <!-- Datos Parametrizados en dos renglones -->
                 <div class="resumen-datos">
                     <div class="resumen-linea">
-                        <p>
-                            <?php
-                            $version = htmlspecialchars($configuracion['version_sistema'] ?? '1.0.0');
-                            $tipoLicencia = htmlspecialchars($configuracion['tipo_licencia'] ?? 'Evaluación');
-                            $desarrolladoPor = htmlspecialchars($configuracion['desarrollado_por'] ?? 'SisgonTech');
-                            $anio = date('Y');
-                            
-                            echo "© {$anio} {$version}® desarrollado por <strong>{$desarrolladoPor}</strong> - Tipo de Licencia: {$tipoLicencia}";
-                            ?>
-                        </p>
+                        <p id="modalLinea1"></p>
                     </div>
                     
                     <div class="resumen-linea">
-                        <p>
-                            <?php
-                            $direccion = htmlspecialchars($configuracion['direccion'] ?? 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta');
-                            $correo = htmlspecialchars($configuracion['correo_contacto'] ?? 'gobernaciondelmeta@meta.gov.co');
-                            $telefono = htmlspecialchars($configuracion['telefono'] ?? '(57 -608) 6 818503');
-                            
-                            echo "{$direccion} - Asesores e-Governance Solutions para Entidades Públicas {$anio}® By: Ing. Rubén Darío González García {$telefono}. Contacto: <strong>{$correo}</strong>";
-                            ?>
-                        </p>
+                        <p id="modalLinea2"></p>
                     </div>
                     
                     <!-- Información adicional -->
                     <div class="resumen-extra">
                         <div class="resumen-item">
                             <span class="resumen-label">Válido hasta:</span>
-                            <span class="resumen-valor">
-                                <?php
-                                if (!empty($configuracion['valida_hasta'])) {
-                                    $fecha = new DateTime($configuracion['valida_hasta']);
-                                    echo $fecha->format('d/m/Y');
-                                } else {
-                                    echo '31/03/2026';
-                                }
-                                ?>
-                            </span>
+                            <span class="resumen-valor" id="modalValidaHasta"></span>
                         </div>
                         
                         <div class="resumen-item">
                             <span class="resumen-label">Días restantes:</span>
-                            <span class="resumen-valor <?php echo ($diasRestantes == '0 días (Expirada)') ? 'text-danger' : 'text-success'; ?>">
-                                <?php echo htmlspecialchars($diasRestantes); ?>
-                            </span>
+                            <span class="resumen-valor" id="modalDiasRestantes"></span>
                         </div>
                         
                         <div class="resumen-item">
                             <span class="resumen-label">Estado:</span>
-                            <span class="resumen-valor text-success">
+                            <span class="resumen-valor text-success" id="modalEstado">
                                 <i class="fas fa-check-circle"></i> Configuración Guardada
                             </span>
                         </div>
@@ -554,7 +529,7 @@ if (!empty($configuracion['valida_hasta'])) {
                 <div class="resumen-usuario">
                     <p>
                         <span>Señor(a) </span>
-                        <strong><?php echo htmlspecialchars($nombreCompleto); ?></strong>
+                        <strong id="modalUsuario"><?php echo htmlspecialchars($nombreCompleto); ?></strong>
                         <span>, la parametrización del sistema ha sido completada exitosamente.</span>
                     </p>
                 </div>
@@ -744,10 +719,104 @@ if (!empty($configuracion['valida_hasta'])) {
     <!-- Incluir el archivo JavaScript externo -->
     <script src="../../javascript/parametrizar.js"></script>
     
-    <!-- Script para el modal de resumen -->
+    <!-- Script para el modal de resumen en tiempo real -->
     <script>
-    // Función para abrir el modal de resumen
+    // Función para calcular días restantes en tiempo real
+    function calcularDiasRestantes() {
+        const validaHastaInput = document.getElementById('validaHasta');
+        const diasRestantesInput = document.getElementById('diasRestantes');
+        
+        if (!validaHastaInput || !diasRestantesInput) return;
+        
+        const fechaValida = new Date(validaHastaInput.value);
+        const hoy = new Date();
+        
+        // Resetear la hora para comparar solo fechas
+        hoy.setHours(0, 0, 0, 0);
+        fechaValida.setHours(0, 0, 0, 0);
+        
+        const diferenciaMs = fechaValida - hoy;
+        const dias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+        
+        if (dias < 0) {
+            diasRestantesInput.value = '0 días (Expirada)';
+        } else if (dias === 0) {
+            diasRestantesInput.value = 'Hoy expira';
+        } else {
+            diasRestantesInput.value = `${dias} días`;
+        }
+    }
+
+    // Función para actualizar el modal con datos en tiempo real
+    function actualizarModalResumen() {
+        // Obtener los valores actuales de los campos del formulario
+        const version = document.getElementById('version')?.value || '1.0.0';
+        const tipoLicencia = document.getElementById('tipoLicencia')?.value || 'Evaluación';
+        const desarrolladoPor = document.getElementById('desarrolladoPor')?.value || 'SisgonTech';
+        const validaHasta = document.getElementById('validaHasta')?.value || '2026-03-31';
+        const direccion = document.getElementById('direccion')?.value || 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta';
+        const contacto = document.getElementById('contacto')?.value || 'gobernaciondelmeta@meta.gov.co';
+        const telefono = document.getElementById('telefono')?.value || '(57 -608) 6 818503';
+        const diasRestantes = document.getElementById('diasRestantes')?.value || '90 días';
+        const logoUrl = document.getElementById('currentLogo')?.src || '../../imagenes/gobernacion.png';
+        const entidad = document.getElementById('logoAltText')?.value || 'Logo Gobernación del Meta';
+        
+        const anio = new Date().getFullYear();
+        
+        // Calcular fecha formateada
+        let fechaFormateada = '31/03/2026';
+        if (validaHasta) {
+            const fecha = new Date(validaHasta);
+            fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+        
+        // Actualizar logo
+        const modalLogo = document.getElementById('modalLogo');
+        if (modalLogo) {
+            modalLogo.src = logoUrl;
+            modalLogo.alt = entidad;
+        }
+        
+        // Actualizar primera línea
+        const modalLinea1 = document.getElementById('modalLinea1');
+        if (modalLinea1) {
+            modalLinea1.innerHTML = `© ${anio} ${version}® desarrollado por <strong>${desarrolladoPor}</strong> - Tipo de Licencia: ${tipoLicencia}`;
+        }
+        
+        // Actualizar segunda línea
+        const modalLinea2 = document.getElementById('modalLinea2');
+        if (modalLinea2) {
+            modalLinea2.innerHTML = `${direccion} - Asesores e-Governance Solutions para Entidades Públicas ${anio}® By: Ing. Rubén Darío González García ${telefono}. Contacto: <strong>${contacto}</strong>`;
+        }
+        
+        // Actualizar información adicional
+        const modalValidaHasta = document.getElementById('modalValidaHasta');
+        if (modalValidaHasta) {
+            modalValidaHasta.textContent = fechaFormateada;
+        }
+        
+        const modalDiasRestantes = document.getElementById('modalDiasRestantes');
+        if (modalDiasRestantes) {
+            modalDiasRestantes.textContent = diasRestantes;
+            // Cambiar color según días restantes
+            if (diasRestantes.includes('0 días') || diasRestantes.includes('Expirada')) {
+                modalDiasRestantes.className = 'resumen-valor text-danger';
+            } else {
+                modalDiasRestantes.className = 'resumen-valor text-success';
+            }
+        }
+    }
+
+    // Modificar la función para abrir el modal para que primero actualice los datos
     function openResumenModal() {
+        // 1. Primero actualizar los datos del modal
+        actualizarModalResumen();
+        
+        // 2. Luego mostrar el modal
         document.getElementById('resumenModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
     }
@@ -781,6 +850,37 @@ if (!empty($configuracion['valida_hasta'])) {
         if (e.key === 'Escape' && document.getElementById('resumenModal').style.display === 'block') {
             closeResumenModal();
         }
+    });
+
+    // Ejecutar cuando cambie la fecha para actualizar días restantes
+    document.getElementById('validaHasta')?.addEventListener('change', calcularDiasRestantes);
+
+    // Ejecutar al cargar la página
+    window.addEventListener('load', calcularDiasRestantes);
+
+    // Actualizar logo preview y modal cuando se seleccione un nuevo logo
+    document.getElementById('newLogo')?.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // Actualizar preview
+                document.getElementById('currentLogo').src = event.target.result;
+                // El logo en el modal se actualizará cuando se abra el modal
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    // También puedes escuchar cambios en los inputs para actualizar en tiempo real si quieres
+    // (opcional, pero útil para ver cambios inmediatos)
+    const inputsConfiguracion = ['version', 'tipoLicencia', 'validaHasta', 'desarrolladoPor', 'direccion', 'contacto', 'telefono'];
+    inputsConfiguracion.forEach(inputId => {
+        document.getElementById(inputId)?.addEventListener('input', function() {
+            // Recalcular días restantes si cambia la fecha
+            if (inputId === 'validaHasta') {
+                calcularDiasRestantes();
+            }
+        });
     });
     </script>
 </body>
