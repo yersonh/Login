@@ -1827,18 +1827,24 @@ input[readonly].form-control {
     letter-spacing: 0.2px;
 }
 
+/* CORRECCIÓN: Remover color por defecto o usar !important */
 .resumen-valor {
     font-weight: 600;
     font-size: 11px;
-    color: #333;
+    /* color: #333; ← REMOVER ESTA LÍNCA o comentarla */
 }
 
+/* CLASES DE COLOR CON ESPECIFICIDAD MÁXIMA */
 .text-success {
-    color: #2e7d32 !important;
+    color: #2e7d32 !important; /* VERDE */
 }
 
 .text-danger {
-    color: #c62828 !important;
+    color: #c62828 !important; /* ROJO */
+}
+
+.text-warning {
+    color: #ff9800 !important; /* NARANJA */
 }
 
 .resumen-usuario {
