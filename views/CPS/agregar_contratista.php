@@ -11,14 +11,14 @@ require_once '../../models/MunicipioModel.php';
 require_once '../../models/TipoVinculacionModel.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     exit();
 }
 
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
     $redireccion = match($_SESSION['tipo_usuario'] ?? '') {
-        'administrador', 'usuario' => 'menu.php',
-        default => '../index.php'
+        'administrador', 'usuario' => '../menu.php',
+        default => '../../index.php'
     };
     header("Location: $redireccion");
     exit();

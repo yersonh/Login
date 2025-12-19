@@ -4,17 +4,17 @@ session_start();
 require_once __DIR__ . '/../../helpers/config_helper.php';
 // Solo administradores
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     exit();
 }
 
 if ($_SESSION['tipo_usuario'] !== 'administrador') {
     if ($_SESSION['tipo_usuario'] === 'asistente') {
-        header("Location: menuAsistente.php");
+        header("Location: ../menuAsistente.php");
     } else if ($_SESSION['tipo_usuario'] === 'contratista') {
-        header("Location: menu.php");
+        header("Location: ../menu.php");
     } else {
-        header("Location: ../index.php");
+        header("Location: ../../index.php");
     }
     exit();
 }

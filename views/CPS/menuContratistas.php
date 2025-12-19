@@ -6,21 +6,21 @@ header("Pragma: no-cache");
 header("Expires: 0"); 
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     exit();
 }
 
 if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'administrador') {
-            header("Location: menu.php");
+            header("Location: ../menuAdministrador.php");
         } else if ($_SESSION['tipo_usuario'] === 'usuario') {
-            header("Location: menu.php");
+            header("Location: ../menu.php");
         } else {
             header("Location: ../index.php");
         }
     } else {
-        header("Location: ../index.php");
+        header("Location: ../../index.php");
     }
     exit();
 }
