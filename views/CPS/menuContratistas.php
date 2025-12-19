@@ -132,7 +132,7 @@ if (empty($nombreCompleto)) {
         
         <button class="volver-btn" id="volverBtn">
             <i class="fas fa-arrow-left"></i>
-            <span>Volver</span>
+            <span>Volver al Menú</span>
         </button>
         
          <footer class="app-footer">

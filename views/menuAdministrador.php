@@ -292,7 +292,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <!-- Botón flotante para volver como asistente -->
         <?php if (isset($_SESSION['usuario_original'])): ?>
         <button class="return-assistant-btn" onclick="volverComoAsistente()">
-            Terminar
+            Volver al Menú
         </button>
         <?php endif; ?>
     </div>
