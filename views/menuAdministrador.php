@@ -106,7 +106,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         }
         
         @media (max-width: 768px) {
-            .logout-btn {
+            .return-assistant-btn {
                 margin-top: 8px;
                 padding: 12px 18px;
                 font-size: 14px;
