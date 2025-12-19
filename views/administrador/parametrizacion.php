@@ -489,7 +489,6 @@ if (!empty($configuracion['valida_hasta'])) {
                          src="<?php echo htmlspecialchars($configuracion['ruta_logo'] ?? '../../imagenes/gobernacion.png'); ?>" 
                          alt="<?php echo htmlspecialchars($configuracion['entidad'] ?? 'Logo Gobernación del Meta'); ?>"
                          onerror="this.onerror=null; this.src='../../imagenes/gobernacion.png'">
-                    <h2>GOBERNACIÓN DEL META</h2>
                 </div>
                 
                 <!-- Datos Parametrizados en dos renglones -->
