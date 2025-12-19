@@ -726,29 +726,29 @@ $anio = date('Y');
     <script>
     // Función para calcular días restantes en tiempo real
     function calcularDiasRestantes() {
-        const validaHastaInput = document.getElementById('validaHasta');
-        const diasRestantesInput = document.getElementById('diasRestantes');
-        
-        if (!validaHastaInput || !diasRestantesInput) return;
-        
-        const fechaValida = new Date(validaHastaInput.value);
-        const hoy = new Date();
-        
-        // Resetear la hora para comparar solo fechas
-        hoy.setHours(0, 0, 0, 0);
-        fechaValida.setHours(0, 0, 0, 0);
-        
-        const diferenciaMs = fechaValida - hoy;
-        const dias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
-        
-        if (dias < 0) {
-            diasRestantesInput.value = '0 días (Expirada)';
-        } else if (dias === 0) {
-            diasRestantesInput.value = 'Hoy expira';
-        } else {
-            diasRestantesInput.value = `${dias} días`;
-        }
+    const validaHastaInput = document.getElementById('validaHasta');
+    const diasRestantesInput = document.getElementById('diasRestantes');
+    
+    if (!validaHastaInput || !diasRestantesInput) return;
+    
+    const fechaValida = new Date(validaHastaInput.value);
+    const hoy = new Date();
+    
+    // Resetear la hora para comparar solo fechas
+    hoy.setHours(0, 0, 0, 0);
+    fechaValida.setHours(0, 0, 0, 0);
+    
+    const diferenciaMs = fechaValida - hoy;
+    const dias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+    
+    if (dias < 0) {
+        diasRestantesInput.value = '0 días (Expirada)';
+    } else if (dias === 0) {
+        diasRestantesInput.value = '0 días';
+    } else {
+        diasRestantesInput.value = `${dias} días`;
     }
+}
 
     // Función para actualizar el modal con datos en tiempo real
     function actualizarModalResumen() {
@@ -801,26 +801,42 @@ $anio = date('Y');
         if (modalValidaHasta) {
             modalValidaHasta.textContent = fechaFormateada;
         }
-        
-        // ACTUALIZACIÓN CRÍTICA: Usar classList para manejar las clases correctamente
-        const modalDiasRestantes = document.getElementById('modalDiasRestantes');
-        if (modalDiasRestantes) {
-            // Actualizar el texto
-            modalDiasRestantes.textContent = diasRestantes;
-            
-            // Remover todas las clases de color primero
-            modalDiasRestantes.classList.remove('text-danger', 'text-success', 'text-warning');
-            
-            // Aplicar la misma lógica que PHP - SIMPLIFICADO
-            if (diasRestantes.includes('Expirada') || diasRestantes === '0 días' || diasRestantes.includes('0 días')) {
-                // Rojo si es "0 días (Expirada)" o contiene "0 días"
+
+const modalDiasRestantes = document.getElementById('modalDiasRestantes');
+if (modalDiasRestantes) {
+    // Actualizar el texto
+    modalDiasRestantes.textContent = diasRestantes;
+    
+    // Remover todas las clases de color primero
+    modalDiasRestantes.classList.remove('text-danger', 'text-success', 'text-warning');
+    
+    // Extraer solo el número de días (eliminar " días" del texto)
+    const diasTexto = diasRestantes.toString();
+    
+    // Verificar si contiene "Expirada" o si es 0 días
+    if (diasTexto.includes('Expirada')) {
+        modalDiasRestantes.classList.add('text-danger');
+    } else {
+        // Extraer el número de días
+        const match = diasTexto.match(/(\d+)/);
+        if (match) {
+            const numDias = parseInt(match[1]);
+            if (numDias <= 0) {
                 modalDiasRestantes.classList.add('text-danger');
+            } else if (numDias <= 30) {
+                // Amarillo para menos de 30 días
+                modalDiasRestantes.classList.add('text-warning');
             } else {
-                // Verde para cualquier otro caso
+                // Verde para más de 30 días
                 modalDiasRestantes.classList.add('text-success');
             }
+        } else {
+            // Si no puede extraer número, usar verde por defecto
+            modalDiasRestantes.classList.add('text-success');
         }
     }
+}
+}
 
     // Modificar la función para abrir el modal para que primero actualice los datos
     function openResumenModal() {
@@ -882,8 +898,6 @@ $anio = date('Y');
         }
     });
 
-    // También puedes escuchar cambios en los inputs para actualizar en tiempo real si quieres
-    // (opcional, pero útil para ver cambios inmediatos)
     const inputsConfiguracion = ['version', 'tipoLicencia', 'validaHasta', 'desarrolladoPor', 'direccion', 'contacto', 'telefono'];
     inputsConfiguracion.forEach(inputId => {
         document.getElementById(inputId)?.addEventListener('input', function() {

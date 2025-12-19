@@ -1954,3 +1954,17 @@ input[readonly].form-control {
     height: auto;
     line-height: normal;
 }
+.text-danger {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.text-success {
+    color: #28a745 !important;
+    font-weight: bold;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+    font-weight: bold;
+}
