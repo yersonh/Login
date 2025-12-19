@@ -37,6 +37,46 @@ try {
         }
     }
     
+    // Validar y procesar archivo CV si se subió
+    $cv_data = null;
+    if (isset($_FILES['adjuntar_cv']) && $_FILES['adjuntar_cv']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['adjuntar_cv'];
+        
+        // Validar tamaño máximo (5MB = 5 * 1024 * 1024 bytes)
+        $maxSize = 5 * 1024 * 1024;
+        if ($file['size'] > $maxSize) {
+            throw new Exception('El archivo CV excede el tamaño máximo de 5MB');
+        }
+        
+        // Validar tipo MIME
+        $allowedMimeTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+        
+        if (!in_array($mimeType, $allowedMimeTypes)) {
+            throw new Exception('Tipo de archivo no permitido. Solo se aceptan PDF, DOC y DOCX.');
+        }
+        
+        // Leer archivo como binario
+        $cv_content = file_get_contents($file['tmp_name']);
+        if ($cv_content === false) {
+            throw new Exception('No se pudo leer el archivo CV');
+        }
+        
+        $cv_data = [
+            'cv_archivo' => $cv_content,
+            'cv_nombre_original' => $file['name'],
+            'cv_tipo_mime' => $mimeType,
+            'cv_tamano' => $file['size']
+        ];
+    }
+    
     $datos = [
         'nombre_completo' => trim($_POST['nombre_completo']),
         'cedula' => preg_replace('/[^0-9]/', '', $_POST['cedula']),
@@ -56,6 +96,11 @@ try {
         'numero_registro_presupuestal' => isset($_POST['numero_registro_presupuestal']) ? trim($_POST['numero_registro_presupuestal']) : '',
         'fecha_rp' => isset($_POST['fecha_rp']) ? $_POST['fecha_rp'] : ''
     ];
+    
+    // Agregar datos del CV si existe
+    if ($cv_data !== null) {
+        $datos = array_merge($datos, $cv_data);
+    }
     
     if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
         throw new Exception("Correo electrónico inválido");

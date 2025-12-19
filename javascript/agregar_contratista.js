@@ -14,7 +14,52 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('duracion_contrato').addEventListener('input', calcularFechaFinal);
     document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFinal);
     
+    // ⬇️ NUEVO: Manejar selección de archivo CV
+    const cvInput = document.getElementById('adjuntar_cv');
+    const cvPreview = document.getElementById('cvPreview');
+    const cvFilename = document.getElementById('cvFilename');
+    
+    cvInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // Validar tamaño (5MB máximo)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('El archivo excede el tamaño máximo de 5MB');
+                this.value = '';
+                cvPreview.style.display = 'none';
+                return;
+            }
+            
+            // Validar tipo de archivo por extensión
+            const allowedExtensions = ['.pdf', '.doc', '.docx'];
+            const fileName = file.name.toLowerCase();
+            const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            
+            if (!isValidExtension) {
+                alert('Solo se permiten archivos PDF, DOC y DOCX');
+                this.value = '';
+                cvPreview.style.display = 'none';
+                return;
+            }
+            
+            // Mostrar vista previa
+            cvFilename.textContent = file.name;
+            cvPreview.style.display = 'block';
+        } else {
+            cvPreview.style.display = 'none';
+        }
+    });
+    
+    // ⬇️ NUEVO: Función para remover CV
+    window.removeCV = function() {
+        cvInput.value = '';
+        cvPreview.style.display = 'none';
+    };
+    
     function calcularFechaFinal() {
+        // ... (código existente se mantiene igual)
         const fechaInicio = document.getElementById('fecha_inicio').value;
         const duracion = document.getElementById('duracion_contrato').value;
         const fechaFinalInput = document.getElementById('fecha_final');
@@ -108,11 +153,13 @@ document.addEventListener('DOMContentLoaded', function() {
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         this.disabled = true;
         
+        // ⬇️ MODIFICADO: Crear FormData correctamente con archivo
         const formData = new FormData();
-        const formElements = document.querySelectorAll('input, select, textarea');
         
+        // Agregar campos del formulario
+        const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
         formElements.forEach(element => {
-            if (element.name && element.value !== undefined) {
+            if (element.name && element.value !== undefined && element.name !== 'adjuntar_cv') {
                 if ((element.name === 'id_municipio_secundario' || element.name === 'id_municipio_terciario') 
                     && element.value === '0') {
                     formData.append(element.name, '');
@@ -121,17 +168,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-
+        
+        // ⬇️ NUEVO: Agregar archivo CV si existe
+        const cvFile = document.getElementById('adjuntar_cv').files[0];
+        if (cvFile) {
+            formData.append('adjuntar_cv', cvFile);
+        }
+        
         try {
             const response = await fetch('../../controllers/procesar_contratista.php', {
                 method: 'POST',
                 body: formData
+                // ⬇️ IMPORTANTE: NO agregar Content-Type header, FormData lo maneja automáticamente
             });
             
             const resultado = await response.json();
             
             if (resultado.success) {
-                // ⬇️ MODIFICADO: Solo muestra mensaje de éxito simple
                 alert(`¡Contratista registrado exitosamente!`);
                 
                 setTimeout(() => {
