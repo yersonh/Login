@@ -13,6 +13,13 @@ let municipioEstadoAction = null;
 let areaEstadoId = null;
 let areaEstadoAction = null;
 
+// Variables para el estado del tipo vinculación (NUEVO)
+let vinculacionEstadoId = null;
+let vinculacionEstadoAction = null;
+let currentVinculacionNombre = null;
+let currentVinculacionCodigo = null;
+let currentVinculacionDescripcion = null;
+
 // =======================================
 // INICIALIZACIÓN
 // =======================================
@@ -59,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupModalEvents();
     setupEstadoModalEvents();
     setupEstadoAreaModalEvents();
+    setupEstadoVinculacionModalEvents(); // NUEVO
     
     // 3. EVENT LISTENERS PARA MUNICIPIOS
     
@@ -96,7 +104,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // 5. EVENT LISTENERS GENERALES
+    // 5. EVENT LISTENERS PARA TIPO VINCULACIÓN (NUEVO)
+    
+    // --- Búsqueda de tipos vinculación ---
+    const searchVinculacionInput = document.getElementById('searchVinculacion');
+    if (searchVinculacionInput) {
+        searchVinculacionInput.addEventListener('input', function(e) {
+            buscarTiposVinculacion(e.target.value);
+        });
+    }
+    
+    // --- Botón agregar tipo vinculación ---
+    const addVinculacionBtn = document.getElementById('addVinculacionBtn');
+    if (addVinculacionBtn) {
+        addVinculacionBtn.addEventListener('click', function() {
+            abrirModalVinculacion('agregar');
+        });
+    }
+    
+    // 6. EVENT LISTENERS GENERALES
     
     // --- Botón Guardar en Modal CRUD ---
     const saveCrudBtn = document.getElementById('saveCrudBtn');
@@ -126,16 +152,485 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
-    // 6. CARGAR DATOS DINÁMICOS
+    // 7. CARGAR DATOS DINÁMICOS
     setTimeout(() => {
         cargarMunicipios();
         cargarAreas();
+        cargarTiposVinculacion(); // NUEVO
     }, 500);
 });
 
 // =======================================
-// 1. CARGAR DATOS DE CONFIGURACIÓN
+// FUNCIONES PARA GESTIÓN DE TIPOS VINCULACIÓN (NUEVO)
 // =======================================
+
+function cargarTiposVinculacion() {
+    const tablaBody = document.getElementById('vinculacionesTable');
+    if (!tablaBody) return;
+    
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Cargando tipos de vinculación...</td></tr>';
+    
+    fetch('../../api/tipo_vinculacion.php')
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">${data.error || 'Error al cargar tipos de vinculación'}</td></tr>`;
+                return;
+            }
+            
+            if (data.data.length === 0) {
+                tablaBody.innerHTML = '<tr><td colspan="5" class="empty-row">No hay tipos de vinculación registrados</td></tr>';
+                return;
+            }
+            
+            // Generar filas de la tabla
+            tablaBody.innerHTML = '';
+            data.data.forEach(tipo => {
+                const fila = document.createElement('tr');
+                
+                // Determinar botón según estado
+                let botonEstado = '';
+                if (tipo.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, false, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, true, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+                
+                // Truncar descripción si es muy larga
+                const descripcionCorta = tipo.descripcion && tipo.descripcion.length > 50 ? 
+                    tipo.descripcion.substring(0, 50) + '...' : 
+                    (tipo.descripcion || '');
+                
+                fila.innerHTML = `
+                    <td>${tipo.nombre}</td>
+                    <td>${tipo.codigo || '--'}</td>
+                    <td title="${tipo.descripcion || ''}">${descripcionCorta}</td>
+                    <td><span class="status-badge ${tipo.activo ? 'status-active' : 'status-inactive'}">${tipo.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarVinculacion(${tipo.id_tipo})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${botonEstado}
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando tipos de vinculación:', error);
+            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error de conexión</td></tr>`;
+        });
+}
+
+function buscarTiposVinculacion(termino) {
+    const tablaBody = document.getElementById('vinculacionesTable');
+    if (!tablaBody) return;
+    
+    if (!termino || termino.trim() === '') {
+        cargarTiposVinculacion();
+        return;
+    }
+    
+    // Mostrar estado de carga
+    tablaBody.innerHTML = '<tr class="loading-row"><td colspan="5">Buscando tipos de vinculación...</td></tr>';
+    
+    // Usar endpoint de búsqueda del backend
+    fetch(`../../api/tipo_vinculacion.php?buscar=${encodeURIComponent(termino)}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data.success || !data.data || data.data.length === 0) {
+                tablaBody.innerHTML = `<tr><td colspan="5" class="empty-row">No se encontraron tipos con "${termino}"</td></tr>`;
+                return;
+            }
+            
+            // Mostrar resultados de búsqueda
+            tablaBody.innerHTML = '';
+            data.data.forEach(tipo => {
+                const fila = document.createElement('tr');
+                let botonEstado = '';
+                if (tipo.activo) {
+                    botonEstado = `
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, false, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Desactivar">
+                            <i class="fas fa-ban"></i> Desactivar
+                        </button>`;
+                } else {
+                    botonEstado = `
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, true, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Activar">
+                            <i class="fas fa-check-circle"></i> Activar
+                        </button>`;
+                }
+
+                const descripcionCorta = tipo.descripcion && tipo.descripcion.length > 50 ? 
+                    tipo.descripcion.substring(0, 50) + '...' : 
+                    (tipo.descripcion || '');
+
+                fila.innerHTML = `
+                    <td>${tipo.nombre}</td>
+                    <td>${tipo.codigo || '--'}</td>
+                    <td title="${tipo.descripcion || ''}">${descripcionCorta}</td>
+                    <td><span class="status-badge ${tipo.activo ? 'status-active' : 'status-inactive'}">${tipo.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editarVinculacion(${tipo.id_tipo})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${botonEstado}
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error('Error buscando tipos de vinculación:', error);
+            tablaBody.innerHTML = `<tr><td colspan="5" class="error-row">Error en la búsqueda</td></tr>`;
+        });
+}
+
+function mostrarConfirmacionEstadoVinculacion(id, activar, nombre, codigo, descripcion) {
+    // Guardar datos para usar después
+    vinculacionEstadoId = id;
+    vinculacionEstadoAction = activar;
+    currentVinculacionNombre = nombre;
+    currentVinculacionCodigo = codigo;
+    currentVinculacionDescripcion = descripcion;
+    
+    const accion = activar ? 'activar' : 'desactivar';
+    const mensaje = activar ? 
+        '¿Está seguro de que desea ACTIVAR este tipo de vinculación?<br><br>El tipo volverá a estar disponible en el sistema.' :
+        '¿Está seguro de que desea DESACTIVAR este tipo de vinculación?<br>';
+    
+    // Actualizar mensaje del modal
+    document.getElementById('estadoVinculacionMensaje').innerHTML = mensaje;
+    
+    // Actualizar detalles del tipo de vinculación
+    document.getElementById('detailNombre').textContent = nombre;
+    document.getElementById('detailCodigo').textContent = codigo || '--';
+    
+    // Truncar descripción si es muy larga para el modal
+    const descripcionCorta = descripcion && descripcion.length > 80 ? 
+        descripcion.substring(0, 80) + '...' : 
+        (descripcion || '--');
+    
+    document.getElementById('detailDescripcion').textContent = descripcionCorta;
+    document.getElementById('detailDescripcion').title = descripcion || '';
+    
+    // Estado actual y nuevo
+    document.getElementById('detailEstadoActual').textContent = activar ? 'Inactivo' : 'Activo';
+    document.getElementById('detailEstadoActual').className = activar ? 'status-inactive' : 'status-active';
+    
+    document.getElementById('detailNuevoEstado').textContent = activar ? 'Activo' : 'Inactivo';
+    document.getElementById('detailNuevoEstado').className = activar ? 'status-active' : 'status-inactive';
+    
+    // Mostrar modal
+    document.getElementById('confirmEstadoVinculacionModal').style.display = 'flex';
+}
+
+function ejecutarCambioEstadoVinculacion() {
+    if (!vinculacionEstadoId || vinculacionEstadoAction === null) {
+        showError('No se pudo completar la acción');
+        return;
+    }
+    
+    const accion = vinculacionEstadoAction ? 'activar' : 'desactivar';
+    const datos = {
+        id_tipo: vinculacionEstadoId,
+        activo: vinculacionEstadoAction
+    };
+    
+    fetch(`../../api/tipo_vinculacion.php`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || `Tipo de vinculación ${accion}do exitosamente`);
+            cargarTiposVinculacion(); // Recargar la tabla
+        } else {
+            showError(data.error || `Error al ${accion} tipo de vinculación`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError(`Error de conexión al ${accion} tipo de vinculación`);
+    })
+    .finally(() => {
+        closeEstadoVinculacionModal();
+    });
+}
+
+function closeEstadoVinculacionModal() {
+    document.getElementById('confirmEstadoVinculacionModal').style.display = 'none';
+    vinculacionEstadoId = null;
+    vinculacionEstadoAction = null;
+    currentVinculacionNombre = null;
+    currentVinculacionCodigo = null;
+    currentVinculacionDescripcion = null;
+}
+
+function setupEstadoVinculacionModalEvents() {
+    const modal = document.getElementById('confirmEstadoVinculacionModal');
+    const confirmBtn = document.getElementById('confirmEstadoVinculacionBtn');
+    
+    if (!modal) return;
+
+    // Click fuera cierra
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) closeEstadoVinculacionModal(); 
+    });
+    
+    // ESC cierra
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeEstadoVinculacionModal();
+        }
+    });
+
+    // Botón confirmar
+    if (confirmBtn) confirmBtn.addEventListener('click', ejecutarCambioEstadoVinculacion);
+}
+
+// Abrir modal para agregar/editar tipo vinculación
+function abrirModalVinculacion(modo = 'agregar', id = null) {
+    const modal = document.getElementById('crudModal');
+    const titulo = document.getElementById('modalTitle');
+    const vinculacionFields = document.getElementById('vinculacionFields');
+    const recordId = document.getElementById('recordId');
+    const recordType = document.getElementById('recordType');
+    
+    // Ocultar otros formularios y mostrar solo el de tipos vinculación
+    document.querySelectorAll('.form-fields').forEach(field => {
+        field.style.display = 'none';
+        field.classList.remove('active');
+    });
+    
+    // Crear el contenedor de campos si no existe
+    if (!vinculacionFields) {
+        crearCamposVinculacion();
+    }
+    
+    const camposVinculacion = document.getElementById('vinculacionFields');
+    camposVinculacion.style.display = 'block';
+    camposVinculacion.classList.add('active');
+    
+    // Limpiar formulario
+    document.getElementById('nombreVinculacion').value = '';
+    document.getElementById('codigoVinculacion').value = '';
+    document.getElementById('descripcionVinculacion').value = '';
+    document.getElementById('estadoVinculacion').value = '1';
+    
+    if (modo === 'agregar') {
+        titulo.textContent = 'Agregar Nuevo Tipo de Vinculación';
+        recordId.value = '';
+        recordType.value = 'vinculacion';
+    } else if (modo === 'editar' && id) {
+        titulo.textContent = 'Editar Tipo de Vinculación';
+        recordId.value = id;
+        recordType.value = 'vinculacion';
+        
+        // Cargar datos del tipo
+        cargarDatosVinculacion(id);
+    }
+    
+    modal.style.display = 'flex';
+}
+
+// Crear campos para tipo vinculación (si no existen en el HTML)
+function crearCamposVinculacion() {
+    const campos = `
+        <div id="vinculacionFields" class="form-fields" style="display: none;">
+            <div class="form-group">
+                <label for="nombreVinculacion">
+                    <i class="fas fa-user-tie"></i> Nombre del Tipo *
+                </label>
+                <input type="text" id="nombreVinculacion" class="form-control" 
+                       placeholder="Ej: De planta, Por contrato, Consultor..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="codigoVinculacion">
+                    <i class="fas fa-code"></i> Código
+                </label>
+                <input type="text" id="codigoVinculacion" class="form-control" 
+                       placeholder="Ej: PLT-01, CNT-02, CON-03...">
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcionVinculacion">
+                    <i class="fas fa-file-alt"></i> Descripción
+                </label>
+                <textarea id="descripcionVinculacion" class="form-control" rows="3"
+                          placeholder="Descripción detallada del tipo de vinculación..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="estadoVinculacion">
+                    <i class="fas fa-toggle-on"></i> Estado
+                </label>
+                <select id="estadoVinculacion" class="form-control">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+        </div>
+    `;
+    
+    // Insertar después de los campos de área
+    const areaFields = document.getElementById('areaFields');
+    if (areaFields) {
+        areaFields.insertAdjacentHTML('afterend', campos);
+    } else {
+        // Si no hay campos de área, insertar después del municipioFields
+        const municipioFields = document.getElementById('municipioFields');
+        if (municipioFields) {
+            municipioFields.insertAdjacentHTML('afterend', campos);
+        }
+    }
+}
+
+// Cargar datos de tipo vinculación para editar
+function cargarDatosVinculacion(id) {
+    fetch(`../../api/tipo_vinculacion.php?id_tipo=${id}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (data.success && data.data) {
+                const tipo = data.data;
+                document.getElementById('nombreVinculacion').value = tipo.nombre || '';
+                document.getElementById('codigoVinculacion').value = tipo.codigo || '';
+                document.getElementById('descripcionVinculacion').value = tipo.descripcion || '';
+                document.getElementById('estadoVinculacion').value = tipo.activo ? '1' : '0';
+            } else {
+                showError(data.error || 'Error al cargar datos del tipo');
+                closeCrudModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Error de conexión al cargar tipo de vinculación');
+            closeCrudModal();
+        });
+}
+
+// Guardar tipo vinculación (crear o actualizar)
+function guardarVinculacion(recordId, btn, originalText) {
+    // Obtener datos del formulario
+    const datos = {
+        nombre: document.getElementById('nombreVinculacion').value.trim(),
+        codigo: document.getElementById('codigoVinculacion').value.trim() || null,
+        descripcion: document.getElementById('descripcionVinculacion').value.trim(),
+        activo: document.getElementById('estadoVinculacion').value === '1'
+    };
+    
+    // Validaciones
+    if (!datos.nombre) {
+        showError('El nombre del tipo es requerido');
+        return;
+    }
+    
+    // Configurar petición
+    const url = '../../api/tipo_vinculacion.php';
+    const metodo = recordId ? 'PUT' : 'POST';
+    const bodyData = recordId ? { ...datos, id_tipo: parseInt(recordId) } : datos;
+    
+    // Mostrar estado de carga
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    btn.disabled = true;
+    
+    fetch(url, {
+        method: metodo,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccess(data.message || 'Tipo de vinculación guardado exitosamente');
+            closeCrudModal();
+            cargarTiposVinculacion(); // Recargar la tabla
+        } else {
+            showError(data.error || 'Error al guardar tipo de vinculación');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showError('Error de conexión al guardar tipo de vinculación');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function editarVinculacion(id) {
+    abrirModalVinculacion('editar', id);
+}
+
+// =======================================
+// ACTUALIZAR FUNCIÓN GUARDAR CRUD PARA INCLUIR TIPO VINCULACIÓN
+// =======================================
+
+// Función unificada para guardar (municipios, áreas y tipos vinculación)
+function guardarCrud() {
+    const recordId = document.getElementById('recordId').value;
+    const recordType = document.getElementById('recordType').value;
+    const btn = document.getElementById('saveCrudBtn');
+    const originalText = btn.innerHTML;
+    
+    if (recordType === 'municipio') {
+        guardarMunicipio(recordId, btn, originalText);
+    } else if (recordType === 'area') {
+        guardarArea(recordId, btn, originalText);
+    } else if (recordType === 'vinculacion') { // NUEVO
+        guardarVinculacion(recordId, btn, originalText);
+    }
+}
+
+// =======================================
+// FUNCIÓN HELPER PARA ESCAPAR HTML (NUEVO)
+// =======================================
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// =======================================
+// (El resto de tu código permanece igual desde aquí hacia abajo)
+// =======================================
+
+// 1. CARGAR DATOS DE CONFIGURACIÓN
 function cargarConfiguracion() {
     fetch("../../api/parametrizacion_obtener.php")
         .then(res => res.json())
@@ -176,9 +671,7 @@ function cargarConfiguracion() {
         });
 }
 
-// =======================================
 // 2. LÓGICA DE ACTUALIZACIÓN DEL LOGO
-// =======================================
 function actualizarConfiguracionLogo() {
     const entidad = document.getElementById('logoAltText').value.trim();
     const nit = document.getElementById('logoNit').value.trim();
@@ -246,9 +739,7 @@ function executeLogoUpdate(datos) {
     .finally(() => setButtonLoading(btn, false, originalText));
 }
 
-// =======================================
 // 3. LÓGICA DE ACTUALIZACIÓN DEL SISTEMA
-// =======================================
 function actualizarConfiguracionSistema() {
     const version_sistema = document.getElementById('version').value.trim();
     const tipo_licencia = document.getElementById('tipoLicencia').value.trim();
@@ -316,9 +807,7 @@ function executeSystemUpdate(datos) {
     .finally(() => setButtonLoading(btn, false, originalText));
 }
 
-// =======================================
 // 4. GESTIÓN DEL MODAL DE CONFIRMACIÓN
-// =======================================
 function setupModalEvents() {
     const modal = document.getElementById('confirmationModal');
     const confirmBtn = document.getElementById('confirmSaveBtn');
@@ -371,9 +860,7 @@ function closeModal() {
     actionData = null;
 }
 
-// =======================================
 // 5. LÓGICA PARA MUNICIPIOS
-// =======================================
 function cargarMunicipios(scrollPosition = null) {
     const tablaBody = document.getElementById('municipiosTable');
     if (!tablaBody) return;
@@ -450,9 +937,7 @@ function cargarMunicipios(scrollPosition = null) {
         });
 }
 
-// =======================================
 // 6. FUNCIÓN PARA CAMBIAR ESTADO DE MUNICIPIOS (CON MODAL)
-// =======================================
 function mostrarConfirmacionEstado(id, activar, nombre, codigoDane, departamento) {
     // Guardar datos para usar después
     municipioEstadoId = id;
@@ -552,9 +1037,7 @@ function setupEstadoModalEvents() {
     if (confirmBtn) confirmBtn.addEventListener('click', ejecutarCambioEstado);
 }
 
-// =======================================
 // 7. FUNCIONES PARA GESTIÓN DE ÁREAS
-// =======================================
 
 function cargarAreas() {
     const tablaBody = document.getElementById('areasTable');
@@ -689,9 +1172,7 @@ function buscarAreas(termino) {
         });
 }
 
-// =======================================
 // 8. MODALES Y FUNCIONES PARA ÁREAS
-// =======================================
 
 // Abrir modal para agregar/editar área
 function abrirModalArea(modo = 'agregar', id = null) {
@@ -733,7 +1214,6 @@ function abrirModalArea(modo = 'agregar', id = null) {
 }
 
 // Cargar datos de área para editar
-// Cargar datos de área para editar (YA ESTÁ CORRECTA)
 function cargarDatosArea(id) {
     fetch(`../../api/areas.php?id=${id}`)
         .then(res => {
@@ -786,7 +1266,6 @@ function mostrarConfirmacionEstadoArea(id, activar, nombre, codigo) {
 }
 
 // Ejecutar cambio de estado de área
-// Ejecutar cambio de estado de área (ACTUALIZADA)
 function ejecutarCambioEstadoArea() {
     if (!areaEstadoId || areaEstadoAction === null) {
         showError('No se pudo completar la acción');
@@ -857,26 +1336,9 @@ function setupEstadoAreaModalEvents() {
     if (confirmBtn) confirmBtn.addEventListener('click', ejecutarCambioEstadoArea);
 }
 
-// =======================================
 // 9. FUNCIONES CRUD UNIFICADAS
-// =======================================
-
-// Función unificada para guardar (municipios y áreas)
-function guardarCrud() {
-    const recordId = document.getElementById('recordId').value;
-    const recordType = document.getElementById('recordType').value;
-    const btn = document.getElementById('saveCrudBtn');
-    const originalText = btn.innerHTML;
-    
-    if (recordType === 'municipio') {
-        guardarMunicipio(recordId, btn, originalText);
-    } else if (recordType === 'area') {
-        guardarArea(recordId, btn, originalText);
-    }
-}
 
 // Función específica para guardar área
-// Función específica para guardar área (ACTUALIZADA)
 function guardarArea(recordId, btn, originalText) {
     // Obtener datos del formulario
     const datos = {
@@ -940,9 +1402,7 @@ function editarArea(id) {
     abrirModalArea('editar', id);
 }
 
-// =======================================
 // 10. CRUD COMPLETO PARA MUNICIPIOS
-// =======================================
 
 // Abrir modal para agregar/editar municipio
 function abrirModalMunicipio(modo = 'agregar', id = null) {
@@ -1157,9 +1617,7 @@ function buscarMunicipios(termino) {
         });
 }
 
-// =======================================
 // 11. UTILIDADES Y AYUDAS UI
-// =======================================
 
 // Manejo de Input File y Preview
 function handleFileSelection(e) {
