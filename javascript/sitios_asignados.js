@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('🔄 Cargando municipios...');
         
         try {
-            const response = await fetch('../../api/municipios.php');
+            const response = await fetch('../../api/municipiosMapa.php');
             
             if (!response.ok) {
                 throw new Error('Error al cargar municipios');
