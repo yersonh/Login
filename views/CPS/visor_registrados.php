@@ -48,6 +48,105 @@ try {
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
+    <style>
+        /* Estilos adicionales para la columna CV */
+        .cv-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            max-width: 180px;
+        }
+        
+        .cv-name {
+            font-weight: 500;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        
+        .cv-size {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 0.9rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .btn-view {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background-color: #138496;
+            transform: translateY(-2px);
+        }
+        
+        .btn-download {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-edit:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .text-primary {
+            color: #007bff !important;
+        }
+        
+        .fa-file-pdf {
+            color: #d9534f;
+        }
+        
+        .fa-file-exclamation {
+            color: #6c757d;
+        }
+        
+        /* Ajuste para tabla con nueva columna */
+        .contratistas-table th:nth-child(9),
+        .contratistas-table td:nth-child(9) {
+            min-width: 150px;
+            max-width: 180px;
+        }
+    </style>
 </head>
 <body>
     
@@ -226,6 +325,7 @@ try {
                                 <th>Fecha final</th>
                                 <th>Ubicación</th>
                                 <th>Contacto</th>
+                                <th>CV</th>
                                 <th>Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -233,7 +333,7 @@ try {
                         <tbody>
                             <?php if (empty($contratistas)): ?>
                                 <tr class="empty-row">
-                                    <td colspan="11">
+                                    <td colspan="12">
                                         <div class="empty-state">
                                             <i class="fas fa-users-slash"></i>
                                             <h5>No hay contratistas registrados</h5>
@@ -258,6 +358,10 @@ try {
                                             $estadoContrato = 'indefinido';
                                         }
                                     }
+                                    
+                                    // Verificar si tiene CV
+                                    $tieneCV = !empty($contratista['cv_nombre_original']) && !empty($contratista['cv_tamano']);
+                                    $tamanoCV = $tieneCV ? round($contratista['cv_tamano'] / 1024, 1) : 0;
                                 ?>
                                     <tr class="contratista-row" 
                                         data-estado-usuario="<?php echo $estadoUsuario; ?>"
@@ -283,6 +387,26 @@ try {
                                                 <i class="fas fa-phone"></i>
                                                 <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?>
                                             </small>
+                                        </td>
+                                        <td>
+                                            <?php if ($tieneCV): ?>
+                                                <div class="cv-info">
+                                                    <i class="fas fa-file-pdf text-primary"></i>
+                                                    <span class="cv-name">
+                                                        <?php 
+                                                        $nombreCorto = strlen($contratista['cv_nombre_original']) > 15 
+                                                            ? substr($contratista['cv_nombre_original'], 0, 15) . '...' 
+                                                            : $contratista['cv_nombre_original'];
+                                                        echo htmlspecialchars($nombreCorto);
+                                                        ?>
+                                                    </span>
+                                                    <small class="cv-size">(<?php echo $tamanoCV; ?> KB)</small>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="text-muted">
+                                                    <i class="fas fa-file-exclamation"></i> Sin CV
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <div class="status-badges">
@@ -314,6 +438,15 @@ try {
                                                         title="Ver detalles">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
+                                                
+                                                <?php if ($tieneCV): ?>
+                                                <button class="btn-action btn-download" 
+                                                        onclick="descargarCV('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Descargar CV">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <?php endif; ?>
+                                                
                                                 <button class="btn-action btn-edit" 
                                                         onclick="editarContratista('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
                                                         title="Editar">
@@ -372,6 +505,37 @@ try {
     
     <!-- Scripts -->
     <script>
+        // Función para descargar CV
+        function descargarCV(idDetalle) {
+            if (!idDetalle || idDetalle === '0') {
+                alert('Error: ID no válido');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            const btn = event.target.closest('.btn-download');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            // Descargar el archivo
+            const url = `../../controllers/descargar_cv.php?id=${idDetalle}`;
+            
+            // Crear enlace temporal para descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Restaurar botón después de 2 segundos
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+        }
+        
         // Función para buscar en la tabla
         function filtrarTabla() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -420,7 +584,7 @@ try {
                     const tbody = document.querySelector('#contratistasTable tbody');
                     tbody.innerHTML = `
                         <tr class="empty-row">
-                            <td colspan="11">
+                            <td colspan="12">
                                 <div class="empty-state">
                                     <i class="fas fa-search"></i>
                                     <h5>No se encontraron resultados</h5>
