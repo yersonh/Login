@@ -77,11 +77,6 @@
         🗺️ Departamento del Meta - Colombia
     </div>
     
-    <!-- Botón para centrar en Villavicencio -->
-    <button class="btn-control" onclick="centrarVillavicencio()">
-        📍 Villavicencio
-    </button>
-    
     <script>
         // JavaScript para mapa centrado en el Meta
         document.addEventListener('DOMContentLoaded', function() {
@@ -105,66 +100,6 @@
             }).addTo(mapa);
             
             console.log('Mapa del Meta cargado');
-            
-            // 3. Añadir marcadores principales del Meta
-            var municipios = [
-                {
-                    nombre: "Villavicencio",
-                    lat: 4.1420,
-                    lng: -73.6266,
-                    desc: "Capital del departamento del Meta",
-                    tipo: "capital"
-                },
-                {
-                    nombre: "Acacías",
-                    lat: 3.9880,
-                    lng: -73.7582,
-                    desc: "Municipio del Meta",
-                    tipo: "municipio"
-                },
-                {
-                    nombre: "Granada",
-                    lat: 3.5431,
-                    lng: -73.7064,
-                    desc: "Municipio del Meta",
-                    tipo: "municipio"
-                },
-                {
-                    nombre: "Puerto López",
-                    lat: 4.0833,
-                    lng: -72.9667,
-                    desc: "Municipio del Meta - Puerto fluvial",
-                    tipo: "municipio"
-                },
-                {
-                    nombre: "Puerto Gaitán",
-                    lat: 4.3133,
-                    lng: -72.0825,
-                    desc: "Municipio del Meta",
-                    tipo: "municipio"
-                }
-            ];
-            
-            // Crear marcadores
-            municipios.forEach(function(municipio) {
-                // Color diferente para la capital
-                var icono = L.divIcon({
-                    className: 'custom-marker',
-                    html: municipio.tipo === "capital" ? 
-                        '<div style="background:#e74c3c;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-weight:bold">V</div>' :
-                        '<div style="background:#3498db;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px">●</div>',
-                    iconSize: [25, 25],
-                    iconAnchor: [12, 25]
-                });
-                
-                var marcador = L.marker([municipio.lat, municipio.lng], {icon: icono}).addTo(mapa);
-                marcador.bindPopup(
-                    `<b>${municipio.nombre}</b><br>
-                     ${municipio.desc}<br>
-                     <small>📌 Lat: ${municipio.lat.toFixed(4)}<br>
-                     📌 Lng: ${municipio.lng.toFixed(4)}</small>`
-                );
-            });
             
             // 4. Mostrar coordenadas al hacer clic
             mapa.on('click', function(e) {
@@ -201,23 +136,6 @@
                     }
                 }, 500);
             };
-            
-            // 7. Añadir polígono aproximado del Meta (opcional)
-            var polygon = L.polygon([
-                [4.5, -74.0],   // Noroeste
-                [4.5, -71.5],   // Noreste
-                [2.0, -71.5],   // Sureste
-                [2.0, -74.0],   // Suroeste
-                [4.5, -74.0]    // Cerrar polígono
-            ], {
-                color: 'blue',
-                weight: 2,
-                opacity: 0.5,
-                fillOpacity: 0.1,
-                fillColor: 'blue'
-            }).addTo(mapa);
-            
-            polygon.bindPopup("Área aproximada del Departamento del Meta");
         });
     </script>
 </body>
