@@ -187,8 +187,61 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.querySelector('.consecutivo-number').textContent = resultado.proximo_consecutivo;
                 }
                 
-                // LIMPIAR FORMULARIO
-                document.querySelector('form').reset();
+                // ⬇️ LIMPIAR CAMPOS ESPECÍFICOS (SIN FORMULARIO)
+                // 1. Campos de texto principales
+                const camposTextoLimpios = [
+                    'nombre_completo', 'cedula', 'correo', 'celular', 'direccion',
+                    'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal'
+                ];
+                
+                camposTextoLimpios.forEach(id => {
+                    const campo = document.getElementById(id);
+                    if (campo) campo.value = '';
+                });
+                
+                // 2. Campos de fecha
+                const fechaCampos = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
+                fechaCampos.forEach(id => {
+                    const campo = document.getElementById(id);
+                    if (campo) {
+                        // Limpiar el campo
+                        campo.value = '';
+                        // Si tiene flatpickr, limpiar también la instancia
+                        if (campo._flatpickr) {
+                            campo._flatpickr.clear();
+                        }
+                    }
+                });
+                
+                // 3. Limpiar selects
+                const selectsLimpiar = [
+                    'id_tipo_vinculacion', 
+                    'id_area', 
+                    'id_municipio_secundario', 
+                    'id_municipio_terciario'
+                ];
+                
+                selectsLimpiar.forEach(id => {
+                    const select = document.getElementById(id);
+                    if (select) {
+                        select.selectedIndex = 0;
+                    }
+                });
+                
+                // 4. Restaurar Villavicencio en municipio principal
+                const municipioPrincipal = document.getElementById('id_municipio_principal');
+                if (municipioPrincipal) {
+                    // Primero resetear
+                    municipioPrincipal.selectedIndex = 0;
+                    // Luego buscar y seleccionar Villavicencio
+                    Array.from(municipioPrincipal.options).forEach(option => {
+                        if (option.text.includes('Villavicencio')) {
+                            option.selected = true;
+                        }
+                    });
+                }
+                
+                // 5. Limpiar archivo CV
                 document.getElementById('adjuntar_cv').value = '';
                 document.getElementById('cvPreview').style.display = 'none';
                 
@@ -203,19 +256,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 requiredFields.forEach(field => {
                     field.style.borderColor = '#e0e0e0';
                 });
-                
-                // RESTAURAR VALORES POR DEFECTO DESPUÉS DE LIMPIAR
-                setTimeout(() => {
-                    // Restaurar Villavicencio como seleccionado por defecto
-                    const municipioPrincipal = document.getElementById('id_municipio_principal');
-                    if (municipioPrincipal) {
-                        Array.from(municipioPrincipal.options).forEach(option => {
-                            if (option.text.includes('Villavicencio')) {
-                                option.selected = true;
-                            }
-                        });
-                    }
-                }, 10);
                 
             } else {
                 alert('Error: ' + resultado.error);
