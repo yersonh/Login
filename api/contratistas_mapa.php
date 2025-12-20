@@ -49,7 +49,6 @@ try {
             'id' => $markerId,
             'nombre' => $contratista['nombres'] . ' ' . $contratista['apellidos'],
             'cedula' => $contratista['cedula'],
-            'telefono' => $contratista['telefono'] ?? 'No registrado', 
             'contrato' => $contratista['numero_contrato'],
             'area' => $contratista['area'],
             'municipio' => $contratista['municipio_principal'],
