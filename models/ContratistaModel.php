@@ -36,12 +36,15 @@ class ContratistaModel {
             $id_detalle = $this->insertarDetalleContrato($id_persona, $datos);
             
             $this->conn->commit();
-            
+
+            $proximo_consecutivo = $this->obtenerProximoConsecutivo();
+
             return [
                 'success' => true,
                 'id_persona' => $id_persona,
                 'id_detalle' => $id_detalle,
-                'mensaje' => 'Contratista registrado exitosamente'
+                'mensaje' => 'Contratista registrado exitosamente',
+                'proximo_consecutivo' => $proximo_consecutivo
             ];
             
         } catch (Exception $e) {
@@ -207,6 +210,14 @@ class ContratistaModel {
         $stmt->execute();
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function obtenerProximoConsecutivo() {
+        $sql = "SELECT COALESCE(MAX(id_detalle), 0) + 1 AS proximo FROM detalle_contrato";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $resultado['proximo'];
     }
 }
 ?>

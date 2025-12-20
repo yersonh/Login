@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('duracion_contrato').addEventListener('input', calcularFechaFinal);
     document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFinal);
     
-    // ⬇️ NUEVO: Manejar selección de archivo CV
+    // Manejar selección de archivo CV
     const cvInput = document.getElementById('adjuntar_cv');
     const cvPreview = document.getElementById('cvPreview');
     const cvFilename = document.getElementById('cvFilename');
@@ -52,14 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ⬇️ NUEVO: Función para remover CV
+    // Función para remover CV
     window.removeCV = function() {
         cvInput.value = '';
         cvPreview.style.display = 'none';
     };
     
     function calcularFechaFinal() {
-        // ... (código existente se mantiene igual)
         const fechaInicio = document.getElementById('fecha_inicio').value;
         const duracion = document.getElementById('duracion_contrato').value;
         const fechaFinalInput = document.getElementById('fecha_final');
@@ -153,10 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         this.disabled = true;
         
-        // ⬇️ MODIFICADO: Crear FormData correctamente con archivo
         const formData = new FormData();
         
-        // Agregar campos del formulario
         const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
         formElements.forEach(element => {
             if (element.name && element.value !== undefined && element.name !== 'adjuntar_cv') {
@@ -169,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // ⬇️ NUEVO: Agregar archivo CV si existe
         const cvFile = document.getElementById('adjuntar_cv').files[0];
         if (cvFile) {
             formData.append('adjuntar_cv', cvFile);
@@ -179,17 +175,47 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('../../controllers/procesar_contratista.php', {
                 method: 'POST',
                 body: formData
-                // ⬇️ IMPORTANTE: NO agregar Content-Type header, FormData lo maneja automáticamente
             });
             
             const resultado = await response.json();
             
             if (resultado.success) {
-                alert(`¡Contratista registrado exitosamente!`);
+                alert(`¡Contratista registrado exitosamente!\n\nContratista N°: ${resultado.id_detalle}`);
                 
+                // ACTUALIZAR CONSECUTIVO AUTOMÁTICAMENTE
+                if (resultado.proximo_consecutivo) {
+                    document.querySelector('.consecutivo-number').textContent = resultado.proximo_consecutivo;
+                }
+                
+                // LIMPIAR FORMULARIO
+                document.querySelector('form').reset();
+                document.getElementById('adjuntar_cv').value = '';
+                document.getElementById('cvPreview').style.display = 'none';
+                
+                // RESTABLECER BOTÓN
+                this.innerHTML = btnOriginalHTML;
+                this.disabled = false;
+                
+                // ENFOCAR PRIMER CAMPO PARA NUEVO REGISTRO
+                document.getElementById('nombre_completo').focus();
+                
+                // RESTABLECER COLORES DE VALIDACIÓN
+                requiredFields.forEach(field => {
+                    field.style.borderColor = '#e0e0e0';
+                });
+                
+                // RESTAURAR VALORES POR DEFECTO DESPUÉS DE LIMPIAR
                 setTimeout(() => {
-                    window.location.href = 'menuContratistas.php';
-                }, 1000);
+                    // Restaurar Villavicencio como seleccionado por defecto
+                    const municipioPrincipal = document.getElementById('id_municipio_principal');
+                    if (municipioPrincipal) {
+                        Array.from(municipioPrincipal.options).forEach(option => {
+                            if (option.text.includes('Villavicencio')) {
+                                option.selected = true;
+                            }
+                        });
+                    }
+                }, 10);
                 
             } else {
                 alert('Error: ' + resultado.error);
