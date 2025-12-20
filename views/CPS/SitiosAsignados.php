@@ -12,62 +12,9 @@
     <!-- Leaflet -->
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../styles/sitios_asignados.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <style>
-        /* Estilo minimalista */
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        
-        #mapa {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        /* Barra superior simple */
-        .barra-superior {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-            background: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-size: 14px;
-            color: #333;
-            font-weight: bold;
-        }
-        
-        /* Botón personalizado */
-        .btn-control {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            background: white;
-            padding: 8px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .btn-control:hover {
-            background: #f5f5f5;
-        }
-    </style>
 </head>
 <body>
     <!-- Solo el mapa -->
