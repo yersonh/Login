@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Mapa del Meta cargado');
     
+    // 1. Cargar contratistas desde la API
+    cargarContratistas();
+    
     // 2. Mostrar coordenadas al hacer clic
     mapa.on('click', function(e) {
         L.popup()
@@ -45,13 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variable para almacenar los marcadores
     var marcadoresContratistas = L.layerGroup().addTo(mapa);
     
-    // Agregar leyenda de colores
-    agregarLeyenda();
-    
-    // 1. Cargar contratistas desde la API
-    cargarContratistas();
-    
-    // ================= FUNCIONES MEJORADAS =================
+    // ================= FUNCIONES MEJORADAS (INTERNAS) =================
     
     // Función para cargar contratistas
     async function cargarContratistas() {
@@ -72,16 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Actualizar barra superior
-            actualizarBarraSuperior(contratistas.length);
-            
-            // Procesar cada contratista con mejor manejo
+            // Procesar cada contratista con búsqueda mejorada
             for (const contratista of contratistas) {
                 await procesarContratista(contratista);
-                await esperar(300); // Pequeña pausa para no saturar OSM
+                // Pequeña pausa para no saturar OSM
+                await esperar(200);
             }
             
-            console.log('✅ Todos los contratistas procesados');
+            console.log('✅ Procesamiento completado');
             
         } catch (error) {
             console.error('❌ Error cargando contratistas:', error);
@@ -89,114 +84,96 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Función mejorada para procesar un contratista
+    // Función principal para procesar un contratista
     async function procesarContratista(contratista) {
-        console.log(`📍 Procesando: ${contratista.nombre}`);
-        console.log(`   Dirección: "${contratista.direccion}"`);
-        console.log(`   Municipio: ${contratista.municipio}`);
-        
         let coordenadas = null;
-        let precision = 'municipio'; // Por defecto
         
-        // PRIMERO: Intentar buscar con múltiples estrategias
+        // PRIMERO: Intentar búsqueda mejorada
         if (contratista.direccion && contratista.municipio) {
-            coordenadas = await geocodificarDireccionMejorado(contratista);
-            
-            if (coordenadas) {
-                // Determinar precisión basada en el tipo de resultado
-                if (coordenadas.tipo === 'street' || coordenadas.tipo === 'road') {
-                    precision = 'calle';
-                } else if (coordenadas.tipo === 'suburb' || coordenadas.tipo === 'neighbourhood') {
-                    precision = 'barrio';
-                } else if (coordenadas.tipo === 'town' || coordenadas.tipo === 'city') {
-                    precision = 'municipio';
-                } else if (coordenadas.tipo === 'administrative') {
-                    precision = 'area';
-                } else {
-                    precision = 'aproximado';
-                }
-            }
+            coordenadas = await buscarDireccionMejorada(contratista.direccion, contratista.municipio);
         }
         
-        // SEGUNDO: Si no encontramos nada, usar municipio
+        // SEGUNDO: Si no funciona, usar municipio
         if (!coordenadas && contratista.municipio) {
-            coordenadas = await obtenerCoordenadasMunicipioMejorado(contratista.municipio);
-            precision = 'municipio';
-            console.log(`   ⚠️ Usando ubicación del municipio`);
+            coordenadas = await obtenerCoordenadasMunicipio(contratista.municipio);
         }
         
-        // TERCERO: Si todo falla, Villavicencio
+        // TERCERO: Fallback a Villavicencio
         if (!coordenadas) {
             coordenadas = {
                 lat: villavicencio[0],
-                lng: villavicencio[1],
-                nombre: 'Villavicencio',
-                tipo: 'fallback'
+                lng: villavicencio[1]
             };
-            precision = 'fallback';
-            console.log(`   ⚠️ Usando Villavicencio como fallback`);
         }
         
-        // Agregar marcador con información de precisión
-        agregarMarcadorContratistaMejorado(contratista, coordenadas, precision);
+        // Agregar marcador (mismo diseño visual)
+        agregarMarcadorContratista(contratista, coordenadas);
     }
     
-    // Función MEJORADA para geocodificar (con múltiples intentos)
-    async function geocodificarDireccionMejorado(contratista) {
-        // Lista de consultas a intentar (de más específica a menos)
-        const consultas = [];
+    // FUNCIÓN MEJORADA: Buscar dirección con múltiples intentos
+    async function buscarDireccionMejorada(direccion, municipio) {
+        // Lista de consultas a intentar
+        const consultas = generarConsultas(direccion, municipio);
         
-        // 1. Dirección completa con municipio
-        consultas.push(`${contratista.direccion}, ${contratista.municipio}, Meta, Colombia`);
-        
-        // 2. Dirección simplificada (quitando números específicos)
-        const direccionSimple = simplificarDireccion(contratista.direccion);
-        if (direccionSimple !== contratista.direccion) {
-            consultas.push(`${direccionSimple}, ${contratista.municipio}, Colombia`);
-        }
-        
-        // 3. Solo calle principal si se puede extraer
-        const callePrincipal = extraerCallePrincipal(contratista.direccion);
-        if (callePrincipal) {
-            consultas.push(`${callePrincipal}, ${contratista.municipio}, Meta`);
-        }
-        
-        // 4. Solo municipio (último intento)
-        consultas.push(`${contratista.municipio}, Meta, Colombia`);
-        
-        console.log(`   🔍 Intentando ${consultas.length} búsquedas...`);
-        
-        // Intentar cada consulta
-        for (const consulta of consultas) {
-            console.log(`     Probando: "${consulta.substring(0, 50)}..."`);
+        for (let i = 0; i < consultas.length; i++) {
+            const consulta = consultas[i];
+            console.log(`   🔍 Intento ${i + 1}: "${consulta.substring(0, 50)}${consulta.length > 50 ? '...' : ''}"`);
             
             const resultado = await buscarEnNominatim(consulta);
             if (resultado) {
-                console.log(`     ✅ Encontrado: ${resultado.tipo}`);
+                console.log(`   ✅ Encontrado`);
                 return resultado;
             }
             
             // Pequeña pausa entre intentos
-            await esperar(200);
+            if (i < consultas.length - 1) {
+                await esperar(100);
+            }
         }
         
-        console.log(`     ❌ Ninguna búsqueda funcionó`);
+        console.log(`   ❌ No encontrado después de ${consultas.length} intentos`);
         return null;
     }
     
-    // Función para simplificar direcciones complejas
+    // Generar múltiples variantes de búsqueda
+    function generarConsultas(direccion, municipio) {
+        const consultas = [];
+        
+        // 1. Dirección completa
+        consultas.push(`${direccion}, ${municipio}, Meta, Colombia`);
+        
+        // 2. Dirección simplificada
+        const direccionSimple = simplificarDireccion(direccion);
+        if (direccionSimple !== direccion) {
+            consultas.push(`${direccionSimple}, ${municipio}, Colombia`);
+        }
+        
+        // 3. Solo elementos principales
+        const elementos = extraerElementosDireccion(direccion);
+        if (elementos.calle && elementos.numero) {
+            consultas.push(`${elementos.calle} ${elementos.numero}, ${municipio}, Meta`);
+        }
+        
+        // 4. Solo calle principal
+        const callePrincipal = extraerCallePrincipal(direccion);
+        if (callePrincipal) {
+            consultas.push(`${callePrincipal}, ${municipio}, Colombia`);
+        }
+        
+        // 5. Solo municipio (último recurso)
+        consultas.push(`${municipio}, Meta, Colombia`);
+        
+        return consultas;
+    }
+    
+    // Simplificar dirección para mejor búsqueda
     function simplificarDireccion(direccion) {
         if (!direccion) return '';
         
         // Quitar números específicos de casa/manzana/lote
-        // Ej: "Calle 13A #14-60" → "Calle 13A"
-        // Ej: "Manzana B Lote 5" → "Manzana B"
-        
         const patrones = [
-            // Quitar complementos después de #, -, etc.
             /^(.*?)(?:\s*[#\-]\s*\d+.*)$/i,
             /^(.*?\b(?:manzana|mz|lote|lt|torre|apartamento|apt)\s+[a-z0-9]+).*$/i,
-            // Quitar palabras como "esquina", "interior", etc.
             /^(.*?)(?:\s+(?:esquina|int|interior|local|oficina|ofc|piso)\s+.*)$/i
         ];
         
@@ -210,11 +187,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return direccion;
     }
     
-    // Función para extraer calle principal
+    // Extraer calle principal
     function extraerCallePrincipal(direccion) {
         if (!direccion) return null;
         
-        // Patrones comunes en Colombia
         const patrones = [
             /(calle|carrera|avenida|diagonal|transversal|cll|cr|av)\s+(\d+[a-z]?(?:\s*[a-z])?)/i,
             /(cra|av|diag|trans)\s+(\d+[a-z]?)/i
@@ -226,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tipo = match[1].toLowerCase();
                 const numero = match[2];
                 
-                // Normalizar abreviaturas
                 const tiposCompletos = {
                     'cll': 'calle', 'cr': 'carrera', 'cra': 'carrera',
                     'av': 'avenida', 'diag': 'diagonal', 'trans': 'transversal'
@@ -238,6 +213,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return null;
+    }
+    
+    // Extraer elementos de dirección
+    function extraerElementosDireccion(direccion) {
+        const elementos = { calle: null, numero: null };
+        
+        if (!direccion) return elementos;
+        
+        // Patrones comunes
+        const patrones = [
+            /(calle|carrera|avenida|diagonal|transversal)\s+(\d+[a-z]?)\s*(?:#|no\.?)?\s*(\d+\s*[-–]\s*\d+)/i,
+            /(calle|carrera|avenida)\s+(\d+[a-z]?)\s+(?:con|y)\s+(calle|carrera|avenida)\s+(\d+)/i
+        ];
+        
+        for (const patron of patrones) {
+            const match = direccion.match(patron);
+            if (match) {
+                elementos.calle = match[1] + ' ' + match[2];
+                elementos.numero = match[3] || match[4] || null;
+                break;
+            }
+        }
+        
+        return elementos;
     }
     
     // Función para buscar en Nominatim
@@ -256,23 +255,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data && data.length > 0) {
                 return {
                     lat: parseFloat(data[0].lat),
-                    lng: parseFloat(data[0].lon),
-                    nombre: data[0].display_name,
-                    tipo: data[0].type || 'unknown'
+                    lng: parseFloat(data[0].lon)
                 };
             }
             
             return null;
             
         } catch (error) {
-            console.warn('Error Nominatim:', error);
+            console.warn('Error en búsqueda OSM:', error);
             return null;
         }
     }
     
     // Función MEJORADA para obtener coordenadas de municipio
-    async function obtenerCoordenadasMunicipioMejorado(municipioNombre) {
-        // Coordenadas más completas de municipios del Meta
+    async function obtenerCoordenadasMunicipio(municipioNombre) {
+        // Coordenadas actualizadas de municipios del Meta
         const coordenadasMunicipios = {
             'Villavicencio': [4.1420, -73.6266],
             'Acacías': [3.9878, -73.7577],
@@ -300,78 +297,31 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         if (municipioNombre && coordenadasMunicipios[municipioNombre]) {
-            const coords = coordenadasMunicipios[municipioNombre];
             return {
-                lat: coords[0],
-                lng: coords[1],
-                nombre: `Centro de ${municipioNombre}`,
-                tipo: 'municipio'
+                lat: coordenadasMunicipios[municipioNombre][0],
+                lng: coordenadasMunicipios[municipioNombre][1]
             };
         }
         
-        // Si no encontramos el municipio, buscar en Nominatim
+        // Si no tenemos el municipio, intentar buscarlo en OSM
         const resultado = await buscarEnNominatim(`${municipioNombre}, Meta, Colombia`);
         if (resultado) {
             return resultado;
         }
         
         // Último recurso: Villavicencio
-        return {
-            lat: villavicencio[0],
-            lng: villavicencio[1],
-            nombre: 'Villavicencio',
-            tipo: 'fallback'
-        };
+        return null;
     }
     
-    // Función MEJORADA para agregar marcador
-    function agregarMarcadorContratistaMejorado(contratista, coordenadas, precision) {
-        // Colores según precisión
-        const colores = {
-            'calle': '#27ae60',     // Verde - Encontramos la calle
-            'barrio': '#2ecc71',    // Verde claro - Encontramos el barrio
-            'area': '#f39c12',      // Naranja - Encontramos el área
-            'municipio': '#e74c3c', // Rojo - Solo municipio
-            'aproximado': '#95a5a6', // Gris - Aproximado
-            'fallback': '#7f8c8d'   // Gris oscuro - Fallback
-        };
-        
-        const color = colores[precision] || colores.fallback;
-        
-        // Mensajes según precisión
-        const mensajes = {
-            'calle': '🚶 <strong>En esta calle</strong> (ubicación aproximada)',
-            'barrio': '🏡 <strong>En este barrio/vecindario</strong>',
-            'area': '🗺️ <strong>En esta área</strong>',
-            'municipio': '🏙️ <strong>En este municipio</strong> (ubicación central)',
-            'aproximado': '🔍 <strong>Ubicación aproximada</strong>',
-            'fallback': '📍 <strong>Ubicación general</strong>'
-        };
-        
-        const mensajePrecision = mensajes[precision] || mensajes.fallback;
-        
-        // Crear ícono personalizado con color
+    // Función para agregar un marcador al mapa (MISMO DISEÑO)
+    function agregarMarcadorContratista(contratista, coordenadas) {
+        // Crear ícono personalizado para contratistas
         var iconoContratista = L.divIcon({
             className: 'marcador-contratista',
-            html: `
-                <div style="
-                    background: ${color};
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 50%;
-                    border: 2px solid white;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 14px;
-                ">👤</div>
-            `,
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -28]
+            html: '👤',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
         });
         
         // Crear el marcador
@@ -380,108 +330,29 @@ document.addEventListener('DOMContentLoaded', function() {
             title: contratista.nombre
         }).addTo(marcadoresContratistas);
         
-        // Agregar popup con información MEJORADA
+        // Agregar popup con información (MISMO DISEÑO)
         marcador.bindPopup(`
-            <div class="popup-contratista" style="max-width: 300px; font-family: Arial, sans-serif;">
-                <div style="background: ${color}; color: white; padding: 10px 15px; margin: -12px -12px 15px -12px; border-radius: 5px 5px 0 0;">
-                    <h4 style="margin: 0; font-size: 15px;">👤 ${contratista.nombre}</h4>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <p style="margin: 6px 0;"><strong>📋 Cédula:</strong> ${contratista.cedula}</p>
-                    <p style="margin: 6px 0;"><strong>📞 Teléfono:</strong> ${contratista.telefono || 'No registrado'}</p>
-                    <p style="margin: 6px 0;"><strong>🏢 Área:</strong> ${contratista.area}</p>
-                    <p style="margin: 6px 0;"><strong>📄 Contrato:</strong> ${contratista.contrato}</p>
-                    <p style="margin: 6px 0;"><strong>📍 Municipio:</strong> ${contratista.municipio}</p>
-                    <p style="margin: 6px 0;"><strong>🏠 Dirección:</strong><br>
-                        <span style="color: #7f8c8d; font-size: 12px;">${contratista.direccion || 'No especificada'}</span>
-                    </p>
-                </div>
-                
-                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 4px solid ${color}; margin-bottom: 10px;">
-                    ${mensajePrecision}
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #7f8c8d;">
-                        ${coordenadas.nombre ? `"${coordenadas.nombre}"` : 'Ubicación en el mapa'}
-                    </p>
-                </div>
-                
-                <div style="font-size: 11px; color: #95a5a6; text-align: center; border-top: 1px solid #eee; padding-top: 8px;">
-                    Coordenadas: ${coordenadas.lat.toFixed(5)}, ${coordenadas.lng.toFixed(5)}
-                </div>
+            <div class="popup-contratista" style="max-width: 300px;">
+                <h4 style="margin: 0 0 10px 0; color: #2c3e50;">
+                    <strong>${contratista.nombre}</strong>
+                </h4>
+                <p style="margin: 5px 0;"><strong>📋 Cédula:</strong> ${contratista.cedula}</p>
+                <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${contratista.telefono || 'No registrado'}</p>
+                <p style="margin: 5px 0;"><strong>🏢 Área:</strong> ${contratista.area}</p>
+                <p style="margin: 5px 0;"><strong>📄 Contrato:</strong> ${contratista.contrato}</p>
+                <p style="margin: 5px 0;"><strong>📍 Municipio:</strong> ${contratista.municipio}</p>
+                <p style="margin: 5px 0;"><strong>🏠 Dirección:</strong> ${contratista.direccion}</p>
+                <hr style="margin: 10px 0;">
+                <small style="color: #7f8c8d;">Coordenadas: ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}</small>
             </div>
         `);
-        
-        // Agregar tooltip
-        marcador.bindTooltip(contratista.nombre, {
-            direction: 'top',
-            offset: [0, -10],
-            opacity: 0.9
-        });
-    }
-    
-    // Función para agregar leyenda al mapa
-    function agregarLeyenda() {
-        const leyenda = L.control({ position: 'bottomleft' });
-        
-        leyenda.onAdd = function() {
-            const div = L.DomUtil.create('div', 'leyenda-mapa');
-            div.innerHTML = `
-                <div style="
-                    background: white;
-                    padding: 12px;
-                    border-radius: 6px;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                    font-family: Arial, sans-serif;
-                    font-size: 12px;
-                    max-width: 200px;
-                ">
-                    <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 13px;">
-                        🎯 Precisión de ubicación
-                    </h4>
-                    
-                    <div style="margin-bottom: 8px;">
-                        <div style="display: flex; align-items: center; margin: 4px 0;">
-                            <div style="width: 12px; height: 12px; background: #27ae60; border-radius: 50%; margin-right: 8px;"></div>
-                            <span>En la calle exacta</span>
-                        </div>
-                        <div style="display: flex; align-items: center; margin: 4px 0;">
-                            <div style="width: 12px; height: 12px; background: #2ecc71; border-radius: 50%; margin-right: 8px;"></div>
-                            <span>En el barrio/área</span>
-                        </div>
-                        <div style="display: flex; align-items: center; margin: 4px 0;">
-                            <div style="width: 12px; height: 12px; background: #f39c12; border-radius: 50%; margin-right: 8px;"></div>
-                            <span>En la zona general</span>
-                        </div>
-                        <div style="display: flex; align-items: center; margin: 4px 0;">
-                            <div style="width: 12px; height: 12px; background: #e74c3c; border-radius: 50%; margin-right: 8px;"></div>
-                            <span>En el municipio</span>
-                        </div>
-                    </div>
-                    
-                    <div style="font-size: 11px; color: #7f8c8d; border-top: 1px solid #eee; padding-top: 8px;">
-                        <strong>💡 Nota:</strong> Las ubicaciones son aproximadas basadas en OpenStreetMap.
-                    </div>
-                </div>
-            `;
-            return div;
-        };
-        
-        leyenda.addTo(mapa);
-    }
-    
-    // Función para actualizar barra superior
-    function actualizarBarraSuperior(cantidad) {
-        const barra = document.querySelector('.barra-superior');
-        if (barra) {
-            barra.innerHTML = `🗺️ Departamento del Meta - ${cantidad} contratistas`;
-        }
     }
     
     // Función para mostrar mensajes
     function mostrarMensaje(mensaje) {
         L.popup()
             .setLatLng(villavicencio)
-            .setContent(`<div style="padding: 15px; text-align: center; min-width: 250px;">${mensaje}</div>`)
+            .setContent(`<div style="padding: 10px; text-align: center;">${mensaje}</div>`)
             .openOn(mapa);
     }
     
@@ -495,11 +366,9 @@ document.addEventListener('DOMContentLoaded', function() {
         mapa.setView(villavicencio, 13);
     };
     
-    // Función para recargar contratistas
+    // Función para recargar (opcional)
     window.recargarContratistas = function() {
-        // Limpiar marcadores existentes
         marcadoresContratistas.clearLayers();
-        // Volver a cargar
         cargarContratistas();
         mostrarMensaje('Recargando contratistas...');
     };
@@ -510,23 +379,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .marcador-contratista {
             background: none;
             border: none;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            cursor: pointer;
         }
         .leaflet-popup-content {
             font-family: Arial, sans-serif;
-        }
-        .leaflet-tooltip {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        .leyenda-mapa {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
     `;
     document.head.appendChild(estilo);
