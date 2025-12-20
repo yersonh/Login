@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <strong>${contratista.nombre}</strong>
                 </h4>
                 <p style="margin: 5px 0;"><strong>📋 Cédula:</strong> ${contratista.cedula}</p>
-                <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${contratista.telefono || 'No registrado'}</p>
+                <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${contratista.telefono}</p>
                 <p style="margin: 5px 0;"><strong>🏢 Área:</strong> ${contratista.area}</p>
                 <p style="margin: 5px 0;"><strong>📄 Contrato:</strong> ${contratista.contrato}</p>
                 <p style="margin: 5px 0;"><strong>📍 Municipio:</strong> ${contratista.municipio}</p>
