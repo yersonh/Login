@@ -25,7 +25,7 @@
         🗺️ Departamento del Meta - Colombia
     </div>
     
-    <script src="../javascript/asistente.js"></script>
+    <script src="../../javascript/asistente.js"></script>
 
 </body>
 </html>
