@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Mapa del Meta cargado');
     
+    // 1. Cargar contratistas desde la API
+    cargarContratistas();
+    
     // 2. Mostrar coordenadas al hacer clic
     mapa.on('click', function(e) {
         L.popup()
@@ -45,306 +48,47 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variable para almacenar los marcadores
     var marcadoresContratistas = L.layerGroup().addTo(mapa);
     
-    // Variables globales para filtros
-    let filtroMunicipioActual = 'todos';
-    let filtroBusquedaActual = '';
+    // ================= FUNCIONES MEJORADAS (INTERNAS) =================
     
-    // ================= SISTEMA DE FILTRADO =================
-    
-    // Función para crear controles de filtrado
-    function crearControlesFiltrado() {
-        const controles = L.control({ position: 'topright' });
-        
-        controles.onAdd = function() {
-            const div = L.DomUtil.create('div', 'controles-filtrado');
-            div.innerHTML = `
-                <div style="
-                    background: white;
-                    padding: 15px;
-                    border-radius: 8px;
-                    box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-                    font-family: Arial, sans-serif;
-                    width: 280px;
-                    max-height: 80vh;
-                    overflow-y: auto;
-                ">
-                    <h3 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 16px;">
-                        🔍 Filtros de Contratistas
-                    </h3>
-                    
-                    <!-- Filtro por Municipio -->
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">
-                            🗺️ Filtrar por Municipio
-                        </label>
-                        <select id="filtro-municipio" 
-                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
-                            <option value="todos">Todos los municipios</option>
-                            <!-- Se llenará con JavaScript -->
-                        </select>
-                    </div>
-                    
-                    <!-- Búsqueda por Nombre/Contrato -->
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;">
-                            👤 Buscar por Nombre o Contrato
-                        </label>
-                        <input type="text" 
-                               id="busqueda-contratista"
-                               placeholder="Nombre, cédula o número de contrato"
-                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
-                    </div>
-                    
-                    <!-- Contador de resultados -->
-                    <div id="contador-resultados" 
-                         style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 13px; text-align: center; margin-bottom: 15px;">
-                        Cargando...
-                    </div>
-                    
-                    <!-- Botones de acción -->
-                    <div style="display: flex; gap: 10px;">
-                        <button id="btn-aplicar-filtros" 
-                                style="flex: 1; padding: 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                            Aplicar Filtros
-                        </button>
-                        <button id="btn-limpiar-filtros" 
-                                style="flex: 1; padding: 10px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                            Limpiar
-                        </button>
-                    </div>
-                    
-                    <!-- Indicador de carga -->
-                    <div id="indicador-carga" 
-                         style="display: none; text-align: center; margin-top: 10px; color: #f39c12;">
-                        ⏳ Aplicando filtros...
-                    </div>
-                </div>
-            `;
-            return div;
-        };
-        
-        controles.addTo(mapa);
-        
-        // Cargar municipios después de crear controles
-        setTimeout(() => {
-            cargarMunicipios();
-            configurarEventosFiltrado();
-        }, 500);
-    }
-    
-    // Función para cargar municipios desde la API
-    async function cargarMunicipios() {
-        try {
-            const response = await fetch('../../api/contratistas_mapa.php?action=municipios');
-            const municipios = await response.json();
-            
-            const select = document.getElementById('filtro-municipio');
-            
-            // Agregar municipios al select
-            municipios.forEach(municipio => {
-                const option = document.createElement('option');
-                option.value = municipio;
-                option.textContent = municipio;
-                select.appendChild(option);
-            });
-            
-            console.log(`✅ ${municipios.length} municipios cargados`);
-            
-        } catch (error) {
-            console.error('❌ Error cargando municipios:', error);
-        }
-    }
-    
-    // Configurar eventos de los controles
-    function configurarEventosFiltrado() {
-        // Aplicar filtros
-        document.getElementById('btn-aplicar-filtros').addEventListener('click', aplicarFiltros);
-        
-        // Limpiar filtros
-        document.getElementById('btn-limpiar-filtros').addEventListener('click', limpiarFiltros);
-        
-        // Buscar al presionar Enter
-        document.getElementById('busqueda-contratista').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') aplicarFiltros();
-        });
-    }
-    
-    async function aplicarFiltros() {
-        mostrarIndicadorCarga(true);
-        
-        const municipio = document.getElementById('filtro-municipio').value;
-        const busqueda = document.getElementById('busqueda-contratista').value.trim();
-        
-        filtroMunicipioActual = municipio;
-        filtroBusquedaActual = busqueda;
-        
-        marcadoresContratistas.clearLayers();
-        
-        let url = '../../api/contratistas_mapa.php';
-        const params = [];
-        
-        if (municipio && municipio !== 'todos') {
-            params.push(`municipio=${encodeURIComponent(municipio)}`);
-        }
-        
-        if (params.length > 0) {
-            url += '?' + params.join('&');
-        }
-        
-        try {
-            const response = await fetch(url);
-            const resultado = await response.json();
-            
-            if (resultado.success && resultado.data) {
-                let contratistas = resultado.data;
-
-                if (busqueda) {
-                    const busquedaLower = busqueda.toLowerCase();
-                    contratistas = contratistas.filter(c => 
-                        c.nombre.toLowerCase().includes(busquedaLower) ||
-                        c.cedula.includes(busqueda) ||
-                        c.contrato.toLowerCase().includes(busquedaLower)
-                    );
-                }
-
-                for (const contratista of contratistas) {
-                    await procesarContratista(contratista);
-                    await esperar(200);
-                }
-
-                actualizarContadorResultados(contratistas.length, resultado.total || contratistas.length);
-
-                if (contratistas.length > 0) {
-                    ajustarVistaAFiltros();
-                } else {
-                    mostrarMensaje('No hay contratistas que coincidan con los filtros');
-                }
-                
-            } else {
-                mostrarMensaje(resultado.message || 'Error aplicando filtros');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error aplicando filtros:', error);
-            mostrarMensaje('Error al aplicar filtros');
-        } finally {
-            mostrarIndicadorCarga(false);
-        }
-    }
-
-    function limpiarFiltros() {
-        document.getElementById('filtro-municipio').value = 'todos';
-        document.getElementById('busqueda-contratista').value = '';
-        
-        filtroMunicipioActual = 'todos';
-        filtroBusquedaActual = '';
-
-        recargarContratistasCompletos();
-    }
-
-    async function recargarContratistasCompletos() {
-        marcadoresContratistas.clearLayers();
-        await cargarContratistas();
-    }
-
-    function actualizarContadorResultados(mostrados, total) {
-        const contador = document.getElementById('contador-resultados');
-        
-        let mensaje = '';
-        if (filtroMunicipioActual !== 'todos' || filtroBusquedaActual) {
-            mensaje = `<strong>${mostrados} contratistas</strong>`;
-            if (filtroMunicipioActual !== 'todos') {
-                mensaje += ` en <strong>${filtroMunicipioActual}</strong>`;
-            }
-            if (filtroBusquedaActual) {
-                mensaje += ` que coinciden con "<strong>${filtroBusquedaActual}</strong>"`;
-            }
-        } else {
-            mensaje = `<strong>${mostrados} contratistas</strong> en total`;
-        }
-        
-        contador.innerHTML = mensaje;
-    }
-
-    function ajustarVistaAFiltros() {
-        const marcadores = marcadoresContratistas.getLayers();
-        
-        if (marcadores.length === 0) {
-            mapa.setView(villavicencio, zoomInicial);
-            return;
-        }
-        
-        if (marcadores.length === 1) {
-            const marcador = marcadores[0];
-            const zoom = filtroMunicipioActual !== 'todos' ? 12 : 14;
-            mapa.setView(marcador.getLatLng(), zoom);
-        } else {
-            const grupo = L.featureGroup(marcadores);
-            mapa.fitBounds(grupo.getBounds().pad(0.1));
-        }
-    }
-
-    function mostrarIndicadorCarga(mostrar) {
-        const indicador = document.getElementById('indicador-carga');
-        indicador.style.display = mostrar ? 'block' : 'none';
-    }
-
+    // Función para cargar contratistas
     async function cargarContratistas() {
         console.log('🔄 Cargando contratistas...');
         
         try {
-            mostrarIndicadorCarga(true);
-
-            let url = '../../api/contratistas_mapa.php';
-            if (filtroMunicipioActual && filtroMunicipioActual !== 'todos') {
-                url += `?municipio=${encodeURIComponent(filtroMunicipioActual)}`;
+            const response = await fetch('../../api/contratistas_mapa.php');
+            
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
             }
             
-            const response = await fetch(url);
-            const resultado = await response.json();
+            const contratistas = await response.json();
+            console.log(`📊 ${contratistas.length} contratistas cargados`);
             
-            if (resultado.success && resultado.data) {
-                let contratistas = resultado.data;
-
-                if (filtroBusquedaActual) {
-                    const busquedaLower = filtroBusquedaActual.toLowerCase();
-                    contratistas = contratistas.filter(c => 
-                        c.nombre.toLowerCase().includes(busquedaLower) ||
-                        c.cedula.includes(filtroBusquedaActual) ||
-                        c.contrato.toLowerCase().includes(busquedaLower)
-                    );
-                }
-                
-                console.log(`📊 ${contratistas.length} contratistas cargados`);
-                
-                if (contratistas.length === 0) {
-                    mostrarMensaje(resultado.message || 'No hay contratistas que coincidan');
-                    actualizarContadorResultados(0, 0);
-                    return;
-                }
-
-                for (const contratista of contratistas) {
-                    await procesarContratista(contratista);
-                    await esperar(200);
-                }
-                
-                actualizarContadorResultados(contratistas.length, resultado.total || contratistas.length);
-                
-            } else {
-                mostrarMensaje(resultado.error || 'Error cargando datos');
+            if (contratistas.length === 0) {
+                mostrarMensaje('No hay contratistas con direcciones registradas');
+                return;
             }
+            
+            // Procesar cada contratista con búsqueda mejorada
+            for (const contratista of contratistas) {
+                await procesarContratista(contratista);
+                // Pequeña pausa para no saturar OSM
+                await esperar(200);
+            }
+            
+            console.log('✅ Procesamiento completado');
             
         } catch (error) {
             console.error('❌ Error cargando contratistas:', error);
             mostrarMensaje('Error al cargar los contratistas');
-        } finally {
-            mostrarIndicadorCarga(false);
         }
     }
-
+    
+    // Función principal para procesar un contratista
     async function procesarContratista(contratista) {
         let coordenadas = null;
         
+        // PRIMERO: Intentar búsqueda mejorada
         if (contratista.direccion && contratista.municipio) {
             coordenadas = await buscarDireccionMejorada(contratista.direccion, contratista.municipio);
         }
@@ -353,17 +97,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!coordenadas && contratista.municipio) {
             coordenadas = await obtenerCoordenadasMunicipio(contratista.municipio);
         }
-
+        
+        // TERCERO: Fallback a Villavicencio
         if (!coordenadas) {
             coordenadas = {
                 lat: villavicencio[0],
                 lng: villavicencio[1]
             };
         }
-
+        
+        // Agregar marcador (mismo diseño visual)
         agregarMarcadorContratista(contratista, coordenadas);
     }
-
+    
+    // FUNCIÓN MEJORADA: Buscar dirección con múltiples intentos
     async function buscarDireccionMejorada(direccion, municipio) {
         // Lista de consultas a intentar
         const consultas = generarConsultas(direccion, municipio);
@@ -387,31 +134,39 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`   ❌ No encontrado después de ${consultas.length} intentos`);
         return null;
     }
-
+    
+    // Generar múltiples variantes de búsqueda
     function generarConsultas(direccion, municipio) {
         const consultas = [];
-
+        
+        // 1. Dirección completa
         consultas.push(`${direccion}, ${municipio}, Meta, Colombia`);
-
+        
+        // 2. Dirección simplificada
         const direccionSimple = simplificarDireccion(direccion);
         if (direccionSimple !== direccion) {
             consultas.push(`${direccionSimple}, ${municipio}, Colombia`);
         }
-
+        
+        // 3. Solo elementos principales
         const elementos = extraerElementosDireccion(direccion);
         if (elementos.calle && elementos.numero) {
             consultas.push(`${elementos.calle} ${elementos.numero}, ${municipio}, Meta`);
         }
-
+        
+        // 4. Solo calle principal
         const callePrincipal = extraerCallePrincipal(direccion);
         if (callePrincipal) {
             consultas.push(`${callePrincipal}, ${municipio}, Colombia`);
         }
-
+        
+        // 5. Solo municipio (último recurso)
         consultas.push(`${municipio}, Meta, Colombia`);
         
         return consultas;
     }
+    
+    // Simplificar dirección para mejor búsqueda
     function simplificarDireccion(direccion) {
         if (!direccion) return '';
         
@@ -431,7 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return direccion;
     }
-
+    
+    // Extraer calle principal
     function extraerCallePrincipal(direccion) {
         if (!direccion) return null;
         
@@ -458,7 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return null;
     }
-
+    
+    // Extraer elementos de dirección
     function extraerElementosDireccion(direccion) {
         const elementos = { calle: null, numero: null };
         
@@ -509,7 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return null;
         }
     }
-
+    
+    // Función MEJORADA para obtener coordenadas de municipio
     async function obtenerCoordenadasMunicipio(municipioNombre) {
         // Coordenadas actualizadas de municipios del Meta
         const coordenadasMunicipios = {
@@ -544,6 +302,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 lng: coordenadasMunicipios[municipioNombre][1]
             };
         }
+        
+        // Si no tenemos el municipio, intentar buscarlo en OSM
         const resultado = await buscarEnNominatim(`${municipioNombre}, Meta, Colombia`);
         if (resultado) {
             return resultado;
@@ -552,7 +312,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Último recurso: Villavicencio
         return null;
     }
-
+    
+    // Función para agregar un marcador al mapa (MISMO DISEÑO)
     function agregarMarcadorContratista(contratista, coordenadas) {
         // Crear ícono personalizado para contratistas
         var iconoContratista = L.divIcon({
@@ -568,7 +329,8 @@ document.addEventListener('DOMContentLoaded', function() {
             icon: iconoContratista,
             title: contratista.nombre
         }).addTo(marcadoresContratistas);
-
+        
+        // Agregar popup con información (MISMO DISEÑO)
         marcador.bindPopup(`
             <div class="popup-contratista" style="max-width: 300px;">
                 <h4 style="margin: 0 0 10px 0; color: #2c3e50;">
@@ -585,32 +347,33 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `);
     }
-
+    
+    // Función para mostrar mensajes
     function mostrarMensaje(mensaje) {
         L.popup()
             .setLatLng(villavicencio)
             .setContent(`<div style="padding: 10px; text-align: center;">${mensaje}</div>`)
             .openOn(mapa);
     }
-
+    
+    // Función de utilidad para esperar
     function esperar(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-
+    
+    // Función para centrar en Villavicencio
     window.centrarVillavicencio = function() {
         mapa.setView(villavicencio, 13);
     };
-
+    
+    // Función para recargar (opcional)
     window.recargarContratistas = function() {
         marcadoresContratistas.clearLayers();
         cargarContratistas();
         mostrarMensaje('Recargando contratistas...');
     };
-
-    window.aplicarFiltros = aplicarFiltros;
-    window.limpiarFiltros = limpiarFiltros;
     
-    // Agregar estilos CSS
+    // Agregar estilos CSS para los marcadores
     const estilo = document.createElement('style');
     estilo.textContent = `
         .marcador-contratista {
@@ -623,37 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .leaflet-popup-content {
             font-family: Arial, sans-serif;
         }
-        .controles-filtrado {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .controles-filtrado select:focus,
-        .controles-filtrado input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        .controles-filtrado button {
-            transition: all 0.2s ease;
-        }
-        .controles-filtrado button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .controles-filtrado button:active {
-            transform: translateY(0);
-        }
-        #btn-aplicar-filtros:hover {
-            background: #2980b9 !important;
-        }
-        #btn-limpiar-filtros:hover {
-            background: #7f8c8d !important;
-        }
     `;
     document.head.appendChild(estilo);
-
-    cargarContratistas();
-    setTimeout(() => {
-        crearControlesFiltrado();
-    }, 1000);
 });
