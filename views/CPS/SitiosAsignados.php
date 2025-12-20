@@ -90,8 +90,12 @@
             const villavicencio = [4.1420, -73.6266]; // Capital del Meta
             const zoomInicial = 10; // Zoom para ver el departamento
             
-            // 1. Crear el mapa centrado en el Meta
-            var mapa = L.map('mapa').setView(villavicencio, zoomInicial);
+            // 1. Crear el mapa DESHABILITANDO los controles por defecto
+            var mapa = L.map('mapa', {
+                zoomControl: false,  // ¡IMPORTANTE! Esto elimina los controles de la esquina superior izquierda
+                center: villavicencio,
+                zoom: zoomInicial
+            });
             
             // 2. Añadir capa de OpenStreetMap
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -114,8 +118,10 @@
                     .openOn(mapa);
             });
             
-            // 5. Añadir controles básicos
+            // 5. Añadir controles básicos - SOLO la escala y el zoom en posición específica
             L.control.scale().addTo(mapa);
+            
+            // Añadir control de zoom personalizado en la esquina inferior derecha
             L.control.zoom({
                 position: 'bottomright'
             }).addTo(mapa);
