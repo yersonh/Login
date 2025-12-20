@@ -240,5 +240,38 @@ class ContratistaModel {
         
         return $resultado['proximo'];
     }
+    public function obtenerContratistasParaMapa() {
+        $sql = "SELECT 
+                    p.id_persona, 
+                    p.cedula, 
+                    p.nombres, 
+                    p.apellidos, 
+                    p.telefono,
+                    dc.id_detalle, 
+                    dc.numero_contrato, 
+                    dc.fecha_inicio, 
+                    dc.fecha_final,
+                    dc.direccion,
+                    a.nombre AS area,
+                    tv.nombre AS tipo_vinculacion,
+                    m1.nombre AS municipio_principal,
+                    m2.nombre AS municipio_secundario,
+                    m3.nombre AS municipio_terciario,
+                    dc.created_at
+                FROM detalle_contrato dc
+                JOIN persona p ON dc.id_persona = p.id_persona
+                LEFT JOIN area a ON dc.id_area = a.id_area
+                LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
+                LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
+                LEFT JOIN municipio m2 ON dc.id_municipio_secundario = m2.id_municipio
+                LEFT JOIN municipio m3 ON dc.id_municipio_terciario = m3.id_municipio
+                WHERE dc.direccion IS NOT NULL AND dc.direccion != ''
+                ORDER BY dc.created_at DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
