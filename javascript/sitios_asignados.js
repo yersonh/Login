@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar contratistas
     function cargarContratistas() {
-        fetch('../api/contratistas_mapa.php')
+        fetch('../../api/contratistas_mapa.php')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error en la respuesta del servidor');
