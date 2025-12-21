@@ -372,7 +372,6 @@ try {
                                 placeholder="Se calculará automáticamente"
                                 readonly
                                 required>
-                            <div class="form-help">Se calcula automáticamente al ingresar las fechas</div>
                         </div>
                         
                         <div class="form-group">
