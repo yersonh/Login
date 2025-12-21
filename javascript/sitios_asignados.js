@@ -40,23 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarContratistas();
     });
     
-    // Mostrar coordenadas al hacer clic
-    mapa.on('click', function(e) {
-        L.popup()
-            .setLatLng(e.latlng)
-            .setContent(
-                `<div class="popup-coordenadas">
-                    <h6><i class="fas fa-map-marker-alt"></i> Ubicación seleccionada</h6>
-                    <div class="coordenadas-info">
-                        <div><strong>Latitud:</strong> ${e.latlng.lat.toFixed(6)}</div>
-                        <div><strong>Longitud:</strong> ${e.latlng.lng.toFixed(6)}</div>
-                        <div class="small text-muted mt-1">Departamento del Meta, Colombia</div>
-                    </div>
-                </div>`
-            )
-            .openOn(mapa);
-    });
-    
     // Añadir controles básicos
     L.control.scale().addTo(mapa);
     L.control.zoom({ position: 'bottomright' }).addTo(mapa);
@@ -690,7 +673,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }).addTo(marcadoresContratistas);
         
         // Agregar popup con información profesional
-        // En la función agregarMarcadorContratista, modifica el HTML del popup:
         marcador.bindPopup(`
             <div class="popup-contratista" style="width: 300px;">
                 <div class="popup-header bg-primary text-white p-3">
