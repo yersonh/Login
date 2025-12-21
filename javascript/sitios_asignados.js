@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var todosContratistas = []; // Almacenar todos los contratistas para la lista
     var contratistasProcesados = []; // Contratistas con marcadores
     
-
+    // Variables para control de búsqueda
+    var busquedaEnCurso = false;
+    var ultimaBusquedaAbortController = null;
+    var timeoutDebounce = null;
+    var procesamientoActivo = false;
     
     // Inicializar buscador
     inicializarBuscador();
@@ -57,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ================= BUSCADOR Y FILTROS =================
     
-   function inicializarBuscador() {
+    function inicializarBuscador() {
         // Crear contenedor para el buscador
         const searchContainer = L.control({ position: 'topright' });
         
@@ -114,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         <!-- Botones de acción -->
                         <div class="d-flex gap-2">
-                            <button onclick="buscarContratistas()" 
+                            <button id="btnBuscar" onclick="buscarContratistas()" 
                                     class="btn btn-primary flex-grow-1">
                                 <i class="fas fa-search me-1"></i>Buscar
                             </button>
@@ -122,6 +126,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                     class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i>Limpiar
                             </button>
+                        </div>
+                        
+                        <!-- Indicador de búsqueda -->
+                        <div id="indicadorBusqueda" class="mt-2" style="display: none;">
+                            <div class="d-flex align-items-center text-primary">
+                                <div class="spinner-border spinner-border-sm me-2" role="status">
+                                    <span class="visually-hidden">Buscando...</span>
+                                </div>
+                                <small class="fw-medium">Buscando contratistas...</small>
+                            </div>
                         </div>
                         
                         <!-- Resultados de búsqueda (OCULTO INICIALMENTE) -->
@@ -236,6 +250,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cargar contratistas (modificada para aceptar filtros)
     async function cargarContratistas(filtros = {}) {
+        // Cancelar búsqueda anterior si existe
+        if (ultimaBusquedaAbortController) {
+            ultimaBusquedaAbortController.abort();
+            console.log('⏹️ Búsqueda anterior cancelada');
+        }
+        
+        // Crear nuevo AbortController
+        ultimaBusquedaAbortController = new AbortController();
+        
+        // Verificar si ya hay una búsqueda en curso
+        if (busquedaEnCurso) {
+            console.log('⚠️ Ya hay una búsqueda en curso, esperando...');
+            return;
+        }
+        
+        // Establecer bandera de búsqueda en curso
+        busquedaEnCurso = true;
+        procesamientoActivo = true;
+        
+        // Mostrar indicador de búsqueda
+        mostrarIndicadorBusqueda(true);
+        
         console.log('🔄 Cargando contratistas...', filtros);
         
         try {
@@ -252,14 +288,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 url += '?' + params.toString();
             }
             
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                signal: ultimaBusquedaAbortController.signal
+            });
             
             if (!response.ok) {
                 throw new Error('Error en la respuesta del servidor');
             }
             
             const result = await response.json();
-            console.log('📦 Respuesta de la API:', result); // Debug
+            console.log('📦 Respuesta de la API:', result);
             
             if (!result.success) {
                 throw new Error(result.error || 'Error desconocido');
@@ -274,7 +312,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 contratistas = [];
             }
             
-            console.log(`📊 ${contratistas.length} contratista(s) cargado(s)`, contratistas);
+            console.log(`📊 ${contratistas.length} contratista(s) cargado(s)`);
+            
+            // Verificar si el procesamiento sigue activo (no fue cancelado)
+            if (!procesamientoActivo) {
+                console.log('⏹️ Procesamiento cancelado por nueva búsqueda');
+                return;
+            }
             
             // Guardar todos los contratistas
             todosContratistas = contratistas;
@@ -291,11 +335,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     ocultarResultadosBusqueda();
                 }
+                
+                // Ocultar indicador
+                mostrarIndicadorBusqueda(false);
+                busquedaEnCurso = false;
+                procesamientoActivo = false;
                 return;
             }
             
             // Procesar cada contratista
             for (const contratista of contratistas) {
+                // Verificar si el procesamiento sigue activo
+                if (!procesamientoActivo) {
+                    console.log('⏹️ Procesamiento interrumpido por nueva búsqueda');
+                    break;
+                }
+                
                 const contratistaProcesado = await procesarContratista(contratista);
                 contratistasProcesados.push(contratistaProcesado);
                 await esperar(150); // Pausa para no saturar OSM
@@ -309,10 +364,38 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Procesamiento completado');
             
         } catch (error) {
+            // Ignorar errores de aborto
+            if (error.name === 'AbortError') {
+                console.log('⏹️ Búsqueda cancelada por el usuario');
+                return;
+            }
+            
             console.error('❌ Error cargando contratistas:', error);
             mostrarMensaje('Error al cargar los contratistas: ' + error.message);
+        } finally {
+            // Ocultar indicador
+            mostrarIndicadorBusqueda(false);
+            busquedaEnCurso = false;
+            procesamientoActivo = false;
         }
     }
+    
+    // Función para mostrar/ocultar indicador de búsqueda
+    function mostrarIndicadorBusqueda(mostrar) {
+        const indicador = document.getElementById('indicadorBusqueda');
+        const btnBuscar = document.getElementById('btnBuscar');
+        
+        if (mostrar) {
+            indicador.style.display = 'block';
+            btnBuscar.disabled = true;
+            btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Buscando...';
+        } else {
+            indicador.style.display = 'none';
+            btnBuscar.disabled = false;
+            btnBuscar.innerHTML = '<i class="fas fa-search me-1"></i>Buscar';
+        }
+    }
+    
     async function cargarTiposVinculacion() {
         console.log('🔄 Cargando tipos de vinculación...');
         
@@ -336,6 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
             throw error;
         }
     }
+    
     // Llenar select de tipos de vinculación
     function llenarSelectTiposVinculacion() {
         const select = document.getElementById('selectTipoVinculacion');
@@ -348,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
             select.appendChild(option);
         });
     }
-        
+    
     // Función principal para procesar un contratista
     async function procesarContratista(contratista) {
         let coordenadas = null;
@@ -385,26 +469,50 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Buscar contratistas (solo cuando el usuario hace clic en Buscar)
     window.buscarContratistas = function() {
-        const filtros = {
-            nombre: document.getElementById('inputNombre').value.trim(),
-            municipio: document.getElementById('selectMunicipio').value,
-            area: document.getElementById('selectArea').value,
-            tipo_vinculacion: document.getElementById('selectTipoVinculacion').value
-        };
-        
-        // Verificar si hay algún filtro activo
-        const tieneFiltros = filtros.nombre || filtros.municipio || filtros.area;
-        
-        if (!tieneFiltros) {
-            mostrarMensaje('Por favor, ingrese al menos un criterio de búsqueda');
-            return;
+        // Limpiar timeout anterior si existe
+        if (timeoutDebounce) {
+            clearTimeout(timeoutDebounce);
         }
         
-        cargarContratistas(filtros);
+        // Usar debounce para evitar múltiples clics rápidos
+        timeoutDebounce = setTimeout(() => {
+            const filtros = {
+                nombre: document.getElementById('inputNombre').value.trim(),
+                municipio: document.getElementById('selectMunicipio').value,
+                area: document.getElementById('selectArea').value,
+                tipo_vinculacion: document.getElementById('selectTipoVinculacion').value
+            };
+            
+            // Verificar si hay algún filtro activo (CORREGIDO: incluye tipo_vinculacion)
+            const tieneFiltros = filtros.nombre || filtros.municipio || filtros.area || filtros.tipo_vinculacion;
+            
+            if (!tieneFiltros) {
+                mostrarMensaje('Por favor, ingrese al menos un criterio de búsqueda');
+                return;
+            }
+            
+            // Detener procesamiento actual
+            procesamientoActivo = false;
+            
+            cargarContratistas(filtros);
+        }, 300); // Debounce de 300ms
     };
     
     // Limpiar búsqueda (vuelve a mostrar todos los contratistas sin filtros)
     window.limpiarBusqueda = function() {
+        // Limpiar timeout si existe
+        if (timeoutDebounce) {
+            clearTimeout(timeoutDebounce);
+        }
+        
+        // Cancelar búsqueda actual si existe
+        if (ultimaBusquedaAbortController) {
+            ultimaBusquedaAbortController.abort();
+        }
+        
+        // Detener procesamiento actual
+        procesamientoActivo = false;
+        
         document.getElementById('inputNombre').value = '';
         document.getElementById('selectMunicipio').selectedIndex = 0;
         document.getElementById('selectArea').selectedIndex = 0;
@@ -422,74 +530,74 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ================= LISTA DE RESULTADOS =================
     
-function actualizarListaResultados(contratistas) {
-    const container = document.getElementById('listaResultados');
-    const contador = document.getElementById('contadorResultados');
-    const resultadosDiv = document.getElementById('resultadosBusqueda');
-    
-    // Mostrar contenedor de resultados (SOLO cuando se hace una búsqueda)
-    resultadosDiv.style.display = 'block';
-    contador.textContent = contratistas.length;
-    
-    // Limpiar lista anterior
-    container.innerHTML = '';
-    
-    if (contratistas.length === 0) {
-        container.innerHTML = `
-            <div class="alert alert-light border mt-2 py-2">
-                <div class="text-center text-muted">
-                    <i class="fas fa-search fa-lg mb-2"></i>
-                    <p class="mb-0">No se encontraron contratistas</p>
-                    <small class="mt-1">Intente con otros criterios de búsqueda</small>
-                </div>
-            </div>
-        `;
-        return;
-    }
-    
-    // Crear elementos de lista
-    contratistas.forEach((contratista, index) => {
-        const item = document.createElement('div');
-        item.className = 'result-item';
-        item.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start">
-                <div class="flex-grow-1">
-                    <div class="fw-semibold text-primary">${contratista.nombre}</div>
-                    <div class="small text-muted mt-1">
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="badge bg-light text-dark border">
-                                <i class="fas fa-id-card me-1"></i>${contratista.cedula}
-                            </span>
-                            <span class="badge bg-light text-dark border">
-                                <i class="fas fa-map-marker-alt me-1"></i>${contratista.municipio_principal || 'Sin municipio'}
-                            </span>
-                            ${contratista.area ? `
-                            <span class="badge bg-light text-dark border">
-                                <i class="fas fa-building me-1"></i>${contratista.area}
-                            </span>` : ''}
-                           ${contratista.tipo_vinculacion ? `
-                            <span class="badge tipo-vinculacion-badge">
-                                <i class="fas fa-handshake me-1"></i>${contratista.tipo_vinculacion}
-                            </span>` : ''}
-                        </div>
+    function actualizarListaResultados(contratistas) {
+        const container = document.getElementById('listaResultados');
+        const contador = document.getElementById('contadorResultados');
+        const resultadosDiv = document.getElementById('resultadosBusqueda');
+        
+        // Mostrar contenedor de resultados (SOLO cuando se hace una búsqueda)
+        resultadosDiv.style.display = 'block';
+        contador.textContent = contratistas.length;
+        
+        // Limpiar lista anterior
+        container.innerHTML = '';
+        
+        if (contratistas.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-light border mt-2 py-2">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-search fa-lg mb-2"></i>
+                        <p class="mb-0">No se encontraron contratistas</p>
+                        <small class="mt-1">Intente con otros criterios de búsqueda</small>
                     </div>
                 </div>
-                <button onclick="event.stopPropagation(); irAContratista(${index})" 
-                        class="btn btn-sm btn-outline-primary ms-2"
-                        title="Ver en mapa">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-        `;
+            `;
+            return;
+        }
         
-        // Al hacer clic en el item
-        item.addEventListener('click', () => {
-            irAContratista(index);
+        // Crear elementos de lista
+        contratistas.forEach((contratista, index) => {
+            const item = document.createElement('div');
+            item.className = 'result-item';
+            item.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold text-primary">${contratista.nombre}</div>
+                        <div class="small text-muted mt-1">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-id-card me-1"></i>${contratista.cedula}
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-map-marker-alt me-1"></i>${contratista.municipio_principal || 'Sin municipio'}
+                                </span>
+                                ${contratista.area ? `
+                                <span class="badge bg-light text-dark border">
+                                    <i class="fas fa-building me-1"></i>${contratista.area}
+                                </span>` : ''}
+                               ${contratista.tipo_vinculacion ? `
+                                <span class="badge tipo-vinculacion-badge">
+                                    <i class="fas fa-handshake me-1"></i>${contratista.tipo_vinculacion}
+                                </span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); irAContratista(${index})" 
+                            class="btn btn-sm btn-outline-primary ms-2"
+                            title="Ver en mapa">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Al hacer clic en el item
+            item.addEventListener('click', () => {
+                irAContratista(index);
+            });
+            
+            container.appendChild(item);
         });
-        
-        container.appendChild(item);
-    });
-}
+    }
     
     // Ocultar resultados de búsqueda
     function ocultarResultadosBusqueda() {
@@ -542,6 +650,11 @@ function actualizarListaResultados(contratistas) {
         const consultas = generarConsultas(direccion, municipio);
         
         for (let i = 0; i < consultas.length; i++) {
+            // Verificar si el procesamiento sigue activo
+            if (!procesamientoActivo) {
+                return null;
+            }
+            
             const consulta = consultas[i];
             console.log(`   🔍 Intento ${i + 1}: "${consulta.substring(0, 50)}${consulta.length > 50 ? '...' : ''}"`);
             
@@ -851,6 +964,14 @@ function actualizarListaResultados(contratistas) {
     
     // Función para recargar
     window.recargarContratistas = function() {
+        // Cancelar búsqueda actual si existe
+        if (ultimaBusquedaAbortController) {
+            ultimaBusquedaAbortController.abort();
+        }
+        
+        // Detener procesamiento actual
+        procesamientoActivo = false;
+        
         marcadoresContratistas.clearLayers();
         cargarContratistas();
         mostrarMensaje('Recargando contratistas...');
