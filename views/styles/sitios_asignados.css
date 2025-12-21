@@ -1,382 +1,146 @@
-/* ================= ESTILOS PROFESIONALES PARA GOBERNACIÓN ================= */
-
-/* Font Awesome CDN (necesario para los iconos) */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-
-/* Paleta de colores institucional */
-:root {
-    --color-primary: #2c3e50;     /* Azul oscuro institucional */
-    --color-secondary: #3498db;   /* Azul principal */
-    --color-accent: #e74c3c;      /* Rojo para énfasis */
-    --color-light: #f8f9fa;       /* Fondo claro */
-    --color-border: #dee2e6;      /* Bordes */
-    --color-text: #2c3e50;        /* Texto principal */
-    --color-text-light: #7f8c8d;  /* Texto secundario */
-    --color-success: #27ae60;     /* Verde para confirmaciones */
-    --color-warning: #f39c12;     /* Amarillo para advertencias */
-}
-
-/* Panel de búsqueda */
-.search-container .card {
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    background: white;
-}
-
-.search-container .card-header {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: white;
-    border-bottom: none;
-    border-radius: 8px 8px 0 0 !important;
-    padding: 12px 16px;
-}
-
-.search-container .card-header h6 {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    margin: 0;
-}
-
-.search-container .card-body {
-    padding: 20px;
-}
-
-/* Formularios */
-.search-container .form-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 6px;
-    letter-spacing: 0.3px;
-}
-
-.search-container .form-control,
-.search-container .form-select {
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    color: var(--color-text);
-}
-
-.search-container .form-control:focus,
-.search-container .form-select:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-    outline: none;
-}
-
-.search-container .form-control::placeholder {
-    color: #adb5bd;
-    font-size: 13px;
-}
-
-/* Botones */
-.search-container .btn {
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 14px;
-    padding: 10px 16px;
-    transition: all 0.2s ease;
-    border: none;
-    letter-spacing: 0.3px;
-}
-
-.search-container .btn-primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: white;
-}
-
-.search-container .btn-primary:hover {
-    background: linear-gradient(135deg, #1a252f, #2980b9);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(41, 128, 185, 0.25);
-}
-
-.search-container .btn-outline-secondary {
-    background: white;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-light);
-}
-
-.search-container .btn-outline-secondary:hover {
-    background: var(--color-light);
-    border-color: var(--color-text-light);
-    color: var(--color-text);
-}
-
-/* Resultados de búsqueda */
-#resultadosBusqueda h6 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--color-secondary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#contadorResultados {
-    background: var(--color-text-light);
-    color: white;
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    min-width: 30px;
-    text-align: center;
-}
-
-/* Lista de resultados */
-.resultados-list {
-    max-height: 320px;
-    overflow-y: auto;
-    margin-top: 12px;
-}
-
-.result-item {
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.result-item:hover {
-    background: var(--color-light);
-    border-color: var(--color-secondary);
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
-}
-
-.result-item:active {
-    background: #e9ecef;
-    transform: scale(0.995);
-}
-
-.result-item .fw-semibold {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 6px;
-}
-
-.result-item .badge {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 5px 9px;
-    border-radius: 4px;
-    background: var(--color-light);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.result-item .btn-outline-primary {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-}
-
-.result-item .btn-outline-primary:hover {
-    background: var(--color-secondary);
-    color: white;
-}
-
-/* Alertas y mensajes */
-.alert-light {
-    background: var(--color-light);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-light);
-}
-
-.alert-light .fa-search {
-    color: var(--color-text-light);
-    opacity: 0.7;
-}
-
-/* Marcadores del mapa */
-.marcador-contratista {
-    background: none;
-    border: none;
-    color: var(--color-primary);
-    font-size: 22px;
-    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.9);
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.marcador-contratista:hover {
-    transform: scale(1.1);
-}
-
-.marcador-contratista i {
-    background: white;
-    border-radius: 50%;
-    padding: 5px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.marcador-contratista-resaltado {
-    background: none;
-    border: none;
-    color: var(--color-accent);
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1000;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Popups profesionales */
-.leaflet-popup-content {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    padding: 0;
-}
-
+/* Estilo minimalista */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        #mapa {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        /* Barra superior simple */
+        .barra-superior {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        /* Botón personalizado */
+        .btn-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-control:hover {
+            background: #f5f5f5;
+        }
+        /* Estilos para los popups de contratistas */
 .popup-contratista {
-    min-width: 280px;
-}
-
-.popup-header {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    color: white;
-    padding: 16px;
-    border-radius: 6px 6px 0 0;
-}
-
-.popup-header h6 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0;
-    line-height: 1.3;
-}
-
-.popup-header small {
-    font-size: 12px;
-    opacity: 0.9;
-    display: block;
-    margin-top: 2px;
-}
-
-.popup-body {
-    padding: 16px;
-    background: white;
-}
-
-.popup-body .row {
-    margin: 0 -4px;
-}
-
-.popup-body .col-6,
-.popup-body .col-12 {
-    padding: 0 4px;
-}
-
-.info-item {
-    margin-bottom: 12px;
-}
-
-.info-label {
-    display: block;
-    font-size: 11px;
-    color: var(--color-text-light);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 3px;
-}
-
-.info-value {
-    display: block;
-    font-size: 13px;
-    color: var(--color-text);
-    font-weight: 500;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
     line-height: 1.4;
 }
 
-.popup-body hr {
-    margin: 16px 0;
-    border-color: var(--color-border);
-    opacity: 0.5;
+.popup-contratista h4 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #3498db;
 }
 
-.popup-body .text-center {
-    font-size: 11px;
-    color: var(--color-text-light);
+.popup-contratista p {
+    margin: 5px 0;
 }
 
-/* Scrollbar personalizado */
-.resultados-list::-webkit-scrollbar {
-    width: 6px;
+.popup-contratista strong {
+    color: #34495e;
+    min-width: 100px;
+    display: inline-block;
+}
+/* Estilos para el buscador de contratistas */
+.search-container .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.resultados-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.resultados-list::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.resultados-list::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .search-container .card {
-        margin: 10px;
-        max-width: calc(100vw - 20px);
-    }
-    
-    .search-container .card-header h6 {
-        font-size: 14px;
-    }
-    
-    .search-container .btn {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-}
-
-/* Estilos para la barra superior (si la mantienes) */
-.barra-superior {
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: var(--color-primary);
+.search-container .card-title {
+    color: #2c3e50;
+    font-size: 1rem;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Filtros activos indicator */
-.filter-indicator {
-    background: var(--color-light);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    color: var(--color-text);
-    margin-top: 8px;
-    display: none;
+.search-container .form-label {
+    color: #495057;
+    font-weight: 500;
 }
 
-.filter-indicator.active {
-    display: block;
+.search-container .form-control-sm,
+.search-container .form-select-sm {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.search-container .form-control-sm:focus,
+.search-container .form-select-sm:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-container .btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.search-container .btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.search-container .btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.search-container .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+#resultadosBusqueda h6 {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.list-group-item h6 {
+    color: #34495e;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.list-group-item small {
+    font-size: 0.8rem;
+}
+
+.btn-outline-primary {
+    padding: 0.1rem 0.4rem;
+    font-size: 0.8rem;
 }
