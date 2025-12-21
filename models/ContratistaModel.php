@@ -405,6 +405,16 @@ class ContratistaModel {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    private function formatearFecha($fecha) {
+        if (empty($fecha)) return null;
+        
+        $partes = explode('/', $fecha);
+        if (count($partes) === 3) {
+            return $partes[2] . '-' . $partes[1] . '-' . $partes[0];
+        }
+        
+        return $fecha;
+    }
   /*  public function obtenerContratistasParaMapa() {
     $sql = "SELECT 
                 p.id_persona, 
