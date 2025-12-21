@@ -196,12 +196,12 @@ function cargarTiposVinculacion() {
                 if (tipo.activo) {
                     botonEstado = `
                         <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, false, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
+                            <i class="fas fa-ban"></i> 
                         </button>`;
                 } else {
                     botonEstado = `
                         <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, true, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
+                            <i class="fas fa-check-circle"></i> 
                         </button>`;
                 }
                 
@@ -263,12 +263,12 @@ function buscarTiposVinculacion(termino) {
                 if (tipo.activo) {
                     botonEstado = `
                         <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, false, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
+                            <i class="fas fa-ban"></i>
                         </button>`;
                 } else {
                     botonEstado = `
                         <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoVinculacion(${tipo.id_tipo}, true, '${escapeHtml(tipo.nombre)}', '${escapeHtml(tipo.codigo || '')}', '${escapeHtml(tipo.descripcion || '')}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
+                            <i class="fas fa-check-circle"></i>
                         </button>`;
                 }
 
@@ -283,7 +283,7 @@ function buscarTiposVinculacion(termino) {
                     <td><span class="status-badge ${tipo.activo ? 'status-active' : 'status-inactive'}">${tipo.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarVinculacion(${tipo.id_tipo})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i>
                         </button>
                         ${botonEstado}
                     </td>
@@ -1071,12 +1071,12 @@ function cargarAreas() {
                 if (area.activo) {
                     botonEstado = `
                         <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, false, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
+                            <i class="fas fa-ban"></i>
                         </button>`;
                 } else {
                     botonEstado = `
                         <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, true, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
+                            <i class="fas fa-check-circle"></i>
                         </button>`;
                 }
                 
@@ -1092,7 +1092,7 @@ function cargarAreas() {
                     <td><span class="status-badge ${area.activo ? 'status-active' : 'status-inactive'}">${area.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarArea(${area.id_area})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i>
                         </button>
                         ${botonEstado}
                     </td>
@@ -1138,12 +1138,12 @@ function buscarAreas(termino) {
                 if (area.activo) {
                     botonEstado = `
                         <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, false, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
+                            <i class="fas fa-ban"></i>
                         </button>`;
                 } else {
                     botonEstado = `
                         <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstadoArea(${area.id_area}, true, '${area.nombre.replace(/'/g, "\\'")}', '${area.codigo_area}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
+                            <i class="fas fa-check-circle"></i>
                         </button>`;
                 }
 
@@ -1158,7 +1158,7 @@ function buscarAreas(termino) {
                     <td><span class="status-badge ${area.activo ? 'status-active' : 'status-inactive'}">${area.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarArea(${area.id_area})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i>
                         </button>
                         ${botonEstado}
                     </td>
@@ -1578,12 +1578,12 @@ function buscarMunicipios(termino) {
                 if (municipio.activo) {
                     botonEstado = `
                         <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
-                            <i class="fas fa-ban"></i> Desactivar
+                            <i class="fas fa-ban"></i> 
                         </button>`;
                 } else {
                     botonEstado = `
                         <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
-                            <i class="fas fa-check-circle"></i> Activar
+                            <i class="fas fa-check-circle"></i> 
                         </button>`;
                 }
 
@@ -1594,7 +1594,7 @@ function buscarMunicipios(termino) {
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i> 
                         </button>
                         ${botonEstado}
                     </td>
