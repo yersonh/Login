@@ -1217,3 +1217,62 @@ select.form-control {
     color: #dc3545;
     margin-right: 5px;
 }
+/* Estilos para iconos de documentos */
+.form-label .fa-file-contract {
+    color: #007bff;
+    margin-right: 5px;
+}
+
+.form-label .fa-file-signature {
+    color: #28a745;
+    margin-right: 5px;
+}
+
+.form-label .fa-file-invoice-dollar {
+    color: #fd7e14;
+    margin-right: 5px;
+}
+
+/* Ajustes para campos de dirección condicionales */
+.direccion-opcional {
+    transition: all 0.3s ease;
+}
+
+/* Mejorar la transición de aparición/desaparición */
+.direccion-opcional[style*="display: block"] {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Iconos en vista previa */
+.preview-icon.fa-file-contract {
+    color: #007bff;
+}
+
+.preview-icon.fa-file-signature {
+    color: #28a745;
+}
+
+.preview-icon.fa-file-invoice-dollar {
+    color: #fd7e14;
+}
+
+/* Separador visual para documentos */
+.form-section h4 {
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section h4 i {
+    font-size: 20px;
+}

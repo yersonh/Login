@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            const response = await fetch('../../controllers/procesar_contratista.php', {
+            const response = await fetch('../../api/procesar_contratista.php', {
                 method: 'POST',
                 body: formData
             });

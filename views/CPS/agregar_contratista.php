@@ -220,6 +220,18 @@ try {
                         </div>
                         
                         <div class="form-group">
+                            <label class="form-label" for="direccion_municipio_principal">
+                                Dirección en municipio principal <span class="required">*</span>
+                            </label>
+                            <input type="text" 
+                                id="direccion_municipio_principal" 
+                                name="direccion_municipio_principal" 
+                                class="form-control" 
+                                placeholder="Dirección completa donde trabaja"
+                                required>
+                        </div>
+                        
+                        <div class="form-group">
                             <label class="form-label" for="id_municipio_secundario">
                                 Municipio 2 (opcional)
                             </label>
@@ -232,6 +244,18 @@ try {
                                 </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        
+                        <!-- Campo de dirección para municipio secundario (inicialmente oculto) -->
+                        <div class="form-group direccion-opcional" id="grupo_direccion_secundario" style="display: none;">
+                            <label class="form-label" for="direccion_municipio_secundario">
+                                Dirección en municipio 2
+                            </label>
+                            <input type="text" 
+                                id="direccion_municipio_secundario" 
+                                name="direccion_municipio_secundario" 
+                                class="form-control" 
+                                placeholder="Dirección completa donde trabaja">
                         </div>
                         
                         <div class="form-group">
@@ -247,6 +271,18 @@ try {
                                 </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        
+                        <!-- Campo de dirección para municipio terciario (inicialmente oculto) -->
+                        <div class="form-group direccion-opcional" id="grupo_direccion_terciario" style="display: none;">
+                            <label class="form-label" for="direccion_municipio_terciario">
+                                Dirección en municipio 3
+                            </label>
+                            <input type="text" 
+                                id="direccion_municipio_terciario" 
+                                name="direccion_municipio_terciario" 
+                                class="form-control" 
+                                placeholder="Dirección completa donde trabaja">
                         </div>
                         
                         <div class="form-group">
@@ -279,11 +315,11 @@ try {
                                 Número de contrato <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="numero_contrato" 
-                                   name="numero_contrato" 
-                                   class="form-control medium" 
-                                   placeholder="Número del contrato"
-                                   required>
+                                id="numero_contrato" 
+                                name="numero_contrato" 
+                                class="form-control medium" 
+                                placeholder="Número del contrato"
+                                required>
                         </div>
                         
                         <div class="form-group">
@@ -291,11 +327,11 @@ try {
                                 Fecha del contrato <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="fecha_contrato" 
-                                   name="fecha_contrato" 
-                                   class="form-control small" 
-                                   placeholder="dd/mm/aaaa"
-                                   required>
+                                id="fecha_contrato" 
+                                name="fecha_contrato" 
+                                class="form-control small" 
+                                placeholder="dd/mm/aaaa"
+                                required>
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
                         
@@ -304,25 +340,24 @@ try {
                                 Fecha inicio <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="fecha_inicio" 
-                                   name="fecha_inicio" 
-                                   class="form-control small" 
-                                   placeholder="dd/mm/aaaa"
-                                   required>
+                                id="fecha_inicio" 
+                                name="fecha_inicio" 
+                                class="form-control small" 
+                                placeholder="dd/mm/aaaa"
+                                required>
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
-                        
                         
                         <div class="form-group">
                             <label class="form-label" for="fecha_final">
                                 Fecha final <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="fecha_final" 
-                                   name="fecha_final" 
-                                   class="form-control small" 
-                                   placeholder="dd/mm/aaaa"
-                                   required>
+                                id="fecha_final" 
+                                name="fecha_final" 
+                                class="form-control small" 
+                                placeholder="dd/mm/aaaa"
+                                required>
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
 
@@ -331,11 +366,11 @@ try {
                                 Duración del contrato <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="duracion_contrato" 
-                                   name="duracion_contrato" 
-                                   class="form-control small" 
-                                   placeholder="Ej: 12 meses"
-                                   required>
+                                id="duracion_contrato" 
+                                name="duracion_contrato" 
+                                class="form-control small" 
+                                placeholder="Ej: 12 meses"
+                                required>
                             <div class="form-help">Ejemplo: 6 meses, 1 año</div>
                         </div>
                         
@@ -344,10 +379,10 @@ try {
                                 Número registro presupuestal
                             </label>
                             <input type="text" 
-                                   id="numero_registro_presupuestal" 
-                                   name="numero_registro_presupuestal" 
-                                   class="form-control medium" 
-                                   placeholder="Número RP">
+                                id="numero_registro_presupuestal" 
+                                name="numero_registro_presupuestal" 
+                                class="form-control medium" 
+                                placeholder="Número RP">
                         </div>
                         
                         <div class="form-group">
@@ -355,42 +390,154 @@ try {
                                 Fecha RP
                             </label>
                             <input type="text" 
-                                   id="fecha_rp" 
-                                   name="fecha_rp" 
-                                   class="form-control small" 
-                                   placeholder="dd/mm/aaaa">
+                                id="fecha_rp" 
+                                name="fecha_rp" 
+                                class="form-control small" 
+                                placeholder="dd/mm/aaaa">
                             <div class="form-help">Formato: dd/mm/aaaa</div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="adjuntar_cv">
-                                <i class="fas fa-file-pdf"></i> Adjuntar CV
-                            </label>
-                            <div class="file-input-container">
-                                <input type="file" 
-                                    id="adjuntar_cv" 
-                                    name="adjuntar_cv" 
-                                    class="file-input-control" 
-                                    accept=".pdf,.doc,.docx">
-                                <div class="file-input-info">
-                                    <span class="file-input-text">Seleccionar archivo...</span>
-                                    <span class="file-input-icon">
-                                        <i class="fas fa-paperclip"></i>
-                                    </span>
+                    </div>
+                    
+                    <!-- Subsección para archivos adjuntos -->
+                    <div style="margin-top: 30px; border-top: 1px solid #eaeaea; padding-top: 25px;">
+                        <h4 style="color: var(--secondary-color); margin-bottom: 20px; font-size: 18px;">
+                            <i class="fas fa-paperclip"></i> DOCUMENTOS ADJUNTOS
+                        </h4>
+                        
+                        <div class="contract-info-grid">
+                            <!-- Adjuntar CV -->
+                            <div class="form-group">
+                                <label class="form-label" for="adjuntar_cv">
+                                    <i class="fas fa-file-pdf"></i> Adjuntar CV (Hoja de Vida)
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                        id="adjuntar_cv" 
+                                        name="adjuntar_cv" 
+                                        class="file-input-control" 
+                                        accept=".pdf,.doc,.docx">
+                                    <div class="file-input-info">
+                                        <span class="file-input-text">Seleccionar archivo...</span>
+                                        <span class="file-input-icon">
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i> Formatos: PDF, DOC, DOCX (Máx. 5MB)
+                                </div>
+                                
+                                <!-- Vista previa CV -->
+                                <div class="file-preview-simple" id="cvPreview" style="display: none; margin-top: 8px;">
+                                    <div class="preview-content">
+                                        <i class="fas fa-file-pdf preview-icon"></i>
+                                        <span class="preview-filename" id="cvFilename"></span>
+                                        <button type="button" class="preview-remove" onclick="removeCV()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-help">
-                                <i class="fas fa-info-circle"></i> Formatos permitidos: PDF, DOC, DOCX (Máx. 5MB)
+                            
+                            <!-- Adjuntar Contrato -->
+                            <div class="form-group">
+                                <label class="form-label" for="adjuntar_contrato">
+                                    <i class="fas fa-file-contract"></i> Contrato PDF
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                        id="adjuntar_contrato" 
+                                        name="adjuntar_contrato" 
+                                        class="file-input-control" 
+                                        accept=".pdf">
+                                    <div class="file-input-info">
+                                        <span class="file-input-text">Seleccionar archivo...</span>
+                                        <span class="file-input-icon">
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i> Formato: PDF (Máx. 5MB)
+                                </div>
+                                
+                                <!-- Vista previa Contrato -->
+                                <div class="file-preview-simple" id="contratoPreview" style="display: none; margin-top: 8px;">
+                                    <div class="preview-content">
+                                        <i class="fas fa-file-contract preview-icon"></i>
+                                        <span class="preview-filename" id="contratoFilename"></span>
+                                        <button type="button" class="preview-remove" onclick="removeContrato()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <!-- Vista previa simple (opcional) -->
-                            <div class="file-preview-simple" id="cvPreview" style="display: none; margin-top: 8px;">
-                                <div class="preview-content">
-                                    <i class="fas fa-file-pdf preview-icon"></i>
-                                    <span class="preview-filename" id="cvFilename"></span>
-                                    <button type="button" class="preview-remove" onclick="removeCV()">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                            <!-- Adjuntar Acta de Inicio -->
+                            <div class="form-group">
+                                <label class="form-label" for="adjuntar_acta_inicio">
+                                    <i class="fas fa-file-signature"></i> Acta de Inicio PDF
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                        id="adjuntar_acta_inicio" 
+                                        name="adjuntar_acta_inicio" 
+                                        class="file-input-control" 
+                                        accept=".pdf">
+                                    <div class="file-input-info">
+                                        <span class="file-input-text">Seleccionar archivo...</span>
+                                        <span class="file-input-icon">
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i> Formato: PDF (Máx. 5MB)
+                                </div>
+                                
+                                <!-- Vista previa Acta de Inicio -->
+                                <div class="file-preview-simple" id="actaPreview" style="display: none; margin-top: 8px;">
+                                    <div class="preview-content">
+                                        <i class="fas fa-file-signature preview-icon"></i>
+                                        <span class="preview-filename" id="actaFilename"></span>
+                                        <button type="button" class="preview-remove" onclick="removeActaInicio()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Adjuntar RP -->
+                            <div class="form-group">
+                                <label class="form-label" for="adjuntar_rp">
+                                    <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal PDF
+                                </label>
+                                <div class="file-input-container">
+                                    <input type="file" 
+                                        id="adjuntar_rp" 
+                                        name="adjuntar_rp" 
+                                        class="file-input-control" 
+                                        accept=".pdf">
+                                    <div class="file-input-info">
+                                        <span class="file-input-text">Seleccionar archivo...</span>
+                                        <span class="file-input-icon">
+                                            <i class="fas fa-paperclip"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i> Formato: PDF (Máx. 5MB)
+                                </div>
+                                
+                                <!-- Vista previa RP -->
+                                <div class="file-preview-simple" id="rpPreview" style="display: none; margin-top: 8px;">
+                                    <div class="preview-content">
+                                        <i class="fas fa-file-invoice-dollar preview-icon"></i>
+                                        <span class="preview-filename" id="rpFilename"></span>
+                                        <button type="button" class="preview-remove" onclick="removeRP()">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

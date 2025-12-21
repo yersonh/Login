@@ -207,27 +207,21 @@ class ContratistaModel {
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id_detalle', $id_detalle);
-        
-        // IMPORTANTE: Configurar para que PDO no convierta los LOBs
+
         $stmt->execute();
         
         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($resultado && !empty($resultado['cv_archivo'])) {
-            // PostgreSQL devuelve bytea con prefijo '\x' para formato hexadecimal
-            // o como un stream/resource
+
             $contenido = $resultado['cv_archivo'];
-            
-            // Si es string y comienza con '\x' (formato hexadecimal de PostgreSQL)
+
             if (is_string($contenido) && substr($contenido, 0, 2) === '\\x') {
-                // Decodificar hexadecimal
                 $resultado['cv_archivo'] = hex2bin(substr($contenido, 2));
             } 
-            // Si es un resource/stream
             elseif (is_resource($contenido)) {
                 $resultado['cv_archivo'] = stream_get_contents($contenido);
             }
-            // Si ya es binario, dejarlo tal cual
         }
         
         return $resultado;
