@@ -519,3 +519,18 @@ body {
     padding: 0.1rem 0.4rem;
     font-size: 0.8rem;
 }
+/* Estilo para el select de tipo vinculación */
+#selectTipoVinculacion {
+    border-left: 3px solid #17a2b8;
+}
+
+/* Badge para tipo vinculación en resultados */
+.badge.bg-info-light {
+    background-color: #e3f2fd !important;
+    color: #0d6efd !important;
+}
+
+/* Ícono personalizado */
+.fa-handshake {
+    color: #17a2b8;
+}
