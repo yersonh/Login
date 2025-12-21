@@ -369,9 +369,10 @@ try {
                                 id="duracion_contrato" 
                                 name="duracion_contrato" 
                                 class="form-control small" 
-                                placeholder="Ej: 12 meses"
+                                placeholder="Se calculará automáticamente"
+                                readonly
                                 required>
-                            <div class="form-help">Ejemplo: 6 meses, 1 año</div>
+                            <div class="form-help">Se calcula automáticamente al ingresar las fechas</div>
                         </div>
                         
                         <div class="form-group">

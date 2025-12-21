@@ -11,8 +11,22 @@ document.addEventListener('DOMContentLoaded', function() {
         flatpickr(input, dateOptions);
     });
     
-    document.getElementById('duracion_contrato').addEventListener('input', calcularFechaFinal);
-    document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFinal);
+    // === CAMBIAR: Quitar eventos antiguos y agregar nuevos para calcular duración ===
+    // Quitar estos:
+    // document.getElementById('duracion_contrato').addEventListener('input', calcularFechaFinal);
+    // document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFinal);
+    
+    // Agregar estos:
+    document.getElementById('fecha_inicio').addEventListener('change', calcularDuracionContrato);
+    document.getElementById('fecha_final').addEventListener('change', calcularDuracionContrato);
+    
+    // Hacer el campo de duración de solo lectura
+    const duracionContratoInput = document.getElementById('duracion_contrato');
+    if (duracionContratoInput) {
+        duracionContratoInput.readOnly = true;
+        duracionContratoInput.style.backgroundColor = '#f8f9fa';
+        duracionContratoInput.style.cursor = 'not-allowed';
+    }
     
     // === MANEJO DE CAMPOS DE DIRECCIÓN CONDICIONALES ===
     const municipioSecundario = document.getElementById('id_municipio_secundario');
@@ -169,57 +183,71 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cvPreview) cvPreview.style.display = 'none';
     };
     
-    function calcularFechaFinal() {
+    // === NUEVA FUNCIÓN: CALCULAR DURACIÓN DEL CONTRATO ===
+    function calcularDuracionContrato() {
         const fechaInicio = document.getElementById('fecha_inicio').value;
-        const duracion = document.getElementById('duracion_contrato').value;
-        const fechaFinalInput = document.getElementById('fecha_final');
+        const fechaFinal = document.getElementById('fecha_final').value;
+        const duracionInput = document.getElementById('duracion_contrato');
         
-        if (fechaInicio && duracion) {
+        if (fechaInicio && fechaFinal) {
             try {
-                const [dia, mes, anio] = fechaInicio.split('/');
-                const fechaInicioDate = new Date(anio, mes - 1, dia);
+                // Convertir fechas de formato dd/mm/aaaa a objetos Date
+                const [diaInicio, mesInicio, anioInicio] = fechaInicio.split('/');
+                const [diaFinal, mesFinal, anioFinal] = fechaFinal.split('/');
                 
-                const match = duracion.match(/(\d+)\s*(meses?|años?|semanas?|días?)/i);
+                const fechaInicioDate = new Date(anioInicio, mesInicio - 1, diaInicio);
+                const fechaFinalDate = new Date(anioFinal, mesFinal - 1, diaFinal);
                 
-                if (match) {
-                    const cantidad = parseInt(match[1]);
-                    const unidad = match[2].toLowerCase();
-                    
-                    let fechaFinalDate = new Date(fechaInicioDate);
-                    
-                    if (unidad.includes('mes')) {
-                        fechaFinalDate.setMonth(fechaFinalDate.getMonth() + cantidad);
-                    } else if (unidad.includes('año')) {
-                        fechaFinalDate.setFullYear(fechaFinalDate.getFullYear() + cantidad);
-                    } else if (unidad.includes('semana')) {
-                        fechaFinalDate.setDate(fechaFinalDate.getDate() + (cantidad * 7));
-                    } else if (unidad.includes('día')) {
-                        fechaFinalDate.setDate(fechaFinalDate.getDate() + cantidad);
+                // Validar que la fecha final sea mayor que la fecha inicio
+                if (fechaFinalDate <= fechaInicioDate) {
+                    alert('La fecha final debe ser mayor a la fecha de inicio');
+                    duracionInput.value = '';
+                    return;
+                }
+                
+                // Calcular diferencia en días
+                const diferenciaMs = fechaFinalDate - fechaInicioDate;
+                const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+                
+                // Calcular duración en meses (aproximado)
+                const meses = Math.floor(diferenciaDias / 30);
+                const diasRestantes = diferenciaDias % 30;
+                
+                // Calcular duración en años
+                const años = Math.floor(meses / 12);
+                const mesesRestantes = meses % 12;
+                
+                let duracionTexto = '';
+                
+                // Formatear la duración
+                if (años > 0) {
+                    duracionTexto += `${años} ${años === 1 ? 'año' : 'años'}`;
+                    if (mesesRestantes > 0) {
+                        duracionTexto += ` ${mesesRestantes} ${mesesRestantes === 1 ? 'mes' : 'meses'}`;
                     }
-                    
-                    const diaFinal = String(fechaFinalDate.getDate()).padStart(2, '0');
-                    const mesFinal = String(fechaFinalDate.getMonth() + 1).padStart(2, '0');
-                    const anioFinal = fechaFinalDate.getFullYear();
-                    
-                    if (fechaFinalInput) {
-                        fechaFinalInput.value = `${diaFinal}/${mesFinal}/${anioFinal}`;
+                } else if (meses > 0) {
+                    duracionTexto += `${meses} ${meses === 1 ? 'mes' : 'meses'}`;
+                    if (diasRestantes > 0 && meses < 3) { // Solo mostrar días si es menos de 3 meses
+                        duracionTexto += ` ${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`;
                     }
-                    
                 } else {
-                    if (fechaFinalInput) {
-                        fechaFinalInput.value = '';
-                    }
+                    duracionTexto += `${diferenciaDias} ${diferenciaDias === 1 ? 'día' : 'días'}`;
+                }
+                
+                // Actualizar el campo de duración
+                if (duracionInput) {
+                    duracionInput.value = duracionTexto;
                 }
                 
             } catch (error) {
-                console.error('Error calculando fecha final:', error);
-                if (fechaFinalInput) {
-                    fechaFinalInput.value = '';
+                console.error('Error calculando duración del contrato:', error);
+                if (duracionInput) {
+                    duracionInput.value = '';
                 }
             }
         } else {
-            if (fechaFinalInput) {
-                fechaFinalInput.value = '';
+            if (duracionInput) {
+                duracionInput.value = '';
             }
         }
     }
@@ -268,6 +296,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     direccionTerciario.style.borderColor = '#dc3545';
                     valid = false;
                 }
+            }
+            
+            // Validar que la duración del contrato esté calculada
+            const duracionContrato = document.getElementById('duracion_contrato');
+            if (duracionContrato && !duracionContrato.value.trim()) {
+                alert('Por favor complete las fechas de inicio y final para calcular la duración del contrato');
+                duracionContrato.style.borderColor = '#dc3545';
+                return;
             }
             
             if (!valid) {
@@ -440,6 +476,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (grupoDireccionSecundario) grupoDireccionSecundario.style.display = 'none';
         if (grupoDireccionTerciario) grupoDireccionTerciario.style.display = 'none';
+        
+        // Restablecer estilo del campo de duración
+        const duracionContratoInput = document.getElementById('duracion_contrato');
+        if (duracionContratoInput) {
+            duracionContratoInput.style.borderColor = '#e0e0e0';
+        }
     }
 
     const municipioPrincipal = document.getElementById('id_municipio_principal');
@@ -473,6 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
         }
     });
+    
     function actualizarHora() {
         const now = new Date();
         const options = { 
