@@ -174,5 +174,84 @@ class MunicipioController {
             ];
         }
     }
+    public function eliminar($id) {
+        try {
+            // Validar que el municipio exista
+            $municipio = $this->model->obtenerPorId($id);
+            if (!$municipio) {
+                return [
+                    'success' => false,
+                    'error' => 'Municipio no encontrado'
+                ];
+            }
+
+            // Verificar dependencias antes de eliminar
+            $dependencias = $this->model->verificarDependencias($id);
+            
+            if ($dependencias['contratistas'] > 0) {
+                return [
+                    'success' => false,
+                    'error' => 'No se puede eliminar el municipio porque está siendo utilizado por ' . 
+                              $dependencias['contratistas'] . ' contratista(s). ' .
+                              'Primero debe cambiar o eliminar estos contratistas.'
+                ];
+            }
+
+            // Intentar eliminar físicamente
+            $resultado = $this->model->eliminarMunicipio($id);
+            
+            if ($resultado) {
+                return [
+                    'success' => true,
+                    'message' => 'Municipio eliminado permanentemente de la base de datos'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'Error al eliminar el municipio'
+                ];
+            }
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al eliminar municipio: ' . $e->getMessage()
+            ];
+        }
+    }
+    public function verificarEliminacion($id) {
+        try {
+            // Validar que el municipio exista
+            $municipio = $this->model->obtenerPorId($id);
+            if (!$municipio) {
+                return [
+                    'success' => false,
+                    'error' => 'Municipio no encontrado'
+                ];
+            }
+
+            $dependencias = $this->model->verificarDependencias($id);
+            $puedeEliminar = $dependencias['contratistas'] == 0;
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'municipio' => [
+                        'id' => $municipio['id_municipio'],
+                        'nombre' => $municipio['nombre'],
+                        'activo' => $municipio['activo']
+                    ],
+                    'dependencias' => $dependencias,
+                    'puede_eliminar' => $puedeEliminar
+                ]
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al verificar dependencias: ' . $e->getMessage()
+            ];
+        }
+    }
 }
 ?>

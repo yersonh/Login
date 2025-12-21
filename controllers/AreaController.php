@@ -203,5 +203,84 @@ class AreaController {
             ];
         }
     }
+    public function eliminar($id) {
+        try {
+            // Validar que el área exista
+            $area = $this->areaModel->obtenerPorId($id);
+            if (!$area) {
+                return [
+                    'success' => false,
+                    'error' => 'Área no encontrada'
+                ];
+            }
+
+            // Verificar dependencias antes de eliminar
+            $dependencias = $this->areaModel->verificarDependencias($id);
+            
+            if ($dependencias['contratistas'] > 0) {
+                return [
+                    'success' => false,
+                    'error' => 'No se puede eliminar el área porque está siendo utilizada por ' . 
+                              $dependencias['contratistas'] . ' contratista(s). ' .
+                              'Primero debe cambiar o eliminar estos contratistas.'
+                ];
+            }
+
+            // Intentar eliminar físicamente
+            $resultado = $this->areaModel->eliminarArea($id);
+            
+            if ($resultado) {
+                return [
+                    'success' => true,
+                    'message' => 'Área eliminada permanentemente de la base de datos'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'Error al eliminar el área'
+                ];
+            }
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al eliminar área: ' . $e->getMessage()
+            ];
+        }
+    }
+    public function verificarEliminacion($id) {
+        try {
+            // Validar que el área exista
+            $area = $this->areaModel->obtenerPorId($id);
+            if (!$area) {
+                return [
+                    'success' => false,
+                    'error' => 'Área no encontrada'
+                ];
+            }
+
+            $dependencias = $this->areaModel->verificarDependencias($id);
+            $puedeEliminar = $dependencias['contratistas'] == 0;
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'area' => [
+                        'id' => $area['id_area'],
+                        'nombre' => $area['nombre'],
+                        'activo' => $area['activo']
+                    ],
+                    'dependencias' => $dependencias,
+                    'puede_eliminar' => $puedeEliminar
+                ]
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al verificar dependencias: ' . $e->getMessage()
+            ];
+        }
+    }
 }
 ?>

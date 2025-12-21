@@ -122,5 +122,37 @@
             
             return $stmt->fetchColumn() > 0;
         }
+        public function eliminarTipo($id_tipo) {
+            // Primero verificar si el tipo está siendo usado en otras tablas
+            $sqlCheck = "SELECT COUNT(*) as count FROM contratistas WHERE id_tipo_vinculacion = :id_tipo";
+            $stmtCheck = $this->conn->prepare($sqlCheck);
+            $stmtCheck->bindParam(':id_tipo', $id_tipo, PDO::PARAM_INT);
+            $stmtCheck->execute();
+            $result = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result['count'] > 0) {
+                throw new Exception("No se puede eliminar el tipo de vinculación porque está siendo utilizado por contratistas");
+            }
+            
+            // Si no hay dependencias, eliminar físicamente
+            $sql = "DELETE FROM tipo_vinculacion WHERE id_tipo = :id_tipo";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id_tipo', $id_tipo, PDO::PARAM_INT);
+            
+            return $stmt->execute();
+        }
+    public function verificarDependencias($id_tipo) {
+            $dependencias = [];
+            
+            // Verificar contratistas
+            $sql = "SELECT COUNT(*) as count FROM contratistas WHERE id_tipo_vinculacion = :id_tipo";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id_tipo', $id_tipo, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $dependencias['contratistas'] = $result['count'];
+            
+            return $dependencias;
+        }
     }
     ?>

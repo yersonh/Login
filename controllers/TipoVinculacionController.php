@@ -237,5 +237,84 @@ class TipoVinculacionController {
             ];
         }
     }
+    public function eliminar($id) {
+        try {
+            // Validar que el tipo exista
+            $tipo = $this->tipoVinculacionModel->obtenerPorId($id);
+            if (!$tipo) {
+                return [
+                    'success' => false,
+                    'error' => 'Tipo de vinculación no encontrado'
+                ];
+            }
+
+            // Verificar dependencias antes de eliminar
+            $dependencias = $this->tipoVinculacionModel->verificarDependencias($id);
+            
+            if ($dependencias['contratistas'] > 0) {
+                return [
+                    'success' => false,
+                    'error' => 'No se puede eliminar el tipo de vinculación porque está siendo utilizado por ' . 
+                              $dependencias['contratistas'] . ' contratista(s). ' .
+                              'Primero debe cambiar o eliminar estos contratistas.'
+                ];
+            }
+
+            // Intentar eliminar físicamente
+            $resultado = $this->tipoVinculacionModel->eliminarTipo($id);
+            
+            if ($resultado) {
+                return [
+                    'success' => true,
+                    'message' => 'Tipo de vinculación eliminado permanentemente de la base de datos'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'Error al eliminar el tipo de vinculación'
+                ];
+            }
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al eliminar tipo: ' . $e->getMessage()
+            ];
+        }
+    }
+    public function verificarEliminacion($id) {
+        try {
+            // Validar que el tipo exista
+            $tipo = $this->tipoVinculacionModel->obtenerPorId($id);
+            if (!$tipo) {
+                return [
+                    'success' => false,
+                    'error' => 'Tipo de vinculación no encontrado'
+                ];
+            }
+
+            $dependencias = $this->tipoVinculacionModel->verificarDependencias($id);
+            $puedeEliminar = $dependencias['contratistas'] == 0;
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'tipo' => [
+                        'id' => $tipo['id_tipo'],
+                        'nombre' => $tipo['nombre'],
+                        'activo' => $tipo['activo']
+                    ],
+                    'dependencias' => $dependencias,
+                    'puede_eliminar' => $puedeEliminar
+                ]
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Error al verificar dependencias: ' . $e->getMessage()
+            ];
+        }
+    }
 }
 ?>

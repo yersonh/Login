@@ -116,5 +116,37 @@ class MunicipioModel {
         
         return $stmt->fetchColumn() > 0;
     }
+    public function eliminarMunicipio($id_municipio) {
+        // Primero verificar si el municipio está siendo usado en otras tablas
+        $sqlCheck = "SELECT COUNT(*) as count FROM contratistas WHERE id_municipio = :id_municipio";
+        $stmtCheck = $this->conn->prepare($sqlCheck);
+        $stmtCheck->bindParam(':id_municipio', $id_municipio, PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $result = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result['count'] > 0) {
+            throw new Exception("No se puede eliminar el municipio porque está siendo utilizado por contratistas");
+        }
+        
+        // Si no hay dependencias, eliminar físicamente
+        $sql = "DELETE FROM municipio WHERE id_municipio = :id_municipio";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_municipio', $id_municipio, PDO::PARAM_INT);
+        
+        return $stmt->execute();
+    }
+    public function verificarDependencias($id_municipio) {
+        $dependencias = [];
+        
+        // Verificar contratistas
+        $sql = "SELECT COUNT(*) as count FROM contratistas WHERE id_municipio = :id_municipio";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_municipio', $id_municipio, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $dependencias['contratistas'] = $result['count'];
+        
+        return $dependencias;
+    }
 }
 ?>

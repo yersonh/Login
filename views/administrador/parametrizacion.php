@@ -158,6 +158,59 @@ $anio = date('Y');
             transform: translateX(-20px);
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
+
+        /* Estilos adicionales para borrado físico */
+        .btn-action.btn-delete-fisico {
+            background-color: #343a40 !important;
+            border-color: #343a40 !important;
+            color: white !important;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+            position: relative;
+        }
+
+        .btn-action.btn-delete-fisico:hover {
+            background-color: #23272b !important;
+            border-color: #23272b !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action.btn-delete-fisico::after {
+            content: '⚠️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 10px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-danger-critico {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+
+        .alert-danger-critico i {
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -765,6 +818,41 @@ $anio = date('Y');
     </div>
 </div>
 
+<!-- MODAL DE CONFIRMACIÓN PARA ELIMINACIÓN FÍSICA -->
+<div id="confirmEliminarModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-skull-crossbones"></i> <span id="eliminarTitulo"></span></h3>
+            <button type="button" class="modal-close" onclick="cerrarModalEliminar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="alert-danger-critico">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>¡ADVERTENCIA CRÍTICA!</strong> Esta acción es IRREVERSIBLE.
+            </div>
+            <p id="eliminarMensaje"></p>
+            <div class="modal-details">
+                <h4>Detalles de la eliminación:</h4>
+                <ul id="eliminarDetalles"></ul>
+            </div>
+            <div id="dependenciasWarning" style="display: none;" class="alert-warning">
+                <i class="fas fa-info-circle"></i>
+                <span id="dependenciasMessage"></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminar()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmEliminarBtn">
+                <i class="fas fa-skull-crossbones"></i> Sí, Eliminar Permanentemente
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer class="app-footer">
     <div class="footer-center">
@@ -884,41 +972,41 @@ $anio = date('Y');
             modalValidaHasta.textContent = fechaFormateada;
         }
 
-const modalDiasRestantes = document.getElementById('modalDiasRestantes');
-if (modalDiasRestantes) {
-    // Actualizar el texto
-    modalDiasRestantes.textContent = diasRestantes;
-    
-    // Remover todas las clases de color primero
-    modalDiasRestantes.classList.remove('text-danger', 'text-success', 'text-warning');
-    
-    // Extraer solo el número de días (eliminar " días" del texto)
-    const diasTexto = diasRestantes.toString();
-    
-    // Verificar si contiene "Expirada" o si es 0 días
-    if (diasTexto.includes('Expirada')) {
-        modalDiasRestantes.classList.add('text-danger');
-    } else {
-        // Extraer el número de días
-        const match = diasTexto.match(/(\d+)/);
-        if (match) {
-            const numDias = parseInt(match[1]);
-            if (numDias <= 0) {
+        const modalDiasRestantes = document.getElementById('modalDiasRestantes');
+        if (modalDiasRestantes) {
+            // Actualizar el texto
+            modalDiasRestantes.textContent = diasRestantes;
+            
+            // Remover todas las clases de color primero
+            modalDiasRestantes.classList.remove('text-danger', 'text-success', 'text-warning');
+            
+            // Extraer solo el número de días (eliminar " días" del texto)
+            const diasTexto = diasRestantes.toString();
+            
+            // Verificar si contiene "Expirada" o si es 0 días
+            if (diasTexto.includes('Expirada')) {
                 modalDiasRestantes.classList.add('text-danger');
-            } else if (numDias <= 30) {
-                // Amarillo para menos de 30 días
-                modalDiasRestantes.classList.add('text-warning');
             } else {
-                // Verde para más de 30 días
-                modalDiasRestantes.classList.add('text-success');
+                // Extraer el número de días
+                const match = diasTexto.match(/(\d+)/);
+                if (match) {
+                    const numDias = parseInt(match[1]);
+                    if (numDias <= 0) {
+                        modalDiasRestantes.classList.add('text-danger');
+                    } else if (numDias <= 30) {
+                        // Amarillo para menos de 30 días
+                        modalDiasRestantes.classList.add('text-warning');
+                    } else {
+                        // Verde para más de 30 días
+                        modalDiasRestantes.classList.add('text-success');
+                    }
+                } else {
+                    // Si no puede extraer número, usar verde por defecto
+                    modalDiasRestantes.classList.add('text-success');
+                }
             }
-        } else {
-            // Si no puede extraer número, usar verde por defecto
-            modalDiasRestantes.classList.add('text-success');
         }
     }
-}
-}
 
     // Modificar la función para abrir el modal para que primero actualice los datos
     function openResumenModal() {
@@ -991,49 +1079,18 @@ if (modalDiasRestantes) {
     });
     </script>
 
-    <!-- SCRIPT PARA ELIMINACIÓN DE REGISTROS (PAPELERA) -->
+    <!-- SCRIPT PARA ELIMINACIÓN FÍSICA DE REGISTROS -->
     <script>
-    // Modal de confirmación de eliminación
-    const modalEliminarHTML = `
-        <div id="confirmEliminarModal" class="modal" style="display: none;">
-            <div class="modal-content" style="max-width: 500px;">
-                <div class="modal-header">
-                    <h3><i class="fas fa-trash-alt"></i> <span id="eliminarTitulo"></span></h3>
-                    <button type="button" class="modal-close" onclick="cerrarModalEliminar()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Advertencia:</strong> Esta acción no se puede deshacer.
-                    </div>
-                    <p id="eliminarMensaje"></p>
-                    <div class="modal-details">
-                        <ul id="eliminarDetalles"></ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminar()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="confirmarEliminacion()">
-                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // Variables para la eliminación
+    // Variables para la eliminación física
     let registroEliminarId = null;
     let registroEliminarTipo = null;
     let registroEliminarNombre = null;
     let registroEliminarCodigo = null;
+    let registroEliminarEstado = null;
 
-    // Insertar modal al cargar la página
+    // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
-        document.body.insertAdjacentHTML('beforeend', modalEliminarHTML);
+        // Configurar eventos del modal de eliminación
         configurarModalEliminar();
         
         // Esperar a que se carguen las tablas para agregar botones de eliminar
@@ -1055,53 +1112,60 @@ if (modalDiasRestantes) {
             }
         });
 
+        // Evento para el botón de confirmación
+        document.getElementById('confirmEliminarBtn').addEventListener('click', confirmarEliminacionFisica);
+
         // Cerrar con ESC
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal.style.display === 'flex') {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
                 cerrarModalEliminar();
             }
         });
     }
 
-    // Mostrar modal de confirmación de eliminación
-    function mostrarModalEliminar(id, tipo, nombre, codigo) {
+    // Función para mostrar modal de confirmación de eliminación física
+    function mostrarModalEliminarFisico(id, tipo, nombre, codigo, estado) {
         registroEliminarId = id;
         registroEliminarTipo = tipo;
         registroEliminarNombre = nombre;
         registroEliminarCodigo = codigo;
+        registroEliminarEstado = estado;
 
         // Configurar textos según el tipo
         let titulo, mensaje, detallesHTML;
         
         switch(tipo) {
             case 'municipio':
-                titulo = 'Eliminar Municipio Permanentemente';
-                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el municipio "${nombre}"?`;
+                titulo = 'Eliminación Física de Municipio';
+                mensaje = `¿Está ABSOLUTAMENTE SEGURO de eliminar PERMANENTEMENTE el municipio "${nombre}" de la base de datos?`;
                 detallesHTML = `
                     <li><strong>Municipio:</strong> ${nombre}</li>
                     <li><strong>Código DANE:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
-                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
+                    <li><strong>Estado actual:</strong> ${estado || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger" style="font-weight: bold;">ELIMINACIÓN COMPLETA E IRREVERSIBLE</span></li>
+                    <li><strong>Consecuencias:</strong> Todos los datos asociados serán eliminados permanentemente</li>
                 `;
                 break;
             case 'area':
-                titulo = 'Eliminar Área Permanentemente';
-                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el área "${nombre}"?`;
+                titulo = 'Eliminación Física de Área';
+                mensaje = `¿Está ABSOLUTAMENTE SEGURO de eliminar PERMANENTEMENTE el área "${nombre}" de la base de datos?`;
                 detallesHTML = `
                     <li><strong>Área:</strong> ${nombre}</li>
                     <li><strong>Código:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
-                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
+                    <li><strong>Estado actual:</strong> ${estado || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger" style="font-weight: bold;">ELIMINACIÓN COMPLETA E IRREVERSIBLE</span></li>
+                    <li><strong>Consecuencias:</strong> Todos los datos asociados serán eliminados permanentemente</li>
                 `;
                 break;
             case 'vinculacion':
-                titulo = 'Eliminar Tipo de Vinculación Permanentemente';
-                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el tipo de vinculación "${nombre}"?`;
+                titulo = 'Eliminación Física de Tipo de Vinculación';
+                mensaje = `¿Está ABSOLUTAMENTE SEGURO de eliminar PERMANENTEMENTE el tipo de vinculación "${nombre}" de la base de datos?`;
                 detallesHTML = `
                     <li><strong>Tipo:</strong> ${nombre}</li>
                     <li><strong>Código:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
-                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
+                    <li><strong>Estado actual:</strong> ${estado || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger" style="font-weight: bold;">ELIMINACIÓN COMPLETA E IRREVERSIBLE</span></li>
+                    <li><strong>Consecuencias:</strong> Todos los datos asociados serán eliminados permanentemente</li>
                 `;
                 break;
         }
@@ -1111,8 +1175,12 @@ if (modalDiasRestantes) {
         document.getElementById('eliminarMensaje').textContent = mensaje;
         document.getElementById('eliminarDetalles').innerHTML = detallesHTML;
 
+        // Ocultar advertencia de dependencias por ahora
+        document.getElementById('dependenciasWarning').style.display = 'none';
+
         // Mostrar modal
-        document.getElementById('confirmEliminarModal').style.display = 'flex';
+        document.getElementById('confirmEliminarModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
 
     // Cerrar modal de eliminación
@@ -1120,56 +1188,57 @@ if (modalDiasRestantes) {
         const modal = document.getElementById('confirmEliminarModal');
         if (modal) {
             modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
         registroEliminarId = null;
         registroEliminarTipo = null;
         registroEliminarNombre = null;
         registroEliminarCodigo = null;
+        registroEliminarEstado = null;
     }
 
-    // Confirmar eliminación
-    function confirmarEliminacion() {
+    // Confirmar eliminación física
+    function confirmarEliminacionFisica() {
         if (!registroEliminarId || !registroEliminarTipo) return;
 
-        const btnEliminar = document.querySelector('#confirmEliminarModal .btn-danger');
+        const btnEliminar = document.getElementById('confirmEliminarBtn');
         const originalText = btnEliminar.innerHTML;
         btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
         btnEliminar.disabled = true;
 
-        // Determinar URL y método según el tipo
-        let url, metodo, datos;
+        // Determinar URL según el tipo
+        let url;
+        let datos = {};
+        
         switch(registroEliminarTipo) {
             case 'municipio':
                 url = '../../api/GestionMunicipio.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
                 datos = { id: registroEliminarId };
                 break;
             case 'area':
                 url = '../../api/areas.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
                 datos = { id: registroEliminarId };
                 break;
             case 'vinculacion':
                 url = '../../api/tipo_vinculacion.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
                 datos = { id_tipo: registroEliminarId };
                 break;
         }
 
-        // Enviar petición con método DELETE
+        // Enviar petición DELETE
         fetch(url, {
-            method: metodo,
+            method: 'DELETE',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'  // Para identificar peticiones AJAX
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify(datos)
         })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Error en la respuesta del servidor');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return res.json();
+            return response.json();
         })
         .then(data => {
             if (data.success) {
@@ -1177,22 +1246,35 @@ if (modalDiasRestantes) {
                 removerFila(registroEliminarId, registroEliminarTipo);
                 
                 // Mostrar mensaje de éxito
-                mostrarAlerta('success', `${registroEliminarTipo === 'municipio' ? 'Municipio' : 
-                                        registroEliminarTipo === 'area' ? 'Área' : 
-                                        'Tipo de vinculación'} eliminado permanentemente`);
+                mostrarAlerta('success', data.message || 'Registro eliminado permanentemente de la base de datos');
                 
                 cerrarModalEliminar();
             } else {
-                mostrarAlerta('error', data.error || 'Error al eliminar registro');
+                // Mostrar error específico
+                let mensajeError = data.error || 'Error al eliminar registro';
+                
+                // Si hay error de dependencias, mostrar en el modal
+                if (data.error && data.error.includes('No se puede eliminar')) {
+                    document.getElementById('dependenciasMessage').textContent = data.error;
+                    document.getElementById('dependenciasWarning').style.display = 'block';
+                    btnEliminar.disabled = false;
+                    btnEliminar.innerHTML = originalText;
+                    return;
+                }
+                
+                mostrarAlerta('error', mensajeError);
+                cerrarModalEliminar();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            mostrarAlerta('error', 'Error de conexión o del servidor');
+            mostrarAlerta('error', 'Error de conexión con el servidor');
+            cerrarModalEliminar();
         })
         .finally(() => {
-            btnEliminar.innerHTML = originalText;
-            btnEliminar.disabled = false;
+            if (!btnEliminar.disabled) {
+                btnEliminar.innerHTML = originalText;
+            }
         });
     }
 
@@ -1215,7 +1297,7 @@ if (modalDiasRestantes) {
                 !fila.classList.contains('error-row')) {
                 
                 // Buscar el botón que contiene este ID
-                const btnEliminar = fila.querySelector('.btn-delete');
+                const btnEliminar = fila.querySelector('.btn-delete-fisico');
                 if (btnEliminar && btnEliminar.dataset.id == id) {
                     // Aplicar animación
                     fila.classList.add('fila-eliminando');
@@ -1225,7 +1307,14 @@ if (modalDiasRestantes) {
                         fila.remove();
                         
                         // Verificar si la tabla quedó vacía
-                        if (tablaBody.querySelectorAll('tr').length === 0) {
+                        const filasRestantes = tablaBody.querySelectorAll('tr');
+                        const tieneContenido = Array.from(filasRestantes).some(fila => 
+                            !fila.classList.contains('loading-row') && 
+                            !fila.classList.contains('empty-row') && 
+                            !fila.classList.contains('error-row')
+                        );
+                        
+                        if (!tieneContenido) {
                             const emptyRow = document.createElement('tr');
                             emptyRow.className = 'empty-row';
                             emptyRow.innerHTML = `<td colspan="5">No hay registros disponibles</td>`;
@@ -1257,38 +1346,44 @@ if (modalDiasRestantes) {
                 return;
             }
 
-            // Verificar si ya tiene botón de eliminar
             const actionCell = fila.querySelector('.action-buttons');
-            if (!actionCell || actionCell.querySelector('.btn-delete')) return;
+            if (!actionCell || actionCell.querySelector('.btn-delete-fisico')) return;
 
             // Obtener datos de la fila
             const nombre = fila.cells[0]?.textContent || '';
             const codigo = fila.cells[1]?.textContent || '';
+            const estadoCell = fila.cells[3];
+            const estado = estadoCell?.textContent || '';
             const id = obtenerIdDeFila(fila, tipo);
 
             if (!id) return;
 
-            // Crear botón de eliminar
+            // Verificar si el registro está inactivo (opcional: solo eliminar inactivos)
+            const isInactivo = estado.toLowerCase().includes('inactivo');
+            
+            // Crear botón de eliminar físico
             const btnEliminar = document.createElement('button');
-            btnEliminar.className = 'btn-action btn-delete';
-            btnEliminar.title = 'Eliminar';
-            btnEliminar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+            btnEliminar.className = 'btn-action btn-delete-fisico';
+            btnEliminar.title = 'Eliminar Permanentemente (Borrado Físico)';
+            btnEliminar.innerHTML = '<i class="fas fa-skull-crossbones"></i>';
             btnEliminar.dataset.id = id;
             btnEliminar.dataset.tipo = tipo;
             btnEliminar.dataset.nombre = nombre;
             btnEliminar.dataset.codigo = codigo;
+            btnEliminar.dataset.estado = estado;
 
             // Agregar evento
             btnEliminar.addEventListener('click', function() {
-                mostrarModalEliminar(
+                mostrarModalEliminarFisico(
                     this.dataset.id,
                     this.dataset.tipo,
                     this.dataset.nombre,
-                    this.dataset.codigo
+                    this.dataset.codigo,
+                    this.dataset.estado
                 );
             });
 
-            // Insertar después del botón de editar
+            // Insertar en la celda de acciones
             const btnEditar = actionCell.querySelector('.btn-edit');
             if (btnEditar) {
                 btnEditar.insertAdjacentElement('afterend', btnEliminar);
@@ -1357,9 +1452,9 @@ if (modalDiasRestantes) {
     }
 
     // Exponer funciones al scope global
-    window.mostrarModalEliminar = mostrarModalEliminar;
+    window.mostrarModalEliminarFisico = mostrarModalEliminarFisico;
     window.cerrarModalEliminar = cerrarModalEliminar;
-    window.confirmarEliminacion = confirmarEliminacion;
+    window.confirmarEliminacionFisica = confirmarEliminacionFisica;
     </script>
 </body>
 </html>

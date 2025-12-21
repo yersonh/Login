@@ -44,6 +44,16 @@ try {
             $resultado = $controlador->cambiarEstado($input['id'], (bool)$input['activo']);
             echo json_encode($resultado);
             break;
+        case 'DELETE':
+            // Eliminación Física
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (empty($input['id'])) {
+                throw new Exception('ID requerido para eliminación');
+            }
+            
+            $resultado = $controlador->eliminar($input['id']);
+            echo json_encode($resultado);
+            break;
             
         default:
             http_response_code(405);

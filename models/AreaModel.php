@@ -3,7 +3,6 @@ require_once __DIR__ . '/../config/database.php';
 class AreaModel {
     private $conn;
 
-
     public function __construct() {
         $database = new Database();
         $this->conn = $database->conectar();
@@ -120,6 +119,38 @@ class AreaModel {
         $stmt->execute();
         
         return $stmt->fetchColumn() > 0;
+    }
+    public function eliminarArea($id_area) {
+        // Primero verificar si el área está siendo usada en otras tablas
+        $sqlCheck = "SELECT COUNT(*) as count FROM contratistas WHERE id_area = :id_area";
+        $stmtCheck = $this->conn->prepare($sqlCheck);
+        $stmtCheck->bindParam(':id_area', $id_area, PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $result = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result['count'] > 0) {
+            throw new Exception("No se puede eliminar el área porque está siendo utilizada por contratistas");
+        }
+        
+        // Si no hay dependencias, eliminar físicamente
+        $sql = "DELETE FROM area WHERE id_area = :id_area";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_area', $id_area, PDO::PARAM_INT);
+        
+        return $stmt->execute();
+    }
+    public function verificarDependencias($id_area) {
+        $dependencias = [];
+        
+        // Verificar contratistas
+        $sql = "SELECT COUNT(*) as count FROM contratistas WHERE id_area = :id_area";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_area', $id_area, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $dependencias['contratistas'] = $result['count'];
+        
+        return $dependencias;
     }
 }
 ?>
