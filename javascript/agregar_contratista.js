@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const municipioTerciario = document.getElementById('id_municipio_terciario');
     const grupoDireccionTerciario = document.getElementById('grupo_direccion_terciario');
     const direccionTerciario = document.getElementById('direccion_municipio_terciario');
-    
-    // Función para mostrar/ocultar campo de dirección
+
     function toggleDireccionOpcional(selectElement, grupoElement, inputElement) {
         if (selectElement.value && selectElement.value !== '0') {
             grupoElement.style.display = 'block';
@@ -58,8 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleDireccionOpcional(municipioTerciario, grupoDireccionTerciario, direccionTerciario);
     }
     
-    // === MANEJO DE ARCHIVOS ADJUNTOS ===
-    // Configurar todos los campos de archivo
     setupFileInput('adjuntar_contrato', 'contratoPreview', 'contratoFilename');
     setupFileInput('adjuntar_acta_inicio', 'actaPreview', 'actaFilename');
     setupFileInput('adjuntar_rp', 'rpPreview', 'rpFilename');
@@ -74,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const file = e.target.files[0];
                 
                 if (file) {
-                    // Validar tamaño (5MB máximo)
                     const maxSize = 5 * 1024 * 1024;
                     if (file.size > maxSize) {
                         alert('El archivo excede el tamaño máximo de 5MB');
@@ -82,8 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         preview.style.display = 'none';
                         return;
                     }
-                    
-                    // Validar tipo de archivo (solo PDF para contratos, actas y RP)
+
                     const allowedExtensions = ['.pdf'];
                     if (inputId === 'adjuntar_cv') {
                         allowedExtensions.push('.doc', '.docx');
@@ -102,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
                     
-                    // Mostrar vista previa
                     filenameSpan.textContent = file.name;
                     preview.style.display = 'block';
                 } else {
@@ -112,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Funciones para remover archivos
     window.removeContrato = function() {
         const input = document.getElementById('adjuntar_contrato');
         const preview = document.getElementById('contratoPreview');
@@ -134,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (preview) preview.style.display = 'none';
     };
     
-    // Manejar selección de archivo CV (existente - mantenido)
     const cvInput = document.getElementById('adjuntar_cv');
     const cvPreview = document.getElementById('cvPreview');
     const cvFilename = document.getElementById('cvFilename');
@@ -152,8 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cvPreview.style.display = 'none';
                     return;
                 }
-                
-                // Validar tipo de archivo por extensión
+
                 const allowedExtensions = ['.pdf', '.doc', '.docx'];
                 const fileName = file.name.toLowerCase();
                 const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
@@ -164,8 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cvPreview.style.display = 'none';
                     return;
                 }
-                
-                // Mostrar vista previa
+
                 cvFilename.textContent = file.name;
                 cvPreview.style.display = 'block';
             } else {
@@ -174,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Función para remover CV
     window.removeCV = function() {
         if (cvInput) cvInput.value = '';
         if (cvPreview) cvPreview.style.display = 'none';
@@ -252,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // === GUARDAR CONTRATISTA ===
     const guardarBtn = document.getElementById('guardarBtn');
     if (guardarBtn) {
         guardarBtn.addEventListener('click', async function() {
@@ -267,8 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     field.style.borderColor = '#e0e0e0';
                 }
             });
-            
-            // Validar campos de dirección opcionales si están visibles
+
             if (grupoDireccionSecundario && grupoDireccionSecundario.style.display === 'block') {
                 if (!direccionSecundario.value.trim()) {
                     direccionSecundario.style.borderColor = '#dc3545';
@@ -309,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const formData = new FormData();
             
-            // Agregar todos los campos del formulario
             const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
             formElements.forEach(element => {
                 if (element.name && element.value !== undefined) {
@@ -324,8 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            
-            // Agregar archivos
+
             const archivos = [
                 'adjuntar_cv', 
                 'adjuntar_contrato', 
@@ -350,27 +335,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (resultado.success) {
                     alert(`¡Contratista registrado exitosamente!\n\nContratista N°: ${resultado.id_detalle}`);
-                    
-                    // ACTUALIZAR CONSECUTIVO AUTOMÁTICAMENTE
+
                     if (resultado.proximo_consecutivo) {
                         const consecutivoElement = document.querySelector('.consecutivo-number');
                         if (consecutivoElement) {
                             consecutivoElement.textContent = resultado.proximo_consecutivo;
                         }
                     }
-                    
-                    // LIMPIAR FORMULARIO
+
                     limpiarFormulario();
-                    
-                    // RESTABLECER BOTÓN
+
                     this.innerHTML = btnOriginalHTML;
                     this.disabled = false;
-                    
-                    // ENFOCAR PRIMER CAMPO PARA NUEVO REGISTRO
                     const primerCampo = document.getElementById('nombre_completo');
                     if (primerCampo) primerCampo.focus();
-                    
-                    // RESTABLECER COLORES DE VALIDACIÓN
+
                     requiredFields.forEach(field => {
                         field.style.borderColor = '#e0e0e0';
                     });
@@ -405,22 +384,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const campo = document.getElementById(id);
             if (campo) campo.value = '';
         });
-        
-        // 2. Campos de fecha
+
         const fechaCampos = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
         fechaCampos.forEach(id => {
             const campo = document.getElementById(id);
             if (campo) {
-                // Limpiar el campo
                 campo.value = '';
-                // Si tiene flatpickr, limpiar también la instancia
                 if (campo._flatpickr) {
                     campo._flatpickr.clear();
                 }
             }
         });
         
-        // 3. Limpiar selects
         const selectsLimpiar = [
             'id_tipo_vinculacion', 
             'id_area', 
@@ -434,21 +409,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 select.selectedIndex = 0;
             }
         });
-        
-        // 4. Restaurar Villavicencio en municipio principal
+
         const municipioPrincipal = document.getElementById('id_municipio_principal');
         if (municipioPrincipal) {
-            // Primero resetear
             municipioPrincipal.selectedIndex = 0;
-            // Luego buscar y seleccionar Villavicencio
             Array.from(municipioPrincipal.options).forEach(option => {
                 if (option.text.includes('Villavicencio')) {
                     option.selected = true;
                 }
             });
         }
-        
-        // 5. Limpiar archivos adjuntos
+
         const archivos = [
             'adjuntar_cv', 
             'adjuntar_contrato', 
@@ -467,12 +438,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (preview) preview.style.display = 'none';
         });
         
-        // 6. Ocultar campos de dirección opcionales
         if (grupoDireccionSecundario) grupoDireccionSecundario.style.display = 'none';
         if (grupoDireccionTerciario) grupoDireccionTerciario.style.display = 'none';
     }
-    
-    // === SUGERENCIA DE MUNICIPIOS (existente - mantenido) ===
+
     const municipioPrincipal = document.getElementById('id_municipio_principal');
     if (municipioPrincipal) {
         municipioPrincipal.addEventListener('change', function() {
@@ -498,15 +467,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // === PREVENIR ENTER EN FORMULARIO ===
+
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
             e.preventDefault();
         }
     });
-    
-    // === ACTUALIZAR HORA EN TIEMPO REAL ===
     function actualizarHora() {
         const now = new Date();
         const options = { 
