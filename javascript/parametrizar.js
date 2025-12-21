@@ -892,13 +892,13 @@ function cargarMunicipios(scrollPosition = null) {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" >
-                            <i class="fas fa-ban"></i> Desactivar
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
+                            <i class="fas fa-ban"></i>
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-check-circle"></i> Activar
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
+                            <i class="fas fa-check-circle"></i>
                         </button>`;
                 }
                 
@@ -909,7 +909,7 @@ function cargarMunicipios(scrollPosition = null) {
                     <td><span class="status-badge ${municipio.activo ? 'status-active' : 'status-inactive'}">${municipio.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarMunicipio(${municipio.id_municipio})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i>
                         </button>
                         ${botonEstado}
                     </td>
