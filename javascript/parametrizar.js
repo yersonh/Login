@@ -217,7 +217,7 @@ function cargarTiposVinculacion() {
                     <td><span class="status-badge ${tipo.activo ? 'status-active' : 'status-inactive'}">${tipo.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editarVinculacion(${tipo.id_tipo})" title="Editar">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i> 
                         </button>
                         ${botonEstado}
                     </td>
@@ -892,12 +892,12 @@ function cargarMunicipios(scrollPosition = null) {
                 let botonEstado = '';
                 if (municipio.activo) {
                     botonEstado = `
-                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Desactivar">
+                        <button class="btn-action btn-deactivate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, false, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" >
                             <i class="fas fa-ban"></i> Desactivar
                         </button>`;
                 } else {
                     botonEstado = `
-                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')" title="Activar">
+                        <button class="btn-action btn-activate" onclick="mostrarConfirmacionEstado(${municipio.id_municipio}, true, '${municipio.nombre.replace(/'/g, "\\'")}', '${municipio.codigo_dane}', '${municipio.departamento.replace(/'/g, "\\'")}')">
                             <i class="fas fa-check-circle"></i> Activar
                         </button>`;
                 }
