@@ -690,8 +690,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }).addTo(marcadoresContratistas);
         
         // Agregar popup con información profesional
+        // En la función agregarMarcadorContratista, modifica el HTML del popup:
         marcador.bindPopup(`
-            <div class="popup-contratista" style="width: 280px;">
+            <div class="popup-contratista" style="width: 300px;">
                 <div class="popup-header bg-primary text-white p-3">
                     <h6 class="mb-0">${contratista.nombre}</h6>
                     <small class="opacity-75">Contratista</small>
@@ -731,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-12">
                             <div class="info-item">
                                 <span class="info-label">Dirección:</span>
-                                <span class="info-value small">${contratista.direccion}</span>
+                                <span class="info-value long-text">${contratista.direccion}</span>
                             </div>
                         </div>
                     </div>
