@@ -77,6 +77,88 @@ $anio = date('Y');
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/parametrizar.css">
+    <style>
+        /* Estilos para el botón de eliminar */
+        .btn-action.btn-delete {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4px;
+        }
+
+        .btn-action.btn-delete:hover {
+            background-color: #c82333 !important;
+            border-color: #bd2130 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Modal de confirmación de eliminación */
+        #confirmEliminarModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #confirmEliminarModal .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-warning i {
+            color: #ffc107;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+            font-weight: 600;
+        }
+
+        /* Animación para remover fila */
+        .fila-eliminando {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -907,6 +989,363 @@ if (modalDiasRestantes) {
             }
         });
     });
+    </script>
+
+    <!-- SCRIPT PARA ELIMINACIÓN DE REGISTROS (PAPELERA) -->
+    <script>
+    // Modal de confirmación de eliminación
+    const modalEliminarHTML = `
+        <div id="confirmEliminarModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-trash-alt"></i> <span id="eliminarTitulo"></span></h3>
+                    <button type="button" class="modal-close" onclick="cerrarModalEliminar()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Advertencia:</strong> Esta acción no se puede deshacer.
+                    </div>
+                    <p id="eliminarMensaje"></p>
+                    <div class="modal-details">
+                        <ul id="eliminarDetalles"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminar()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="confirmarEliminacion()">
+                        <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Variables para la eliminación
+    let registroEliminarId = null;
+    let registroEliminarTipo = null;
+    let registroEliminarNombre = null;
+    let registroEliminarCodigo = null;
+
+    // Insertar modal al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.insertAdjacentHTML('beforeend', modalEliminarHTML);
+        configurarModalEliminar();
+        
+        // Esperar a que se carguen las tablas para agregar botones de eliminar
+        setTimeout(() => {
+            agregarBotonesEliminar();
+            observarCambiosTablas();
+        }, 1500);
+    });
+
+    // Configurar eventos del modal de eliminación
+    function configurarModalEliminar() {
+        const modal = document.getElementById('confirmEliminarModal');
+        if (!modal) return;
+
+        // Cerrar al hacer clic fuera
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                cerrarModalEliminar();
+            }
+        });
+
+        // Cerrar con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                cerrarModalEliminar();
+            }
+        });
+    }
+
+    // Mostrar modal de confirmación de eliminación
+    function mostrarModalEliminar(id, tipo, nombre, codigo) {
+        registroEliminarId = id;
+        registroEliminarTipo = tipo;
+        registroEliminarNombre = nombre;
+        registroEliminarCodigo = codigo;
+
+        // Configurar textos según el tipo
+        let titulo, mensaje, detallesHTML;
+        
+        switch(tipo) {
+            case 'municipio':
+                titulo = 'Eliminar Municipio';
+                mensaje = `¿Está seguro de que desea eliminar el municipio "${nombre}"?`;
+                detallesHTML = `
+                    <li><strong>Municipio:</strong> ${nombre}</li>
+                    <li><strong>Código DANE:</strong> ${codigo || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                `;
+                break;
+            case 'area':
+                titulo = 'Eliminar Área';
+                mensaje = `¿Está seguro de que desea eliminar el área "${nombre}"?`;
+                detallesHTML = `
+                    <li><strong>Área:</strong> ${nombre}</li>
+                    <li><strong>Código:</strong> ${codigo || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                `;
+                break;
+            case 'vinculacion':
+                titulo = 'Eliminar Tipo de Vinculación';
+                mensaje = `¿Está seguro de que desea eliminar el tipo de vinculación "${nombre}"?`;
+                detallesHTML = `
+                    <li><strong>Tipo:</strong> ${nombre}</li>
+                    <li><strong>Código:</strong> ${codigo || '--'}</li>
+                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                `;
+                break;
+        }
+
+        // Actualizar modal
+        document.getElementById('eliminarTitulo').textContent = titulo;
+        document.getElementById('eliminarMensaje').textContent = mensaje;
+        document.getElementById('eliminarDetalles').innerHTML = detallesHTML;
+
+        // Mostrar modal
+        document.getElementById('confirmEliminarModal').style.display = 'flex';
+    }
+
+    // Cerrar modal de eliminación
+    function cerrarModalEliminar() {
+        const modal = document.getElementById('confirmEliminarModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        registroEliminarId = null;
+        registroEliminarTipo = null;
+        registroEliminarNombre = null;
+        registroEliminarCodigo = null;
+    }
+
+    // Confirmar eliminación
+    function confirmarEliminacion() {
+        if (!registroEliminarId || !registroEliminarTipo) return;
+
+        const btnEliminar = document.querySelector('#confirmEliminarModal .btn-danger');
+        const originalText = btnEliminar.innerHTML;
+        btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+        btnEliminar.disabled = true;
+
+        // Determinar URL y datos según el tipo
+        let url, datos;
+        switch(registroEliminarTipo) {
+            case 'municipio':
+                url = '../../api/GestionMunicipio.php';
+                datos = { id: registroEliminarId, activo: false };
+                break;
+            case 'area':
+                url = '../../api/areas.php';
+                datos = { id: registroEliminarId, activo: false };
+                break;
+            case 'vinculacion':
+                url = '../../api/tipo_vinculacion.php';
+                datos = { id_tipo: registroEliminarId, activo: false };
+                break;
+        }
+
+        // Enviar petición
+        fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Remover fila de la tabla con animación
+                removerFila(registroEliminarId, registroEliminarTipo);
+                
+                // Mostrar mensaje de éxito
+                mostrarAlerta('success', `${registroEliminarTipo === 'municipio' ? 'Municipio' : 
+                                         registroEliminarTipo === 'area' ? 'Área' : 
+                                         'Tipo de vinculación'} eliminado correctamente`);
+                
+                cerrarModalEliminar();
+            } else {
+                mostrarAlerta('error', data.error || 'Error al eliminar registro');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarAlerta('error', 'Error de conexión');
+        })
+        .finally(() => {
+            btnEliminar.innerHTML = originalText;
+            btnEliminar.disabled = false;
+        });
+    }
+
+    // Remover fila con animación
+    function removerFila(id, tipo) {
+        let tablaId;
+        switch(tipo) {
+            case 'municipio': tablaId = 'municipiosTable'; break;
+            case 'area': tablaId = 'areasTable'; break;
+            case 'vinculacion': tablaId = 'vinculacionesTable'; break;
+        }
+
+        const tablaBody = document.getElementById(tablaId);
+        if (!tablaBody) return;
+
+        const filas = tablaBody.querySelectorAll('tr');
+        filas.forEach(fila => {
+            if (!fila.classList.contains('loading-row') && 
+                !fila.classList.contains('empty-row') && 
+                !fila.classList.contains('error-row')) {
+                
+                // Buscar el botón que contiene este ID
+                const btnEliminar = fila.querySelector('.btn-delete');
+                if (btnEliminar && btnEliminar.dataset.id == id) {
+                    // Aplicar animación
+                    fila.classList.add('fila-eliminando');
+                    
+                    // Remover después de la animación
+                    setTimeout(() => {
+                        fila.remove();
+                        
+                        // Verificar si la tabla quedó vacía
+                        if (tablaBody.querySelectorAll('tr').length === 0) {
+                            const emptyRow = document.createElement('tr');
+                            emptyRow.className = 'empty-row';
+                            emptyRow.innerHTML = `<td colspan="5">No hay registros disponibles</td>`;
+                            tablaBody.appendChild(emptyRow);
+                        }
+                    }, 300);
+                }
+            }
+        });
+    }
+
+    // Agregar botones de eliminar a las tablas
+    function agregarBotonesEliminar() {
+        agregarBotonEliminarATabla('municipiosTable', 'municipio');
+        agregarBotonEliminarATabla('areasTable', 'area');
+        agregarBotonEliminarATabla('vinculacionesTable', 'vinculacion');
+    }
+
+    function agregarBotonEliminarATabla(tablaId, tipo) {
+        const tablaBody = document.getElementById(tablaId);
+        if (!tablaBody) return;
+
+        const filas = tablaBody.querySelectorAll('tr');
+        filas.forEach(fila => {
+            // Ignorar filas especiales
+            if (fila.classList.contains('loading-row') || 
+                fila.classList.contains('empty-row') || 
+                fila.classList.contains('error-row')) {
+                return;
+            }
+
+            // Verificar si ya tiene botón de eliminar
+            const actionCell = fila.querySelector('.action-buttons');
+            if (!actionCell || actionCell.querySelector('.btn-delete')) return;
+
+            // Obtener datos de la fila
+            const nombre = fila.cells[0]?.textContent || '';
+            const codigo = fila.cells[1]?.textContent || '';
+            const id = obtenerIdDeFila(fila, tipo);
+
+            if (!id) return;
+
+            // Crear botón de eliminar
+            const btnEliminar = document.createElement('button');
+            btnEliminar.className = 'btn-action btn-delete';
+            btnEliminar.title = 'Eliminar';
+            btnEliminar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+            btnEliminar.dataset.id = id;
+            btnEliminar.dataset.tipo = tipo;
+            btnEliminar.dataset.nombre = nombre;
+            btnEliminar.dataset.codigo = codigo;
+
+            // Agregar evento
+            btnEliminar.addEventListener('click', function() {
+                mostrarModalEliminar(
+                    this.dataset.id,
+                    this.dataset.tipo,
+                    this.dataset.nombre,
+                    this.dataset.codigo
+                );
+            });
+
+            // Insertar después del botón de editar
+            const btnEditar = actionCell.querySelector('.btn-edit');
+            if (btnEditar) {
+                btnEditar.insertAdjacentElement('afterend', btnEliminar);
+            } else {
+                actionCell.appendChild(btnEliminar);
+            }
+        });
+    }
+
+    // Obtener ID de una fila
+    function obtenerIdDeFila(fila, tipo) {
+        // Intentar desde botón de editar
+        const btnEditar = fila.querySelector('.btn-edit');
+        if (btnEditar && btnEditar.onclick) {
+            const onclickStr = btnEditar.onclick.toString();
+            const match = onclickStr.match(/\d+/);
+            if (match) return match[0];
+        }
+
+        // Intentar desde botón de estado
+        const btnEstado = fila.querySelector('.btn-activate, .btn-deactivate');
+        if (btnEstado && btnEstado.onclick) {
+            const onclickStr = btnEstado.onclick.toString();
+            const match = onclickStr.match(/\d+/);
+            if (match) return match[0];
+        }
+
+        return null;
+    }
+
+    // Observar cambios en las tablas
+    function observarCambiosTablas() {
+        const tablas = ['municipiosTable', 'areasTable', 'vinculacionesTable'];
+        
+        tablas.forEach(tablaId => {
+            const tablaBody = document.getElementById(tablaId);
+            if (tablaBody) {
+                const observer = new MutationObserver(() => {
+                    // Determinar tipo
+                    let tipo = '';
+                    if (tablaId.includes('municipio')) tipo = 'municipio';
+                    else if (tablaId.includes('area')) tipo = 'area';
+                    else if (tablaId.includes('vinculacion')) tipo = 'vinculacion';
+                    
+                    if (tipo) {
+                        agregarBotonEliminarATabla(tablaId, tipo);
+                    }
+                });
+                
+                observer.observe(tablaBody, { childList: true, subtree: true });
+            }
+        });
+    }
+
+    // Mostrar alerta
+    function mostrarAlerta(tipo, mensaje) {
+        let alertaDiv = document.getElementById(tipo === 'success' ? 'successAlert' : 'errorAlert');
+        if (alertaDiv) {
+            alertaDiv.innerHTML = `<i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${mensaje}`;
+            alertaDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertaDiv.style.display = 'none';
+            }, tipo === 'success' ? 4000 : 5000);
+        }
+    }
+
+    // Exponer funciones al scope global
+    window.mostrarModalEliminar = mostrarModalEliminar;
+    window.cerrarModalEliminar = cerrarModalEliminar;
+    window.confirmarEliminacion = confirmarEliminacion;
     </script>
 </body>
 </html>
