@@ -28,16 +28,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variables globales para el buscador
     var marcadoresContratistas = L.layerGroup().addTo(mapa);
     var municipiosCargados = [];
+    var areasCargadas = [];
     var todosContratistas = []; // Almacenar todos los contratistas para la lista
     var contratistasProcesados = []; // Contratistas con marcadores
     
     // Inicializar buscador
     inicializarBuscador();
     
-    // 1. Primero cargar municipios
-    cargarMunicipios().then(() => {
+    // 1. Cargar datos iniciales
+    Promise.all([
+        cargarMunicipios(),
+        cargarAreas()
+    ]).then(() => {
         // 2. Luego cargar todos los contratistas (sin mostrar resultados en el buscador)
         cargarContratistas();
+    }).catch(error => {
+        console.error('❌ Error cargando datos iniciales:', error);
+        mostrarMensaje('Error al cargar datos iniciales');
     });
     
     // Añadir controles básicos
@@ -127,6 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
         searchContainer.addTo(mapa);
     }
     
+    // ================= FUNCIONES DE CARGA DE DATOS =================
+    
     // Función para cargar municipios
     async function cargarMunicipios() {
         console.log('🔄 Cargando municipios...');
@@ -148,6 +157,32 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('❌ Error cargando municipios:', error);
+            throw error;
+        }
+    }
+    
+    // Función para cargar áreas
+    async function cargarAreas() {
+        console.log('🔄 Cargando áreas...');
+        
+        try {
+            const response = await fetch('../../api/areasMapa.php');
+            
+            if (!response.ok) {
+                throw new Error('Error al cargar áreas');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                areasCargadas = result.data;
+                llenarSelectAreas();
+                console.log(`✅ ${areasCargadas.length} áreas cargadas`);
+            }
+            
+        } catch (error) {
+            console.error('❌ Error cargando áreas:', error);
+            throw error;
         }
     }
     
@@ -163,6 +198,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const option = document.createElement('option');
             option.value = municipio.nombre;
             option.textContent = municipio.nombre;
+            select.appendChild(option);
+        });
+    }
+    
+    // Llenar select de áreas
+    function llenarSelectAreas() {
+        const select = document.getElementById('selectArea');
+        
+        // Ordenar áreas alfabéticamente
+        areasCargadas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        
+        // Agregar opciones
+        areasCargadas.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area.nombre;
+            option.textContent = area.nombre;
             select.appendChild(option);
         });
     }
@@ -203,9 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Guardar todos los contratistas
             todosContratistas = contratistas;
-            
-            // Actualizar lista de áreas dinámicamente
-            actualizarListaAreas(contratistas);
             
             // Limpiar marcadores anteriores
             marcadoresContratistas.clearLayers();
@@ -310,33 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cargar todos los contratistas sin filtros
         cargarContratistas();
     };
-    
-    // Actualizar lista de áreas dinámicamente
-    function actualizarListaAreas(contratistas) {
-        const areas = new Set();
-        
-        contratistas.forEach(c => {
-            if (c.area) areas.add(c.area);
-        });
-        
-        const select = document.getElementById('selectArea');
-        
-        // Limpiar opciones (excepto "Todas las áreas")
-        while (select.options.length > 1) {
-            select.remove(1);
-        }
-        
-        // Ordenar áreas alfabéticamente
-        const areasOrdenadas = Array.from(areas).sort();
-        
-        // Agregar opciones
-        areasOrdenadas.forEach(area => {
-            const option = document.createElement('option');
-            option.value = area;
-            option.textContent = area;
-            select.appendChild(option);
-        });
-    }
     
     // ================= LISTA DE RESULTADOS =================
     
