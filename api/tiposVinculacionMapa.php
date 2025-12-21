@@ -14,8 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Incluir archivos necesarios
-require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/TipoVinculacionModel.php';
 
 // Función para enviar respuesta JSON
