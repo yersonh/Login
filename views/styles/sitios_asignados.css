@@ -130,7 +130,7 @@ body {
 }
 
 .info-label {
-    display: block;
+    display: flex;
     font-size: 11px;
     color: #7f8c8d;
     font-weight: 600;
@@ -140,7 +140,7 @@ body {
 }
 
 .info-value {
-    display: block;
+    display: flex;
     font-size: 13px;
     color: #2c3e50;
     font-weight: 500;
