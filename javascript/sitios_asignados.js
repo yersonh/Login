@@ -1,4 +1,4 @@
-// JavaScript para mapa centrado en el Meta con buscador/filtro profesional
+// JavaScript para mapa centrado en el Meta con buscador/filtro
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no está cargado');
@@ -40,24 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarContratistas();
     });
     
-    // Mostrar coordenadas al hacer clic
+    // 2. Mostrar coordenadas al hacer clic
     mapa.on('click', function(e) {
         L.popup()
             .setLatLng(e.latlng)
             .setContent(
-                `<div class="popup-coordenadas">
-                    <h6><i class="fas fa-map-marker-alt"></i> Ubicación seleccionada</h6>
-                    <div class="coordenadas-info">
-                        <div><strong>Latitud:</strong> ${e.latlng.lat.toFixed(6)}</div>
-                        <div><strong>Longitud:</strong> ${e.latlng.lng.toFixed(6)}</div>
-                        <div class="small text-muted mt-1">Departamento del Meta, Colombia</div>
-                    </div>
-                </div>`
+                `<b>📍 Ubicación seleccionada</b><br>
+                 Latitud: ${e.latlng.lat.toFixed(6)}<br>
+                 Longitud: ${e.latlng.lng.toFixed(6)}<br>
+                 <small>Departamento del Meta, Colombia</small>`
             )
             .openOn(mapa);
     });
     
-    // Añadir controles básicos
+    // 3. Añadir controles básicos
     L.control.scale().addTo(mapa);
     L.control.zoom({ position: 'bottomright' }).addTo(mapa);
     
@@ -70,40 +66,31 @@ document.addEventListener('DOMContentLoaded', function() {
         searchContainer.onAdd = function(map) {
             const div = L.DomUtil.create('div', 'search-container');
             div.innerHTML = `
-                <div class="card search-panel" style="width: 380px; max-width: 90vw;">
-                    <div class="card-header bg-primary text-white py-2">
-                        <h6 class="mb-0">
-                            <i class="fas fa-search me-2"></i>Buscar Contratistas
-                        </h6>
-                    </div>
+                <div class="card shadow-sm" style="width: 350px; max-width: 90vw;">
                     <div class="card-body p-3">
+                        <h5 class="card-title mb-3">🔍 Buscar Contratistas</h5>
+                        
                         <!-- Búsqueda por nombre -->
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-user me-1"></i>Nombre del contratista
-                            </label>
+                            <label class="form-label small">Nombre del contratista</label>
                             <input type="text" 
                                    id="inputNombre" 
-                                   class="form-control" 
-                                   placeholder="Ingrese nombre o apellido">
+                                   class="form-control form-control-sm" 
+                                   placeholder="Ej: Juan Pérez">
                         </div>
                         
                         <!-- Filtro por municipio -->
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-map-marker-alt me-1"></i>Municipio
-                            </label>
-                            <select id="selectMunicipio" class="form-select">
+                            <label class="form-label small">Filtrar por municipio</label>
+                            <select id="selectMunicipio" class="form-select form-select-sm">
                                 <option value="">Todos los municipios</option>
                             </select>
                         </div>
                         
                         <!-- Área -->
-                        <div class="mb-4">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-building me-1"></i>Área
-                            </label>
-                            <select id="selectArea" class="form-select">
+                        <div class="mb-3">
+                            <label class="form-label small">Área</label>
+                            <select id="selectArea" class="form-select form-select-sm">
                                 <option value="">Todas las áreas</option>
                             </select>
                         </div>
@@ -111,22 +98,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         <!-- Botones de acción -->
                         <div class="d-flex gap-2">
                             <button onclick="aplicarFiltros()" 
-                                    class="btn btn-primary flex-grow-1">
-                                <i class="fas fa-filter me-1"></i>Filtrar
+                                    class="btn btn-primary btn-sm flex-grow-1">
+                                🔍 Aplicar filtros
                             </button>
                             <button onclick="limpiarFiltros()" 
-                                    class="btn btn-outline-secondary">
-                                <i class="fas fa-eraser me-1"></i>Limpiar
+                                    class="btn btn-outline-secondary btn-sm">
+                                🗑️ Limpiar
                             </button>
                         </div>
                         
                         <!-- Resultados de búsqueda -->
-                        <div id="resultadosBusqueda" class="mt-4" style="display: none;">
-                            <h6 class="border-bottom pb-2 text-primary">
-                                <i class="fas fa-list me-1"></i>Resultados
-                                <span class="badge bg-secondary ms-2" id="contadorResultados">0</span>
-                            </h6>
-                            <div id="listaResultados" class="resultados-list"></div>
+                        <div id="resultadosBusqueda" class="mt-3" style="display: none;">
+                            <h6 class="border-bottom pb-2">Resultados</h6>
+                            <div id="listaResultados" style="max-height: 300px; overflow-y: auto;"></div>
+                            <div class="mt-2 text-end small">
+                                <span id="contadorResultados">0</span> contratistas encontrados
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -348,11 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (contratistas.length === 0) {
             container.innerHTML = `
-                <div class="alert alert-light border mt-2 py-2">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-search fa-lg mb-2"></i>
-                        <p class="mb-0">No se encontraron contratistas</p>
-                    </div>
+                <div class="alert alert-warning py-2 my-2">
+                    No se encontraron contratistas
                 </div>
             `;
             return;
@@ -361,30 +345,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // Crear elementos de lista
         contratistas.forEach((contratista, index) => {
             const item = document.createElement('div');
-            item.className = 'result-item';
+            item.className = 'list-group-item list-group-item-action';
+            item.style.cursor = 'pointer';
             item.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold text-primary">${contratista.nombre}</div>
-                        <div class="small text-muted mt-1">
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-id-card me-1"></i>${contratista.cedula}
-                                </span>
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-map-marker-alt me-1"></i>${contratista.municipio_principal || 'Sin municipio'}
-                                </span>
-                                ${contratista.area ? `
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-building me-1"></i>${contratista.area}
-                                </span>` : ''}
-                            </div>
-                        </div>
+                    <div>
+                        <h6 class="mb-1">${contratista.nombre}</h6>
+                        <small class="text-muted">
+                            📍 ${contratista.municipio_principal || 'Sin municipio'}
+                            | 📋 ${contratista.cedula}
+                            ${contratista.area ? `| 🏢 ${contratista.area}` : ''}
+                        </small>
                     </div>
                     <button onclick="event.stopPropagation(); irAContratista(${index})" 
-                            class="btn btn-sm btn-outline-primary ms-2"
-                            title="Ver en mapa">
-                        <i class="fas fa-eye"></i>
+                            class="btn btn-sm btn-outline-primary">
+                        👁️
                     </button>
                 </div>
             `;
@@ -408,40 +383,40 @@ document.addEventListener('DOMContentLoaded', function() {
         if (contratistasProcesados[index] && contratistasProcesados[index].marcador) {
             const marcador = contratistasProcesados[index].marcador;
             
-            // Centrar mapa en el marcador con zoom adecuado
-            mapa.setView(marcador.getLatLng(), 14);
+            // Centrar mapa en el marcador
+            mapa.setView(marcador.getLatLng(), 15);
             
             // Abrir popup
             marcador.openPopup();
             
-            // Resaltar sutilmente el marcador
+            // Resaltar marcador
             resaltarMarcador(marcador);
         }
     };
     
-    // Resaltar marcador sutilmente
+    // Resaltar marcador temporalmente
     function resaltarMarcador(marcador) {
         const originalIcon = marcador.options.icon;
         
-        // Cambiar a ícono resaltado sutilmente
+        // Cambiar a ícono resaltado
         const iconoResaltado = L.divIcon({
             className: 'marcador-contratista-resaltado',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
+            html: '⭐',
+            iconSize: [35, 35],
+            iconAnchor: [17, 35]
         });
         
         marcador.setIcon(iconoResaltado);
         
-        // Restaurar después de 2 segundos
+        // Restaurar después de 3 segundos
         setTimeout(() => {
             if (marcador && marcador.setIcon) {
                 marcador.setIcon(originalIcon);
             }
-        }, 2000);
+        }, 3000);
     }
     
-    // ================= FUNCIONES DE GEOCODIFICACIÓN =================
+    // ================= FUNCIONES DE GEOCODIFICACIÓN (TUS FUNCIONES ORIGINALES) =================
     
     // FUNCIÓN MEJORADA: Buscar dirección con múltiples intentos
     async function buscarDireccionMejorada(direccion, municipio) {
@@ -650,13 +625,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para agregar un marcador al mapa
     function agregarMarcadorContratista(contratista, coordenadas) {
-        // Crear ícono personalizado profesional
+        // Crear ícono personalizado para contratistas
         var iconoContratista = L.divIcon({
             className: 'marcador-contratista',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -28]
+            html: '👤',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
         });
         
         // Crear el marcador
@@ -665,58 +640,20 @@ document.addEventListener('DOMContentLoaded', function() {
             title: contratista.nombre
         }).addTo(marcadoresContratistas);
         
-        // Agregar popup con información profesional
+        // Agregar popup con información
         marcador.bindPopup(`
-            <div class="popup-contratista" style="width: 280px;">
-                <div class="popup-header bg-primary text-white p-3">
-                    <h6 class="mb-0">${contratista.nombre}</h6>
-                    <small class="opacity-75">Contratista</small>
-                </div>
-                <div class="popup-body p-3">
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Cédula:</span>
-                                <span class="info-value">${contratista.cedula}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Teléfono:</span>
-                                <span class="info-value">${contratista.telefono}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Contrato:</span>
-                                <span class="info-value">${contratista.contrato}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Área:</span>
-                                <span class="info-value">${contratista.area}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Municipio:</span>
-                                <span class="info-value">${contratista.municipio_principal}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Dirección:</span>
-                                <span class="info-value small">${contratista.direccion}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="my-2">
-                    <div class="text-center small text-muted">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
-                    </div>
-                </div>
+            <div class="popup-contratista" style="max-width: 300px;">
+                <h4 style="margin: 0 0 10px 0; color: #2c3e50;">
+                    <strong>${contratista.nombre}</strong>
+                </h4>
+                <p style="margin: 5px 0;"><strong>📋 Cédula:</strong> ${contratista.cedula}</p>
+                <p style="margin: 5px 0;"><strong>📞 Teléfono:</strong> ${contratista.telefono}</p>
+                <p style="margin: 5px 0;"><strong>🏢 Área:</strong> ${contratista.area}</p>
+                <p style="margin: 5px 0;"><strong>📄 Contrato:</strong> ${contratista.contrato}</p>
+                <p style="margin: 5px 0;"><strong>📍 Municipio:</strong> ${contratista.municipio_principal}</p>
+                <p style="margin: 5px 0;"><strong>🏠 Dirección:</strong> ${contratista.direccion}</p>
+                <hr style="margin: 10px 0;">
+                <small style="color: #7f8c8d;">Coordenadas: ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}</small>
             </div>
         `);
         
@@ -729,14 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function mostrarMensaje(mensaje) {
         L.popup()
             .setLatLng(villavicencio)
-            .setContent(`
-                <div class="popup-mensaje">
-                    <div class="text-center">
-                        <i class="fas fa-info-circle fa-2x text-primary mb-2"></i>
-                        <p class="mb-0">${mensaje}</p>
-                    </div>
-                </div>
-            `)
+            .setContent(`<div style="padding: 10px; text-align: center;">${mensaje}</div>`)
             .openOn(mapa);
     }
     
@@ -756,6 +686,94 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarContratistas();
         mostrarMensaje('Recargando contratistas...');
     };
+    
+    // ================= ESTILOS CSS =================
+    
+    // Agregar estilos CSS
+    const estilo = document.createElement('style');
+    estilo.textContent = `
+        .search-container {
+            background: none;
+            border: none;
+        }
+        
+        .search-container .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .search-container .card-title {
+            color: #2c3e50;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .marcador-contratista {
+            background: none;
+            border: none;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+        
+        .marcador-contratista-resaltado {
+            background: none;
+            border: none;
+            font-size: 24px;
+            text-shadow: 0 0 10px gold;
+            cursor: pointer;
+            z-index: 1000 !important;
+        }
+        
+        .leaflet-popup-content {
+            font-family: Arial, sans-serif;
+        }
+        
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            padding: 10px 15px;
+        }
+        
+        .list-group-item:first-child {
+            border-top: none;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        #listaResultados::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #listaResultados::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        #listaResultados::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .form-control-sm, .form-select-sm {
+            font-size: 0.875rem;
+        }
+    `;
+    document.head.appendChild(estilo);
     
     // Evento Enter en el input de búsqueda
     document.addEventListener('keypress', function(e) {
