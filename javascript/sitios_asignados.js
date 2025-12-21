@@ -458,8 +458,8 @@ function actualizarListaResultados(contratistas) {
                             <span class="badge bg-light text-dark border">
                                 <i class="fas fa-building me-1"></i>${contratista.area}
                             </span>` : ''}
-                            ${contratista.tipo_vinculacion ? `
-                            <span class="badge bg-light text-dark border">
+                           ${contratista.tipo_vinculacion ? `
+                            <span class="badge tipo-vinculacion-badge">
                                 <i class="fas fa-handshake me-1"></i>${contratista.tipo_vinculacion}
                             </span>` : ''}
                         </div>
