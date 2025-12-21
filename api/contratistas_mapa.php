@@ -32,46 +32,65 @@ try {
     
     // Aplicar filtros si existen
     if (!empty(array_filter($filtros))) {
-        $contratistas = filtrarContratistas($contratistas, $filtros);
+        $contratistasFiltrados = filtrarContratistas($contratistas, $filtros);
+        
+        // CORRECCIÓN CRÍTICA: Asegurarnos de que siempre sea un array
+        if (empty($contratistasFiltrados)) {
+            $contratistasFiltrados = [];
+        }
+        
+        // Re-indexar el array para asegurar índices consecutivos
+        $contratistasFiltrados = array_values($contratistasFiltrados);
+        
+        $contratistas = $contratistasFiltrados;
+    }
+    
+    // CORRECCIÓN: Verificar que $contratistas sea un array antes de procesar
+    if (!is_array($contratistas)) {
+        $contratistas = [];
     }
     
     if (empty($contratistas)) {
         echo json_encode([
             'success' => true,
-            'data' => [],
+            'data' => [], // Siempre devolver array vacío, no null
             'count' => 0,
             'message' => 'No hay contratistas que coincidan con los filtros'
         ]);
         exit();
     }
     
-    // Procesar datos
-    $resultados = array_map(function($contratista) {
-        return [
-            'id' => 'contratista_' . $contratista['id_detalle'],
-            'id_detalle' => $contratista['id_detalle'],
-            'id_persona' => $contratista['id_persona'],
-            'nombre' => trim($contratista['nombres'] . ' ' . $contratista['apellidos']),
-            'nombres' => $contratista['nombres'],
-            'apellidos' => $contratista['apellidos'],
-            'cedula' => $contratista['cedula'],
-            'telefono' => $contratista['telefono'] ?? 'No registrado',
-            'contrato' => $contratista['numero_contrato'],
-            'fecha_inicio' => $contratista['fecha_inicio'],
-            'fecha_final' => $contratista['fecha_final'],
-            'area' => $contratista['area'],
-            'tipo_vinculacion' => $contratista['tipo_vinculacion'],
-            'municipio_principal' => $contratista['municipio_principal'],
-            'municipio_secundario' => $contratista['municipio_secundario'],
-            'municipio_terciario' => $contratista['municipio_terciario'],
-            'direccion' => $contratista['direccion'],
-            'created_at' => $contratista['created_at']
-        ];
-    }, $contratistas);
+    // Procesar datos - asegurar que siempre procesamos un array
+    $resultados = [];
+    foreach ($contratistas as $contratista) {
+        // Verificar que $contratista sea un array válido
+        if (is_array($contratista)) {
+            $resultados[] = [
+                'id' => 'contratista_' . ($contratista['id_detalle'] ?? '0'),
+                'id_detalle' => $contratista['id_detalle'] ?? null,
+                'id_persona' => $contratista['id_persona'] ?? null,
+                'nombre' => trim(($contratista['nombres'] ?? '') . ' ' . ($contratista['apellidos'] ?? '')),
+                'nombres' => $contratista['nombres'] ?? '',
+                'apellidos' => $contratista['apellidos'] ?? '',
+                'cedula' => $contratista['cedula'] ?? '',
+                'telefono' => $contratista['telefono'] ?? 'No registrado',
+                'contrato' => $contratista['numero_contrato'] ?? '',
+                'fecha_inicio' => $contratista['fecha_inicio'] ?? null,
+                'fecha_final' => $contratista['fecha_final'] ?? null,
+                'area' => $contratista['area'] ?? '',
+                'tipo_vinculacion' => $contratista['tipo_vinculacion'] ?? '',
+                'municipio_principal' => $contratista['municipio_principal'] ?? '',
+                'municipio_secundario' => $contratista['municipio_secundario'] ?? '',
+                'municipio_terciario' => $contratista['municipio_terciario'] ?? '',
+                'direccion' => $contratista['direccion'] ?? '',
+                'created_at' => $contratista['created_at'] ?? null
+            ];
+        }
+    }
     
     echo json_encode([
         'success' => true,
-        'data' => $resultados,
+        'data' => $resultados, // Esto siempre será un array
         'count' => count($resultados),
         'filters_applied' => array_filter($filtros),
         'timestamp' => date('Y-m-d H:i:s')
@@ -86,9 +105,16 @@ try {
     ]);
 }
 
-// Función para filtrar contratistas
+// Función para filtrar contratistas - MEJORADA
 function filtrarContratistas($contratistas, $filtros) {
-    return array_filter($contratistas, function($contratista) use ($filtros) {
+    // Asegurarnos de que $contratistas sea un array
+    if (!is_array($contratistas)) {
+        return [];
+    }
+    
+    $resultadosFiltrados = [];
+    
+    foreach ($contratistas as $contratista) {
         $coincide = true;
         
         // Filtrar por municipio (principal, secundario o terciario)
@@ -108,7 +134,7 @@ function filtrarContratistas($contratistas, $filtros) {
         // Filtrar por nombre (búsqueda parcial en nombres o apellidos)
         if (!empty($filtros['nombre'])) {
             $nombreBusqueda = strtolower(trim($filtros['nombre']));
-            $nombreCompleto = strtolower($contratista['nombres'] . ' ' . $contratista['apellidos']);
+            $nombreCompleto = strtolower(($contratista['nombres'] ?? '') . ' ' . ($contratista['apellidos'] ?? ''));
             
             if (strpos($nombreCompleto, $nombreBusqueda) === false) {
                 $coincide = false;
@@ -116,16 +142,20 @@ function filtrarContratistas($contratistas, $filtros) {
         }
         
         // Filtrar por área
-        if (!empty($filtros['area']) && $contratista['area'] != $filtros['area']) {
+        if (!empty($filtros['area']) && ($contratista['area'] ?? '') != $filtros['area']) {
             $coincide = false;
         }
         
         // Filtrar por tipo de vinculación
-        if (!empty($filtros['tipo_vinculacion']) && $contratista['tipo_vinculacion'] != $filtros['tipo_vinculacion']) {
+        if (!empty($filtros['tipo_vinculacion']) && ($contratista['tipo_vinculacion'] ?? '') != $filtros['tipo_vinculacion']) {
             $coincide = false;
         }
         
-        return $coincide;
-    });
+        if ($coincide) {
+            $resultadosFiltrados[] = $contratista;
+        }
+    }
+    
+    return $resultadosFiltrados;
 }
 ?>

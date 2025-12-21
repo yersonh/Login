@@ -259,13 +259,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const result = await response.json();
+            console.log('📦 Respuesta de la API:', result); // Debug
             
             if (!result.success) {
                 throw new Error(result.error || 'Error desconocido');
             }
             
-            const contratistas = result.data;
-            console.log(`📊 ${contratistas.length} contratistas cargados`);
+            // Asegurarse de que contratistas sea siempre un array
+            let contratistas = result.data;
+            
+            // Validación robusta
+            if (!contratistas || !Array.isArray(contratistas)) {
+                console.warn('⚠️ La API no devolvió un array válido:', contratistas);
+                contratistas = [];
+            }
+            
+            console.log(`📊 ${contratistas.length} contratista(s) cargado(s)`, contratistas);
             
             // Guardar todos los contratistas
             todosContratistas = contratistas;
