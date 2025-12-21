@@ -1075,30 +1075,33 @@ if (modalDiasRestantes) {
         
         switch(tipo) {
             case 'municipio':
-                titulo = 'Eliminar Municipio';
-                mensaje = `¿Está seguro de que desea eliminar el municipio "${nombre}"?`;
+                titulo = 'Eliminar Municipio Permanentemente';
+                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el municipio "${nombre}"?`;
                 detallesHTML = `
                     <li><strong>Municipio:</strong> ${nombre}</li>
                     <li><strong>Código DANE:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
+                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
                 `;
                 break;
             case 'area':
-                titulo = 'Eliminar Área';
-                mensaje = `¿Está seguro de que desea eliminar el área "${nombre}"?`;
+                titulo = 'Eliminar Área Permanentemente';
+                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el área "${nombre}"?`;
                 detallesHTML = `
                     <li><strong>Área:</strong> ${nombre}</li>
                     <li><strong>Código:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
+                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
                 `;
                 break;
             case 'vinculacion':
-                titulo = 'Eliminar Tipo de Vinculación';
-                mensaje = `¿Está seguro de que desea eliminar el tipo de vinculación "${nombre}"?`;
+                titulo = 'Eliminar Tipo de Vinculación Permanentemente';
+                mensaje = `¿Está seguro de que desea eliminar PERMANENTEMENTE el tipo de vinculación "${nombre}"?`;
                 detallesHTML = `
                     <li><strong>Tipo:</strong> ${nombre}</li>
                     <li><strong>Código:</strong> ${codigo || '--'}</li>
-                    <li><strong>Acción:</strong> <span class="text-danger">Desactivar y eliminar de la vista</span></li>
+                    <li><strong>Acción:</strong> <span class="text-danger">ELIMINACIÓN PERMANENTE DE LA BASE DE DATOS</span></li>
+                    <li><strong>Advertencia:</strong> Esta acción no se puede deshacer y el registro será eliminado completamente.</li>
                 `;
                 break;
         }
@@ -1133,30 +1136,41 @@ if (modalDiasRestantes) {
         btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
         btnEliminar.disabled = true;
 
-        // Determinar URL y datos según el tipo
-        let url, datos;
+        // Determinar URL y método según el tipo
+        let url, metodo, datos;
         switch(registroEliminarTipo) {
             case 'municipio':
                 url = '../../api/GestionMunicipio.php';
-                datos = { id: registroEliminarId, activo: false };
+                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
+                datos = { id: registroEliminarId };
                 break;
             case 'area':
                 url = '../../api/areas.php';
-                datos = { id: registroEliminarId, activo: false };
+                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
+                datos = { id: registroEliminarId };
                 break;
             case 'vinculacion':
                 url = '../../api/tipo_vinculacion.php';
-                datos = { id_tipo: registroEliminarId, activo: false };
+                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
+                datos = { id_tipo: registroEliminarId };
                 break;
         }
 
-        // Enviar petición
+        // Enviar petición con método DELETE
         fetch(url, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            method: metodo,
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'  // Para identificar peticiones AJAX
+            },
             body: JSON.stringify(datos)
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return res.json();
+        })
         .then(data => {
             if (data.success) {
                 // Remover fila de la tabla con animación
@@ -1164,8 +1178,8 @@ if (modalDiasRestantes) {
                 
                 // Mostrar mensaje de éxito
                 mostrarAlerta('success', `${registroEliminarTipo === 'municipio' ? 'Municipio' : 
-                                         registroEliminarTipo === 'area' ? 'Área' : 
-                                         'Tipo de vinculación'} eliminado correctamente`);
+                                        registroEliminarTipo === 'area' ? 'Área' : 
+                                        'Tipo de vinculación'} eliminado permanentemente`);
                 
                 cerrarModalEliminar();
             } else {
@@ -1174,7 +1188,7 @@ if (modalDiasRestantes) {
         })
         .catch(error => {
             console.error('Error:', error);
-            mostrarAlerta('error', 'Error de conexión');
+            mostrarAlerta('error', 'Error de conexión o del servidor');
         })
         .finally(() => {
             btnEliminar.innerHTML = originalText;
