@@ -88,16 +88,6 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Opción 2: Modificar datos contratista -->
-                <div class="service-card" id="modificar-contratista">
-                    <div class="service-icon">
-                        <i class="fas fa-user-edit"></i>
-                    </div>
-                    <div class="service-name">Modificar Datos Contratista</div>
-                    <div class="service-desc">Actualizar información de contratistas existentes</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
-                
                 <!-- Opción 3: Parametrizar obligaciones -->
                 <div class="service-card" id="parametrizar-obligaciones">
                     <div class="service-icon">
