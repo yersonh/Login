@@ -319,8 +319,8 @@ try {
                                 <th class="text-center">#</th>
                                 <th>Nombres</th>
                                 <th>Cédula</th>
-                                <th>Número de contrato</th>
-                                <th>Fecha del contrato</th>
+                                <th>N° contrato</th>
+                                <th>Fecha contrato</th>
                                 <th>Fecha inicio</th>
                                 <th>Fecha final</th>
                                 <th>Ubicación</th>
