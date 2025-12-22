@@ -204,22 +204,30 @@ class ContratistaModel {
 
     public function obtenerTodosContratistas() {
         $sql = "SELECT 
-                    p.id_persona, p.cedula, p.nombres, p.apellidos, p.telefono,
-                    dc.id_detalle, dc.numero_contrato, dc.fecha_inicio, dc.fecha_final,
-                    a.nombre AS area, tv.nombre AS tipo_vinculacion,
-                    m1.nombre AS municipio_principal,
-                    dc.direccion_municipio_principal,
-                    dc.cv_nombre_original, 
-                    dc.cv_tamano,
-                    dc.contrato_nombre_original,
-                    dc.acta_inicio_nombre_original,
-                    dc.rp_nombre_original
-                FROM detalle_contrato dc
-                JOIN persona p ON dc.id_persona = p.id_persona
-                LEFT JOIN area a ON dc.id_area = a.id_area
-                LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
-                LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
-                ORDER BY dc.created_at ASC";
+                p.id_persona, p.cedula, p.nombres, p.apellidos, 
+                p.telefono, p.correo_personal,
+                dc.id_detalle, dc.numero_contrato, 
+                dc.fecha_contrato, dc.fecha_inicio, dc.fecha_final,
+                dc.duracion_contrato, dc.numero_registro_presupuestal,
+                dc.created_at,
+                a.nombre AS area, 
+                tv.nombre AS tipo_vinculacion,
+                m1.nombre AS municipio_principal,
+                m2.nombre AS municipio_secundario,
+                m3.nombre AS municipio_terciario,
+                dc.direccion_municipio_principal,
+                dc.cv_nombre_original, 
+                dc.contrato_nombre_original,
+                dc.acta_inicio_nombre_original,
+                dc.rp_nombre_original
+            FROM detalle_contrato dc
+            JOIN persona p ON dc.id_persona = p.id_persona
+            LEFT JOIN area a ON dc.id_area = a.id_area
+            LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
+            LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
+            LEFT JOIN municipio m2 ON dc.id_municipio_secundario = m2.id_municipio
+            LEFT JOIN municipio m3 ON dc.id_municipio_terciario = m3.id_municipio
+            ORDER BY dc.created_at ASC";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
