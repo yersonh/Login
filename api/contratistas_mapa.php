@@ -65,6 +65,39 @@ try {
     foreach ($contratistas as $contratista) {
         // Verificar que $contratista sea un array válido
         if (is_array($contratista)) {
+            // Crear array de sitios de trabajo
+            $sitios_trabajo = [];
+            
+            // Sitio principal (siempre debe existir)
+            if (!empty($contratista['direccion_municipio_principal']) && !empty($contratista['municipio_principal'])) {
+                $sitios_trabajo[] = [
+                    'tipo' => 'principal',
+                    'municipio' => $contratista['municipio_principal'],
+                    'direccion' => $contratista['direccion_municipio_principal'],
+                    'municipio_id' => $contratista['id_municipio_principal'] ?? null
+                ];
+            }
+            
+            // Sitio secundario (opcional)
+            if (!empty($contratista['direccion_municipio_secundario']) && !empty($contratista['municipio_secundario'])) {
+                $sitios_trabajo[] = [
+                    'tipo' => 'secundario',
+                    'municipio' => $contratista['municipio_secundario'],
+                    'direccion' => $contratista['direccion_municipio_secundario'],
+                    'municipio_id' => $contratista['id_municipio_secundario'] ?? null
+                ];
+            }
+            
+            // Sitio terciario (opcional)
+            if (!empty($contratista['direccion_municipio_terciario']) && !empty($contratista['municipio_terciario'])) {
+                $sitios_trabajo[] = [
+                    'tipo' => 'terciario',
+                    'municipio' => $contratista['municipio_terciario'],
+                    'direccion' => $contratista['direccion_municipio_terciario'],
+                    'municipio_id' => $contratista['id_municipio_terciario'] ?? null
+                ];
+            }
+            
             $resultados[] = [
                 'id' => 'contratista_' . ($contratista['id_detalle'] ?? '0'),
                 'id_detalle' => $contratista['id_detalle'] ?? null,
@@ -82,7 +115,12 @@ try {
                 'municipio_principal' => $contratista['municipio_principal'] ?? '',
                 'municipio_secundario' => $contratista['municipio_secundario'] ?? '',
                 'municipio_terciario' => $contratista['municipio_terciario'] ?? '',
-                'direccion' => $contratista['direccion'] ?? '',
+                // Direcciones de trabajo
+                'direccion_principal' => $contratista['direccion_municipio_principal'] ?? '',
+                'direccion_secundaria' => $contratista['direccion_municipio_secundario'] ?? '',
+                'direccion_terciaria' => $contratista['direccion_municipio_terciario'] ?? '',
+                // Array de sitios de trabajo (para el mapa)
+                'sitios_trabajo' => $sitios_trabajo,
                 'created_at' => $contratista['created_at'] ?? null
             ];
         }

@@ -1,4 +1,5 @@
 // JavaScript para mapa centrado en el Meta con buscador/filtro profesional
+// VERSIÓN ACTUALIZADA - Usa direcciones de trabajo (sitios de trabajo) en lugar de dirección personal
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no está cargado');
@@ -433,35 +434,103 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Función principal para procesar un contratista
+    // ================= FUNCIÓN PRINCIPAL MODIFICADA PARA USAR SITIOS DE TRABAJO =================
+    
+    // Función principal para procesar un contratista - VERSIÓN ACTUALIZADA
     async function procesarContratista(contratista) {
-        let coordenadas = null;
+        console.log(`📋 Procesando contratista: ${contratista.nombre}`);
         
-        // PRIMERO: Intentar búsqueda mejorada
-        if (contratista.direccion && contratista.municipio_principal) {
-            coordenadas = await buscarDireccionMejorada(contratista.direccion, contratista.municipio_principal);
+        // Array para almacenar todos los marcadores del contratista
+        const marcadores = [];
+        
+        // Verificar si el contratista tiene sitios de trabajo
+        if (contratista.sitios_trabajo && contratista.sitios_trabajo.length > 0) {
+            console.log(`   📍 Tiene ${contratista.sitios_trabajo.length} sitio(s) de trabajo`);
+            
+            // Procesar cada sitio de trabajo
+            for (const sitio of contratista.sitios_trabajo) {
+                // Verificar si el procesamiento sigue activo
+                if (!procesamientoActivo) {
+                    console.log('⏹️ Procesamiento interrumpido por nueva búsqueda');
+                    break;
+                }
+                
+                console.log(`   🔍 Procesando sitio ${sitio.tipo}: ${sitio.municipio}`);
+                
+                let coordenadas = null;
+                
+                // Intentar geocodificar la dirección del sitio de trabajo
+                if (sitio.direccion && sitio.municipio) {
+                    console.log(`      📍 Buscando dirección: ${sitio.direccion}, ${sitio.municipio}`);
+                    coordenadas = await buscarDireccionMejorada(sitio.direccion, sitio.municipio);
+                }
+                
+                // Si no se encuentra, usar coordenadas del municipio
+                if (!coordenadas && sitio.municipio) {
+                    console.log(`      🏢 Usando coordenadas del municipio: ${sitio.municipio}`);
+                    coordenadas = await obtenerCoordenadasMunicipio(sitio.municipio);
+                }
+                
+                // Si todavía no hay coordenadas, usar Villavicencio como fallback
+                if (!coordenadas) {
+                    console.log(`      🚨 Usando Villavicencio como fallback`);
+                    coordenadas = {
+                        lat: villavicencio[0],
+                        lng: villavicencio[1]
+                    };
+                }
+                
+                // Agregar marcador para este sitio de trabajo
+                const marcador = agregarMarcadorSitioTrabajo(contratista, sitio, coordenadas);
+                if (marcador) {
+                    marcadores.push({
+                        marcador: marcador,
+                        sitio: sitio,
+                        coordenadas: coordenadas
+                    });
+                }
+                
+                // Pequeña pausa para no saturar Nominatim
+                await esperar(100);
+            }
+        } else {
+            // Fallback: usar datos antiguos (para compatibilidad)
+            console.log(`   ⚠️ No tiene sitios de trabajo definidos, usando datos antiguos`);
+            
+            let coordenadas = null;
+            
+            // Primero intentar con dirección principal
+            if (contratista.direccion_principal && contratista.municipio_principal) {
+                coordenadas = await buscarDireccionMejorada(contratista.direccion_principal, contratista.municipio_principal);
+            }
+            
+            // Si no funciona, usar municipio
+            if (!coordenadas && contratista.municipio_principal) {
+                coordenadas = await obtenerCoordenadasMunicipio(contratista.municipio_principal);
+            }
+            
+            // Último recurso
+            if (!coordenadas) {
+                coordenadas = {
+                    lat: villavicencio[0],
+                    lng: villavicencio[1]
+                };
+            }
+            
+            const marcador = agregarMarcadorContratista(contratista, coordenadas);
+            if (marcador) {
+                marcadores.push({
+                    marcador: marcador,
+                    sitio: { tipo: 'principal', municipio: contratista.municipio_principal },
+                    coordenadas: coordenadas
+                });
+            }
         }
-        
-        // SEGUNDO: Si no funciona, usar municipio
-        if (!coordenadas && contratista.municipio_principal) {
-            coordenadas = await obtenerCoordenadasMunicipio(contratista.municipio_principal);
-        }
-        
-        // TERCERO: Fallback a Villavicencio
-        if (!coordenadas) {
-            coordenadas = {
-                lat: villavicencio[0],
-                lng: villavicencio[1]
-            };
-        }
-        
-        // Agregar marcador
-        const marcador = agregarMarcadorContratista(contratista, coordenadas);
         
         return {
             ...contratista,
-            coordenadas,
-            marcador
+            marcadores: marcadores,
+            tiene_sitios_trabajo: contratista.sitios_trabajo && contratista.sitios_trabajo.length > 0
         };
     }
     
@@ -483,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tipo_vinculacion: document.getElementById('selectTipoVinculacion').value
             };
             
-            // Verificar si hay algún filtro activo (CORREGIDO: incluye tipo_vinculacion)
+            // Verificar si hay algún filtro activo
             const tieneFiltros = filtros.nombre || filtros.municipio || filtros.area || filtros.tipo_vinculacion;
             
             if (!tieneFiltros) {
@@ -528,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarContratistas();
     };
     
-    // ================= LISTA DE RESULTADOS =================
+    // ================= LISTA DE RESULTADOS (ACTUALIZADA) =================
     
     function actualizarListaResultados(contratistas) {
         const container = document.getElementById('listaResultados');
@@ -537,7 +606,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mostrar contenedor de resultados (SOLO cuando se hace una búsqueda)
         resultadosDiv.style.display = 'block';
-        contador.textContent = contratistas.length;
+        
+        // Contar el total de marcadores (no contratistas)
+        let totalMarcadores = 0;
+        contratistas.forEach(contratista => {
+            totalMarcadores += contratista.marcadores ? contratista.marcadores.length : 1;
+        });
+        
+        contador.textContent = totalMarcadores;
         
         // Limpiar lista anterior
         container.innerHTML = '';
@@ -559,17 +635,29 @@ document.addEventListener('DOMContentLoaded', function() {
         contratistas.forEach((contratista, index) => {
             const item = document.createElement('div');
             item.className = 'result-item';
+            
+            // Mostrar información de sitios de trabajo si existen
+            let sitiosInfo = '';
+            if (contratista.tiene_sitios_trabajo && contratista.sitios_trabajo) {
+                sitiosInfo = contratista.sitios_trabajo.map(sitio => 
+                    `<span class="badge ${sitio.tipo === 'principal' ? 'bg-primary' : 'bg-info'} me-1 mb-1">
+                        <i class="fas fa-${sitio.tipo === 'principal' ? 'star' : 'map-marker-alt'} me-1"></i>
+                        ${sitio.municipio}
+                    </span>`
+                ).join('');
+            }
+            
             item.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                         <div class="fw-semibold text-primary">${contratista.nombre}</div>
                         <div class="small text-muted mt-1">
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                ${sitiosInfo}
+                            </div>
                             <div class="d-flex flex-wrap gap-2">
                                 <span class="badge bg-light text-dark border">
                                     <i class="fas fa-id-card me-1"></i>${contratista.cedula}
-                                </span>
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-map-marker-alt me-1"></i>${contratista.municipio_principal || 'Sin municipio'}
                                 </span>
                                 ${contratista.area ? `
                                 <span class="badge bg-light text-dark border">
@@ -604,19 +692,24 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('resultadosBusqueda').style.display = 'none';
     }
     
-    // Ir a un contratista específico
+    // Ir a un contratista específico (ACTUALIZADA)
     window.irAContratista = function(index) {
-        if (contratistasProcesados[index] && contratistasProcesados[index].marcador) {
-            const marcador = contratistasProcesados[index].marcador;
+        if (contratistasProcesados[index] && contratistasProcesados[index].marcadores) {
+            const marcadores = contratistasProcesados[index].marcadores;
             
-            // Centrar mapa en el marcador con zoom adecuado
-            mapa.setView(marcador.getLatLng(), 14);
-            
-            // Abrir popup
-            marcador.openPopup();
-            
-            // Resaltar sutilmente el marcador
-            resaltarMarcador(marcador);
+            if (marcadores.length > 0) {
+                // Si tiene múltiples sitios, centrar en el primero
+                const primerMarcador = marcadores[0].marcador;
+                
+                // Centrar mapa en el marcador
+                mapa.setView(primerMarcador.getLatLng(), 14);
+                
+                // Abrir popup
+                primerMarcador.openPopup();
+                
+                // Resaltar sutilmente el marcador
+                resaltarMarcador(primerMarcador);
+            }
         }
     };
     
@@ -627,9 +720,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cambiar a ícono resaltado sutilmente
         const iconoResaltado = L.divIcon({
             className: 'marcador-contratista-resaltado',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
+            html: '<div style="background-color: #ffc107; color: #000; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);"><i class="fas fa-star"></i></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
         });
         
         marcador.setIcon(iconoResaltado);
@@ -640,6 +733,190 @@ document.addEventListener('DOMContentLoaded', function() {
                 marcador.setIcon(originalIcon);
             }
         }, 2000);
+    }
+    
+    // ================= NUEVA FUNCIÓN: AGREGAR MARCADOR DE SITIO DE TRABAJO =================
+    
+    // Función para agregar marcador de sitio de trabajo
+    function agregarMarcadorSitioTrabajo(contratista, sitio, coordenadas) {
+        // Definir colores según el tipo de sitio
+        const colores = {
+            'principal': '#007bff', // Azul
+            'secundario': '#28a745', // Verde
+            'terciario': '#fd7e14'   // Naranja
+        };
+        
+        // Crear ícono personalizado según tipo
+        const iconoSitioTrabajo = L.divIcon({
+            className: 'marcador-sitio-trabajo',
+            html: `<div style="background-color: ${colores[sitio.tipo] || '#6c757d'}; 
+                           color: white; 
+                           border-radius: 50%; 
+                           width: 32px; 
+                           height: 32px; 
+                           display: flex; 
+                           align-items: center; 
+                           justify-content: center;
+                           border: 2px solid white;
+                           box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px;">
+                  <i class="fas fa-${sitio.tipo === 'principal' ? 'building' : 'map-marker-alt'}"></i>
+               </div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+        });
+        
+        // Crear el marcador
+        const marcador = L.marker([coordenadas.lat, coordenadas.lng], {
+            icon: iconoSitioTrabajo,
+            title: `${contratista.nombre} - ${sitio.municipio} (${sitio.tipo})`
+        }).addTo(marcadoresContratistas);
+        
+        // Agregar popup con información del sitio
+        marcador.bindPopup(`
+            <div class="popup-contratista" style="width: 300px;">
+                <div class="popup-header p-3" style="background-color: ${colores[sitio.tipo] || '#6c757d'}; color: white;">
+                    <h6 class="mb-0">${contratista.nombre}</h6>
+                    <small class="opacity-75">
+                        <i class="fas fa-${sitio.tipo === 'principal' ? 'star' : 'map-marker-alt'} me-1"></i>
+                        Sitio de trabajo ${sitio.tipo}
+                    </small>
+                </div>
+                <div class="popup-body p-3">
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="info-item">
+                                <span class="info-label">Municipio:</span>
+                                <span class="info-value">${sitio.municipio}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-item">
+                                <span class="info-label">Dirección de trabajo:</span>
+                                <span class="info-value long-text">${sitio.direccion}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Área:</span>
+                                <span class="info-value">${contratista.area}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Contrato:</span>
+                                <span class="info-value">${contratista.contrato}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Teléfono:</span>
+                                <span class="info-value">${contratista.telefono}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Tipo Vinculación:</span>
+                                <span class="info-value">${contratista.tipo_vinculacion || 'No especificado'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="text-center small text-muted">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        return marcador;
+    }
+    
+    // ================= FUNCIÓN ORIGINAL (para compatibilidad) =================
+    
+    // Función para agregar un marcador al mapa (versión original - para compatibilidad)
+    function agregarMarcadorContratista(contratista, coordenadas) {
+        // Crear ícono personalizado profesional
+        var iconoContratista = L.divIcon({
+            className: 'marcador-contratista',
+            html: '<i class="fas fa-user"></i>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 28],
+            popupAnchor: [0, -28]
+        });
+        
+        // Crear el marcador
+        var marcador = L.marker([coordenadas.lat, coordenadas.lng], {
+            icon: iconoContratista,
+            title: contratista.nombre
+        }).addTo(marcadoresContratistas);
+        
+        // Determinar qué dirección mostrar
+        const direccionMostrar = contratista.direccion_principal || contratista.direccion || 'No especificada';
+        
+        // Agregar popup con información profesional
+        marcador.bindPopup(`
+            <div class="popup-contratista" style="width: 300px;">
+                <div class="popup-header bg-primary text-white p-3">
+                    <h6 class="mb-0">${contratista.nombre}</h6>
+                    <small class="opacity-75">Contratista</small>
+                </div>
+                <div class="popup-body p-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Cédula:</span>
+                                <span class="info-value">${contratista.cedula}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Teléfono:</span>
+                                <span class="info-value">${contratista.telefono}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-item">
+                                <span class="info-label">Contrato:</span>
+                                <span class="info-value">${contratista.contrato}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Área:</span>
+                                <span class="info-value">${contratista.area}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Tipo Vinculación:</span>
+                                <span class="info-value">${contratista.tipo_vinculacion || 'No especificado'}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-item">
+                                <span class="info-label">Municipio principal:</span>
+                                <span class="info-value">${contratista.municipio_principal}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-item">
+                                <span class="info-label">Dirección de trabajo:</span>
+                                <span class="info-value long-text">${direccionMostrar}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="text-center small text-muted">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        return marcador;
     }
     
     // ================= FUNCIONES DE GEOCODIFICACIÓN =================
@@ -852,89 +1129,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return null;
     }
     
-    // ================= FUNCIONES DE MARCADORES =================
-    
-    // Función para agregar un marcador al mapa
-    function agregarMarcadorContratista(contratista, coordenadas) {
-        // Crear ícono personalizado profesional
-        var iconoContratista = L.divIcon({
-            className: 'marcador-contratista',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -28]
-        });
-        
-        // Crear el marcador
-        var marcador = L.marker([coordenadas.lat, coordenadas.lng], {
-            icon: iconoContratista,
-            title: contratista.nombre
-        }).addTo(marcadoresContratistas);
-        
-        // Agregar popup con información profesional
-        marcador.bindPopup(`
-            <div class="popup-contratista" style="width: 300px;">
-                <div class="popup-header bg-primary text-white p-3">
-                    <h6 class="mb-0">${contratista.nombre}</h6>
-                    <small class="opacity-75">Contratista</small>
-                </div>
-                <div class="popup-body p-3">
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Cédula:</span>
-                                <span class="info-value">${contratista.cedula}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Teléfono:</span>
-                                <span class="info-value">${contratista.telefono}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Contrato:</span>
-                                <span class="info-value">${contratista.contrato}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Área:</span>
-                                <span class="info-value">${contratista.area}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Tipo Vinculación:</span>
-                                <span class="info-value">${contratista.tipo_vinculacion || 'No especificado'}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Municipio:</span>
-                                <span class="info-value">${contratista.municipio_principal}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Dirección:</span>
-                                <span class="info-value long-text">${contratista.direccion}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="my-2">
-                    <div class="text-center small text-muted">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
-                    </div>
-                </div>
-            </div>
-        `);
-        
-        return marcador;
-    }
-    
     // ================= FUNCIONES DE UTILIDAD =================
     
     // Función para mostrar mensajes
@@ -983,4 +1177,22 @@ document.addEventListener('DOMContentLoaded', function() {
             buscarContratistas();
         }
     });
+    
+    // ================= FUNCIONALIDADES ADICIONALES =================
+    
+    // Función para mostrar información detallada en consola
+    window.mostrarInfoContratistas = function() {
+        console.log('=== INFORMACIÓN DE CONTRATISTAS PROCESADOS ===');
+        contratistasProcesados.forEach((contratista, index) => {
+            console.log(`${index + 1}. ${contratista.nombre}`);
+            console.log(`   - Cédula: ${contratista.cedula}`);
+            console.log(`   - Tiene sitios de trabajo: ${contratista.tiene_sitios_trabajo}`);
+            console.log(`   - Número de marcadores: ${contratista.marcadores ? contratista.marcadores.length : 0}`);
+            if (contratista.sitios_trabajo) {
+                contratista.sitios_trabajo.forEach(sitio => {
+                    console.log(`   - Sitio ${sitio.tipo}: ${sitio.municipio} - ${sitio.direccion}`);
+                });
+            }
+        });
+    };
 });
