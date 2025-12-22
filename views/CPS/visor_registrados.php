@@ -526,10 +526,10 @@ try {
                                                     <i class="fas fa-phone"></i>
                                                     <span><?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></span>
                                                 </div>
-                                                <?php if (!empty($contratista['correo'])): ?>
+                                                <?php if (!empty($contratista['correo_personal'])): ?>
                                                 <div class="info-line">
                                                     <i class="fas fa-envelope"></i>
-                                                    <span style="font-size: 0.8rem;"><?php echo htmlspecialchars($contratista['correo']); ?></span>
+                                                    <span style="font-size: 0.8rem;"><?php echo htmlspecialchars($contratista['correo_personal']); ?></span>
                                                 </div>
                                                 <?php endif; ?>
                                             </div>
@@ -713,7 +713,7 @@ try {
                 $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
                 $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
                 $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
-                $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+                $correo = htmlspecialchars(ConfigHelper::obtener('correo_personal'));
                 $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
                 $anio = date('Y');
                 ?>
