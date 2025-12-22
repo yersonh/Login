@@ -862,8 +862,7 @@ try {
         // Funciones placeholder para acciones
         function verDetalle(idDetalle) {
             if (!idDetalle || idDetalle === '0') return alert('Error: ID no válido');
-            alert(`Ver detalle del contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
-            // window.location.href = `ver_detalle.php?id_detalle=${idDetalle}`;
+            window.location.href = `ver_detalle.php?id_detalle=${idDetalle}`;
         }
         
         function editarContratista(idDetalle) {
