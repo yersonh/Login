@@ -867,8 +867,8 @@ try {
         
         function editarContratista(idDetalle) {
             if (!idDetalle || idDetalle === '0') return alert('Error: ID no válido');
-            alert(`Editar contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
-            // window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
+            
+            window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
         }
     </script>
     
