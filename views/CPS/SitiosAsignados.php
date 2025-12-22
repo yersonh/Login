@@ -25,6 +25,10 @@
     <div class="barra-superior">
         🗺️ Departamento del Meta - Colombia
     </div>
+    <button class="volver-btn" id="volverBtn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver al Menú</span>
+    </button>
     
     <script src="../../javascript/sitios_asignados.js"></script>
 
