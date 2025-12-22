@@ -1276,3 +1276,46 @@ select.form-control {
 .form-section h4 i {
     font-size: 20px;
 }
+/* Agrega esto a tu archivo CSS (agregar_contratista.css) */
+
+/* Estilos para mensajes de validación */
+.validation-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para campos con error */
+.form-control.error {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
+.form-control.valid {
+    border-color: #28a745;
+}
+
+/* Estilo para mensajes de ayuda adicional */
+.form-help.error {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* Efecto de enfoque para campos válidos */
+.form-control:focus.valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Efecto de enfoque para campos con error */
+.form-control:focus.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}

@@ -12,10 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // === CAMBIAR: Quitar eventos antiguos y agregar nuevos para calcular duración ===
-    // Quitar estos:
-    // document.getElementById('duracion_contrato').addEventListener('input', calcularFechaFinal);
-    // document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFinal);
-    
     // Agregar estos:
     document.getElementById('fecha_inicio').addEventListener('change', calcularDuracionContrato);
     document.getElementById('fecha_final').addEventListener('change', calcularDuracionContrato);
@@ -252,6 +248,172 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // === VALIDACIONES EN TIEMPO REAL ===
+    function setupValidacionesEnTiempoReal() {
+        const camposRequeridos = document.querySelectorAll('[required]');
+        
+        camposRequeridos.forEach(campo => {
+            // Crear elemento de mensaje de error
+            const errorElement = document.createElement('div');
+            errorElement.className = 'validation-message';
+            errorElement.style.color = '#dc3545';
+            errorElement.style.fontSize = '12px';
+            errorElement.style.marginTop = '5px';
+            errorElement.style.display = 'none';
+            
+            // Insertar después del campo
+            campo.parentNode.appendChild(errorElement);
+            
+            // Eventos para validación en tiempo real
+            campo.addEventListener('blur', function() {
+                validarCampo(this, errorElement);
+            });
+            
+            campo.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.style.borderColor = '#e0e0e0';
+                    errorElement.style.display = 'none';
+                }
+            });
+            
+            // Para selects
+            if (campo.tagName === 'SELECT') {
+                campo.addEventListener('change', function() {
+                    validarCampo(this, errorElement);
+                });
+            }
+        });
+        
+        // Validar campos de dirección opcionales
+        if (direccionSecundario) {
+            direccionSecundario.addEventListener('blur', function() {
+                if (grupoDireccionSecundario.style.display === 'block' && !this.value.trim()) {
+                    this.style.borderColor = '#dc3545';
+                    mostrarError(this, 'Este campo es requerido cuando se selecciona un municipio secundario');
+                } else {
+                    this.style.borderColor = '#e0e0e0';
+                    ocultarError(this);
+                }
+            });
+            
+            direccionSecundario.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.style.borderColor = '#e0e0e0';
+                    ocultarError(this);
+                }
+            });
+        }
+        
+        if (direccionTerciario) {
+            direccionTerciario.addEventListener('blur', function() {
+                if (grupoDireccionTerciario.style.display === 'block' && !this.value.trim()) {
+                    this.style.borderColor = '#dc3545';
+                    mostrarError(this, 'Este campo es requerido cuando se selecciona un municipio terciario');
+                } else {
+                    this.style.borderColor = '#e0e0e0';
+                    ocultarError(this);
+                }
+            });
+            
+            direccionTerciario.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.style.borderColor = '#e0e0e0';
+                    ocultarError(this);
+                }
+            });
+        }
+        
+        // Validaciones específicas para campos
+        const camposEspecificos = {
+            'cedula': {
+                validar: function(valor) {
+                    if (valor.length < 5) return 'La cédula debe tener al menos 5 dígitos';
+                    if (!/^\d+$/.test(valor)) return 'La cédula solo debe contener números';
+                    return null;
+                }
+            },
+            'correo': {
+                validar: function(valor) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(valor)) return 'Ingrese un correo electrónico válido';
+                    return null;
+                }
+            },
+            'celular': {
+                validar: function(valor) {
+                    if (valor.length < 10) return 'El celular debe tener al menos 10 dígitos';
+                    if (!/^\d+$/.test(valor)) return 'El celular solo debe contener números';
+                    return null;
+                }
+            },
+            'nombre_completo': {
+                validar: function(valor) {
+                    if (valor.split(' ').length < 2) return 'Ingrese nombre y apellido completos';
+                    return null;
+                }
+            }
+        };
+        
+        // Aplicar validaciones específicas
+        Object.keys(camposEspecificos).forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) {
+                campo.addEventListener('blur', function() {
+                    const error = camposEspecificos[id].validar(this.value.trim());
+                    if (error) {
+                        this.style.borderColor = '#dc3545';
+                        mostrarError(this, error);
+                    }
+                });
+                
+                campo.addEventListener('input', function() {
+                    const error = camposEspecificos[id].validar(this.value.trim());
+                    if (!error && this.value.trim()) {
+                        this.style.borderColor = '#e0e0e0';
+                        ocultarError(this);
+                    }
+                });
+            }
+        });
+    }
+    
+    function validarCampo(campo, errorElement) {
+        if (!campo.value.trim()) {
+            campo.style.borderColor = '#dc3545';
+            errorElement.textContent = 'Este campo es requerido';
+            errorElement.style.display = 'block';
+            return false;
+        } else {
+            campo.style.borderColor = '#e0e0e0';
+            errorElement.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function mostrarError(campo, mensaje) {
+        let errorElement = campo.parentNode.querySelector('.validation-message');
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.className = 'validation-message';
+            errorElement.style.color = '#dc3545';
+            errorElement.style.fontSize = '12px';
+            errorElement.style.marginTop = '5px';
+            campo.parentNode.appendChild(errorElement);
+        }
+        errorElement.textContent = mensaje;
+        errorElement.style.display = 'block';
+    }
+    
+    function ocultarError(campo) {
+        const errorElement = campo.parentNode.querySelector('.validation-message');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+    }
+    
+    // Inicializar validaciones en tiempo real
+    setupValidacionesEnTiempoReal();
+    
     // === BOTONES DE NAVEGACIÓN ===
     const volverBtn = document.getElementById('volverBtn');
     if (volverBtn) {
@@ -272,45 +434,122 @@ document.addEventListener('DOMContentLoaded', function() {
     const guardarBtn = document.getElementById('guardarBtn');
     if (guardarBtn) {
         guardarBtn.addEventListener('click', async function() {
-            const requiredFields = document.querySelectorAll('[required]');
             let valid = true;
+            let primerCampoInvalido = null;
             
+            // Validar campos requeridos
+            const requiredFields = document.querySelectorAll('[required]');
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     field.style.borderColor = '#dc3545';
+                    mostrarError(field, 'Este campo es requerido');
                     valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = field;
+                    }
                 } else {
                     field.style.borderColor = '#e0e0e0';
+                    ocultarError(field);
                 }
             });
-
+            
+            // Validar campos de dirección opcionales
             if (grupoDireccionSecundario && grupoDireccionSecundario.style.display === 'block') {
                 if (!direccionSecundario.value.trim()) {
                     direccionSecundario.style.borderColor = '#dc3545';
+                    mostrarError(direccionSecundario, 'Este campo es requerido cuando se selecciona un municipio secundario');
                     valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = direccionSecundario;
+                    }
                 }
             }
             
             if (grupoDireccionTerciario && grupoDireccionTerciario.style.display === 'block') {
                 if (!direccionTerciario.value.trim()) {
                     direccionTerciario.style.borderColor = '#dc3545';
+                    mostrarError(direccionTerciario, 'Este campo es requerido cuando se selecciona un municipio terciario');
                     valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = direccionTerciario;
+                    }
                 }
             }
             
             // Validar que la duración del contrato esté calculada
             const duracionContrato = document.getElementById('duracion_contrato');
             if (duracionContrato && !duracionContrato.value.trim()) {
-                alert('Por favor complete las fechas de inicio y final para calcular la duración del contrato');
+                mostrarError(duracionContrato, 'Complete las fechas de inicio y final para calcular la duración');
                 duracionContrato.style.borderColor = '#dc3545';
-                return;
+                valid = false;
+                if (!primerCampoInvalido) {
+                    primerCampoInvalido = duracionContrato;
+                }
+            }
+            
+            // Validaciones específicas adicionales
+            const cedula = document.getElementById('cedula');
+            if (cedula && cedula.value.trim()) {
+                if (cedula.value.trim().length < 5) {
+                    mostrarError(cedula, 'La cédula debe tener al menos 5 dígitos');
+                    cedula.style.borderColor = '#dc3545';
+                    valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = cedula;
+                    }
+                }
+                if (!/^\d+$/.test(cedula.value.trim())) {
+                    mostrarError(cedula, 'La cédula solo debe contener números');
+                    cedula.style.borderColor = '#dc3545';
+                    valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = cedula;
+                    }
+                }
+            }
+            
+            const correo = document.getElementById('correo');
+            if (correo && correo.value.trim()) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(correo.value.trim())) {
+                    mostrarError(correo, 'Ingrese un correo electrónico válido');
+                    correo.style.borderColor = '#dc3545';
+                    valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = correo;
+                    }
+                }
+            }
+            
+            const celular = document.getElementById('celular');
+            if (celular && celular.value.trim()) {
+                if (celular.value.trim().length < 10) {
+                    mostrarError(celular, 'El celular debe tener al menos 10 dígitos');
+                    celular.style.borderColor = '#dc3545';
+                    valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = celular;
+                    }
+                }
+                if (!/^\d+$/.test(celular.value.trim())) {
+                    mostrarError(celular, 'El celular solo debe contener números');
+                    celular.style.borderColor = '#dc3545';
+                    valid = false;
+                    if (!primerCampoInvalido) {
+                        primerCampoInvalido = celular;
+                    }
+                }
             }
             
             if (!valid) {
-                alert('Por favor complete todos los campos obligatorios (*)');
+                alert('Por favor complete todos los campos obligatorios (*) correctamente');
+                if (primerCampoInvalido) {
+                    primerCampoInvalido.focus();
+                }
                 return;
             }
             
+            // Validar fechas
             const fechaInicio = document.getElementById('fecha_inicio').value;
             const fechaFinal = document.getElementById('fecha_final').value;
             
@@ -322,6 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('La fecha de inicio no puede ser mayor a la fecha final');
                     document.getElementById('fecha_inicio').style.borderColor = '#dc3545';
                     document.getElementById('fecha_final').style.borderColor = '#dc3545';
+                    mostrarError(document.getElementById('fecha_inicio'), 'La fecha de inicio debe ser menor a la fecha final');
+                    mostrarError(document.getElementById('fecha_final'), 'La fecha final debe ser mayor a la fecha de inicio');
                     return;
                 }
             }
@@ -335,7 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
             formElements.forEach(element => {
                 if (element.name && element.value !== undefined) {
-                    // Excluir campos de archivo del procesamiento manual
                     if (!element.name.includes('adjuntar_')) {
                         if ((element.name === 'id_municipio_secundario' || element.name === 'id_municipio_terciario') 
                             && element.value === '0') {
@@ -386,8 +626,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const primerCampo = document.getElementById('nombre_completo');
                     if (primerCampo) primerCampo.focus();
 
-                    requiredFields.forEach(field => {
-                        field.style.borderColor = '#e0e0e0';
+                    // Limpiar todos los mensajes de error
+                    document.querySelectorAll('.validation-message').forEach(el => {
+                        el.style.display = 'none';
                     });
                     
                 } else {
@@ -482,6 +723,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (duracionContratoInput) {
             duracionContratoInput.style.borderColor = '#e0e0e0';
         }
+        
+        // Limpiar todos los mensajes de error
+        document.querySelectorAll('.validation-message').forEach(el => {
+            el.style.display = 'none';
+        });
     }
 
     const municipioPrincipal = document.getElementById('id_municipio_principal');
