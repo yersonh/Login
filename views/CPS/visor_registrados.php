@@ -33,9 +33,40 @@ try {
     $db = $database->conectar();
     $contratistaModel = new ContratistaModel($db);
     $contratistas = $contratistaModel->obtenerTodosContratistas();
+    
+    // Obtener valores únicos para filtros
+    $areasUnicas = [];
+    $tiposVinculacionUnicos = [];
+    $municipiosUnicos = [];
+    
+    foreach ($contratistas as $c) {
+        // Áreas
+        if (isset($c['area']) && !empty($c['area']) && !in_array($c['area'], $areasUnicas)) {
+            $areasUnicas[] = $c['area'];
+        }
+        
+        // Tipos de vinculación
+        if (isset($c['tipo_vinculacion']) && !empty($c['tipo_vinculacion']) && !in_array($c['tipo_vinculacion'], $tiposVinculacionUnicos)) {
+            $tiposVinculacionUnicos[] = $c['tipo_vinculacion'];
+        }
+        
+        // Municipios principales
+        if (isset($c['municipio_principal']) && !empty($c['municipio_principal']) && !in_array($c['municipio_principal'], $municipiosUnicos)) {
+            $municipiosUnicos[] = $c['municipio_principal'];
+        }
+    }
+    
+    // Ordenar alfabéticamente
+    sort($areasUnicas);
+    sort($tiposVinculacionUnicos);
+    sort($municipiosUnicos);
+    
 } catch (Exception $e) {
     error_log("Error al cargar contratistas: " . $e->getMessage());
     $contratistas = [];
+    $areasUnicas = [];
+    $tiposVinculacionUnicos = [];
+    $municipiosUnicos = [];
 }
 ?>
 <!DOCTYPE html>
@@ -404,19 +435,30 @@ try {
                         
                         <select id="filterArea" class="filter-select">
                             <option value="">Todas las áreas</option>
-                            <?php 
-                            $areasUnicas = [];
-                            foreach ($contratistas as $c) {
-                                if (isset($c['area']) && !in_array($c['area'], $areasUnicas)) {
-                                    $areasUnicas[] = $c['area'];
-                                }
-                            }
-                            sort($areasUnicas);
-                            foreach ($areasUnicas as $area): 
-                            ?>
-                                <option value="<?php echo htmlspecialchars($area); ?>">
-                                    <?php echo htmlspecialchars($area); ?>
-                                </option>
+                            <?php foreach ($areasUnicas as $area): ?>
+                            <option value="<?php echo htmlspecialchars($area); ?>">
+                                <?php echo htmlspecialchars($area); ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                        
+                        <!-- NUEVO FILTRO: Tipo de Vinculación -->
+                        <select id="filterVinculacion" class="filter-select">
+                            <option value="">Todos los tipos de vinculación</option>
+                            <?php foreach ($tiposVinculacionUnicos as $tipo): ?>
+                            <option value="<?php echo htmlspecialchars($tipo); ?>">
+                                <?php echo htmlspecialchars($tipo); ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                        
+                        <!-- NUEVO FILTRO: Municipio Principal -->
+                        <select id="filterMunicipio" class="filter-select">
+                            <option value="">Todos los municipios</option>
+                            <?php foreach ($municipiosUnicos as $municipio): ?>
+                            <option value="<?php echo htmlspecialchars($municipio); ?>">
+                                <?php echo htmlspecialchars($municipio); ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -506,6 +548,8 @@ try {
                                     <tr class="contratista-row" 
                                         data-estado-contrato="<?php echo $estadoContrato; ?>"
                                         data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>"
+                                        data-vinculacion="<?php echo htmlspecialchars($contratista['tipo_vinculacion'] ?? ''); ?>"
+                                        data-municipio="<?php echo htmlspecialchars($contratista['municipio_principal'] ?? ''); ?>"
                                         data-has-cv="<?php echo $tieneCV ? '1' : '0'; ?>"
                                         data-has-contrato="<?php echo $tieneContrato ? '1' : '0'; ?>"
                                         data-has-acta="<?php echo $tieneActa ? '1' : '0'; ?>"
@@ -713,7 +757,7 @@ try {
                 $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
                 $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
                 $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
-                $correo = htmlspecialchars(ConfigHelper::obtener('correo_personal'));
+                $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
                 $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
                 $anio = date('Y');
                 ?>
@@ -747,6 +791,9 @@ try {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterArea = document.getElementById('filterArea').value;
+            const filterVinculacion = document.getElementById('filterVinculacion').value;
+            const filterMunicipio = document.getElementById('filterMunicipio').value;
+            
             const rows = document.querySelectorAll('.contratista-row');
             let visibleCount = 0;
             
@@ -754,10 +801,14 @@ try {
                 const text = row.textContent.toLowerCase();
                 const estadoContrato = row.getAttribute('data-estado-contrato');
                 const area = row.getAttribute('data-area').toLowerCase();
+                const vinculacion = row.getAttribute('data-vinculacion').toLowerCase();
+                const municipio = row.getAttribute('data-municipio').toLowerCase();
                 
                 let matchesSearch = text.includes(searchTerm);
                 let matchesStatus = true;
                 let matchesArea = true;
+                let matchesVinculacion = true;
+                let matchesMunicipio = true;
                 
                 // Filtrar por estado de contrato
                 if (filterStatus) {
@@ -770,7 +821,17 @@ try {
                     matchesArea = false;
                 }
                 
-                if (matchesSearch && matchesStatus && matchesArea) {
+                // Filtrar por tipo de vinculación
+                if (filterVinculacion && vinculacion !== filterVinculacion.toLowerCase()) {
+                    matchesVinculacion = false;
+                }
+                
+                // Filtrar por municipio principal
+                if (filterMunicipio && municipio !== filterMunicipio.toLowerCase()) {
+                    matchesMunicipio = false;
+                }
+                
+                if (matchesSearch && matchesStatus && matchesArea && matchesVinculacion && matchesMunicipio) {
                     row.style.display = '';
                     visibleCount++;
                 } else {
@@ -813,6 +874,8 @@ try {
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').selectedIndex = 0;
             document.getElementById('filterArea').selectedIndex = 0;
+            document.getElementById('filterVinculacion').selectedIndex = 0;
+            document.getElementById('filterMunicipio').selectedIndex = 0;
             filtrarTabla();
         }
         
@@ -845,6 +908,8 @@ try {
             // Filtros
             document.getElementById('filterStatus').addEventListener('change', filtrarTabla);
             document.getElementById('filterArea').addEventListener('change', filtrarTabla);
+            document.getElementById('filterVinculacion').addEventListener('change', filtrarTabla);
+            document.getElementById('filterMunicipio').addEventListener('change', filtrarTabla);
             
             // Botones
             document.getElementById('clearFiltersBtn').addEventListener('click', limpiarFiltros);
