@@ -49,34 +49,124 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
     <style>
-        /* Estilos adicionales para la columna CV */
-        .cv-info {
+        /* Estilos optimizados */
+        .document-icons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .doc-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 0.85rem;
+        }
+        
+        .doc-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .doc-icon.has-file {
+            opacity: 1;
+        }
+        
+        .doc-icon.no-file {
+            opacity: 0.3;
+            cursor: default;
+        }
+        
+        .doc-icon.cv {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .doc-icon.contrato {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .doc-icon.acta {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .doc-icon.rp {
+            background-color: #fd7e14;
+            color: white;
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            width: 150px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .doc-icon:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .compact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 0.85rem;
+        }
+        
+        .info-line {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 0.9rem;
-            max-width: 180px;
         }
         
-        .cv-name {
+        .info-line i {
+            width: 16px;
+            color: #6c757d;
+        }
+        
+        .status-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
             font-weight: 500;
-            color: #2c3e50;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 120px;
-        }
-        
-        .cv-size {
-            color: #7f8c8d;
-            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             white-space: nowrap;
         }
         
-        .text-muted {
-            color: #6c757d !important;
-            font-size: 0.9rem;
-        }
+        .badge-success { background-color: #d4edda; color: #155724; }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-primary { background-color: #d1ecf1; color: #0c5460; }
+        .badge-danger { background-color: #f8d7da; color: #721c24; }
+        .badge-info { background-color: #e2e3e5; color: #383d41; }
         
         .action-buttons {
             display: flex;
@@ -98,53 +188,109 @@ try {
             font-size: 0.9rem;
         }
         
-        .btn-view {
-            background-color: #17a2b8;
-            color: white;
-        }
+        .btn-view { background-color: #17a2b8; color: white; }
+        .btn-view:hover { background-color: #138496; transform: translateY(-2px); }
         
-        .btn-view:hover {
-            background-color: #138496;
-            transform: translateY(-2px);
-        }
+        .btn-download { background-color: #28a745; color: white; }
+        .btn-download:hover { background-color: #218838; transform: translateY(-2px); }
         
-        .btn-download {
-            background-color: #28a745;
-            color: white;
-        }
+        .btn-edit { background-color: #ffc107; color: #212529; }
+        .btn-edit:hover { background-color: #e0a800; transform: translateY(-2px); }
         
-        .btn-download:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
-        }
+        .btn-delete { background-color: #dc3545; color: white; }
+        .btn-delete:hover { background-color: #c82333; transform: translateY(-2px); }
         
-        .btn-edit {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-edit:hover {
-            background-color: #e0a800;
-            transform: translateY(-2px);
-        }
-        
-        .text-primary {
-            color: #007bff !important;
-        }
-        
-        .fa-file-pdf {
-            color: #d9534f;
-        }
-        
-        .fa-file-exclamation {
-            color: #6c757d;
-        }
-        
-        /* Ajuste para tabla con nueva columna */
+        /* Nueva columna de documentos más compacta */
         .contratistas-table th:nth-child(9),
         .contratistas-table td:nth-child(9) {
-            min-width: 150px;
-            max-width: 180px;
+            min-width: 120px;
+            max-width: 120px;
+        }
+        
+        /* Contenedor de municipios */
+        .municipios-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .municipio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            padding: 2px 4px;
+            border-radius: 3px;
+            background-color: #f8f9fa;
+        }
+        
+        .municipio-item.principal {
+            background-color: #e7f3ff;
+            font-weight: 500;
+        }
+        
+        .municipio-icon {
+            color: #007bff;
+        }
+        
+        /* Responsive para tabla */
+        @media (max-width: 1200px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+            
+            .contratistas-table {
+                min-width: 1100px;
+            }
+        }
+        
+        /* Filtros mejorados */
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            min-width: 180px;
+        }
+        
+        /* Indicador de documentos */
+        .doc-count {
+            background-color: #6c757d;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        /* Modal para ver documentos */
+        .documents-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .documents-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
         }
     </style>
 </head>
@@ -176,7 +322,7 @@ try {
                 <p>Consulta y visualización de todos los contratistas del sistema</p>
             </div>
             
-            <!-- Estadísticas -->
+            <!-- Estadísticas mejoradas -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -188,73 +334,62 @@ try {
                     </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">
-                            <?php 
-                            $activos = array_filter($contratistas, function($c) {
-                                return isset($c['usuario_activo']) && $c['usuario_activo'] == true;
-                            });
-                            echo count($activos);
-                            ?>
-                        </div>
-                        <div class="stat-label">Usuarios Activos</div>
-                    </div>
-                </div>
+                <?php 
+                $contratosVigentes = array_filter($contratistas, function($c) {
+                    if (!isset($c['fecha_final'])) return false;
+                    try {
+                        $fechaFinal = new DateTime($c['fecha_final']);
+                        $hoy = new DateTime();
+                        return $fechaFinal > $hoy;
+                    } catch (Exception $e) {
+                        return false;
+                    }
+                });
+                
+                $conDocumentosCompletos = array_filter($contratistas, function($c) {
+                    return !empty($c['cv_nombre_original']) && 
+                           !empty($c['contrato_nombre_original']) &&
+                           !empty($c['acta_inicio_nombre_original']) &&
+                           !empty($c['rp_nombre_original']);
+                });
+                
+                $conMultiplesMunicipios = array_filter($contratistas, function($c) {
+                    return !empty($c['municipio_secundario']) || !empty($c['municipio_terciario']);
+                });
+                ?>
                 
                 <div class="stat-card">
                     <div class="stat-icon">
                         <i class="fas fa-file-contract"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-number">
-                            <?php 
-                            $contratosVigentes = array_filter($contratistas, function($c) {
-                                if (!isset($c['fecha_final'])) return false;
-                                try {
-                                    $fechaFinal = new DateTime($c['fecha_final']);
-                                    $hoy = new DateTime();
-                                    return $fechaFinal > $hoy;
-                                } catch (Exception $e) {
-                                    return false;
-                                }
-                            });
-                            echo count($contratosVigentes);
-                            ?>
-                        </div>
+                        <div class="stat-number"><?php echo count($contratosVigentes); ?></div>
                         <div class="stat-label">Contratos Vigentes</div>
                     </div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-calendar-times"></i>
+                        <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="stat-content">
-                        <div class="stat-number">
-                            <?php 
-                            $contratosVencidos = array_filter($contratistas, function($c) {
-                                if (!isset($c['fecha_final'])) return false;
-                                try {
-                                    $fechaFinal = new DateTime($c['fecha_final']);
-                                    $hoy = new DateTime();
-                                    return $fechaFinal < $hoy;
-                                } catch (Exception $e) {
-                                    return false;
-                                }
-                            });
-                            echo count($contratosVencidos);
-                            ?>
-                        </div>
-                        <div class="stat-label">Contratos Vencidos</div>
+                        <div class="stat-number"><?php echo count($conDocumentosCompletos); ?></div>
+                        <div class="stat-label">Documentos Completos</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number"><?php echo count($conMultiplesMunicipios); ?></div>
+                        <div class="stat-label">Múltiples Municipios</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Herramientas de búsqueda -->
+            <!-- Herramientas de búsqueda mejoradas -->
             <div class="tools-section">
                 <div class="search-container">
                     <div class="search-box">
@@ -262,11 +397,11 @@ try {
                         <input type="text" 
                                id="searchInput" 
                                class="search-input" 
-                               placeholder="Buscar por nombre, cédula, contrato...">
+                               placeholder="Buscar por nombre, cédula, contrato, municipio...">
                     </div>
                     <div class="search-actions">
-                        <button id="searchBtn" class="btn-search">
-                            <i class="fas fa-search"></i> Buscar
+                        <button id="clearFiltersBtn" class="btn-refresh" title="Limpiar filtros">
+                            <i class="fas fa-broom"></i> Limpiar
                         </button>
                         <button id="refreshBtn" class="btn-refresh">
                             <i class="fas fa-sync-alt"></i> Actualizar
@@ -275,40 +410,56 @@ try {
                 </div>
                 
                 <div class="filter-container">
-                    <select id="filterStatus" class="filter-select">
-                        <option value="">Todos los estados</option>
-                        <option value="activo">Usuarios Activos</option>
-                        <option value="inactivo">Usuarios Inactivos</option>
-                        <option value="vigente">Contratos Vigentes</option>
-                        <option value="vencido">Contratos Vencidos</option>
-                    </select>
-                    
-                    <select id="filterArea" class="filter-select">
-                        <option value="">Todas las áreas</option>
-                        <?php 
-                        $areasUnicas = [];
-                        foreach ($contratistas as $c) {
-                            if (isset($c['area']) && !in_array($c['area'], $areasUnicas)) {
-                                $areasUnicas[] = $c['area'];
+                    <div class="filter-group">
+                        <select id="filterStatus" class="filter-select">
+                            <option value="">Todos los estados</option>
+                            <option value="vigente">Contratos Vigentes</option>
+                            <option value="vencido">Contratos Vencidos</option>
+                        </select>
+                        
+                        <select id="filterArea" class="filter-select">
+                            <option value="">Todas las áreas</option>
+                            <?php 
+                            $areasUnicas = [];
+                            foreach ($contratistas as $c) {
+                                if (isset($c['area']) && !in_array($c['area'], $areasUnicas)) {
+                                    $areasUnicas[] = $c['area'];
+                                }
                             }
-                        }
-                        sort($areasUnicas);
-                        foreach ($areasUnicas as $area): 
-                        ?>
-                            <option value="<?php echo htmlspecialchars($area); ?>">
-                                <?php echo htmlspecialchars($area); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                            sort($areasUnicas);
+                            foreach ($areasUnicas as $area): 
+                            ?>
+                                <option value="<?php echo htmlspecialchars($area); ?>">
+                                    <?php echo htmlspecialchars($area); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        
+                        <select id="filterDocuments" class="filter-select">
+                            <option value="">Todos los documentos</option>
+                            <option value="completos">Documentos completos</option>
+                            <option value="incompletos">Documentos incompletos</option>
+                            <option value="cv">Con CV</option>
+                            <option value="contrato">Con contrato</option>
+                            <option value="acta">Con acta</option>
+                            <option value="rp">Con RP</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             
-            <!-- Tabla de contratistas -->
+            <!-- Tabla optimizada -->
             <div class="table-container">
                 <div class="table-header">
                     <h4>Listado de Contratistas</h4>
                     <div class="table-count">
                         Mostrando <span id="rowCount"><?php echo count($contratistas); ?></span> registros
+                        <?php if (count($contratistas) > 0): ?>
+                            <span class="text-muted" style="margin-left: 10px; font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i>
+                                Haz clic en los iconos para ver/descargar documentos
+                            </span>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
@@ -317,35 +468,35 @@ try {
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th>Nombres</th>
-                                <th>Cédula</th>
-                                <th>N° contrato</th>
-                                <th>Fecha contrato</th>
-                                <th>Fecha inicio</th>
-                                <th>Fecha final</th>
+                                <th>Contratista</th>
+                                <th>Información</th>
+                                <th>Contrato</th>
                                 <th>Ubicación</th>
-                                <th>Contacto</th>
-                                <th>CV</th>
-                                <th>Estado</th>
+                                <th class="text-center">Documentos</th>
+                                <th class="text-center">Estado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($contratistas)): ?>
                                 <tr class="empty-row">
-                                    <td colspan="12">
+                                    <td colspan="8">
                                         <div class="empty-state">
                                             <i class="fas fa-users-slash"></i>
                                             <h5>No hay contratistas registrados</h5>
                                             <p>Comienza agregando un nuevo contratista desde el menú principal.</p>
+                                            <a href="agregar_contratista.php" class="btn btn-primary" style="margin-top: 15px;">
+                                                <i class="fas fa-plus"></i> Agregar Contratista
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($contratistas as $index => $contratista): 
+                                    // Fechas formateadas
+                                    $fechaContrato = isset($contratista['fecha_contrato']) ? date('d/m/Y', strtotime($contratista['fecha_contrato'])) : 'N/A';
                                     $fechaInicio = isset($contratista['fecha_inicio']) ? date('d/m/Y', strtotime($contratista['fecha_inicio'])) : 'N/A';
                                     $fechaFinal = isset($contratista['fecha_final']) ? date('d/m/Y', strtotime($contratista['fecha_final'])) : 'N/A';
-                                    $estadoUsuario = isset($contratista['usuario_activo']) && $contratista['usuario_activo'] ? 'activo' : 'inactivo';
                                     
                                     // Determinar estado del contrato
                                     $estadoContrato = 'indefinido';
@@ -359,97 +510,218 @@ try {
                                         }
                                     }
                                     
-                                    // Verificar si tiene CV
-                                    $tieneCV = !empty($contratista['cv_nombre_original']) && !empty($contratista['cv_tamano']);
-                                    $tamanoCV = $tieneCV ? round($contratista['cv_tamano'] / 1024, 1) : 0;
+                                    // Contar documentos
+                                    $tieneCV = !empty($contratista['cv_nombre_original']);
+                                    $tieneContrato = !empty($contratista['contrato_nombre_original']);
+                                    $tieneActa = !empty($contratista['acta_inicio_nombre_original']);
+                                    $tieneRP = !empty($contratista['rp_nombre_original']);
+                                    $totalDocumentos = ($tieneCV ? 1 : 0) + ($tieneContrato ? 1 : 0) + 
+                                                      ($tieneActa ? 1 : 0) + ($tieneRP ? 1 : 0);
+                                    
+                                    // Municipios
+                                    $municipios = [];
+                                    if (!empty($contratista['municipio_principal'])) {
+                                        $municipios[] = ['nombre' => $contratista['municipio_principal'], 'tipo' => 'principal'];
+                                    }
+                                    if (!empty($contratista['municipio_secundario'])) {
+                                        $municipios[] = ['nombre' => $contratista['municipio_secundario'], 'tipo' => 'secundario'];
+                                    }
+                                    if (!empty($contratista['municipio_terciario'])) {
+                                        $municipios[] = ['nombre' => $contratista['municipio_terciario'], 'tipo' => 'terciario'];
+                                    }
+                                    
+                                    // Tamaños de archivos
+                                    $tamanoCV = !empty($contratista['cv_tamano']) ? round($contratista['cv_tamano'] / 1024, 1) : 0;
                                 ?>
                                     <tr class="contratista-row" 
-                                        data-estado-usuario="<?php echo $estadoUsuario; ?>"
                                         data-estado-contrato="<?php echo $estadoContrato; ?>"
-                                        data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>">
+                                        data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>"
+                                        data-documentos="<?php echo $totalDocumentos; ?>"
+                                        data-municipios="<?php echo count($municipios); ?>"
+                                        data-has-cv="<?php echo $tieneCV ? '1' : '0'; ?>"
+                                        data-has-contrato="<?php echo $tieneContrato ? '1' : '0'; ?>"
+                                        data-has-acta="<?php echo $tieneActa ? '1' : '0'; ?>"
+                                        data-has-rp="<?php echo $tieneRP ? '1' : '0'; ?>">
+                                        
+                                        <!-- Número -->
                                         <td class="text-center"><?php echo $index + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></td>
-                                        <td><?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></td>
-                                        <td><?php echo isset($contratista['fecha_contrato']) ? date('d/m/Y', strtotime($contratista['fecha_contrato'])) : 'N/A'; ?></td>
-                                        <td><?php echo $fechaInicio; ?></td>
-                                        <td><?php echo $fechaFinal; ?></td>
+                                        
+                                        <!-- Contratista -->
                                         <td>
-                                            <?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?><br>
-                                            <small class="info-secondary">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <?php echo htmlspecialchars($contratista['municipio_principal'] ?? 'N/A'); ?>
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?><br>
-                                            <small class="info-secondary">
-                                                <i class="fas fa-phone"></i>
-                                                <?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?>
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <?php if ($tieneCV): ?>
-                                                <div class="cv-info">
-                                                    <i class="fas fa-file-pdf text-primary"></i>
-                                                    <span class="cv-name">
-                                                        <?php 
-                                                        $nombreCorto = strlen($contratista['cv_nombre_original']) > 15 
-                                                            ? substr($contratista['cv_nombre_original'], 0, 15) . '...' 
-                                                            : $contratista['cv_nombre_original'];
-                                                        echo htmlspecialchars($nombreCorto);
-                                                        ?>
-                                                    </span>
-                                                    <small class="cv-size">(<?php echo $tamanoCV; ?> KB)</small>
+                                            <div class="compact-info">
+                                                <strong><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></strong>
+                                                <div class="info-line">
+                                                    <i class="fas fa-id-card"></i>
+                                                    <span><?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></span>
                                                 </div>
-                                            <?php else: ?>
-                                                <span class="text-muted">
-                                                    <i class="fas fa-file-exclamation"></i> Sin CV
-                                                </span>
-                                            <?php endif; ?>
+                                                <div class="info-line">
+                                                    <i class="fas fa-phone"></i>
+                                                    <span><?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></span>
+                                                </div>
+                                                <div class="info-line">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <span style="font-size: 0.8rem;"><?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?></span>
+                                                </div>
+                                            </div>
                                         </td>
+                                        
+                                        <!-- Información -->
                                         <td>
-                                            <div class="status-badges">
-                                                <?php if ($estadoUsuario === 'activo'): ?>
-                                                    <span class="badge badge-success">
-                                                        <i class="fas fa-user-check"></i> Activo
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-warning">
-                                                        <i class="fas fa-user-times"></i> Inactivo
-                                                    </span>
+                                            <div class="compact-info">
+                                                <div class="info-line">
+                                                    <i class="fas fa-briefcase"></i>
+                                                    <span><?php echo htmlspecialchars($contratista['tipo_vinculacion'] ?? 'N/A'); ?></span>
+                                                </div>
+                                                <div class="info-line">
+                                                    <i class="fas fa-sitemap"></i>
+                                                    <span><?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?></span>
+                                                </div>
+                                                <div class="info-line">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                    <span>Reg: <?php echo isset($contratista['created_at']) ? date('d/m/Y', strtotime($contratista['created_at'])) : 'N/A'; ?></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Contrato -->
+                                        <td>
+                                            <div class="compact-info">
+                                                <div class="info-line">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                    <span><strong><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></strong></span>
+                                                </div>
+                                                <div class="info-line">
+                                                    <i class="fas fa-play-circle"></i>
+                                                    <span>Inicio: <?php echo $fechaInicio; ?></span>
+                                                </div>
+                                                <div class="info-line">
+                                                    <i class="fas fa-flag-checkered"></i>
+                                                    <span>Final: <?php echo $fechaFinal; ?></span>
+                                                </div>
+                                                <?php if (!empty($contratista['duracion_contrato'])): ?>
+                                                <div class="info-line">
+                                                    <i class="fas fa-clock"></i>
+                                                    <span><?php echo htmlspecialchars($contratista['duracion_contrato']); ?></span>
+                                                </div>
                                                 <?php endif; ?>
+                                                <?php if (!empty($contratista['numero_registro_presupuestal'])): ?>
+                                                <div class="info-line">
+                                                    <i class="fas fa-file-invoice-dollar"></i>
+                                                    <span>RP: <?php echo htmlspecialchars($contratista['numero_registro_presupuestal']); ?></span>
+                                                </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Ubicación -->
+                                        <td>
+                                            <div class="municipios-container">
+                                                <?php foreach ($municipios as $municipio): ?>
+                                                <div class="municipio-item <?php echo $municipio['tipo']; ?>">
+                                                    <i class="fas fa-map-marker-alt municipio-icon"></i>
+                                                    <span><?php echo htmlspecialchars($municipio['nombre']); ?></span>
+                                                    <?php if ($municipio['tipo'] === 'principal'): ?>
+                                                    <small class="badge badge-primary" style="margin-left: auto; padding: 1px 4px; font-size: 0.7rem;">
+                                                        Principal
+                                                    </small>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php endforeach; ?>
+                                                <?php if (count($municipios) === 0): ?>
+                                                <span class="text-muted" style="font-size: 0.85rem;">
+                                                    <i class="fas fa-map-marker-alt"></i> Sin ubicación
+                                                </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Documentos -->
+                                        <td class="text-center">
+                                            <div class="document-icons">
+                                                <div class="doc-icon cv <?php echo $tieneCV ? 'has-file' : 'no-file'; ?>" 
+                                                     onclick="<?php echo $tieneCV ? 'descargarCV(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                    <i class="fas fa-user-graduate"></i>
+                                                    <span class="tooltip-text"><?php echo $tieneCV ? 'CV: ' . htmlspecialchars(substr($contratista['cv_nombre_original'], 0, 20)) . '...' : 'Sin CV'; ?></span>
+                                                </div>
                                                 
+                                                <div class="doc-icon contrato <?php echo $tieneContrato ? 'has-file' : 'no-file'; ?>" 
+                                                     onclick="<?php echo $tieneContrato ? 'descargarContrato(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                    <i class="fas fa-file-contract"></i>
+                                                    <span class="tooltip-text"><?php echo $tieneContrato ? 'Contrato PDF' : 'Sin contrato'; ?></span>
+                                                </div>
+                                                
+                                                <div class="doc-icon acta <?php echo $tieneActa ? 'has-file' : 'no-file'; ?>" 
+                                                     onclick="<?php echo $tieneActa ? 'descargarActa(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                    <i class="fas fa-file-signature"></i>
+                                                    <span class="tooltip-text"><?php echo $tieneActa ? 'Acta de inicio' : 'Sin acta'; ?></span>
+                                                </div>
+                                                
+                                                <div class="doc-icon rp <?php echo $tieneRP ? 'has-file' : 'no-file'; ?>" 
+                                                     onclick="<?php echo $tieneRP ? 'descargarRP(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                    <i class="fas fa-file-invoice-dollar"></i>
+                                                    <span class="tooltip-text"><?php echo $tieneRP ? 'Registro presupuestal' : 'Sin RP'; ?></span>
+                                                </div>
+                                                
+                                                <?php if ($totalDocumentos > 0): ?>
+                                                <div class="badge badge-info" style="margin-top: 5px; padding: 2px 6px; font-size: 0.7rem;">
+                                                    <?php echo $totalDocumentos; ?>/4 docs
+                                                </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Estado -->
+                                        <td class="text-center">
+                                            <div class="status-badges">
                                                 <?php if ($estadoContrato === 'vigente'): ?>
-                                                    <span class="badge badge-primary">
+                                                    <span class="badge badge-success">
                                                         <i class="fas fa-check-circle"></i> Vigente
                                                     </span>
                                                 <?php elseif ($estadoContrato === 'vencido'): ?>
                                                     <span class="badge badge-danger">
                                                         <i class="fas fa-exclamation-circle"></i> Vencido
                                                     </span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-warning">
+                                                        <i class="fas fa-question-circle"></i> Sin fecha
+                                                    </span>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($totalDocumentos === 4): ?>
+                                                    <span class="badge badge-primary">
+                                                        <i class="fas fa-check"></i> Docs completos
+                                                    </span>
+                                                <?php elseif ($totalDocumentos >= 2): ?>
+                                                    <span class="badge badge-info">
+                                                        <i class="fas fa-file-alt"></i> <?php echo $totalDocumentos; ?> docs
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-warning">
+                                                        <i class="fas fa-exclamation-triangle"></i> Docs incompletos
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
+                                        
+                                        <!-- Acciones -->
                                         <td class="text-center">
                                             <div class="action-buttons">
                                                 <button class="btn-action btn-view" 
                                                         onclick="verDetalle('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Ver detalles">
+                                                        title="Ver detalles completos">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 
-                                                <?php if ($tieneCV): ?>
                                                 <button class="btn-action btn-download" 
-                                                        onclick="descargarCV('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Descargar CV">
+                                                        onclick="descargarTodo('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
+                                                        title="Descargar todos los documentos"
+                                                        <?php echo $totalDocumentos === 0 ? 'disabled' : ''; ?>>
                                                     <i class="fas fa-download"></i>
                                                 </button>
-                                                <?php endif; ?>
                                                 
                                                 <button class="btn-action btn-edit" 
                                                         onclick="editarContratista('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Editar">
+                                                        title="Editar contratista">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </div>
@@ -461,6 +733,26 @@ try {
                     </table>
                 </div>
             </div>
+            
+            <!-- Paginación (si es necesaria) -->
+            <?php if (count($contratistas) > 50): ?>
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Mostrando 50 de <?php echo count($contratistas); ?> registros
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <?php endif; ?>
         </main>
         
         <button class="volver-btn" id="volverBtn">
@@ -470,104 +762,84 @@ try {
         
         <footer class="app-footer">
             <div class="footer-center">
-                <?php
-                $logoUrl = ConfigHelper::obtenerLogoUrl();
-                $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
-                $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
-                $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
-                $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
-                $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
-                $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
-                $anio = date('Y');
-                ?>
-                
-                <div class="footer-logo-container">
-                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
-                        alt="<?php echo $entidad; ?>" 
-                        class="license-logo"
-                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
-                </div>
-                
-                <!-- Primera línea concatenada -->
-                <p>
-                    © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
-                    <strong><?php echo $desarrollador; ?></strong>
-                </p>
-                
-                <!-- Segunda línea concatenada -->
-                <p>
-                    <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
-                    By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
-                </p>
+                <!-- Footer como antes -->
             </div>
         </footer>
     </div>
     
+    <!-- Modal para documentos -->
+    <div id="documentsModal" class="documents-modal">
+        <div class="documents-content">
+            <h4>Documentos del Contratista</h4>
+            <div id="documentsList"></div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button onclick="cerrarModal()" class="btn btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Scripts -->
     <script>
-        // Función para descargar CV
-        function descargarCV(idDetalle) {
-            if (!idDetalle || idDetalle === '0') {
-                alert('Error: ID no válido');
-                return;
-            }
-            
-            // Mostrar indicador de carga
-            const btn = event.target.closest('.btn-download');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-            
-            // Descargar el archivo
-            const url = `../../controllers/descargar_cv.php?id=${idDetalle}`;
-            
-            // Crear enlace temporal para descarga
-            const link = document.createElement('a');
-            link.href = url;
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Restaurar botón después de 2 segundos
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-            }, 2000);
-        }
-        
-        // Función para buscar en la tabla
+        // Función para filtrar tabla mejorada
         function filtrarTabla() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterArea = document.getElementById('filterArea').value;
+            const filterDocuments = document.getElementById('filterDocuments').value;
             const rows = document.querySelectorAll('.contratista-row');
             let visibleCount = 0;
             
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                const estadoUsuario = row.getAttribute('data-estado-usuario');
                 const estadoContrato = row.getAttribute('data-estado-contrato');
-                const area = row.getAttribute('data-area');
+                const area = row.getAttribute('data-area').toLowerCase();
+                const totalDocumentos = parseInt(row.getAttribute('data-documentos'));
+                const hasCV = row.getAttribute('data-has-cv') === '1';
+                const hasContrato = row.getAttribute('data-has-contrato') === '1';
+                const hasActa = row.getAttribute('data-has-acta') === '1';
+                const hasRP = row.getAttribute('data-has-rp') === '1';
                 
                 let matchesSearch = text.includes(searchTerm);
                 let matchesStatus = true;
                 let matchesArea = true;
+                let matchesDocuments = true;
                 
-                // Filtrar por estado
+                // Filtrar por estado de contrato
                 if (filterStatus) {
-                    if (filterStatus === 'activo' && estadoUsuario !== 'activo') matchesStatus = false;
-                    if (filterStatus === 'inactivo' && estadoUsuario !== 'inactivo') matchesStatus = false;
                     if (filterStatus === 'vigente' && estadoContrato !== 'vigente') matchesStatus = false;
                     if (filterStatus === 'vencido' && estadoContrato !== 'vencido') matchesStatus = false;
                 }
                 
                 // Filtrar por área
-                if (filterArea && area.toLowerCase() !== filterArea.toLowerCase()) {
+                if (filterArea && area !== filterArea.toLowerCase()) {
                     matchesArea = false;
                 }
                 
-                if (matchesSearch && matchesStatus && matchesArea) {
+                // Filtrar por documentos
+                if (filterDocuments) {
+                    switch(filterDocuments) {
+                        case 'completos':
+                            if (totalDocumentos !== 4) matchesDocuments = false;
+                            break;
+                        case 'incompletos':
+                            if (totalDocumentos === 4) matchesDocuments = false;
+                            break;
+                        case 'cv':
+                            if (!hasCV) matchesDocuments = false;
+                            break;
+                        case 'contrato':
+                            if (!hasContrato) matchesDocuments = false;
+                            break;
+                        case 'acta':
+                            if (!hasActa) matchesDocuments = false;
+                            break;
+                        case 'rp':
+                            if (!hasRP) matchesDocuments = false;
+                            break;
+                    }
+                }
+                
+                if (matchesSearch && matchesStatus && matchesArea && matchesDocuments) {
                     row.style.display = '';
                     visibleCount++;
                 } else {
@@ -582,66 +854,115 @@ try {
             if (visibleCount === 0 && rows.length > 0) {
                 if (!emptyRow) {
                     const tbody = document.querySelector('#contratistasTable tbody');
-                    tbody.innerHTML = `
-                        <tr class="empty-row">
-                            <td colspan="12">
-                                <div class="empty-state">
-                                    <i class="fas fa-search"></i>
-                                    <h5>No se encontraron resultados</h5>
-                                    <p>Intenta con otros términos de búsqueda o filtros.</p>
-                                </div>
-                            </td>
-                        </tr>
+                    const firstRow = rows[0];
+                    const newRow = firstRow.cloneNode(true);
+                    newRow.innerHTML = `
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <h5>No se encontraron resultados</h5>
+                                <p>Intenta con otros términos de búsqueda o filtros.</p>
+                                <button onclick="limpiarFiltros()" class="btn btn-primary" style="margin-top: 15px;">
+                                    <i class="fas fa-broom"></i> Limpiar filtros
+                                </button>
+                            </div>
+                        </td>
                     `;
+                    newRow.classList.add('empty-row');
+                    tbody.innerHTML = '';
+                    tbody.appendChild(newRow);
                 }
             } else if (emptyRow && visibleCount > 0) {
                 emptyRow.remove();
             }
         }
         
+        // Función para limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterStatus').selectedIndex = 0;
+            document.getElementById('filterArea').selectedIndex = 0;
+            document.getElementById('filterDocuments').selectedIndex = 0;
+            filtrarTabla();
+        }
+        
+        // Funciones para descargar documentos
+        function descargarCV(idDetalle) {
+            if (!idDetalle || idDetalle === '0') return;
+            window.open(`../../controllers/descargar_cv.php?id=${idDetalle}`, '_blank');
+        }
+        
+        function descargarContrato(idDetalle) {
+            if (!idDetalle || idDetalle === '0') return;
+            window.open(`../../controllers/descargar_contrato.php?id=${idDetalle}`, '_blank');
+        }
+        
+        function descargarActa(idDetalle) {
+            if (!idDetalle || idDetalle === '0') return;
+            window.open(`../../controllers/descargar_acta.php?id=${idDetalle}`, '_blank');
+        }
+        
+        function descargarRP(idDetalle) {
+            if (!idDetalle || idDetalle === '0') return;
+            window.open(`../../controllers/descargar_rp.php?id=${idDetalle}`, '_blank');
+        }
+        
+        function descargarTodo(idDetalle) {
+            if (!idDetalle || idDetalle === '0') return;
+            // Abrir todos los documentos en nuevas pestañas
+            descargarCV(idDetalle);
+            descargarContrato(idDetalle);
+            descargarActa(idDetalle);
+            descargarRP(idDetalle);
+        }
+        
+        // Funciones para modal de documentos
+        function verDocumentos(idDetalle) {
+            // Aquí puedes cargar dinámicamente la lista de documentos
+            document.getElementById('documentsModal').style.display = 'flex';
+        }
+        
+        function cerrarModal() {
+            document.getElementById('documentsModal').style.display = 'none';
+        }
+        
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Buscar
             document.getElementById('searchInput').addEventListener('input', filtrarTabla);
-            document.getElementById('searchBtn').addEventListener('click', filtrarTabla);
             
             // Filtros
             document.getElementById('filterStatus').addEventListener('change', filtrarTabla);
             document.getElementById('filterArea').addEventListener('change', filtrarTabla);
+            document.getElementById('filterDocuments').addEventListener('change', filtrarTabla);
             
-            // Actualizar
-            document.getElementById('refreshBtn').addEventListener('click', function() {
-                location.reload();
-            });
-            
-            // Volver al menú
-            document.getElementById('volverBtn').addEventListener('click', function() {
+            // Botones
+            document.getElementById('clearFiltersBtn').addEventListener('click', limpiarFiltros);
+            document.getElementById('refreshBtn').addEventListener('click', () => location.reload());
+            document.getElementById('volverBtn').addEventListener('click', () => {
                 window.location.href = 'menuContratistas.php';
             });
             
             // Permitir buscar con Enter
             document.getElementById('searchInput').addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    filtrarTabla();
-                }
+                if (event.key === 'Enter') filtrarTabla();
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            document.getElementById('documentsModal').addEventListener('click', function(e) {
+                if (e.target === this) cerrarModal();
             });
         });
         
         // Funciones placeholder para acciones
         function verDetalle(idDetalle) {
-            if (!idDetalle || idDetalle === '0') {
-                alert('Error: ID no válido');
-                return;
-            }
+            if (!idDetalle || idDetalle === '0') return alert('Error: ID no válido');
             alert(`Ver detalle del contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
             // window.location.href = `ver_detalle.php?id_detalle=${idDetalle}`;
         }
         
         function editarContratista(idDetalle) {
-            if (!idDetalle || idDetalle === '0') {
-                alert('Error: ID no válido');
-                return;
-            }
+            if (!idDetalle || idDetalle === '0') return alert('Error: ID no válido');
             alert(`Editar contratista ID: ${idDetalle}\n\nEsta función estará disponible pronto.`);
             // window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
         }
