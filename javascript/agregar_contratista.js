@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         flatpickr(input, dateOptions);
     });
     
-    // === CAMBIAR: Quitar eventos antiguos y agregar nuevos para calcular duración ===
-    // Agregar estos:
+    // === CALCULAR DURACIÓN DEL CONTRATO ===
     document.getElementById('fecha_inicio').addEventListener('change', calcularDuracionContrato);
     document.getElementById('fecha_final').addEventListener('change', calcularDuracionContrato);
     
@@ -146,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = e.target.files[0];
             
             if (file) {
-                // Validar tamaño (5MB máximo)
                 const maxSize = 5 * 1024 * 1024;
                 if (file.size > maxSize) {
                     alert('El archivo excede el tamaño máximo de 5MB');
@@ -179,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cvPreview) cvPreview.style.display = 'none';
     };
     
-    // === NUEVA FUNCIÓN: CALCULAR DURACIÓN DEL CONTRATO ===
+    // === FUNCIÓN: CALCULAR DURACIÓN DEL CONTRATO ===
     function calcularDuracionContrato() {
         const fechaInicio = document.getElementById('fecha_inicio').value;
         const fechaFinal = document.getElementById('fecha_final').value;
@@ -187,35 +185,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (fechaInicio && fechaFinal) {
             try {
-                // Convertir fechas de formato dd/mm/aaaa a objetos Date
                 const [diaInicio, mesInicio, anioInicio] = fechaInicio.split('/');
                 const [diaFinal, mesFinal, anioFinal] = fechaFinal.split('/');
                 
                 const fechaInicioDate = new Date(anioInicio, mesInicio - 1, diaInicio);
                 const fechaFinalDate = new Date(anioFinal, mesFinal - 1, diaFinal);
                 
-                // Validar que la fecha final sea mayor que la fecha inicio
                 if (fechaFinalDate <= fechaInicioDate) {
                     alert('La fecha final debe ser mayor a la fecha de inicio');
                     duracionInput.value = '';
                     return;
                 }
                 
-                // Calcular diferencia en días
                 const diferenciaMs = fechaFinalDate - fechaInicioDate;
                 const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
                 
-                // Calcular duración en meses (aproximado)
                 const meses = Math.floor(diferenciaDias / 30);
                 const diasRestantes = diferenciaDias % 30;
                 
-                // Calcular duración en años
                 const años = Math.floor(meses / 12);
                 const mesesRestantes = meses % 12;
                 
                 let duracionTexto = '';
                 
-                // Formatear la duración
                 if (años > 0) {
                     duracionTexto += `${años} ${años === 1 ? 'año' : 'años'}`;
                     if (mesesRestantes > 0) {
@@ -223,14 +215,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } else if (meses > 0) {
                     duracionTexto += `${meses} ${meses === 1 ? 'mes' : 'meses'}`;
-                    if (diasRestantes > 0 && meses < 3) { // Solo mostrar días si es menos de 3 meses
+                    if (diasRestantes > 0 && meses < 3) {
                         duracionTexto += ` ${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`;
                     }
                 } else {
                     duracionTexto += `${diferenciaDias} ${diferenciaDias === 1 ? 'día' : 'días'}`;
                 }
                 
-                // Actualizar el campo de duración
                 if (duracionInput) {
                     duracionInput.value = duracionTexto;
                 }
@@ -253,7 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const camposRequeridos = document.querySelectorAll('[required]');
         
         camposRequeridos.forEach(campo => {
-            // Crear elemento de mensaje de error
             const errorElement = document.createElement('div');
             errorElement.className = 'validation-message';
             errorElement.style.color = '#dc3545';
@@ -261,10 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
             errorElement.style.marginTop = '5px';
             errorElement.style.display = 'none';
             
-            // Insertar después del campo
             campo.parentNode.appendChild(errorElement);
             
-            // Eventos para validación en tiempo real
             campo.addEventListener('blur', function() {
                 validarCampo(this, errorElement);
             });
@@ -276,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Para selects
             if (campo.tagName === 'SELECT') {
                 campo.addEventListener('change', function() {
                     validarCampo(this, errorElement);
@@ -284,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Validar campos de dirección opcionales
         if (direccionSecundario) {
             direccionSecundario.addEventListener('blur', function() {
                 if (grupoDireccionSecundario.style.display === 'block' && !this.value.trim()) {
@@ -323,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Validaciones específicas para campos
         const camposEspecificos = {
             'cedula': {
                 validar: function(valor) {
@@ -354,7 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Aplicar validaciones específicas
         Object.keys(camposEspecificos).forEach(id => {
             const campo = document.getElementById(id);
             if (campo) {
@@ -413,6 +397,409 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar validaciones en tiempo real
     setupValidacionesEnTiempoReal();
+    
+    // === CREAR MODAL DE CONFIRMACIÓN ===
+    function crearModalConfirmacion() {
+        const modalHTML = `
+            <div id="confirmModal" class="modal-overlay" style="display: none;">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-clipboard-check"></i> Confirmar Registro</h3>
+                        <button class="modal-close" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="confirmation-message">
+                            <p><strong>¿Está seguro de registrar al siguiente contratista?</strong></p>
+                            <p class="modal-subtitle">Revise los datos antes de continuar:</p>
+                        </div>
+                        
+                        <div class="data-summary">
+                            <div class="summary-section">
+                                <h4><i class="fas fa-user"></i> Datos Personales</h4>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="summary-label">Nombre completo:</span>
+                                        <span class="summary-value" id="summaryNombre"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Cédula:</span>
+                                        <span class="summary-value" id="summaryCedula"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Correo:</span>
+                                        <span class="summary-value" id="summaryCorreo"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Celular:</span>
+                                        <span class="summary-value" id="summaryCelular"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Tipo de vinculación:</span>
+                                        <span class="summary-value" id="summaryTipoVinculacion"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-section">
+                                <h4><i class="fas fa-map-marker-alt"></i> Información Geográfica</h4>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="summary-label">Municipio principal:</span>
+                                        <span class="summary-value" id="summaryMunicipioPrincipal"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Dirección principal:</span>
+                                        <span class="summary-value" id="summaryDireccionPrincipal"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryMunicipioSecundarioItem" style="display: none;">
+                                        <span class="summary-label">Municipio secundario:</span>
+                                        <span class="summary-value" id="summaryMunicipioSecundario"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryDireccionSecundariaItem" style="display: none;">
+                                        <span class="summary-label">Dirección secundaria:</span>
+                                        <span class="summary-value" id="summaryDireccionSecundaria"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryMunicipioTerciarioItem" style="display: none;">
+                                        <span class="summary-label">Municipio terciario:</span>
+                                        <span class="summary-value" id="summaryMunicipioTerciario"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryDireccionTerciariaItem" style="display: none;">
+                                        <span class="summary-label">Dirección terciaria:</span>
+                                        <span class="summary-value" id="summaryDireccionTerciaria"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Área:</span>
+                                        <span class="summary-value" id="summaryArea"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-section">
+                                <h4><i class="fas fa-file-contract"></i> Información del Contrato</h4>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="summary-label">Número de contrato:</span>
+                                        <span class="summary-value" id="summaryNumeroContrato"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Fecha contrato:</span>
+                                        <span class="summary-value" id="summaryFechaContrato"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Fecha inicio:</span>
+                                        <span class="summary-value" id="summaryFechaInicio"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Fecha final:</span>
+                                        <span class="summary-value" id="summaryFechaFinal"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Duración:</span>
+                                        <span class="summary-value" id="summaryDuracion"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryRPItem" style="display: none;">
+                                        <span class="summary-label">Número RP:</span>
+                                        <span class="summary-value" id="summaryRP"></span>
+                                    </div>
+                                    <div class="summary-item" id="summaryFechaRPItem" style="display: none;">
+                                        <span class="summary-label">Fecha RP:</span>
+                                        <span class="summary-value" id="summaryFechaRP"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-section">
+                                <h4><i class="fas fa-paperclip"></i> Documentos Adjuntos</h4>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="summary-label">CV:</span>
+                                        <span class="summary-value" id="summaryCV"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Contrato PDF:</span>
+                                        <span class="summary-value" id="summaryContrato"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Acta de inicio:</span>
+                                        <span class="summary-value" id="summaryActaInicio"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Registro presupuestal:</span>
+                                        <span class="summary-value" id="summaryRPArchivo"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-warning">
+                            <p><i class="fas fa-exclamation-triangle"></i> <strong>Nota:</strong> Una vez confirmado, los datos no podrán ser modificados desde este formulario.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" id="cancelModalBtn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button class="btn btn-primary" id="confirmSaveBtn">
+                            <i class="fas fa-check"></i> Confirmar y Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Agregar modal al body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Obtener elementos del modal
+        const modal = document.getElementById('confirmModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+        
+        // Función para mostrar el modal
+        function mostrarModal() {
+            // Recopilar datos del formulario
+            const datos = recopilarDatosFormulario();
+            
+            // Llenar el modal con los datos
+            llenarModalConDatos(datos);
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Función para ocultar el modal
+        function ocultarModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Event listeners para el modal
+        closeModalBtn.addEventListener('click', ocultarModal);
+        cancelModalBtn.addEventListener('click', ocultarModal);
+        
+        // Cerrar modal al hacer clic fuera del contenido
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                ocultarModal();
+            }
+        });
+        
+        // Confirmar y guardar
+        confirmSaveBtn.addEventListener('click', function() {
+            ocultarModal();
+            guardarContratista();
+        });
+        
+        return {
+            mostrar: mostrarModal,
+            ocultar: ocultarModal
+        };
+    }
+    
+    // Función para recopilar datos del formulario
+    function recopilarDatosFormulario() {
+        const datos = {};
+        
+        // Obtener valores de los campos
+        const campos = [
+            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion',
+            'numero_contrato', 'fecha_contrato', 'fecha_inicio', 'fecha_final',
+            'duracion_contrato', 'numero_registro_presupuestal', 'fecha_rp',
+            'direccion_municipio_principal', 'direccion_municipio_secundario',
+            'direccion_municipio_terciario'
+        ];
+        
+        campos.forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                datos[id] = elemento.value.trim();
+            }
+        });
+        
+        // Obtener textos de selects
+        const selects = {
+            'id_tipo_vinculacion': 'summaryTipoVinculacion',
+            'id_area': 'summaryArea',
+            'id_municipio_principal': 'summaryMunicipioPrincipal',
+            'id_municipio_secundario': 'summaryMunicipioSecundario',
+            'id_municipio_terciario': 'summaryMunicipioTerciario'
+        };
+        
+        Object.keys(selects).forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                const texto = select.options[select.selectedIndex].text;
+                datos[selects[id]] = texto === 'Seleccione' || texto === 'Ninguno' ? '' : texto;
+            }
+        });
+        
+        // Obtener nombres de archivos
+        const archivos = ['adjuntar_cv', 'adjuntar_contrato', 'adjuntar_acta_inicio', 'adjuntar_rp'];
+        archivos.forEach(id => {
+            const fileInput = document.getElementById(id);
+            datos[id] = fileInput && fileInput.files[0] ? fileInput.files[0].name : 'No seleccionado';
+        });
+        
+        return datos;
+    }
+    
+    // Función para llenar el modal con datos
+    function llenarModalConDatos(datos) {
+        // Datos personales
+        document.getElementById('summaryNombre').textContent = datos.nombre_completo || 'No especificado';
+        document.getElementById('summaryCedula').textContent = datos.cedula || 'No especificado';
+        document.getElementById('summaryCorreo').textContent = datos.correo || 'No especificado';
+        document.getElementById('summaryCelular').textContent = datos.celular || 'No especificado';
+        document.getElementById('summaryTipoVinculacion').textContent = datos.summaryTipoVinculacion || 'No especificado';
+        
+        // Información geográfica
+        document.getElementById('summaryMunicipioPrincipal').textContent = datos.summaryMunicipioPrincipal || 'No especificado';
+        document.getElementById('summaryDireccionPrincipal').textContent = datos.direccion_municipio_principal || 'No especificado';
+        
+        // Municipios secundarios/terciarios (condicionales)
+        const municipioSecundario = datos.summaryMunicipioSecundario;
+        const direccionSecundaria = datos.direccion_municipio_secundario;
+        
+        if (municipioSecundario && municipioSecundario !== '') {
+            document.getElementById('summaryMunicipioSecundarioItem').style.display = 'flex';
+            document.getElementById('summaryDireccionSecundariaItem').style.display = 'flex';
+            document.getElementById('summaryMunicipioSecundario').textContent = municipioSecundario;
+            document.getElementById('summaryDireccionSecundaria').textContent = direccionSecundaria || 'No especificado';
+        } else {
+            document.getElementById('summaryMunicipioSecundarioItem').style.display = 'none';
+            document.getElementById('summaryDireccionSecundariaItem').style.display = 'none';
+        }
+        
+        const municipioTerciario = datos.summaryMunicipioTerciario;
+        const direccionTerciaria = datos.direccion_municipio_terciario;
+        
+        if (municipioTerciario && municipioTerciario !== '') {
+            document.getElementById('summaryMunicipioTerciarioItem').style.display = 'flex';
+            document.getElementById('summaryDireccionTerciariaItem').style.display = 'flex';
+            document.getElementById('summaryMunicipioTerciario').textContent = municipioTerciario;
+            document.getElementById('summaryDireccionTerciaria').textContent = direccionTerciaria || 'No especificado';
+        } else {
+            document.getElementById('summaryMunicipioTerciarioItem').style.display = 'none';
+            document.getElementById('summaryDireccionTerciariaItem').style.display = 'none';
+        }
+        
+        document.getElementById('summaryArea').textContent = datos.summaryArea || 'No especificado';
+        
+        // Información del contrato
+        document.getElementById('summaryNumeroContrato').textContent = datos.numero_contrato || 'No especificado';
+        document.getElementById('summaryFechaContrato').textContent = datos.fecha_contrato || 'No especificado';
+        document.getElementById('summaryFechaInicio').textContent = datos.fecha_inicio || 'No especificado';
+        document.getElementById('summaryFechaFinal').textContent = datos.fecha_final || 'No especificado';
+        document.getElementById('summaryDuracion').textContent = datos.duracion_contrato || 'No especificado';
+        
+        // RP (condicional)
+        if (datos.numero_registro_presupuestal) {
+            document.getElementById('summaryRPItem').style.display = 'flex';
+            document.getElementById('summaryRP').textContent = datos.numero_registro_presupuestal;
+        } else {
+            document.getElementById('summaryRPItem').style.display = 'none';
+        }
+        
+        if (datos.fecha_rp) {
+            document.getElementById('summaryFechaRPItem').style.display = 'flex';
+            document.getElementById('summaryFechaRP').textContent = datos.fecha_rp;
+        } else {
+            document.getElementById('summaryFechaRPItem').style.display = 'none';
+        }
+        
+        // Documentos adjuntos
+        document.getElementById('summaryCV').textContent = datos.adjuntar_cv || 'No seleccionado';
+        document.getElementById('summaryContrato').textContent = datos.adjuntar_contrato || 'No seleccionado';
+        document.getElementById('summaryActaInicio').textContent = datos.adjuntar_acta_inicio || 'No seleccionado';
+        document.getElementById('summaryRPArchivo').textContent = datos.adjuntar_rp || 'No seleccionado';
+    }
+    
+    // Crear el modal al cargar la página
+    const modal = crearModalConfirmacion();
+    
+    // === FUNCIÓN PARA GUARDAR CONTRATISTA (separada) ===
+    async function guardarContratista() {
+        const btnOriginalHTML = guardarBtn.innerHTML;
+        guardarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        guardarBtn.disabled = true;
+        
+        const formData = new FormData();
+        
+        const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
+        formElements.forEach(element => {
+            if (element.name && element.value !== undefined) {
+                if (!element.name.includes('adjuntar_')) {
+                    if ((element.name === 'id_municipio_secundario' || element.name === 'id_municipio_terciario') 
+                        && element.value === '0') {
+                        formData.append(element.name, '');
+                    } else {
+                        formData.append(element.name, element.value);
+                    }
+                }
+            }
+        });
+
+        const archivos = [
+            'adjuntar_cv', 
+            'adjuntar_contrato', 
+            'adjuntar_acta_inicio', 
+            'adjuntar_rp'
+        ];
+        
+        archivos.forEach(id => {
+            const fileInput = document.getElementById(id);
+            if (fileInput && fileInput.files[0]) {
+                formData.append(id, fileInput.files[0]);
+            }
+        });
+        
+        try {
+            const response = await fetch('../../api/procesar_contratista.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const resultado = await response.json();
+            
+            if (resultado.success) {
+                alert(`¡Contratista registrado exitosamente!\n\nContratista N°: ${resultado.id_detalle}`);
+
+                if (resultado.proximo_consecutivo) {
+                    const consecutivoElement = document.querySelector('.consecutivo-number');
+                    if (consecutivoElement) {
+                        consecutivoElement.textContent = resultado.proximo_consecutivo;
+                    }
+                }
+
+                limpiarFormulario();
+
+                guardarBtn.innerHTML = btnOriginalHTML;
+                guardarBtn.disabled = false;
+                const primerCampo = document.getElementById('nombre_completo');
+                if (primerCampo) primerCampo.focus();
+
+                // Limpiar todos los mensajes de error
+                document.querySelectorAll('.validation-message').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+            } else {
+                alert('Error: ' + resultado.error);
+                
+                guardarBtn.innerHTML = btnOriginalHTML;
+                guardarBtn.disabled = false;
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión con el servidor. Por favor intente nuevamente.');
+            
+            guardarBtn.innerHTML = btnOriginalHTML;
+            guardarBtn.disabled = false;
+        }
+    }
     
     // === BOTONES DE NAVEGACIÓN ===
     const volverBtn = document.getElementById('volverBtn');
@@ -567,84 +954,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            const btnOriginalHTML = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-            this.disabled = true;
-            
-            const formData = new FormData();
-            
-            const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
-            formElements.forEach(element => {
-                if (element.name && element.value !== undefined) {
-                    if (!element.name.includes('adjuntar_')) {
-                        if ((element.name === 'id_municipio_secundario' || element.name === 'id_municipio_terciario') 
-                            && element.value === '0') {
-                            formData.append(element.name, '');
-                        } else {
-                            formData.append(element.name, element.value);
-                        }
-                    }
-                }
-            });
-
-            const archivos = [
-                'adjuntar_cv', 
-                'adjuntar_contrato', 
-                'adjuntar_acta_inicio', 
-                'adjuntar_rp'
-            ];
-            
-            archivos.forEach(id => {
-                const fileInput = document.getElementById(id);
-                if (fileInput && fileInput.files[0]) {
-                    formData.append(id, fileInput.files[0]);
-                }
-            });
-            
-            try {
-                const response = await fetch('../../api/procesar_contratista.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const resultado = await response.json();
-                
-                if (resultado.success) {
-                    alert(`¡Contratista registrado exitosamente!\n\nContratista N°: ${resultado.id_detalle}`);
-
-                    if (resultado.proximo_consecutivo) {
-                        const consecutivoElement = document.querySelector('.consecutivo-number');
-                        if (consecutivoElement) {
-                            consecutivoElement.textContent = resultado.proximo_consecutivo;
-                        }
-                    }
-
-                    limpiarFormulario();
-
-                    this.innerHTML = btnOriginalHTML;
-                    this.disabled = false;
-                    const primerCampo = document.getElementById('nombre_completo');
-                    if (primerCampo) primerCampo.focus();
-
-                    // Limpiar todos los mensajes de error
-                    document.querySelectorAll('.validation-message').forEach(el => {
-                        el.style.display = 'none';
-                    });
-                    
-                } else {
-                    alert('Error: ' + resultado.error);
-                    
-                    this.innerHTML = btnOriginalHTML;
-                    this.disabled = false;
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error de conexión con el servidor. Por favor intente nuevamente.');
-                
-                this.innerHTML = btnOriginalHTML;
-                this.disabled = false;
-            }
+            // Mostrar modal de confirmación en lugar de guardar directamente
+            modal.mostrar();
         });
     }
     
@@ -741,7 +1052,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (principalId && secundario && !secundario.value) {
                 if (confirm(`¿Desea asignar "${principalNombre}" como municipio secundario?`)) {
                     secundario.value = principalId;
-                    // Actualizar campo de dirección secundaria
                     toggleDireccionOpcional(secundario, grupoDireccionSecundario, direccionSecundario);
                 }
             }
@@ -749,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (principalId && terciario && !terciario.value) {
                 if (confirm(`¿Desea asignar "${principalNombre}" como municipio terciario?`)) {
                     terciario.value = principalId;
-                    // Actualizar campo de dirección terciaria
                     toggleDireccionOpcional(terciario, grupoDireccionTerciario, direccionTerciario);
                 }
             }
