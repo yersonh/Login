@@ -219,7 +219,7 @@ class ContratistaModel {
                 LEFT JOIN area a ON dc.id_area = a.id_area
                 LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
                 LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
-                ORDER BY dc.created_at DESC";
+                ORDER BY dc.created_at ASC";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
