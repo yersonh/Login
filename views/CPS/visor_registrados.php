@@ -695,10 +695,6 @@ try {
                                                     <span class="badge badge-info">
                                                         <i class="fas fa-file-alt"></i> <?php echo $totalDocumentos; ?> docs
                                                     </span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-warning">
-                                                        <i class="fas fa-exclamation-triangle"></i> Docs incompletos
-                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
