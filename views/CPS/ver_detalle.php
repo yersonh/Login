@@ -280,40 +280,27 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         }
         
         .btn-volver {
-            background-color: #6c757d;
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
+            border-radius: 12px;
+            padding: 14px 22px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 1rem;
-            display: inline-flex;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+            display: flex;
             align-items: center;
-            gap: 8px;
-            text-decoration: none;
+            gap: 10px;
+            z-index: 100;
+            transition: all 0.3s ease;
         }
         
         .btn-volver:hover {
-            background-color: #5a6268;
-        }
-        
-        .btn-editar {
-            background-color: #ffc107;
-            color: #212529;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .btn-editar:hover {
-            background-color: #e0a800;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 74, 141, 0.4);
         }
         
         .empty-doc {
@@ -750,9 +737,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 <div class="action-buttons">
                     <a href="visor_registrados.php" class="btn-volver">
                         <i class="fas fa-arrow-left"></i> Volver al Listado
-                    </a>
-                    <a href="editar_contratista.php?id_detalle=<?php echo $id_detalle; ?>" class="btn-editar">
-                        <i class="fas fa-edit"></i> Editar Contratista
                     </a>
                 </div>
             </div>
