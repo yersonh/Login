@@ -1,0 +1,852 @@
+<?php
+session_start();
+require_once __DIR__ . '/../../helpers/config_helper.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../models/ContratistaModel.php';
+require_once __DIR__ . '/../../models/AreaModel.php';
+require_once __DIR__ . '/../../models/MunicipioModel.php';
+require_once __DIR__ . '/../../models/TipoVinculacionModel.php';
+
+header("Cache-Control: no-cache, no-store, must-revalidate"); 
+header("Pragma: no-cache"); 
+header("Expires: 0"); 
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../../index.php");
+    exit();
+}
+
+if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistente') {
+    $redireccion = match($_SESSION['tipo_usuario'] ?? '') {
+        'usuario' => '../menu.php',
+        default => '../../index.php'
+    };
+    header("Location: $redireccion");
+    exit();
+}
+
+// Obtener ID del contratista
+if (!isset($_GET['id_detalle']) || empty($_GET['id_detalle'])) {
+    $_SESSION['error'] = "ID de contratista no especificado";
+    header("Location: visor_registrados.php");
+    exit();
+}
+
+$id_detalle = (int)$_GET['id_detalle'];
+
+// Inicializar variables
+$contratista = null;
+$areas = [];
+$municipios = [];
+$tiposVinculacion = [];
+$error = '';
+$success = '';
+
+try {
+    $database = new Database();
+    $db = $database->conectar();
+    
+    // Obtener modelos
+    $contratistaModel = new ContratistaModel($db);
+    $areaModel = new AreaModel($db);
+    $municipioModel = new MunicipioModel($db);
+    $tipoVinculacionModel = new TipoVinculacionModel($db);
+    
+    // Obtener datos del contratista
+    $contratista = $contratistaModel->obtenerContratistaPorId($id_detalle);
+    
+    if (!$contratista) {
+        $_SESSION['error'] = "Contratista no encontrado";
+        header("Location: visor_registrados.php");
+        exit();
+    }
+    
+    // Obtener listas para formulario
+    $areas = $areaModel->obtenerTodasAreas();
+    $municipios = $municipioModel->obtenerTodosMunicipios();
+    $tiposVinculacion = $tipoVinculacionModel->obtenerTodosTipos();
+    
+    // Procesar POST si se envió el formulario
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Validar y procesar datos del formulario
+        $datosActualizados = [
+            'nombres' => trim($_POST['nombres'] ?? ''),
+            'apellidos' => trim($_POST['apellidos'] ?? ''),
+            'cedula' => trim($_POST['cedula'] ?? ''),
+            'telefono' => trim($_POST['telefono'] ?? ''),
+            'correo_personal' => trim($_POST['correo_personal'] ?? ''),
+            'id_area' => (int)($_POST['id_area'] ?? 0),
+            'id_tipo_vinculacion' => (int)($_POST['id_tipo_vinculacion'] ?? 0),
+            'id_municipio_principal' => (int)($_POST['id_municipio_principal'] ?? 0),
+            'id_municipio_secundario' => !empty($_POST['id_municipio_secundario']) ? (int)$_POST['id_municipio_secundario'] : null,
+            'id_municipio_terciario' => !empty($_POST['id_municipio_terciario']) ? (int)$_POST['id_municipio_terciario'] : null,
+            'numero_contrato' => trim($_POST['numero_contrato'] ?? ''),
+            'fecha_contrato' => trim($_POST['fecha_contrato'] ?? ''),
+            'fecha_inicio' => trim($_POST['fecha_inicio'] ?? ''),
+            'fecha_final' => trim($_POST['fecha_final'] ?? ''),
+            'duracion_contrato' => trim($_POST['duracion_contrato'] ?? ''),
+            'numero_registro_presupuestal' => trim($_POST['numero_registro_presupuestal'] ?? ''),
+            'fecha_rp' => trim($_POST['fecha_rp'] ?? ''),
+            'direccion_municipio_principal' => trim($_POST['direccion_municipio_principal'] ?? ''),
+            'direccion_municipio_secundario' => trim($_POST['direccion_municipio_secundario'] ?? ''),
+            'direccion_municipio_terciario' => trim($_POST['direccion_municipio_terciario'] ?? ''),
+            'cv_nombre_original' => $contratista['cv_nombre_original'] ?? '', // Mantener archivo existente
+            'contrato_nombre_original' => $contratista['contrato_nombre_original'] ?? '',
+            'acta_inicio_nombre_original' => $contratista['acta_inicio_nombre_original'] ?? '',
+            'rp_nombre_original' => $contratista['rp_nombre_original'] ?? ''
+        ];
+        
+        // Validaciones básicas
+        if (empty($datosActualizados['nombres']) || empty($datosActualizados['apellidos'])) {
+            $error = "El nombre y apellidos son obligatorios";
+        } elseif (empty($datosActualizados['cedula'])) {
+            $error = "La cédula es obligatoria";
+        } elseif (empty($datosActualizados['numero_contrato'])) {
+            $error = "El número de contrato es obligatorio";
+        } else {
+            // Actualizar en la base de datos
+            $resultado = $contratistaModel->actualizarContratista($id_detalle, $datosActualizados);
+            
+            if ($resultado['success']) {
+                $_SESSION['success'] = "Contratista actualizado exitosamente";
+                header("Location: ver_detalle.php?id_detalle=$id_detalle");
+                exit();
+            } else {
+                $error = $resultado['error'] ?? "Error al actualizar el contratista";
+            }
+        }
+    }
+    
+} catch (Exception $e) {
+    error_log("Error en editar_contratista: " . $e->getMessage());
+    $error = "Error al cargar los datos del contratista: " . $e->getMessage();
+}
+
+$nombreUsuario = htmlspecialchars($_SESSION['nombres'] ?? '');
+$apellidoUsuario = htmlspecialchars($_SESSION['apellidos'] ?? '');
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+$nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreCompleto;
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Contratista - Secretaría de Minas y Energía</title>
+    <link rel="icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/visor_registrados.css">
+    <style>
+        .edit-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .edit-header {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .edit-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-section h3 {
+            color: #1e3c72;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        .form-group label i {
+            width: 20px;
+            color: #1e3c72;
+            margin-right: 5px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+        
+        .form-control-sm {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .form-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-cancelar {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-cancelar:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .btn-guardar {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+        }
+        
+        .btn-guardar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-volver {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 22px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-volver:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .file-info {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-info i {
+            color: #1e3c72;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="department-info">
+                    <h1>GOBERNACIÓN DEL META</h1>
+                    <h2>Secretaría de Minas y Energía</h2>
+                </div>
+                <div class="user-profile">
+                    <div class="welcome-user">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Bienvenido(a) </span>
+                        <strong style="font-size: 25px; font-weight: bold;">
+                            <?php echo htmlspecialchars($nombreCompleto); ?>
+                        </strong>
+                    </div>
+                    <div class="user-role">Asistente</div>
+                </div>
+            </div>
+        </header>
+        
+        <main class="app-main">
+            <div class="edit-container">
+                <!-- Encabezado -->
+                <div class="edit-header">
+                    <h1>
+                        <i class="fas fa-user-edit"></i>
+                        Editar Contratista
+                    </h1>
+                    <p>
+                        <i class="fas fa-info-circle"></i>
+                        Modifica la información del contratista <?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos'] ?? ''); ?>
+                    </p>
+                </div>
+                
+                <!-- Mensajes de error/success -->
+                <?php if ($error): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($error); ?>
+                </div>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($_SESSION['error']); ?>
+                    <?php unset($_SESSION['error']); ?>
+                </div>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo htmlspecialchars($_SESSION['success']); ?>
+                    <?php unset($_SESSION['success']); ?>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Formulario -->
+                <form method="POST" action="" class="form-container" id="formEditarContratista">
+                    
+                    <!-- Datos Personales -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-id-card"></i> Datos Personales</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nombres">
+                                    <i class="fas fa-user"></i> Nombres <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="nombres" 
+                                       name="nombres" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="apellidos">
+                                    <i class="fas fa-user"></i> Apellidos <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="apellidos" 
+                                       name="apellidos" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cedula">
+                                    <i class="fas fa-id-card"></i> Cédula <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="cedula" 
+                                       name="cedula" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="telefono">
+                                    <i class="fas fa-phone"></i> Teléfono
+                                </label>
+                                <input type="tel" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="correo_personal">
+                                    <i class="fas fa-envelope"></i> Correo Personal
+                                </label>
+                                <input type="email" 
+                                       id="correo_personal" 
+                                       name="correo_personal" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>">
+                                <span class="form-text">Correo para contactar al contratista</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del Contrato -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-file-contract"></i> Información del Contrato</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="numero_contrato">
+                                    <i class="fas fa-file-invoice"></i> Número de Contrato <span class="required">*</span>
+                                </label>
+                                <input type="text" 
+                                       id="numero_contrato" 
+                                       name="numero_contrato" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['numero_contrato'] ?? ''); ?>"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_contrato">
+                                    <i class="fas fa-calendar-check"></i> Fecha del Contrato
+                                </label>
+                                <input type="date" 
+                                       id="fecha_contrato" 
+                                       name="fecha_contrato" 
+                                       class="form-control"
+                                       value="<?php echo !empty($contratista['fecha_contrato']) ? date('Y-m-d', strtotime($contratista['fecha_contrato'])) : ''; ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_inicio">
+                                    <i class="fas fa-play-circle"></i> Fecha de Inicio
+                                </label>
+                                <input type="date" 
+                                       id="fecha_inicio" 
+                                       name="fecha_inicio" 
+                                       class="form-control"
+                                       value="<?php echo !empty($contratista['fecha_inicio']) ? date('Y-m-d', strtotime($contratista['fecha_inicio'])) : ''; ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_final">
+                                    <i class="fas fa-flag-checkered"></i> Fecha Final
+                                </label>
+                                <input type="date" 
+                                       id="fecha_final" 
+                                       name="fecha_final" 
+                                       class="form-control"
+                                       value="<?php echo !empty($contratista['fecha_final']) ? date('Y-m-d', strtotime($contratista['fecha_final'])) : ''; ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="duracion_contrato">
+                                    <i class="fas fa-clock"></i> Duración
+                                </label>
+                                <input type="text" 
+                                       id="duracion_contrato" 
+                                       name="duracion_contrato" 
+                                       class="form-control"
+                                       placeholder="Ej: 6 meses, 1 año"
+                                       value="<?php echo htmlspecialchars($contratista['duracion_contrato'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="numero_registro_presupuestal">
+                                    <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal
+                                </label>
+                                <input type="text" 
+                                       id="numero_registro_presupuestal" 
+                                       name="numero_registro_presupuestal" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['numero_registro_presupuestal'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_rp">
+                                    <i class="fas fa-calendar-alt"></i> Fecha RP
+                                </label>
+                                <input type="date" 
+                                       id="fecha_rp" 
+                                       name="fecha_rp" 
+                                       class="form-control"
+                                       value="<?php echo !empty($contratista['fecha_rp']) ? date('Y-m-d', strtotime($contratista['fecha_rp'])) : ''; ?>">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información Laboral -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-briefcase"></i> Información Laboral</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="id_area">
+                                    <i class="fas fa-sitemap"></i> Área <span class="required">*</span>
+                                </label>
+                                <select id="id_area" name="id_area" class="form-control" required>
+                                    <option value="">Seleccione un área</option>
+                                    <?php foreach ($areas as $area): ?>
+                                    <option value="<?php echo $area['id_area']; ?>"
+                                        <?php echo ($area['id_area'] == ($contratista['id_area'] ?? 0)) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($area['nombre']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_tipo_vinculacion">
+                                    <i class="fas fa-link"></i> Tipo de Vinculación <span class="required">*</span>
+                                </label>
+                                <select id="id_tipo_vinculacion" name="id_tipo_vinculacion" class="form-control" required>
+                                    <option value="">Seleccione un tipo</option>
+                                    <?php foreach ($tiposVinculacion as $tipo): ?>
+                                    <option value="<?php echo $tipo['id_tipo']; ?>"
+                                        <?php echo ($tipo['id_tipo'] == ($contratista['id_tipo_vinculacion'] ?? 0)) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($tipo['nombre']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ubicación -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="id_municipio_principal">
+                                    <i class="fas fa-map-pin"></i> Municipio Principal <span class="required">*</span>
+                                </label>
+                                <select id="id_municipio_principal" name="id_municipio_principal" class="form-control" required>
+                                    <option value="">Seleccione municipio principal</option>
+                                    <?php foreach ($municipios as $municipio): ?>
+                                    <option value="<?php echo $municipio['id_municipio']; ?>"
+                                        <?php echo ($municipio['id_municipio'] == ($contratista['id_municipio_principal'] ?? 0)) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($municipio['nombre']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion_municipio_principal">
+                                    <i class="fas fa-home"></i> Dirección Principal
+                                </label>
+                                <input type="text" 
+                                       id="direccion_municipio_principal" 
+                                       name="direccion_municipio_principal" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['direccion_municipio_principal'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_municipio_secundario">
+                                    <i class="fas fa-map-marker"></i> Municipio Secundario
+                                </label>
+                                <select id="id_municipio_secundario" name="id_municipio_secundario" class="form-control">
+                                    <option value="">Seleccione municipio secundario</option>
+                                    <?php foreach ($municipios as $municipio): ?>
+                                    <option value="<?php echo $municipio['id_municipio']; ?>"
+                                        <?php echo ($municipio['id_municipio'] == ($contratista['id_municipio_secundario'] ?? 0)) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($municipio['nombre']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion_municipio_secundario">
+                                    <i class="fas fa-home"></i> Dirección Secundaria
+                                </label>
+                                <input type="text" 
+                                       id="direccion_municipio_secundario" 
+                                       name="direccion_municipio_secundario" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['direccion_municipio_secundario'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_municipio_terciario">
+                                    <i class="fas fa-map-marker"></i> Municipio Terciario
+                                </label>
+                                <select id="id_municipio_terciario" name="id_municipio_terciario" class="form-control">
+                                    <option value="">Seleccione municipio terciario</option>
+                                    <?php foreach ($municipios as $municipio): ?>
+                                    <option value="<?php echo $municipio['id_municipio']; ?>"
+                                        <?php echo ($municipio['id_municipio'] == ($contratista['id_municipio_terciario'] ?? 0)) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($municipio['nombre']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion_municipio_terciario">
+                                    <i class="fas fa-home"></i> Dirección Terciaria
+                                </label>
+                                <input type="text" 
+                                       id="direccion_municipio_terciario" 
+                                       name="direccion_municipio_terciario" 
+                                       class="form-control"
+                                       value="<?php echo htmlspecialchars($contratista['direccion_municipio_terciario'] ?? ''); ?>">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Documentos (solo información) -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-paperclip"></i> Documentos Adjuntos</h3>
+                        <p><i class="fas fa-info-circle"></i> Los documentos no se pueden modificar desde esta vista. Si necesitas cambiar un documento, contacta al administrador.</p>
+                        
+                        <div class="form-grid">
+                            <?php if (!empty($contratista['cv_nombre_original'])): ?>
+                            <div class="file-info">
+                                <i class="fas fa-user-graduate"></i>
+                                <span><strong>CV:</strong> <?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($contratista['contrato_nombre_original'])): ?>
+                            <div class="file-info">
+                                <i class="fas fa-file-contract"></i>
+                                <span><strong>Contrato:</strong> <?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
+                            <div class="file-info">
+                                <i class="fas fa-file-signature"></i>
+                                <span><strong>Acta de inicio:</strong> <?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($contratista['rp_nombre_original'])): ?>
+                            <div class="file-info">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span><strong>RP:</strong> <?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="form-actions">
+                        <a href="ver_detalle.php?id_detalle=<?php echo $id_detalle; ?>" class="btn btn-cancelar">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-guardar">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+        
+        <button class="btn-volver" onclick="window.location.href='visor_registrados.php'">
+            <i class="fas fa-arrow-left"></i> Volver al Listado
+        </button>
+        
+        <footer class="app-footer">
+            <div class="footer-center">
+                <?php
+                $logoUrl = ConfigHelper::obtenerLogoUrl();
+                $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
+                $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
+                $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
+                $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
+                $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+                $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
+                $anio = date('Y');
+                ?>
+                
+                <div class="footer-logo-container">
+                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                        alt="<?php echo $entidad; ?>" 
+                        class="license-logo"
+                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+                </div>
+                
+                <p>
+                    © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
+                    <strong><?php echo $desarrollador; ?></strong>
+                </p>
+                
+                <p>
+                    <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
+                    By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
+                </p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validación del formulario
+            const form = document.getElementById('formEditarContratista');
+            form.addEventListener('submit', function(e) {
+                let valid = true;
+                
+                // Validar campos requeridos
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        valid = false;
+                        field.style.borderColor = '#dc3545';
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                // Validar cédula (solo números)
+                const cedula = document.getElementById('cedula');
+                if (cedula.value && !/^\d+$/.test(cedula.value)) {
+                    valid = false;
+                    alert('La cédula debe contener solo números');
+                    cedula.focus();
+                }
+                
+                // Validar fechas
+                const fechaInicio = document.getElementById('fecha_inicio');
+                const fechaFinal = document.getElementById('fecha_final');
+                
+                if (fechaInicio.value && fechaFinal.value) {
+                    const inicio = new Date(fechaInicio.value);
+                    const final = new Date(fechaFinal.value);
+                    
+                    if (final < inicio) {
+                        valid = false;
+                        alert('La fecha final no puede ser anterior a la fecha de inicio');
+                        fechaFinal.focus();
+                    }
+                }
+                
+                if (!valid) {
+                    e.preventDefault();
+                    alert('Por favor complete todos los campos requeridos correctamente');
+                }
+            });
+            
+            // Formato automático para teléfono
+            const telefono = document.getElementById('telefono');
+            telefono.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.substring(0, 10); // Limitar a 10 dígitos
+                    if (value.length <= 3) {
+                        value = value;
+                    } else if (value.length <= 6) {
+                        value = value.substring(0,3) + '-' + value.substring(3);
+                    } else {
+                        value = value.substring(0,3) + '-' + value.substring(3,6) + '-' + value.substring(6);
+                    }
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
+    
+</body>
+</html>
