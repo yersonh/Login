@@ -164,47 +164,48 @@ try {
         
         .badge-success { background-color: #d4edda; color: #155724; }
         .badge-warning { background-color: #fff3cd; color: #856404; }
-        .badge-primary { background-color: #d1ecf1; color: #0c5460; }
         .badge-danger { background-color: #f8d7da; color: #721c24; }
-        .badge-info { background-color: #e2e3e5; color: #383d41; }
         
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: nowrap;
         }
         
         .btn-action {
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
         
-        .btn-view { background-color: #17a2b8; color: white; }
-        .btn-view:hover { background-color: #138496; transform: translateY(-2px); }
+        .btn-view { 
+            background-color: #17a2b8; 
+            color: white; 
+        }
         
-        .btn-download { background-color: #28a745; color: white; }
-        .btn-download:hover { background-color: #218838; transform: translateY(-2px); }
+        .btn-view:hover { 
+            background-color: #138496; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
         
-        .btn-edit { background-color: #ffc107; color: #212529; }
-        .btn-edit:hover { background-color: #e0a800; transform: translateY(-2px); }
+        .btn-edit { 
+            background-color: #ffc107; 
+            color: #212529; 
+        }
         
-        .btn-delete { background-color: #dc3545; color: white; }
-        .btn-delete:hover { background-color: #c82333; transform: translateY(-2px); }
-        
-        /* Nueva columna de documentos más compacta */
-        .contratistas-table th:nth-child(9),
-        .contratistas-table td:nth-child(9) {
-            min-width: 120px;
-            max-width: 120px;
+        .btn-edit:hover { 
+            background-color: #e0a800; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
         }
         
         /* Contenedor de municipios */
@@ -240,7 +241,7 @@ try {
             }
             
             .contratistas-table {
-                min-width: 1100px;
+                min-width: 1000px;
             }
         }
         
@@ -255,42 +256,19 @@ try {
             min-width: 180px;
         }
         
-        /* Indicador de documentos */
-        .doc-count {
-            background-color: #6c757d;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: -5px;
-            right: -5px;
+        /* Tabla más compacta */
+        .contratistas-table {
+            font-size: 0.9rem;
         }
         
-        /* Modal para ver documentos */
-        .documents-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
+        .contratistas-table th {
+            padding: 12px 8px;
+            font-weight: 600;
         }
         
-        .documents-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 90%;
+        .contratistas-table td {
+            padding: 10px 8px;
+            vertical-align: top;
         }
     </style>
 </head>
@@ -322,7 +300,7 @@ try {
                 <p>Consulta y visualización de todos los contratistas del sistema</p>
             </div>
             
-            <!-- Estadísticas mejoradas -->
+            <!-- Estadísticas simplificadas -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -346,13 +324,6 @@ try {
                     }
                 });
                 
-                $conDocumentosCompletos = array_filter($contratistas, function($c) {
-                    return !empty($c['cv_nombre_original']) && 
-                           !empty($c['contrato_nombre_original']) &&
-                           !empty($c['acta_inicio_nombre_original']) &&
-                           !empty($c['rp_nombre_original']);
-                });
-                
                 $conMultiplesMunicipios = array_filter($contratistas, function($c) {
                     return !empty($c['municipio_secundario']) || !empty($c['municipio_terciario']);
                 });
@@ -370,16 +341,6 @@ try {
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number"><?php echo count($conDocumentosCompletos); ?></div>
-                        <div class="stat-label">Documentos Completos</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
                     <div class="stat-content">
@@ -387,9 +348,33 @@ try {
                         <div class="stat-label">Múltiples Municipios</div>
                     </div>
                 </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">
+                            <?php 
+                            $contratosVencidos = array_filter($contratistas, function($c) {
+                                if (!isset($c['fecha_final'])) return false;
+                                try {
+                                    $fechaFinal = new DateTime($c['fecha_final']);
+                                    $hoy = new DateTime();
+                                    return $fechaFinal < $hoy;
+                                } catch (Exception $e) {
+                                    return false;
+                                }
+                            });
+                            echo count($contratosVencidos);
+                            ?>
+                        </div>
+                        <div class="stat-label">Contratos Vencidos</div>
+                    </div>
+                </div>
             </div>
             
-            <!-- Herramientas de búsqueda mejoradas -->
+            <!-- Herramientas de búsqueda -->
             <div class="tools-section">
                 <div class="search-container">
                     <div class="search-box">
@@ -434,16 +419,6 @@ try {
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        
-                        <select id="filterDocuments" class="filter-select">
-                            <option value="">Todos los documentos</option>
-                            <option value="completos">Documentos completos</option>
-                            <option value="incompletos">Documentos incompletos</option>
-                            <option value="cv">Con CV</option>
-                            <option value="contrato">Con contrato</option>
-                            <option value="acta">Con acta</option>
-                            <option value="rp">Con RP</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -456,8 +431,8 @@ try {
                         Mostrando <span id="rowCount"><?php echo count($contratistas); ?></span> registros
                         <?php if (count($contratistas) > 0): ?>
                             <span class="text-muted" style="margin-left: 10px; font-size: 0.9rem;">
-                                <i class="fas fa-info-circle"></i>
-                                Haz clic en los iconos para ver/descargar documentos
+                                <i class="fas fa-mouse-pointer"></i>
+                                Haz clic en los iconos de documentos para descargar
                             </span>
                         <?php endif; ?>
                     </div>
@@ -510,13 +485,11 @@ try {
                                         }
                                     }
                                     
-                                    // Contar documentos
+                                    // Verificar documentos
                                     $tieneCV = !empty($contratista['cv_nombre_original']);
                                     $tieneContrato = !empty($contratista['contrato_nombre_original']);
                                     $tieneActa = !empty($contratista['acta_inicio_nombre_original']);
                                     $tieneRP = !empty($contratista['rp_nombre_original']);
-                                    $totalDocumentos = ($tieneCV ? 1 : 0) + ($tieneContrato ? 1 : 0) + 
-                                                      ($tieneActa ? 1 : 0) + ($tieneRP ? 1 : 0);
                                     
                                     // Municipios
                                     $municipios = [];
@@ -529,15 +502,10 @@ try {
                                     if (!empty($contratista['municipio_terciario'])) {
                                         $municipios[] = ['nombre' => $contratista['municipio_terciario'], 'tipo' => 'terciario'];
                                     }
-                                    
-                                    // Tamaños de archivos
-                                    $tamanoCV = !empty($contratista['cv_tamano']) ? round($contratista['cv_tamano'] / 1024, 1) : 0;
                                 ?>
                                     <tr class="contratista-row" 
                                         data-estado-contrato="<?php echo $estadoContrato; ?>"
                                         data-area="<?php echo htmlspecialchars($contratista['area'] ?? ''); ?>"
-                                        data-documentos="<?php echo $totalDocumentos; ?>"
-                                        data-municipios="<?php echo count($municipios); ?>"
                                         data-has-cv="<?php echo $tieneCV ? '1' : '0'; ?>"
                                         data-has-contrato="<?php echo $tieneContrato ? '1' : '0'; ?>"
                                         data-has-acta="<?php echo $tieneActa ? '1' : '0'; ?>"
@@ -558,20 +526,24 @@ try {
                                                     <i class="fas fa-phone"></i>
                                                     <span><?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></span>
                                                 </div>
+                                                <?php if (!empty($contratista['correo'])): ?>
                                                 <div class="info-line">
                                                     <i class="fas fa-envelope"></i>
-                                                    <span style="font-size: 0.8rem;"><?php echo htmlspecialchars($contratista['correo'] ?? 'N/A'); ?></span>
+                                                    <span style="font-size: 0.8rem;"><?php echo htmlspecialchars($contratista['correo']); ?></span>
                                                 </div>
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         
                                         <!-- Información -->
                                         <td>
                                             <div class="compact-info">
+                                                <?php if (!empty($contratista['tipo_vinculacion'])): ?>
                                                 <div class="info-line">
                                                     <i class="fas fa-briefcase"></i>
-                                                    <span><?php echo htmlspecialchars($contratista['tipo_vinculacion'] ?? 'N/A'); ?></span>
+                                                    <span><?php echo htmlspecialchars($contratista['tipo_vinculacion']); ?></span>
                                                 </div>
+                                                <?php endif; ?>
                                                 <div class="info-line">
                                                     <i class="fas fa-sitemap"></i>
                                                     <span><?php echo htmlspecialchars($contratista['area'] ?? 'N/A'); ?></span>
@@ -621,7 +593,7 @@ try {
                                                     <i class="fas fa-map-marker-alt municipio-icon"></i>
                                                     <span><?php echo htmlspecialchars($municipio['nombre']); ?></span>
                                                     <?php if ($municipio['tipo'] === 'principal'): ?>
-                                                    <small class="badge badge-primary" style="margin-left: auto; padding: 1px 4px; font-size: 0.7rem;">
+                                                    <small class="badge badge-success" style="margin-left: auto; padding: 1px 4px; font-size: 0.7rem;">
                                                         Principal
                                                     </small>
                                                     <?php endif; ?>
@@ -639,34 +611,28 @@ try {
                                         <td class="text-center">
                                             <div class="document-icons">
                                                 <div class="doc-icon cv <?php echo $tieneCV ? 'has-file' : 'no-file'; ?>" 
-                                                     onclick="<?php echo $tieneCV ? 'descargarCV(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                     onclick="<?php echo $tieneCV ? 'descargarCV(' . $contratista['id_detalle'] . ')' : ''; ?>"
+                                                     title="<?php echo $tieneCV ? 'CV: ' . htmlspecialchars($contratista['cv_nombre_original']) : 'Sin CV'; ?>">
                                                     <i class="fas fa-user-graduate"></i>
-                                                    <span class="tooltip-text"><?php echo $tieneCV ? 'CV: ' . htmlspecialchars(substr($contratista['cv_nombre_original'], 0, 20)) . '...' : 'Sin CV'; ?></span>
                                                 </div>
                                                 
                                                 <div class="doc-icon contrato <?php echo $tieneContrato ? 'has-file' : 'no-file'; ?>" 
-                                                     onclick="<?php echo $tieneContrato ? 'descargarContrato(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                     onclick="<?php echo $tieneContrato ? 'descargarContrato(' . $contratista['id_detalle'] . ')' : ''; ?>"
+                                                     title="<?php echo $tieneContrato ? 'Contrato PDF' : 'Sin contrato'; ?>">
                                                     <i class="fas fa-file-contract"></i>
-                                                    <span class="tooltip-text"><?php echo $tieneContrato ? 'Contrato PDF' : 'Sin contrato'; ?></span>
                                                 </div>
                                                 
                                                 <div class="doc-icon acta <?php echo $tieneActa ? 'has-file' : 'no-file'; ?>" 
-                                                     onclick="<?php echo $tieneActa ? 'descargarActa(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                     onclick="<?php echo $tieneActa ? 'descargarActa(' . $contratista['id_detalle'] . ')' : ''; ?>"
+                                                     title="<?php echo $tieneActa ? 'Acta de inicio' : 'Sin acta'; ?>">
                                                     <i class="fas fa-file-signature"></i>
-                                                    <span class="tooltip-text"><?php echo $tieneActa ? 'Acta de inicio' : 'Sin acta'; ?></span>
                                                 </div>
                                                 
                                                 <div class="doc-icon rp <?php echo $tieneRP ? 'has-file' : 'no-file'; ?>" 
-                                                     onclick="<?php echo $tieneRP ? 'descargarRP(' . $contratista['id_detalle'] . ')' : ''; ?>">
+                                                     onclick="<?php echo $tieneRP ? 'descargarRP(' . $contratista['id_detalle'] . ')' : ''; ?>"
+                                                     title="<?php echo $tieneRP ? 'Registro presupuestal' : 'Sin RP'; ?>">
                                                     <i class="fas fa-file-invoice-dollar"></i>
-                                                    <span class="tooltip-text"><?php echo $tieneRP ? 'Registro presupuestal' : 'Sin RP'; ?></span>
                                                 </div>
-                                                
-                                                <?php if ($totalDocumentos > 0): ?>
-                                                <div class="badge badge-info" style="margin-top: 5px; padding: 2px 6px; font-size: 0.7rem;">
-                                                    <?php echo $totalDocumentos; ?>/4 docs
-                                                </div>
-                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         
@@ -686,33 +652,16 @@ try {
                                                         <i class="fas fa-question-circle"></i> Sin fecha
                                                     </span>
                                                 <?php endif; ?>
-                                                
-                                                <?php if ($totalDocumentos === 4): ?>
-                                                    <span class="badge badge-primary">
-                                                        <i class="fas fa-check"></i> Docs completos
-                                                    </span>
-                                                <?php elseif ($totalDocumentos >= 2): ?>
-                                                    <span class="badge badge-info">
-                                                        <i class="fas fa-file-alt"></i> <?php echo $totalDocumentos; ?> docs
-                                                    </span>
-                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         
-                                        <!-- Acciones -->
+                                        <!-- Acciones simplificadas -->
                                         <td class="text-center">
                                             <div class="action-buttons">
                                                 <button class="btn-action btn-view" 
                                                         onclick="verDetalle('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
                                                         title="Ver detalles completos">
                                                     <i class="fas fa-eye"></i>
-                                                </button>
-                                                
-                                                <button class="btn-action btn-download" 
-                                                        onclick="descargarTodo('<?php echo $contratista['id_detalle'] ?? 0; ?>')"
-                                                        title="Descargar todos los documentos"
-                                                        <?php echo $totalDocumentos === 0 ? 'disabled' : ''; ?>>
-                                                    <i class="fas fa-download"></i>
                                                 </button>
                                                 
                                                 <button class="btn-action btn-edit" 
@@ -730,7 +679,7 @@ try {
                 </div>
             </div>
             
-            <!-- Paginación (si es necesaria) -->
+            <!-- Paginación -->
             <?php if (count($contratistas) > 50): ?>
             <div class="pagination-container">
                 <div class="pagination-info">
@@ -758,30 +707,46 @@ try {
         
         <footer class="app-footer">
             <div class="footer-center">
-                <!-- Footer como antes -->
+                <?php
+                $logoUrl = ConfigHelper::obtenerLogoUrl();
+                $entidad = htmlspecialchars(ConfigHelper::obtener('entidad', 'Gobernación del Meta'));
+                $version = htmlspecialchars(ConfigHelper::obtenerVersionCompleta());
+                $desarrollador = htmlspecialchars(ConfigHelper::obtener('desarrollado_por', 'SisgonTech'));
+                $direccion = htmlspecialchars(ConfigHelper::obtener('direccion'));
+                $correo = htmlspecialchars(ConfigHelper::obtener('correo_contacto'));
+                $telefono = htmlspecialchars(ConfigHelper::obtener('telefono'));
+                $anio = date('Y');
+                ?>
+                
+                <div class="footer-logo-container">
+                    <img src="<?php echo htmlspecialchars($logoUrl); ?>" 
+                        alt="<?php echo $entidad; ?>" 
+                        class="license-logo"
+                        onerror="this.onerror=null; this.src='/imagenes/gobernacion.png'">
+                </div>
+                
+                <!-- Primera línea concatenada -->
+                <p>
+                    © <?php echo $anio; ?> <?php echo $entidad; ?> <?php echo $version; ?>® desarrollado por 
+                    <strong><?php echo $desarrollador; ?></strong>
+                </p>
+                
+                <!-- Segunda línea concatenada -->
+                <p>
+                    <?php echo $direccion; ?> - Asesores e-Governance Solutions para Entidades Públicas <?php echo $anio; ?>® 
+                    By: Ing. Rubén Darío González García <?php echo $telefono; ?>. Contacto: <strong><?php echo $correo; ?></strong> - Reservados todos los derechos de autor.  
+                </p>
             </div>
         </footer>
     </div>
     
-    <!-- Modal para documentos -->
-    <div id="documentsModal" class="documents-modal">
-        <div class="documents-content">
-            <h4>Documentos del Contratista</h4>
-            <div id="documentsList"></div>
-            <div style="text-align: right; margin-top: 20px;">
-                <button onclick="cerrarModal()" class="btn btn-secondary">Cerrar</button>
-            </div>
-        </div>
-    </div>
-    
     <!-- Scripts -->
     <script>
-        // Función para filtrar tabla mejorada
+        // Función para filtrar tabla
         function filtrarTabla() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterArea = document.getElementById('filterArea').value;
-            const filterDocuments = document.getElementById('filterDocuments').value;
             const rows = document.querySelectorAll('.contratista-row');
             let visibleCount = 0;
             
@@ -789,16 +754,10 @@ try {
                 const text = row.textContent.toLowerCase();
                 const estadoContrato = row.getAttribute('data-estado-contrato');
                 const area = row.getAttribute('data-area').toLowerCase();
-                const totalDocumentos = parseInt(row.getAttribute('data-documentos'));
-                const hasCV = row.getAttribute('data-has-cv') === '1';
-                const hasContrato = row.getAttribute('data-has-contrato') === '1';
-                const hasActa = row.getAttribute('data-has-acta') === '1';
-                const hasRP = row.getAttribute('data-has-rp') === '1';
                 
                 let matchesSearch = text.includes(searchTerm);
                 let matchesStatus = true;
                 let matchesArea = true;
-                let matchesDocuments = true;
                 
                 // Filtrar por estado de contrato
                 if (filterStatus) {
@@ -811,31 +770,7 @@ try {
                     matchesArea = false;
                 }
                 
-                // Filtrar por documentos
-                if (filterDocuments) {
-                    switch(filterDocuments) {
-                        case 'completos':
-                            if (totalDocumentos !== 4) matchesDocuments = false;
-                            break;
-                        case 'incompletos':
-                            if (totalDocumentos === 4) matchesDocuments = false;
-                            break;
-                        case 'cv':
-                            if (!hasCV) matchesDocuments = false;
-                            break;
-                        case 'contrato':
-                            if (!hasContrato) matchesDocuments = false;
-                            break;
-                        case 'acta':
-                            if (!hasActa) matchesDocuments = false;
-                            break;
-                        case 'rp':
-                            if (!hasRP) matchesDocuments = false;
-                            break;
-                    }
-                }
-                
-                if (matchesSearch && matchesStatus && matchesArea && matchesDocuments) {
+                if (matchesSearch && matchesStatus && matchesArea) {
                     row.style.display = '';
                     visibleCount++;
                 } else {
@@ -878,7 +813,6 @@ try {
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').selectedIndex = 0;
             document.getElementById('filterArea').selectedIndex = 0;
-            document.getElementById('filterDocuments').selectedIndex = 0;
             filtrarTabla();
         }
         
@@ -903,25 +837,6 @@ try {
             window.open(`../../controllers/descargar_rp.php?id=${idDetalle}`, '_blank');
         }
         
-        function descargarTodo(idDetalle) {
-            if (!idDetalle || idDetalle === '0') return;
-            // Abrir todos los documentos en nuevas pestañas
-            descargarCV(idDetalle);
-            descargarContrato(idDetalle);
-            descargarActa(idDetalle);
-            descargarRP(idDetalle);
-        }
-        
-        // Funciones para modal de documentos
-        function verDocumentos(idDetalle) {
-            // Aquí puedes cargar dinámicamente la lista de documentos
-            document.getElementById('documentsModal').style.display = 'flex';
-        }
-        
-        function cerrarModal() {
-            document.getElementById('documentsModal').style.display = 'none';
-        }
-        
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Buscar
@@ -930,7 +845,6 @@ try {
             // Filtros
             document.getElementById('filterStatus').addEventListener('change', filtrarTabla);
             document.getElementById('filterArea').addEventListener('change', filtrarTabla);
-            document.getElementById('filterDocuments').addEventListener('change', filtrarTabla);
             
             // Botones
             document.getElementById('clearFiltersBtn').addEventListener('click', limpiarFiltros);
@@ -942,11 +856,6 @@ try {
             // Permitir buscar con Enter
             document.getElementById('searchInput').addEventListener('keyup', function(event) {
                 if (event.key === 'Enter') filtrarTabla();
-            });
-            
-            // Cerrar modal al hacer clic fuera
-            document.getElementById('documentsModal').addEventListener('click', function(e) {
-                if (e.target === this) cerrarModal();
             });
         });
         
