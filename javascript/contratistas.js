@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const opciones = [
             'agregar-contratista',
+            'municipios-card',
             'modificar-contratista',
             'parametrizar-obligaciones',
             'dashboard-estadistico',
@@ -34,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'agregar-contratista':
                 window.location.href = 'agregar_contratista.php';
                 break;
+            case 'municipios-card':
+                window.location.href = 'SitiosAsignados.php';
             case 'modificar-contratista':
                 window.location.href = 'modificar_contratista.php';
                 break;

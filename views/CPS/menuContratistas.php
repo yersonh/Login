@@ -88,6 +88,16 @@ if (empty($nombreCompleto)) {
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
+                <!-- Opción 2: Sitios Asignados -->
+                <div class="service-card"  id="municipios-card">
+                    <div class="service-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                </div> 
+                    <div class="service-name">Sitios Asignados</div>
+                    <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
+                    <div class="service-status status-available">Disponible</div>
+                </div>
+                
                 <!-- Opción 3: Parametrizar obligaciones -->
                 <div class="service-card" id="parametrizar-obligaciones">
                     <div class="service-icon">
@@ -95,7 +105,7 @@ if (empty($nombreCompleto)) {
                     </div>
                     <div class="service-name">Parametrizar Obligaciones</div>
                     <div class="service-desc">Configurar obligaciones contractuales</div>
-                    <div class="service-status status-available">Disponible</div>
+                    <div class="service-status status-unavailable">Disponible</div>
                 </div>
                 
                 <!-- Opción 4: Dashboard estadístico -->
