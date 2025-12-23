@@ -45,8 +45,19 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModalClave();
             return;
         }
+        
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
+            
+            // AÑADE ESTO: Manejar redirección específica para CPS
+            if (card.id === 'CPS-card') {
+                setTimeout(() => {
+                    window.location.href = 'CPS/menuContratistas.php';
+                }, 500);
+                return;
+            }
+            
+            // Aquí puedes agregar más redirecciones para otras tarjetas si es necesario
         } else {
             showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
         }
