@@ -37,8 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'municipios-card':
                 window.location.href = 'SitiosAsignados.php';
-            case 'modificar-contratista':
-                window.location.href = 'modificar_contratista.php';
                 break;
             case 'parametrizar-obligaciones':
                 // Mostrar modal de clave para esta opción
