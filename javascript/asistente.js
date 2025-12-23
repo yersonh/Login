@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const serviceCards = document.querySelectorAll('.service-card');
     const adminCard = document.getElementById('admin-card');
-    const CPSCard = document.getElementById('CPS-card');
     const modalClave = document.getElementById('modalClave');
     const inputClave = document.getElementById('inputClave');
     const btnIngresar = document.getElementById('btnIngresarClave');
@@ -46,12 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModalClave();
             return;
         }
-
-        if (card === CPSCard && statusElement.classList.contains('status-available')) {
-            irCPS();
-            return;
-        }
-
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
         } else {
@@ -310,11 +303,6 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.classList.add('show');
         errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-
-    function irCPS() {
-        window.location.href = 'CPS/agregar_contratista.php';
-    }
-
     if (!document.querySelector('#shake-animation')) {
         const style = document.createElement('style');
         style.id = 'shake-animation';
