@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function irCPS() {
-        window.location.href = 'CPS/menuContratistas.php';
+        window.location.href = 'CPS/agregar_contratista.php';
     }
 
     if (!document.querySelector('#shake-animation')) {
