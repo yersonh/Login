@@ -130,7 +130,7 @@ if (empty($nombreCompleto)) {
             </div>
         </main>
         
-        <button class="volver-btn" id="volverBtn">
+        <button class="volver-btn" id="volverBtn" onclick="window.location.href='../menuAsistente.php'";>
             <i class="fas fa-arrow-left"></i>
             <span>Volver al Menú</span>
         </button>
