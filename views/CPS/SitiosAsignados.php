@@ -29,7 +29,7 @@
     
     <script>
         document.getElementById('volverBtn').addEventListener('click', () => {
-            window.location.href = 'OpcionesCPS.php';
+            window.location.href = 'menuContratistas.php';
         });
     </script>
 
