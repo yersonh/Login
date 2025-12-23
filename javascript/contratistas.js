@@ -1,4 +1,4 @@
-// javascript/aom.js
+
 document.addEventListener('DOMContentLoaded', function() {
     
     initButtons();
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'agregar-contratista':
                 window.location.href = 'agregar_contratista.php';
                 break;
-            case 'municipios-card':
+            case 'sitios-asignados':
                 window.location.href = 'SitiosAsignados.php';
                 break;
             case 'parametrizar-obligaciones':

@@ -89,12 +89,12 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Opción 2: Sitios Asignados -->
-                <div class="service-card"  id="municipios-card">
+                <div class="service-card" id="sitios-asignados">
                     <div class="service-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                </div> 
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
                     <div class="service-name">Sitios Asignados</div>
-                    <div class="service-desc">Gestión de municipios bajo responsabilidad</div>
+                    <div class="service-desc">Visualización de sitios asignados</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
