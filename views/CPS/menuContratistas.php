@@ -89,7 +89,7 @@ if (empty($nombreCompleto)) {
                 </div>
                 
                 <!-- Opción 2: Sitios Asignados -->
-                <div class="service-card" id="sitios-asignados">
+                <div class="service-card" id="sitios-asignados" onclick ="window.location.href='SitiosAsignados.php'">
                     <div class="service-icon">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
