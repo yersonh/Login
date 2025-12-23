@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const serviceCards = document.querySelectorAll('.service-card');
     const adminCard = document.getElementById('admin-card');
+    const CPSCard = document.getElementById('CPS-card');
     const modalClave = document.getElementById('modalClave');
     const inputClave = document.getElementById('inputClave');
     const btnIngresar = document.getElementById('btnIngresarClave');
@@ -45,19 +46,14 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModalClave();
             return;
         }
-        
+
+        if (card === CPSCard && statusElement.classList.contains('status-available')) {
+            irCPS();
+            return;
+        }
+
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');
-            
-            // AÑADE ESTO: Manejar redirección específica para CPS
-            if (card.id === 'CPS-card') {
-                setTimeout(() => {
-                    window.location.href = 'CPS/menuContratistas.php';
-                }, 500);
-                return;
-            }
-            
-            // Aquí puedes agregar más redirecciones para otras tarjetas si es necesario
         } else {
             showNotification(`El servicio "${serviceName}" se encuentra en mantenimiento.`, 'error');
         }
@@ -314,6 +310,11 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.classList.add('show');
         errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    function irCPS() {
+        window.location.href = 'CPS/menuContratistas.php';
+    }
+
     if (!document.querySelector('#shake-animation')) {
         const style = document.createElement('style');
         style.id = 'shake-animation';
