@@ -132,15 +132,6 @@ try {
         </label>
         
         <div class="foto-container">
-            <!-- Vista previa de la foto -->
-            <div class="foto-preview" id="fotoPreview">
-                <div class="foto-placeholder">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Vista previa</span>
-                    <small>Seleccione una foto</small>
-                </div>
-                <img id="fotoPreviewImg" style="display: none; max-width: 100%; border-radius: 8px;">
-            </div>
             
             <!-- Input para subir la foto -->
             <div class="foto-input-group">
