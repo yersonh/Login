@@ -284,47 +284,56 @@ class ContratistaModel {
 
     public function obtenerContratistaPorId($id_detalle) {
     $sql = "SELECT 
-                p.*, dc.*,
-                a.nombre AS area_nombre,
-                tv.nombre AS tipo_vinculacion_nombre,
-                m1.nombre AS municipio_principal_nombre,
-                m2.nombre AS municipio_secundario_nombre,
-                m3.nombre AS municipio_terciario_nombre,
-                dc.cv_archivo, dc.cv_nombre_original, 
-                dc.cv_tipo_mime, dc.cv_tamano,
-                dc.direccion_municipio_principal,
-                dc.direccion_municipio_secundario,
-                dc.direccion_municipio_terciario,
-                dc.contrato_archivo, dc.contrato_nombre_original,
-                dc.contrato_tipo_mime, dc.contrato_tamano,
-                dc.acta_inicio_archivo, dc.acta_inicio_nombre_original,
-                dc.acta_inicio_tipo_mime, dc.acta_inicio_tamano,
-                dc.rp_archivo, dc.rp_nombre_original,
-                dc.rp_tipo_mime, dc.rp_tamano,
-                fp.id_foto, fp.nombre_archivo AS foto_nombre,
-                fp.tipo_mime AS foto_tipo_mime,
-                fp.contenido AS foto_contenido,
-                fp.fecha_subida AS foto_fecha_subida
-                -- NOTA: No se incluye tamano porque no existe en fotos_perfil
-            FROM detalle_contrato dc
-            JOIN persona p ON dc.id_persona = p.id_persona
-            LEFT JOIN area a ON dc.id_area = a.id_area
-            LEFT JOIN tipo_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
-            LEFT JOIN municipio m1 ON dc.id_municipio_principal = m1.id_municipio
-            LEFT JOIN municipio m2 ON dc.id_municipio_secundario = m2.id_municipio
-            LEFT JOIN municipio m3 ON dc.id_municipio_terciario = m3.id_municipio
-            LEFT JOIN fotos_perfil fp ON p.id_persona = fp.id_persona 
-                AND fp.fecha_subida = (
-                    SELECT MAX(fecha_subida) 
-                    FROM fotos_perfil fp2 
-                    WHERE fp2.id_persona = p.id_persona
-                )
-            WHERE dc.id_detalle = :id_detalle";
+        p.id_persona,
+        p.nombres,
+        p.apellidos,
+        p.cedula,
+        p.correo_personal,
+        p.telefono,
+        p.profesion,  // <-- NUEVO: Agregar profesión
+        dc.id_detalle,
+        dc.numero_contrato,
+        dc.fecha_contrato,
+        dc.fecha_inicio,
+        dc.fecha_final,
+        dc.duracion_contrato,
+        dc.numero_registro_presupuestal,  // <-- RP ya debería estar
+        dc.fecha_rp,
+        dc.direccion_municipio_principal,
+        dc.direccion_municipio_secundario,
+        dc.direccion_municipio_terciario,
+        dc.created_at,
+        a.nombre as area_nombre,
+        tv.nombre as tipo_vinculacion_nombre,
+        m1.nombre as municipio_principal_nombre,
+        m2.nombre as municipio_secundario_nombre,
+        m3.nombre as municipio_terciario_nombre,
+        dc.cv_nombre_original,
+        dc.cv_tipo_mime,
+        dc.cv_tamano,
+        dc.contrato_nombre_original,
+        dc.contrato_tipo_mime,
+        dc.contrato_tamano,
+        dc.acta_inicio_nombre_original,
+        dc.acta_inicio_tipo_mime,
+        dc.acta_inicio_tamano,
+        dc.rp_nombre_original,
+        dc.rp_tipo_mime,
+        dc.rp_tamano,
+        fp.foto,  // <-- NUEVO: Foto de perfil
+        fp.tipo_mime as foto_tipo_mime  // <-- NUEVO: Tipo MIME de la foto
+        FROM detalle_contrato dc
+        LEFT JOIN personas p ON dc.id_persona = p.id_persona
+        LEFT JOIN areas a ON dc.id_area = a.id_area
+        LEFT JOIN tipos_vinculacion tv ON dc.id_tipo_vinculacion = tv.id_tipo
+        LEFT JOIN municipios m1 ON dc.id_municipio_principal = m1.id_municipio
+        LEFT JOIN municipios m2 ON dc.id_municipio_secundario = m2.id_municipio
+        LEFT JOIN municipios m3 ON dc.id_municipio_terciario = m3.id_municipio
+        LEFT JOIN fotos_perfil fp ON dc.id_detalle = fp.id_detalle  // <-- NUEVO: Join con fotos
+        WHERE dc.id_detalle = :id_detalle";
     
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':id_detalle', $id_detalle);
-    $stmt->execute();
-    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([':id_detalle' => $id_detalle]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
