@@ -11,13 +11,11 @@ class SesionControlador {
         $this->usuarioModel = new Usuario($db);
     }
 
-    public function registrar($nombres, $apellidos, $correo, $telefono, $password, $tipo_usuario = 'contratista') {
-
+     public function registrar($nombres, $apellidos, $correo, $telefono, $password, $tipo_usuario = 'contratista') {
         if ($this->usuarioModel->existeCorreo($correo)) {
             return false;
         }
-
-        $id_persona = $this->personaModel->insertar($nombres, $apellidos, $telefono);
+        $id_persona = $this->personaModel->insertar($cedula, $nombres, $apellidos, $telefono, $correo);
 
         if ($id_persona) {
             return $this->usuarioModel->insertar($id_persona, $correo, $password, $tipo_usuario);

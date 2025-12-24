@@ -44,8 +44,9 @@ class Usuario {
     }
 
     public function obtenerPorCorreo($correo) {
+        // QUITAR p.foto_perfil de la consulta ya que ya no existe
         $sql = "SELECT u.*, u.fecha_registro, u.fecha_creacion, 
-                       p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
+                       p.nombres, p.apellidos, p.telefono, p.cedula
                 FROM usuario u
                 JOIN persona p ON u.id_persona = p.id_persona
                 WHERE u.correo = :correo";
@@ -55,9 +56,32 @@ class Usuario {
 
         try {
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($usuario) {
+                // Agregar un campo para indicar si tiene foto (opcional)
+                $usuario['tiene_foto'] = $this->personaTieneFoto($usuario['id_persona']);
+            }
+            
+            return $usuario;
         } catch (PDOException $e) {
             error_log("Error al obtener usuario por correo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Método auxiliar para verificar si una persona tiene foto
+     */
+    private function personaTieneFoto($id_persona) {
+        try {
+            $sql = "SELECT COUNT(*) FROM fotos_perfil WHERE id_persona = :id_persona";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id_persona', $id_persona);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            error_log("Error al verificar foto de persona: " . $e->getMessage());
             return false;
         }
     }
@@ -79,8 +103,9 @@ class Usuario {
     }
 
     public function obtenerTodos() {
+        // QUITAR p.foto_perfil de la consulta
         $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
-                       p.nombres, p.apellidos, p.telefono, p.cedula, p.foto_perfil
+                       p.nombres, p.apellidos, p.telefono, p.cedula
                 FROM usuario u
                 JOIN persona p ON u.id_persona = p.id_persona
                 ORDER BY u.id_usuario";
@@ -93,6 +118,53 @@ class Usuario {
         } catch (PDOException $e) {
             error_log("Error al obtener usuarios: " . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Método para obtener datos completos de usuario con foto
+     */
+    public function obtenerConFoto($correo) {
+        try {
+            // Primero obtener los datos básicos
+            $sql = "SELECT u.*, p.nombres, p.apellidos, p.telefono, p.cedula
+                    FROM usuario u
+                    JOIN persona p ON u.id_persona = p.id_persona
+                    WHERE u.correo = :correo";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':correo', $correo);
+            $stmt->execute();
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$usuario) {
+                return false;
+            }
+            
+            // Verificar si tiene foto
+            $sqlFoto = "SELECT tipo_mime, contenido, tamano 
+                       FROM fotos_perfil 
+                       WHERE id_persona = :id_persona 
+                       ORDER BY fecha_subida DESC 
+                       LIMIT 1";
+            
+            $stmtFoto = $this->conn->prepare($sqlFoto);
+            $stmtFoto->bindParam(':id_persona', $usuario['id_persona']);
+            $stmtFoto->execute();
+            $foto = $stmtFoto->fetch(PDO::FETCH_ASSOC);
+            
+            if ($foto) {
+                $usuario['foto_info'] = $foto;
+                $usuario['tiene_foto'] = true;
+            } else {
+                $usuario['tiene_foto'] = false;
+            }
+            
+            return $usuario;
+            
+        } catch (PDOException $e) {
+            error_log("Error al obtener usuario con foto: " . $e->getMessage());
+            return false;
         }
     }
 }
