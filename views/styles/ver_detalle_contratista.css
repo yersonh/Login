@@ -356,30 +356,32 @@
 
 /* === BOTONES DE ACCIÓN === */
 .btn-volver {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
+   position: fixed;
+    bottom: 25px;
+    right: 25px;
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
+    border-radius: 12px;
+    padding: 14px 22px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
     z-index: 100;
     transition: all 0.3s ease;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .btn-volver:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 74, 141, 0.4);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+.back-button i {
+    font-size: 18px;
 }
 
 /* === MEDIA QUERIES PARA TABLET === */
@@ -427,9 +429,11 @@
     }
     
     .btn-volver {
-        width: auto;
-        right: auto;
-        max-width: 200px;
+        margin-top: 8px;
+        padding: 12px 18px;
+        font-size: 14px;
+        bottom: 15px;
+        right: 15px;
     }
 }
 
