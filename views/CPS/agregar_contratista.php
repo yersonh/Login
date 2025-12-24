@@ -132,6 +132,10 @@ try {
         </label>
         
         <div class="foto-container">
+            <!-- Vista previa de la foto -->
+            <div class="foto-preview" id="fotoPreview">
+                <img id="fotoPreviewImg" style="display: none; max-width: 100%; border-radius: 8px;">
+            </div>
             
             <!-- Input para subir la foto -->
             <div class="foto-input-group">
