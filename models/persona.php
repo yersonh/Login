@@ -47,76 +47,75 @@ class Persona {
      * Guardar foto de perfil en la tabla fotos_perfil
      */
     public function guardarFotoPerfil($id_persona, $archivoFoto) {
-        // Validar que sea una imagen
-        if (!isset($archivoFoto['error']) || $archivoFoto['error'] !== UPLOAD_ERR_OK) {
-            return false;
-        }
-
-        // Leer el archivo como binario
-        $contenido = file_get_contents($archivoFoto['tmp_name']);
-        $nombre = basename($archivoFoto['name']);
-        $tipo = $archivoFoto['type'];
-        $tamano = $archivoFoto['size'];
-
-        // Validar tipo de imagen
-        $tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-        if (!in_array($tipo, $tiposPermitidos)) {
-            error_log("Tipo de imagen no permitido: $tipo");
-            return false;
-        }
-
-        // Validar tamaño (máximo 10MB - ajustable)
-        if ($tamano > 10 * 1024 * 1024) {
-            error_log("Imagen demasiado grande: $tamano bytes");
-            return false;
-        }
-
-        try {
-            // Primero eliminar foto anterior si existe
-            $this->eliminarFotoPerfil($id_persona);
-
-            // Insertar nueva foto
-            $sql = "INSERT INTO fotos_perfil 
-                    (id_persona, nombre_archivo, tipo_mime, contenido, tamano)
-                    VALUES (:id_persona, :nombre, :tipo, :contenido, :tamano)";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':id_persona', $id_persona);
-            $stmt->bindParam(':nombre', $nombre);
-            $stmt->bindParam(':tipo', $tipo);
-            $stmt->bindParam(':contenido', $contenido, PDO::PARAM_LOB);
-            $stmt->bindParam(':tamano', $tamano);
-            
-            return $stmt->execute();
-
-        } catch (PDOException $e) {
-            error_log("Error al guardar foto de perfil: " . $e->getMessage());
-            return false;
-        }
+    // Validar que sea una imagen
+    if (!isset($archivoFoto['error']) || $archivoFoto['error'] !== UPLOAD_ERR_OK) {
+        return false;
     }
+
+    // Leer el archivo como binario
+    $contenido = file_get_contents($archivoFoto['tmp_name']);
+    $nombre = basename($archivoFoto['name']);
+    $tipo = $archivoFoto['type'];
+    $tamanoArchivo = $archivoFoto['size']; // Solo para validación
+
+    // Validar tipo de imagen
+    $tiposPermitidos = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!in_array($tipo, $tiposPermitidos)) {
+        error_log("Tipo de imagen no permitido: $tipo");
+        return false;
+    }
+
+    // Validar tamaño (máximo 10MB - ajustable)
+    if ($tamanoArchivo > 10 * 1024 * 1024) {
+        error_log("Imagen demasiado grande: $tamanoArchivo bytes");
+        return false;
+    }
+
+    try {
+        // Primero eliminar foto anterior si existe
+        $this->eliminarFotoPerfil($id_persona);
+
+        // INSERT correcto según la estructura de la tabla
+        $sql = "INSERT INTO fotos_perfil 
+                (id_persona, nombre_archivo, tipo_mime, contenido)
+                VALUES (:id_persona, :nombre, :tipo, :contenido)";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_persona', $id_persona);
+        $stmt->bindParam(':nombre', $nombre);
+        $stmt->bindParam(':tipo', $tipo);
+        $stmt->bindParam(':contenido', $contenido, PDO::PARAM_LOB);
+        
+        return $stmt->execute();
+
+    } catch (PDOException $e) {
+        error_log("Error al guardar foto de perfil: " . $e->getMessage());
+        return false;
+    }
+}
 
     /**
      * Obtener la foto de perfil de una persona
      */
     public function obtenerFotoPerfil($id_persona) {
-        try {
-            $sql = "SELECT id_foto, nombre_archivo, tipo_mime, contenido, tamano, fecha_subida
-                    FROM fotos_perfil 
-                    WHERE id_persona = :id_persona 
-                    ORDER BY fecha_subida DESC 
-                    LIMIT 1";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':id_persona', $id_persona);
-            $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $sql = "SELECT id_foto, nombre_archivo, tipo_mime, contenido, fecha_subida
+                FROM fotos_perfil 
+                WHERE id_persona = :id_persona 
+                ORDER BY fecha_subida DESC 
+                LIMIT 1";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_persona', $id_persona);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
 
-        } catch (PDOException $e) {
-            error_log("Error al obtener foto de perfil: " . $e->getMessage());
-            return false;
-        }
+    } catch (PDOException $e) {
+        error_log("Error al obtener foto de perfil: " . $e->getMessage());
+        return false;
     }
+}
 
     /**
      * Verificar si una persona tiene foto de perfil
@@ -160,43 +159,42 @@ class Persona {
      * Obtener datos básicos de persona junto con info de foto
      */
     public function obtenerConFoto($id_persona) {
-        try {
-            // Datos básicos de persona (incluyendo profesion)
-            $sql = "SELECT p.* 
-                    FROM persona p
-                    WHERE p.id_persona = :id_persona";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':id_persona', $id_persona);
-            $stmt->execute();
-            $persona = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        // Datos básicos de persona
+        $sql = "SELECT p.* 
+                FROM persona p
+                WHERE p.id_persona = :id_persona";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_persona', $id_persona);
+        $stmt->execute();
+        $persona = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$persona) {
-                return false;
-            }
-
-            // Agregar info de foto si existe
-            $persona['tiene_foto'] = $this->tieneFotoPerfil($id_persona);
-            
-            if ($persona['tiene_foto']) {
-                $foto = $this->obtenerFotoPerfil($id_persona);
-                $persona['foto_info'] = [
-                    'id_foto' => $foto['id_foto'],
-                    'nombre_archivo' => $foto['nombre_archivo'],
-                    'tipo_mime' => $foto['tipo_mime'],
-                    'tamano' => $foto['tamano'],
-                    'fecha_subida' => $foto['fecha_subida']
-                ];
-            }
-
-            return $persona;
-
-        } catch (PDOException $e) {
-            error_log("Error al obtener persona con foto: " . $e->getMessage());
+        if (!$persona) {
             return false;
         }
-    }
 
+        // Agregar info de foto si existe
+        $persona['tiene_foto'] = $this->tieneFotoPerfil($id_persona);
+        
+        if ($persona['tiene_foto']) {
+            $foto = $this->obtenerFotoPerfil($id_persona);
+            $persona['foto_info'] = [
+                'id_foto' => $foto['id_foto'],
+                'nombre_archivo' => $foto['nombre_archivo'],
+                'tipo_mime' => $foto['tipo_mime'],
+                'fecha_subida' => $foto['fecha_subida']
+                // Nota: no incluye tamano porque no existe en la tabla
+            ];
+        }
+
+        return $persona;
+
+    } catch (PDOException $e) {
+        error_log("Error al obtener persona con foto: " . $e->getMessage());
+        return false;
+    }
+}
     // ================= MÉTODOS ADICIONALES ÚTILES =================
 
     /**

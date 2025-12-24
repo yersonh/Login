@@ -90,7 +90,7 @@ try {
             throw new Exception("La foto de perfil excede el tamaño máximo de {$maxSizeMB}MB");
         }
         
-        // Validar tipo de imagen por extensión (más simple y confiable)
+        // Validar tipo de imagen por extensión
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
         $fileName = strtolower($file['name']);
         $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -100,24 +100,12 @@ try {
             throw new Exception("Tipo de imagen no permitido. Solo se aceptan: {$tiposStr}");
         }
         
-        // Validar tipo MIME de forma más simple
-        $allowedMimeTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/x-png'];
+        // Obtener tipo MIME
         $mimeType = mime_content_type($file['tmp_name']);
+        $allowedMimeTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/x-png'];
         
         if (!in_array($mimeType, $allowedMimeTypes)) {
-            // Si falla mime_content_type, intentar con fileinfo como respaldo
-            if (function_exists('finfo_open')) {
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mimeType = finfo_file($finfo, $file['tmp_name']);
-                finfo_close($finfo);
-                
-                if (!in_array($mimeType, $allowedMimeTypes)) {
-                    throw new Exception("Tipo de archivo no permitido para la foto");
-                }
-            } else {
-                // Si no hay soporte para mime_content_type ni finfo, confiar solo en la extensión
-                error_log("Advertencia: No se pudo verificar el tipo MIME de la foto, se confía en la extensión");
-            }
+            throw new Exception("Tipo de archivo no permitido para la foto");
         }
         
         // Leer archivo como binario
@@ -129,8 +117,8 @@ try {
         return [
             'archivo' => $content,
             'nombre_original' => $file['name'],
-            'tipo_mime' => $mimeType,
-            'tamano' => $file['size']
+            'tipo_mime' => $mimeType
+            // NOTA: No incluimos 'tamano' porque la tabla fotos_perfil no tiene esta columna
         ];
     }
     return null;
