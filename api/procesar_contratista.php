@@ -81,50 +81,60 @@ try {
     
     // ====== FUNCIÓN ESPECIAL PARA PROCESAR FOTOS ======
     function procesarFoto($nombreCampo, $maxSizeMB = 10) {
-        if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
-            $file = $_FILES[$nombreCampo];
-            
-            // Validar tamaño máximo (más grande para fotos)
-            $maxSize = $maxSizeMB * 1024 * 1024;
-            if ($file['size'] > $maxSize) {
-                throw new Exception("La foto de perfil excede el tamaño máximo de {$maxSizeMB}MB");
-            }
-            
-            // Validar tipo de imagen
-            $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-            $fileName = strtolower($file['name']);
-            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-            
-            if (!in_array($fileExtension, $allowedTypes)) {
-                $tiposStr = implode(', ', array_map('strtoupper', $allowedTypes));
-                throw new Exception("Tipo de imagen no permitido. Solo se aceptan: {$tiposStr}");
-            }
-            
-            // Validar tipo MIME de imagen
-            $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimeType = finfo_file($finfo, $file['tmp_name']);
-            finfo_close($finfo);
-            
-            if (!in_array($mimeType, $allowedMimeTypes)) {
-                throw new Exception("Tipo de archivo MIME no permitido para la foto");
-            }
-            
-            // Leer archivo como binario
-            $content = file_get_contents($file['tmp_name']);
-            if ($content === false) {
-                throw new Exception("No se pudo leer la foto");
-            }
-            
-            return [
-                'archivo' => $content,
-                'nombre_original' => $file['name'],
-                'tipo_mime' => $mimeType,
-                'tamano' => $file['size']
-            ];
+    if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES[$nombreCampo];
+        
+        // Validar tamaño máximo (más grande para fotos)
+        $maxSize = $maxSizeMB * 1024 * 1024;
+        if ($file['size'] > $maxSize) {
+            throw new Exception("La foto de perfil excede el tamaño máximo de {$maxSizeMB}MB");
         }
-        return null;
+        
+        // Validar tipo de imagen por extensión (más simple y confiable)
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $fileName = strtolower($file['name']);
+        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+        
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            $tiposStr = implode(', ', array_map('strtoupper', $allowedExtensions));
+            throw new Exception("Tipo de imagen no permitido. Solo se aceptan: {$tiposStr}");
+        }
+        
+        // Validar tipo MIME de forma más simple
+        $allowedMimeTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/x-png'];
+        $mimeType = mime_content_type($file['tmp_name']);
+        
+        if (!in_array($mimeType, $allowedMimeTypes)) {
+            // Si falla mime_content_type, intentar con fileinfo como respaldo
+            if (function_exists('finfo_open')) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+                
+                if (!in_array($mimeType, $allowedMimeTypes)) {
+                    throw new Exception("Tipo de archivo no permitido para la foto");
+                }
+            } else {
+                // Si no hay soporte para mime_content_type ni finfo, confiar solo en la extensión
+                error_log("Advertencia: No se pudo verificar el tipo MIME de la foto, se confía en la extensión");
+            }
+        }
+        
+        // Leer archivo como binario
+        $content = file_get_contents($file['tmp_name']);
+        if ($content === false) {
+            throw new Exception("No se pudo leer la foto");
+        }
+        
+        return [
+            'archivo' => $content,
+            'nombre_original' => $file['name'],
+            'tipo_mime' => $mimeType,
+            'tamano' => $file['size']
+        ];
     }
+    return null;
+}
     
     // ====== PROCESAR TODOS LOS ARCHIVOS ======
     $cv_data = procesarArchivo('adjuntar_cv', ['pdf', 'doc', 'docx']);

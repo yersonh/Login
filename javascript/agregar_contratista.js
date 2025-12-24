@@ -480,182 +480,232 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // === CREAR MODAL DE CONFIRMACIÓN (ACTUALIZADO) ===
     function crearModalConfirmacion() {
-        const modalHTML = `
-            <div id="confirmModal" class="modal-overlay" style="display: none;">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <h3><i class="fas fa-clipboard-check"></i> Confirmar Registro</h3>
-                        <button class="modal-close" id="closeModal">&times;</button>
+    const modalHTML = `
+        <div id="confirmModal" class="modal-overlay" style="display: none;">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3><i class="fas fa-clipboard-check"></i> Confirmar Registro</h3>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="confirmation-message">
+                        <p><strong>¿Está seguro de registrar al siguiente contratista?</strong></p>
+                        <p class="modal-subtitle">Revise los datos antes de continuar:</p>
                     </div>
-                    <div class="modal-body">
-                        <div class="confirmation-message">
-                            <p><strong>¿Está seguro de registrar al siguiente contratista?</strong></p>
-                            <p class="modal-subtitle">Revise los datos antes de continuar:</p>
-                        </div>
-                        
-                        <div class="data-summary">
-                            <div class="summary-section">
-                                <h4><i class="fas fa-user"></i> Datos Personales</h4>
-                                <div class="summary-grid">
-                                    <div class="summary-item">
-                                        <span class="summary-label">Nombre completo:</span>
-                                        <span class="summary-value" id="summaryNombre"></span>
+                    
+                    <div class="data-summary">
+                        <!-- SECCIÓN DE FOTO Y DATOS BÁSICOS -->
+                        <div class="summary-section" style="display: flex; flex-direction: column;">
+                            <h4><i class="fas fa-user"></i> Información del Contratista</h4>
+                            <div style="display: flex; gap: 30px; margin-top: 15px;">
+                                <!-- Columna izquierda: Foto -->
+                                <div style="flex: 0 0 200px;">
+                                    <div style="margin-bottom: 10px; font-weight: 600; color: var(--dark-color);">
+                                        Foto de perfil:
                                     </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Profesión:</span>
-                                        <span class="summary-value" id="summaryProfesion"></span>
+                                    <div id="modalFotoPreview" style="width: 200px; height: 200px; border-radius: 10px; 
+                                         border: 2px solid #e9ecef; overflow: hidden; display: flex; 
+                                         align-items: center; justify-content: center; background: #f8f9fa;">
+                                        <div id="modalFotoPlaceholder" style="text-align: center; color: #6c757d;">
+                                            <i class="fas fa-user-circle" style="font-size: 60px; color: #adb5bd; margin-bottom: 10px; display: block;"></i>
+                                            <span style="display: block; font-size: 14px; font-weight: 500;">Sin foto</span>
+                                        </div>
+                                        <img id="modalFotoImg" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                                     </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Cédula:</span>
-                                        <span class="summary-value" id="summaryCedula"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Correo:</span>
-                                        <span class="summary-value" id="summaryCorreo"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Celular:</span>
-                                        <span class="summary-value" id="summaryCelular"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Tipo de vinculación:</span>
-                                        <span class="summary-value" id="summaryTipoVinculacion"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Foto de perfil:</span>
-                                        <span class="summary-value" id="summaryFotoPerfil"></span>
+                                    <div id="modalFotoNombre" style="margin-top: 8px; font-size: 12px; color: #6c757d; text-align: center;">
+                                        No seleccionada
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="summary-section">
-                                <h4><i class="fas fa-map-marker-alt"></i> Información Geográfica</h4>
-                                <div class="summary-grid">
-                                    <div class="summary-item">
-                                        <span class="summary-label">Municipio principal:</span>
-                                        <span class="summary-value" id="summaryMunicipioPrincipal"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Dirección principal:</span>
-                                        <span class="summary-value" id="summaryDireccionPrincipal"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryMunicipioSecundarioItem" style="display: none;">
-                                        <span class="summary-label">Municipio secundario:</span>
-                                        <span class="summary-value" id="summaryMunicipioSecundario"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryDireccionSecundariaItem" style="display: none;">
-                                        <span class="summary-label">Dirección secundaria:</span>
-                                        <span class="summary-value" id="summaryDireccionSecundaria"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryMunicipioTerciarioItem" style="display: none;">
-                                        <span class="summary-label">Municipio terciario:</span>
-                                        <span class="summary-value" id="summaryMunicipioTerciario"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryDireccionTerciariaItem" style="display: none;">
-                                        <span class="summary-label">Dirección terciaria:</span>
-                                        <span class="summary-value" id="summaryDireccionTerciaria"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Área:</span>
-                                        <span class="summary-value" id="summaryArea"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="summary-section">
-                                <h4><i class="fas fa-file-contract"></i> Información del Contrato</h4>
-                                <div class="summary-grid">
-                                    <div class="summary-item">
-                                        <span class="summary-label">Número de contrato:</span>
-                                        <span class="summary-value" id="summaryNumeroContrato"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Fecha contrato:</span>
-                                        <span class="summary-value" id="summaryFechaContrato"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Fecha inicio:</span>
-                                        <span class="summary-value" id="summaryFechaInicio"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Fecha final:</span>
-                                        <span class="summary-value" id="summaryFechaFinal"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Duración:</span>
-                                        <span class="summary-value" id="summaryDuracion"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryRPItem" style="display: none;">
-                                        <span class="summary-label">Número RP:</span>
-                                        <span class="summary-value" id="summaryRP"></span>
-                                    </div>
-                                    <div class="summary-item" id="summaryFechaRPItem" style="display: none;">
-                                        <span class="summary-label">Fecha RP:</span>
-                                        <span class="summary-value" id="summaryFechaRP"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="summary-section">
-                                <h4><i class="fas fa-paperclip"></i> Documentos Adjuntos</h4>
-                                <div class="summary-grid">
-                                    <div class="summary-item">
-                                        <span class="summary-label">CV:</span>
-                                        <span class="summary-value" id="summaryCV"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Contrato PDF:</span>
-                                        <span class="summary-value" id="summaryContrato"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Acta de inicio:</span>
-                                        <span class="summary-value" id="summaryActaInicio"></span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">Registro presupuestal:</span>
-                                        <span class="summary-value" id="summaryRPArchivo"></span>
+                                
+                                <!-- Columna derecha: Datos básicos -->
+                                <div style="flex: 1;">
+                                    <div class="summary-grid" style="grid-template-columns: repeat(2, 1fr);">
+                                        <div class="summary-item">
+                                            <span class="summary-label">Nombre completo:</span>
+                                            <span class="summary-value" id="summaryNombre"></span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Profesión:</span>
+                                            <span class="summary-value" id="summaryProfesion"></span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Cédula:</span>
+                                            <span class="summary-value" id="summaryCedula"></span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Correo:</span>
+                                            <span class="summary-value" id="summaryCorreo"></span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Celular:</span>
+                                            <span class="summary-value" id="summaryCelular"></span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Tipo de vinculación:</span>
+                                            <span class="summary-value" id="summaryTipoVinculacion"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="modal-warning">
-                            <p><i class="fas fa-exclamation-triangle"></i> <strong>Nota:</strong> Una vez confirmado, los datos no podrán ser modificados desde este formulario.</p>
+                        <div class="summary-section">
+                            <h4><i class="fas fa-map-marker-alt"></i> Información Geográfica</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">Municipio principal:</span>
+                                    <span class="summary-value" id="summaryMunicipioPrincipal"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Dirección principal:</span>
+                                    <span class="summary-value" id="summaryDireccionPrincipal"></span>
+                                </div>
+                                <div class="summary-item" id="summaryMunicipioSecundarioItem" style="display: none;">
+                                    <span class="summary-label">Municipio secundario:</span>
+                                    <span class="summary-value" id="summaryMunicipioSecundario"></span>
+                                </div>
+                                <div class="summary-item" id="summaryDireccionSecundariaItem" style="display: none;">
+                                    <span class="summary-label">Dirección secundaria:</span>
+                                    <span class="summary-value" id="summaryDireccionSecundaria"></span>
+                                </div>
+                                <div class="summary-item" id="summaryMunicipioTerciarioItem" style="display: none;">
+                                    <span class="summary-label">Municipio terciario:</span>
+                                    <span class="summary-value" id="summaryMunicipioTerciario"></span>
+                                </div>
+                                <div class="summary-item" id="summaryDireccionTerciariaItem" style="display: none;">
+                                    <span class="summary-label">Dirección terciaria:</span>
+                                    <span class="summary-value" id="summaryDireccionTerciaria"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Área:</span>
+                                    <span class="summary-value" id="summaryArea"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h4><i class="fas fa-file-contract"></i> Información del Contrato</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">Número de contrato:</span>
+                                    <span class="summary-value" id="summaryNumeroContrato"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Fecha contrato:</span>
+                                    <span class="summary-value" id="summaryFechaContrato"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Fecha inicio:</span>
+                                    <span class="summary-value" id="summaryFechaInicio"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Fecha final:</span>
+                                    <span class="summary-value" id="summaryFechaFinal"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Duración:</span>
+                                    <span class="summary-value" id="summaryDuracion"></span>
+                                </div>
+                                <div class="summary-item" id="summaryRPItem" style="display: none;">
+                                    <span class="summary-label">Número RP:</span>
+                                    <span class="summary-value" id="summaryRP"></span>
+                                </div>
+                                <div class="summary-item" id="summaryFechaRPItem" style="display: none;">
+                                    <span class="summary-label">Fecha RP:</span>
+                                    <span class="summary-value" id="summaryFechaRP"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h4><i class="fas fa-paperclip"></i> Documentos Adjuntos</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">CV:</span>
+                                    <span class="summary-value" id="summaryCV"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Contrato PDF:</span>
+                                    <span class="summary-value" id="summaryContrato"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Acta de inicio:</span>
+                                    <span class="summary-value" id="summaryActaInicio"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Registro presupuestal:</span>
+                                    <span class="summary-value" id="summaryRPArchivo"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" id="cancelModalBtn">
-                            <i class="fas fa-times"></i> Cancelar
-                        </button>
-                        <button class="btn btn-primary" id="confirmSaveBtn">
-                            <i class="fas fa-check"></i> Confirmar y Guardar
-                        </button>
+                    
+                    <div class="modal-warning">
+                        <p><i class="fas fa-exclamation-triangle"></i> <strong>Nota:</strong> Una vez confirmado, los datos no podrán ser modificados desde este formulario.</p>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelModalBtn">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn btn-primary" id="confirmSaveBtn">
+                        <i class="fas fa-check"></i> Confirmar y Guardar
+                    </button>
+                </div>
             </div>
-        `;
+        </div>
+    `;
         
         // Agregar modal al body
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Obtener elementos del modal
+    const modal = document.getElementById('confirmModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+    
+    // Elementos de la foto en el modal
+    const modalFotoImg = document.getElementById('modalFotoImg');
+    const modalFotoPlaceholder = document.getElementById('modalFotoPlaceholder');
+    const modalFotoNombre = document.getElementById('modalFotoNombre');
         
-        // Obtener elementos del modal
-        const modal = document.getElementById('confirmModal');
-        const closeModalBtn = document.getElementById('closeModal');
-        const cancelModalBtn = document.getElementById('cancelModalBtn');
-        const confirmSaveBtn = document.getElementById('confirmSaveBtn');
-        
+    function mostrarFotoEnModal(file) {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                modalFotoImg.src = e.target.result;
+                modalFotoImg.style.display = 'block';
+                modalFotoPlaceholder.style.display = 'none';
+                modalFotoNombre.textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            modalFotoImg.style.display = 'none';
+            modalFotoPlaceholder.style.display = 'block';
+            modalFotoNombre.textContent = 'No seleccionada';
+        }
+    }
         // Función para mostrar el modal
         function mostrarModal() {
-            // Recopilar datos del formulario
-            const datos = recopilarDatosFormulario();
-            
-            // Llenar el modal con los datos
-            llenarModalConDatos(datos);
-            
-            // Mostrar modal
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+        // Recopilar datos del formulario
+        const datos = recopilarDatosFormulario();
+        
+        // Llenar el modal con los datos
+        llenarModalConDatos(datos);
+        
+        // Mostrar foto en el modal si existe
+        const fotoInput = document.getElementById('foto_perfil');
+        if (fotoInput && fotoInput.files[0]) {
+            mostrarFotoEnModal(fotoInput.files[0]);
+        } else {
+            mostrarFotoEnModal(null);
         }
+        
+        // Mostrar modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
         
         // Función para ocultar el modal
         function ocultarModal() {
@@ -743,76 +793,75 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para llenar el modal con datos (ACTUALIZADA)
     function llenarModalConDatos(datos) {
-        // Datos personales (con profesion)
-        document.getElementById('summaryNombre').textContent = datos.nombre_completo || 'No especificado';
-        document.getElementById('summaryProfesion').textContent = datos.profesion || 'No especificado';
-        document.getElementById('summaryCedula').textContent = datos.cedula || 'No especificado';
-        document.getElementById('summaryCorreo').textContent = datos.correo || 'No especificado';
-        document.getElementById('summaryCelular').textContent = datos.celular || 'No especificado';
-        document.getElementById('summaryTipoVinculacion').textContent = datos.summaryTipoVinculacion || 'No especificado';
-        document.getElementById('summaryFotoPerfil').textContent = datos.foto_perfil || 'No seleccionada';
-        
-        // Información geográfica
-        document.getElementById('summaryMunicipioPrincipal').textContent = datos.summaryMunicipioPrincipal || 'No especificado';
-        document.getElementById('summaryDireccionPrincipal').textContent = datos.direccion_municipio_principal || 'No especificado';
-        
-        // Municipios secundarios/terciarios (condicionales)
-        const municipioSecundario = datos.summaryMunicipioSecundario;
-        const direccionSecundaria = datos.direccion_municipio_secundario;
-        
-        if (municipioSecundario && municipioSecundario !== '') {
-            document.getElementById('summaryMunicipioSecundarioItem').style.display = 'flex';
-            document.getElementById('summaryDireccionSecundariaItem').style.display = 'flex';
-            document.getElementById('summaryMunicipioSecundario').textContent = municipioSecundario;
-            document.getElementById('summaryDireccionSecundaria').textContent = direccionSecundaria || 'No especificado';
-        } else {
-            document.getElementById('summaryMunicipioSecundarioItem').style.display = 'none';
-            document.getElementById('summaryDireccionSecundariaItem').style.display = 'none';
-        }
-        
-        const municipioTerciario = datos.summaryMunicipioTerciario;
-        const direccionTerciaria = datos.direccion_municipio_terciario;
-        
-        if (municipioTerciario && municipioTerciario !== '') {
-            document.getElementById('summaryMunicipioTerciarioItem').style.display = 'flex';
-            document.getElementById('summaryDireccionTerciariaItem').style.display = 'flex';
-            document.getElementById('summaryMunicipioTerciario').textContent = municipioTerciario;
-            document.getElementById('summaryDireccionTerciaria').textContent = direccionTerciaria || 'No especificado';
-        } else {
-            document.getElementById('summaryMunicipioTerciarioItem').style.display = 'none';
-            document.getElementById('summaryDireccionTerciariaItem').style.display = 'none';
-        }
-        
-        document.getElementById('summaryArea').textContent = datos.summaryArea || 'No especificado';
-        
-        // Información del contrato
-        document.getElementById('summaryNumeroContrato').textContent = datos.numero_contrato || 'No especificado';
-        document.getElementById('summaryFechaContrato').textContent = datos.fecha_contrato || 'No especificado';
-        document.getElementById('summaryFechaInicio').textContent = datos.fecha_inicio || 'No especificado';
-        document.getElementById('summaryFechaFinal').textContent = datos.fecha_final || 'No especificado';
-        document.getElementById('summaryDuracion').textContent = datos.duracion_contrato || 'No especificado';
-        
-        // RP (condicional)
-        if (datos.numero_registro_presupuestal) {
-            document.getElementById('summaryRPItem').style.display = 'flex';
-            document.getElementById('summaryRP').textContent = datos.numero_registro_presupuestal;
-        } else {
-            document.getElementById('summaryRPItem').style.display = 'none';
-        }
-        
-        if (datos.fecha_rp) {
-            document.getElementById('summaryFechaRPItem').style.display = 'flex';
-            document.getElementById('summaryFechaRP').textContent = datos.fecha_rp;
-        } else {
-            document.getElementById('summaryFechaRPItem').style.display = 'none';
-        }
-        
-        // Documentos adjuntos
-        document.getElementById('summaryCV').textContent = datos.adjuntar_cv || 'No seleccionado';
-        document.getElementById('summaryContrato').textContent = datos.adjuntar_contrato || 'No seleccionado';
-        document.getElementById('summaryActaInicio').textContent = datos.adjuntar_acta_inicio || 'No seleccionado';
-        document.getElementById('summaryRPArchivo').textContent = datos.adjuntar_rp || 'No seleccionado';
+    // Datos personales (con profesion)
+    document.getElementById('summaryNombre').textContent = datos.nombre_completo || 'No especificado';
+    document.getElementById('summaryProfesion').textContent = datos.profesion || 'No especificado';
+    document.getElementById('summaryCedula').textContent = datos.cedula || 'No especificado';
+    document.getElementById('summaryCorreo').textContent = datos.correo || 'No especificado';
+    document.getElementById('summaryCelular').textContent = datos.celular || 'No especificado';
+    document.getElementById('summaryTipoVinculacion').textContent = datos.summaryTipoVinculacion || 'No especificado';
+    
+    // Información geográfica
+    document.getElementById('summaryMunicipioPrincipal').textContent = datos.summaryMunicipioPrincipal || 'No especificado';
+    document.getElementById('summaryDireccionPrincipal').textContent = datos.direccion_municipio_principal || 'No especificado';
+    
+    // Municipios secundarios/terciarios (condicionales)
+    const municipioSecundario = datos.summaryMunicipioSecundario;
+    const direccionSecundaria = datos.direccion_municipio_secundario;
+    
+    if (municipioSecundario && municipioSecundario !== '') {
+        document.getElementById('summaryMunicipioSecundarioItem').style.display = 'flex';
+        document.getElementById('summaryDireccionSecundariaItem').style.display = 'flex';
+        document.getElementById('summaryMunicipioSecundario').textContent = municipioSecundario;
+        document.getElementById('summaryDireccionSecundaria').textContent = direccionSecundaria || 'No especificado';
+    } else {
+        document.getElementById('summaryMunicipioSecundarioItem').style.display = 'none';
+        document.getElementById('summaryDireccionSecundariaItem').style.display = 'none';
     }
+    
+    const municipioTerciario = datos.summaryMunicipioTerciario;
+    const direccionTerciaria = datos.direccion_municipio_terciario;
+    
+    if (municipioTerciario && municipioTerciario !== '') {
+        document.getElementById('summaryMunicipioTerciarioItem').style.display = 'flex';
+        document.getElementById('summaryDireccionTerciariaItem').style.display = 'flex';
+        document.getElementById('summaryMunicipioTerciario').textContent = municipioTerciario;
+        document.getElementById('summaryDireccionTerciaria').textContent = direccionTerciaria || 'No especificado';
+    } else {
+        document.getElementById('summaryMunicipioTerciarioItem').style.display = 'none';
+        document.getElementById('summaryDireccionTerciariaItem').style.display = 'none';
+    }
+    
+    document.getElementById('summaryArea').textContent = datos.summaryArea || 'No especificado';
+    
+    // Información del contrato
+    document.getElementById('summaryNumeroContrato').textContent = datos.numero_contrato || 'No especificado';
+    document.getElementById('summaryFechaContrato').textContent = datos.fecha_contrato || 'No especificado';
+    document.getElementById('summaryFechaInicio').textContent = datos.fecha_inicio || 'No especificado';
+    document.getElementById('summaryFechaFinal').textContent = datos.fecha_final || 'No especificado';
+    document.getElementById('summaryDuracion').textContent = datos.duracion_contrato || 'No especificado';
+    
+    // RP (condicional)
+    if (datos.numero_registro_presupuestal) {
+        document.getElementById('summaryRPItem').style.display = 'flex';
+        document.getElementById('summaryRP').textContent = datos.numero_registro_presupuestal;
+    } else {
+        document.getElementById('summaryRPItem').style.display = 'none';
+    }
+    
+    if (datos.fecha_rp) {
+        document.getElementById('summaryFechaRPItem').style.display = 'flex';
+        document.getElementById('summaryFechaRP').textContent = datos.fecha_rp;
+    } else {
+        document.getElementById('summaryFechaRPItem').style.display = 'none';
+    }
+    
+    // Documentos adjuntos
+    document.getElementById('summaryCV').textContent = datos.adjuntar_cv || 'No seleccionado';
+    document.getElementById('summaryContrato').textContent = datos.adjuntar_contrato || 'No seleccionado';
+    document.getElementById('summaryActaInicio').textContent = datos.adjuntar_acta_inicio || 'No seleccionado';
+    document.getElementById('summaryRPArchivo').textContent = datos.adjuntar_rp || 'No seleccionado';
+}
     
     // Crear el modal al cargar la página
     const modal = crearModalConfirmacion();
