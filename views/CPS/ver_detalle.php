@@ -107,8 +107,9 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
     <style>
+        /* === ESTILOS GENERALES === */
         .detail-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -116,156 +117,291 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         .detail-header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            padding: 25px;
+            padding: 20px 25px;
             border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .detail-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .detail-title h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .status-badge {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .status-vigente { background-color: #28a745; color: white; }
         .status-vencido { background-color: #dc3545; color: white; }
         .status-indefinido { background-color: #ffc107; color: #212529; }
         
-        .info-grid {
+        /* === LAYOUT PRINCIPAL - DOS COLUMNAS === */
+        .main-content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: 2fr 1fr;
             gap: 25px;
             margin-bottom: 30px;
         }
         
+        /* === COLUMNA IZQUIERDA - INFORMACIÓN === */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        /* === COLUMNA DERECHA - FOTO Y DOCUMENTOS === */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        /* === TARJETAS DE INFORMACIÓN === */
         .info-card {
             background: white;
             border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            border-left: 4px solid #1e3c72;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
         }
         
         .info-card h3 {
             color: #1e3c72;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             padding-bottom: 10px;
             border-bottom: 2px solid #f0f0f0;
-            font-size: 1.3rem;
-        }
-        
-        .info-item {
+            font-size: 1.2rem;
             display: flex;
-            margin-bottom: 15px;
-            align-items: flex-start;
+            align-items: center;
+            gap: 10px;
         }
         
-        .info-icon {
-            width: 24px;
+        .info-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item-compact {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .info-icon-compact {
+            width: 20px;
             color: #1e3c72;
-            margin-right: 12px;
             text-align: center;
             flex-shrink: 0;
+            padding-top: 2px;
         }
         
-        .info-content {
+        .info-content-compact {
             flex: 1;
         }
         
-        .info-label {
+        .info-label-compact {
             font-weight: 600;
             color: #555;
-            font-size: 0.9rem;
-            margin-bottom: 3px;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            line-height: 1.3;
         }
         
-        .info-value {
+        .info-value-compact {
             color: #333;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        /* === SECCIÓN DE FOTO Y PROFESIÓN === */
+        .foto-profesion-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
+            text-align: center;
+        }
+        
+        .foto-contratista {
+            width: 180px;
+            height: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #1e3c72;
+            background-color: #f8f9fa;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .foto-contratista img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .foto-placeholder {
+            text-align: center;
+            color: #6c757d;
+            padding: 20px;
+        }
+        
+        .foto-placeholder i {
+            font-size: 3.5rem;
+            color: #adb5bd;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .profesion-badge {
+            background: linear-gradient(135deg, #6f42c1 0%, #8a63d2 100%);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        
+        .no-profesion {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* === DOCUMENTOS ADJUNTOS === */
+        .documentos-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
+        }
+        
+        .documentos-card h3 {
+            color: #1e3c72;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .documentos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
         
-        .documento-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        .documento-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #1e3c72;
+            transition: all 0.3s;
+        }
+        
+        .documento-item:hover {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+        
+        .documento-header {
             display: flex;
             align-items: center;
-            transition: transform 0.3s;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
         
-        .documento-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .documento-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
         }
         
         .documento-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 1.5rem;
-            flex-shrink: 0;
+            font-size: 1.1rem;
+            color: white;
         }
         
-        .documento-icon.cv { background-color: #dc3545; color: white; }
-        .documento-icon.contrato { background-color: #007bff; color: white; }
-        .documento-icon.acta { background-color: #28a745; color: white; }
-        .documento-icon.rp { background-color: #fd7e14; color: white; }
-        .documento-icon.foto { background-color: #6f42c1; color: white; }
-        
-        .documento-info {
-            flex: 1;
-        }
-        
-        .documento-info h4 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
+        .documento-icon.cv { background-color: #dc3545; }
+        .documento-icon.contrato { background-color: #007bff; }
+        .documento-icon.acta { background-color: #28a745; }
+        .documento-icon.rp { background-color: #fd7e14; }
         
         .documento-meta {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .documento-meta div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+        
+        .empty-doc {
+            color: #999;
+            font-style: italic;
+            font-size: 0.85rem;
         }
         
         .btn-descargar {
             background-color: #1e3c72;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 7px 14px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: background-color 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            width: 100%;
+            justify-content: center;
         }
         
         .btn-descargar:hover {
@@ -277,15 +413,41 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             cursor: not-allowed;
         }
         
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+        /* === SECCIÓN DE FOTO COMO DOCUMENTO === */
+        .foto-documento-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #6f42c1;
+            margin-top: 20px;
         }
         
+        .foto-documento-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .foto-documento-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: #6f42c1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+        
+        .foto-info-text {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        /* === BOTONES DE ACCIÓN === */
         .btn-volver {
             position: fixed;
             bottom: 25px;
@@ -310,76 +472,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             box-shadow: 0 10px 25px rgba(0, 74, 141, 0.4);
         }
         
-        .empty-doc {
-            color: #999;
-            font-style: italic;
-        }
-        
-        /* NUEVOS ESTILOS PARA FOTO Y PROFESIÓN */
-        .foto-profesion-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .foto-contratista {
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 3px solid #1e3c72;
-            background-color: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .foto-contratista img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .foto-placeholder {
-            text-align: center;
-            color: #6c757d;
-            padding: 10px;
-        }
-        
-        .foto-placeholder i {
-            font-size: 2.5rem;
-            color: #adb5bd;
-            margin-bottom: 5px;
-            display: block;
-        }
-        
-        .profesion-container {
-            flex: 1;
-        }
-        
-        .profesion-badge {
-            background-color: #6f42c1;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-        }
-        
-        .profesion-label {
-            font-weight: 600;
-            color: #6c757d;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        
-        .info-card-con-foto {
-            position: relative;
+        /* === RESPONSIVE === */
+        @media (max-width: 1200px) {
+            .main-content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-grid-compact {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         @media (max-width: 768px) {
@@ -389,22 +490,32 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 gap: 10px;
             }
             
-            .info-grid {
+            .info-grid-compact {
                 grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .foto-profesion-container {
-                flex-direction: column;
-                text-align: center;
             }
             
             .foto-contratista {
                 width: 150px;
                 height: 150px;
+            }
+            
+            .btn-volver {
+                bottom: 15px;
+                left: 15px;
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .detail-container {
+                padding: 15px;
+            }
+            
+            .info-card,
+            .foto-profesion-card,
+            .documentos-card {
+                padding: 15px;
             }
         }
     </style>
@@ -433,7 +544,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         
         <main class="app-main">
             <div class="detail-container">
-                <!-- Encabezado -->
+                <!-- ENCABEZADO -->
                 <div class="detail-header">
                     <div class="detail-title">
                         <h1>
@@ -445,443 +556,454 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <?php echo ucfirst($estado); ?>
                         </span>
                     </div>
-                    <p>
+                    <p style="margin: 0; font-size: 0.95rem; opacity: 0.9;">
                         <i class="fas fa-info-circle"></i>
-                        Información completa del contratista <?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?>
+                        Información completa del contratista <strong><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></strong>
                     </p>
                 </div>
                 
-                <!-- Sección de Foto y Profesión -->
-                <div class="info-card info-card-con-foto">
-                    <h3><i class="fas fa-id-card"></i> Información Personal</h3>
-                    
-                    <div class="foto-profesion-container">
-                        <!-- Foto del Contratista -->
-                        <div class="foto-contratista">
-                            <?php if ($foto_base64): ?>
-                                <img src="<?php echo $foto_base64; ?>" alt="Foto de <?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?>">
-                            <?php else: ?>
-                                <div class="foto-placeholder">
-                                    <i class="fas fa-user-circle"></i>
-                                    <span>Sin foto</span>
+                <!-- LAYOUT PRINCIPAL - DOS COLUMNAS -->
+                <div class="main-content-grid">
+                    <!-- COLUMNA IZQUIERDA - INFORMACIÓN -->
+                    <div class="left-column">
+                        <!-- INFORMACIÓN PERSONAL -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-id-card"></i> Información Personal</h3>
+                            <div class="info-grid-compact">
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Nombre Completo</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></div>
+                                    </div>
                                 </div>
-                            <?php endif; ?>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Cédula</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Teléfono / Celular</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Correo Electrónico</div>
+                                        <div class="info-value-compact"><?php echo !empty($contratista['correo']) ? htmlspecialchars($contratista['correo']) : '<span style="color:#999; font-style:italic">No registrado</span>'; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Dirección</div>
+                                        <div class="info-value-compact"><?php echo !empty($contratista['direccion']) ? htmlspecialchars($contratista['direccion']) : '<span style="color:#999; font-style:italic">No registrada</span>'; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <?php if (!empty($contratista['profesion'])): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Profesión</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['profesion']); ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         
-                        <!-- Profesión -->
-                        <div class="profesion-container">
+                        <!-- INFORMACIÓN DEL CONTRATO -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-file-contract"></i> Información del Contrato</h3>
+                            <div class="info-grid-compact">
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Número de Contrato</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Fecha del Contrato</div>
+                                        <div class="info-value-compact"><?php echo $fecha_contrato; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Fecha de Inicio</div>
+                                        <div class="info-value-compact"><?php echo $fecha_inicio; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-flag-checkered"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Fecha Final</div>
+                                        <div class="info-value-compact"><?php echo $fecha_final; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Duración</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['duracion_contrato'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <?php if (!empty($contratista['numero_registro_presupuestal'])): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Registro Presupuestal</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['numero_registro_presupuestal']); ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($fecha_rp) && $fecha_rp !== 'N/A'): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Fecha RP</div>
+                                        <div class="info-value-compact"><?php echo $fecha_rp; ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <!-- INFORMACIÓN LABORAL Y UBICACIÓN -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-briefcase"></i> Información Laboral y Ubicación</h3>
+                            <div class="info-grid-compact">
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-sitemap"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Área</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['area_nombre'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-link"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Tipo de Vinculación</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['tipo_vinculacion_nombre'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Municipio Principal</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['municipio_principal_nombre'] ?? 'N/A'); ?></div>
+                                    </div>
+                                </div>
+                                
+                                <?php if (!empty($contratista['direccion_municipio_principal'])): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Dirección Principal</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['direccion_municipio_principal']); ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($contratista['municipio_secundario_nombre'])): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-map-marker"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Municipio Secundario</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['municipio_secundario_nombre']); ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($contratista['direccion_municipio_secundario'])): ?>
+                                <div class="info-item-compact">
+                                    <div class="info-icon-compact">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="info-content-compact">
+                                        <div class="info-label-compact">Dirección Secundaria</div>
+                                        <div class="info-value-compact"><?php echo htmlspecialchars($contratista['direccion_municipio_secundario']); ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUMNA DERECHA - FOTO Y DOCUMENTOS -->
+                    <div class="right-column">
+                        <!-- FOTO Y PROFESIÓN -->
+                        <div class="foto-profesion-card">
+                            <h3 style="text-align: left; margin-bottom: 15px;">
+                                <i class="fas fa-camera"></i> Foto del Contratista
+                            </h3>
+                            
+                            <div class="foto-contratista">
+                                <?php if ($foto_base64): ?>
+                                    <img src="<?php echo $foto_base64; ?>" alt="Foto de <?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?>">
+                                <?php else: ?>
+                                    <div class="foto-placeholder">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>Sin foto</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
                             <?php if (!empty($contratista['profesion'])): ?>
-                                <div class="profesion-label">Profesión / Ocupación:</div>
                                 <div class="profesion-badge">
                                     <i class="fas fa-graduation-cap"></i>
                                     <?php echo htmlspecialchars($contratista['profesion']); ?>
                                 </div>
                             <?php else: ?>
-                                <div class="profesion-label">Profesión / Ocupación:</div>
-                                <div style="color: #6c757d; font-style: italic;">
-                                    <i class="fas fa-graduation-cap"></i> No especificada
+                                <div class="no-profesion">
+                                    <i class="fas fa-graduation-cap"></i> Profesión no especificada
                                 </div>
                             <?php endif; ?>
                         </div>
+                        
+                        <!-- DOCUMENTOS ADJUNTOS -->
+                        <div class="documentos-card">
+                            <h3><i class="fas fa-paperclip"></i> Documentos Adjuntos</h3>
+                            
+                            <div class="documentos-grid">
+                                <!-- CV -->
+                                <div class="documento-item">
+                                    <div class="documento-header">
+                                        <div class="documento-title">
+                                            <div class="documento-icon cv">
+                                                <i class="fas fa-user-graduate"></i>
+                                            </div>
+                                            Hoja de Vida (CV)
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="documento-meta">
+                                        <?php if (!empty($contratista['cv_nombre_original'])): ?>
+                                            <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
+                                            <div><i class="fas fa-weight"></i> <?php echo $cv_size; ?></div>
+                                            <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['cv_tipo_mime'] ?? 'N/A'); ?></div>
+                                        <?php else: ?>
+                                            <div class="empty-doc">No se ha cargado hoja de vida</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <button class="btn-descargar" 
+                                            onclick="descargarCV(<?php echo $id_detalle; ?>)"
+                                            <?php echo empty($contratista['cv_nombre_original']) ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-download"></i> Descargar CV
+                                    </button>
+                                </div>
+                                
+                                <!-- CONTRATO -->
+                                <div class="documento-item">
+                                    <div class="documento-header">
+                                        <div class="documento-title">
+                                            <div class="documento-icon contrato">
+                                                <i class="fas fa-file-contract"></i>
+                                            </div>
+                                            Contrato
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="documento-meta">
+                                        <?php if (!empty($contratista['contrato_nombre_original'])): ?>
+                                            <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
+                                            <div><i class="fas fa-weight"></i> <?php echo $contrato_size; ?></div>
+                                            <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['contrato_tipo_mime'] ?? 'N/A'); ?></div>
+                                        <?php else: ?>
+                                            <div class="empty-doc">No se ha cargado contrato</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <button class="btn-descargar" 
+                                            onclick="descargarContrato(<?php echo $id_detalle; ?>)"
+                                            <?php echo empty($contratista['contrato_nombre_original']) ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-download"></i> Descargar Contrato
+                                    </button>
+                                </div>
+                                
+                                <!-- ACTA DE INICIO -->
+                                <div class="documento-item">
+                                    <div class="documento-header">
+                                        <div class="documento-title">
+                                            <div class="documento-icon acta">
+                                                <i class="fas fa-file-signature"></i>
+                                            </div>
+                                            Acta de Inicio
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="documento-meta">
+                                        <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
+                                            <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
+                                            <div><i class="fas fa-weight"></i> <?php echo $acta_size; ?></div>
+                                            <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['acta_inicio_tipo_mime'] ?? 'N/A'); ?></div>
+                                        <?php else: ?>
+                                            <div class="empty-doc">No se ha cargado acta de inicio</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <button class="btn-descargar" 
+                                            onclick="descargarActa(<?php echo $id_detalle; ?>)"
+                                            <?php echo empty($contratista['acta_inicio_nombre_original']) ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-download"></i> Descargar Acta
+                                    </button>
+                                </div>
+                                
+                                <!-- REGISTRO PRESUPUESTAL (SIEMPRE VISIBLE) -->
+                                <div class="documento-item">
+                                    <div class="documento-header">
+                                        <div class="documento-title">
+                                            <div class="documento-icon rp">
+                                                <i class="fas fa-file-invoice-dollar"></i>
+                                            </div>
+                                            Registro Presupuestal
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="documento-meta">
+                                        <?php if (!empty($contratista['rp_nombre_original'])): ?>
+                                            <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
+                                            <div><i class="fas fa-weight"></i> <?php echo $rp_size; ?></div>
+                                            <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['rp_tipo_mime'] ?? 'N/A'); ?></div>
+                                        <?php else: ?>
+                                            <div class="empty-doc">No se ha cargado registro presupuestal</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <button class="btn-descargar" 
+                                            onclick="descargarRP(<?php echo $id_detalle; ?>)"
+                                            <?php echo empty($contratista['rp_nombre_original']) ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-download"></i> Descargar RP
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- FOTO COMO DOCUMENTO (SI EXISTE) -->
+                            <?php if ($foto_base64): ?>
+                            <div class="foto-documento-item">
+                                <div class="foto-documento-header">
+                                    <div class="foto-documento-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div style="font-weight: 600; color: #333;">Foto de Perfil</div>
+                                </div>
+                                <div class="foto-info-text">
+                                    <i class="fas fa-info-circle"></i> La foto del contratista está disponible y se muestra en la sección superior.
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    
-                    <!-- Datos Personales -->
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Nombre Completo</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-id-card"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Cédula</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['cedula'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Teléfono / Celular</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['telefono'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Correo Electrónico</div>
-                            <div class="info-value"><?php echo !empty($contratista['correo']) ? htmlspecialchars($contratista['correo']) : '<span class="empty-doc">No registrado</span>'; ?></div>
-                        </div>
-                    </div>
-                    
-                    <?php if (!empty($contratista['direccion'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Dirección</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['direccion']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
                 </div>
                 
-                <!-- Información del Contrato -->
-                <div class="info-card">
-                    <h3><i class="fas fa-file-contract"></i> Información del Contrato</h3>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Número de Contrato</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['numero_contrato'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Fecha del Contrato</div>
-                            <div class="info-value"><?php echo $fecha_contrato; ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-play-circle"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Fecha de Inicio</div>
-                            <div class="info-value"><?php echo $fecha_inicio; ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-flag-checkered"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Fecha Final</div>
-                            <div class="info-value"><?php echo $fecha_final; ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Duración</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['duracion_contrato'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <?php if (!empty($contratista['numero_registro_presupuestal'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Registro Presupuestal</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['numero_registro_presupuestal']); ?></div>
-                        </div>
-                    </div>
-                    
-                    <?php if (!empty($fecha_rp) && $fecha_rp !== 'N/A'): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Fecha RP</div>
-                            <div class="info-value"><?php echo $fecha_rp; ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Información Laboral y Ubicación -->
-                <div class="info-card">
-                    <h3><i class="fas fa-briefcase"></i> Información Laboral y Ubicación</h3>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-sitemap"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Área</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['area_nombre'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-link"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Tipo de Vinculación</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['tipo_vinculacion_nombre'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Municipio Principal</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['municipio_principal_nombre'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <?php if (!empty($contratista['direccion_municipio_principal'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Dirección Principal</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['direccion_municipio_principal']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($contratista['municipio_secundario_nombre'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-map-marker"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Municipio Secundario</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['municipio_secundario_nombre']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($contratista['direccion_municipio_secundario'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Dirección Secundaria</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['direccion_municipio_secundario']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($contratista['municipio_terciario_nombre'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-map-marker"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Municipio Terciario</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['municipio_terciario_nombre']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($contratista['direccion_municipio_terciario'])): ?>
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Dirección Terciaria</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['direccion_municipio_terciario']); ?></div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Información del Sistema -->
-                <div class="info-card">
+                <!-- INFORMACIÓN DEL SISTEMA -->
+                <div class="info-card" style="margin-top: 20px;">
                     <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-calendar-plus"></i>
+                    <div class="info-grid-compact">
+                        <div class="info-item-compact">
+                            <div class="info-icon-compact">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="info-content-compact">
+                                <div class="info-label-compact">Fecha de Registro</div>
+                                <div class="info-value-compact"><?php echo $created_at; ?></div>
+                            </div>
                         </div>
-                        <div class="info-content">
-                            <div class="info-label">Fecha de Registro</div>
-                            <div class="info-value"><?php echo $created_at; ?></div>
+                        
+                        <div class="info-item-compact">
+                            <div class="info-icon-compact">
+                                <i class="fas fa-id-badge"></i>
+                            </div>
+                            <div class="info-content-compact">
+                                <div class="info-label-compact">ID Persona</div>
+                                <div class="info-value-compact"><?php echo htmlspecialchars($contratista['id_persona'] ?? 'N/A'); ?></div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-id-badge"></i>
+                        
+                        <div class="info-item-compact">
+                            <div class="info-icon-compact">
+                                <i class="fas fa-id-badge"></i>
+                            </div>
+                            <div class="info-content-compact">
+                                <div class="info-label-compact">ID Detalle</div>
+                                <div class="info-value-compact"><?php echo htmlspecialchars($contratista['id_detalle'] ?? 'N/A'); ?></div>
+                            </div>
                         </div>
-                        <div class="info-content">
-                            <div class="info-label">ID Persona</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['id_persona'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-id-badge"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">ID Detalle</div>
-                            <div class="info-value"><?php echo htmlspecialchars($contratista['id_detalle'] ?? 'N/A'); ?></div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <div class="info-content">
-                            <div class="info-label">Referencia</div>
-                            <div class="info-value">CT-<?php echo str_pad($contratista['id_detalle'] ?? '0', 5, '0', STR_PAD_LEFT); ?></div>
+                        
+                        <div class="info-item-compact">
+                            <div class="info-icon-compact">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="info-content-compact">
+                                <div class="info-label-compact">Referencia</div>
+                                <div class="info-value-compact">CT-<?php echo str_pad($contratista['id_detalle'] ?? '0', 5, '0', STR_PAD_LEFT); ?></div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Documentos Adjuntos -->
-                <h2 style="color: #1e3c72; margin-bottom: 20px;">
-                    <i class="fas fa-paperclip"></i> Documentos Adjuntos
-                </h2>
-                
-                <div class="documentos-grid">
-                    <!-- CV -->
-                    <div class="documento-card">
-                        <div class="documento-icon cv">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="documento-info">
-                            <h4>Hoja de Vida (CV)</h4>
-                            <div class="documento-meta">
-                                <?php if (!empty($contratista['cv_nombre_original'])): ?>
-                                    <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
-                                    <div><i class="fas fa-weight"></i> <?php echo $cv_size; ?></div>
-                                    <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['cv_tipo_mime'] ?? 'N/A'); ?></div>
-                                <?php else: ?>
-                                    <div class="empty-doc">No se ha cargado hoja de vida</div>
-                                <?php endif; ?>
-                            </div>
-                            <button class="btn-descargar" 
-                                    onclick="descargarCV(<?php echo $id_detalle; ?>)"
-                                    <?php echo empty($contratista['cv_nombre_original']) ? 'disabled' : ''; ?>>
-                                <i class="fas fa-download"></i> Descargar CV
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Contrato -->
-                    <div class="documento-card">
-                        <div class="documento-icon contrato">
-                            <i class="fas fa-file-contract"></i>
-                        </div>
-                        <div class="documento-info">
-                            <h4>Contrato</h4>
-                            <div class="documento-meta">
-                                <?php if (!empty($contratista['contrato_nombre_original'])): ?>
-                                    <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
-                                    <div><i class="fas fa-weight"></i> <?php echo $contrato_size; ?></div>
-                                    <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['contrato_tipo_mime'] ?? 'N/A'); ?></div>
-                                <?php else: ?>
-                                    <div class="empty-doc">No se ha cargado contrato</div>
-                                <?php endif; ?>
-                            </div>
-                            <button class="btn-descargar" 
-                                    onclick="descargarContrato(<?php echo $id_detalle; ?>)"
-                                    <?php echo empty($contratista['contrato_nombre_original']) ? 'disabled' : ''; ?>>
-                                <i class="fas fa-download"></i> Descargar Contrato
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Acta de Inicio -->
-                    <div class="documento-card">
-                        <div class="documento-icon acta">
-                            <i class="fas fa-file-signature"></i>
-                        </div>
-                        <div class="documento-info">
-                            <h4>Acta de Inicio</h4>
-                            <div class="documento-meta">
-                                <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
-                                    <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
-                                    <div><i class="fas fa-weight"></i> <?php echo $acta_size; ?></div>
-                                    <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['acta_inicio_tipo_mime'] ?? 'N/A'); ?></div>
-                                <?php else: ?>
-                                    <div class="empty-doc">No se ha cargado acta de inicio</div>
-                                <?php endif; ?>
-                            </div>
-                            <button class="btn-descargar" 
-                                    onclick="descargarActa(<?php echo $id_detalle; ?>)"
-                                    <?php echo empty($contratista['acta_inicio_nombre_original']) ? 'disabled' : ''; ?>>
-                                <i class="fas fa-download"></i> Descargar Acta
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- RP (Opcional) -->
-                    <?php if (!empty($contratista['rp_nombre_original'])): ?>
-                    <div class="documento-card">
-                        <div class="documento-icon rp">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
-                        <div class="documento-info">
-                            <h4>Registro Presupuestal</h4>
-                            <div class="documento-meta">
-                                <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
-                                <div><i class="fas fa-weight"></i> <?php echo $rp_size; ?></div>
-                                <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['rp_tipo_mime'] ?? 'N/A'); ?></div>
-                            </div>
-                            <button class="btn-descargar" onclick="descargarRP(<?php echo $id_detalle; ?>)">
-                                <i class="fas fa-download"></i> Descargar RP
-                            </button>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <!-- Foto del Contratista (si existe) -->
-                    <?php if ($foto_base64): ?>
-                    <div class="documento-card">
-                        <div class="documento-icon foto">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <div class="documento-info">
-                            <h4>Foto de Perfil</h4>
-                            <div class="documento-meta">
-                                <div><i class="fas fa-image"></i> Foto del contratista</div>
-                                <div><i class="fas fa-user"></i> <?php echo htmlspecialchars($contratista['nombres'] . ' ' . $contratista['apellidos']); ?></div>
-                            </div>
-                            <div style="color: #666; font-size: 0.85rem;">
-                                <i class="fas fa-info-circle"></i> La foto se muestra arriba en la sección de información personal
-                            </div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Botones de acción -->
-                <div class="action-buttons">
-                    <a href="visor_registrados.php" class="btn-volver">
-                        <i class="fas fa-arrow-left"></i> Volver al Listado
-                    </a>
-                </div>
+                <!-- BOTÓN VOLVER -->
+                <a href="visor_registrados.php" class="btn-volver">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
             </div>
         </main>
         
