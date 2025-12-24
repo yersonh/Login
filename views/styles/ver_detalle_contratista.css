@@ -422,20 +422,20 @@
 /* === BOTÓN VOLVER MEJORADO === */
 .btn-volver {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 25px;
+    left: 25px; /* Cambié de right a left para que sea consistente */
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 16px 24px;
+    padding: 14px 22px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
     display: flex;
     align-items: center;
     gap: 10px;
-    z-index: 1000;
+    z-index: 100;
     transition: all 0.3s ease;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-decoration: none;
@@ -459,68 +459,6 @@
 
 /* ========== RESPONSIVE MEJORADO ========== */
 
-/* ========== DESKTOP GRANDE (> 1200px) ========== */
-@media (min-width: 1201px) {
-    .detail-container {
-        max-width: 1400px;
-        padding: 25px 40px;
-    }
-    
-    .detail-header {
-        padding: 25px 35px;
-    }
-    
-    .info-grid-compact {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-    
-    .foto-contratista {
-        width: 200px;
-        height: 200px;
-    }
-}
-
-/* ========== DESKTOP ESTÁNDAR (1024px - 1200px) ========== */
-@media (min-width: 1024px) {
-    .detail-container {
-        padding: 25px 35px;
-    }
-    
-    .detail-title {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .status-badge {
-        align-self: center;
-    }
-    
-    .main-content-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 30px;
-    }
-    
-    .left-column {
-        order: 1;
-    }
-    
-    .right-column {
-        order: 2;
-    }
-    
-    .info-grid-compact {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-    }
-    
-    .foto-contratista {
-        width: 180px;
-        height: 180px;
-    }
-}
 
 /* ========== TABLETS (768px - 992px) ========== */
 @media (max-width: 992px) {

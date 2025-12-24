@@ -547,6 +547,14 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(0, 74, 141, 0.4);
 }
+.volver-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.volver-btn:hover i {
+    transform: translateX(-3px);
+}
 
 /* Footer centrado */
 .app-footer {
