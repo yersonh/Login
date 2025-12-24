@@ -24,7 +24,7 @@ try {
     
     $contratistaModel = new ContratistaModel($db);
     
-    // Campos obligatorios actualizados
+    // Campos obligatorios actualizados (incluyendo profesion)
     $requiredFields = [
         'nombre_completo', 'cedula', 'correo', 'celular',
         'id_area', 'id_tipo_vinculacion', 'id_municipio_principal',
@@ -38,15 +38,15 @@ try {
         }
     }
     
-    // ====== FUNCIÓN PARA PROCESAR ARCHIVOS ======
-    function procesarArchivo($nombreCampo, $tiposPermitidos = ['pdf']) {
+    // ====== FUNCIÓN PARA PROCESAR ARCHIVOS (GENERAL) ======
+    function procesarArchivo($nombreCampo, $tiposPermitidos = ['pdf'], $maxSizeMB = 5) {
         if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES[$nombreCampo];
             
-            // Validar tamaño máximo (5MB = 5 * 1024 * 1024 bytes)
-            $maxSize = 5 * 1024 * 1024;
+            // Validar tamaño máximo
+            $maxSize = $maxSizeMB * 1024 * 1024;
             if ($file['size'] > $maxSize) {
-                throw new Exception("El archivo {$nombreCampo} excede el tamaño máximo de 5MB");
+                throw new Exception("El archivo {$nombreCampo} excede el tamaño máximo de {$maxSizeMB}MB");
             }
             
             // Validar extensión
@@ -58,15 +58,62 @@ try {
                 throw new Exception("Tipo de archivo no permitido para {$nombreCampo}. Solo se aceptan: {$tiposStr}");
             }
             
-            // Validar tipo MIME (opcional pero recomendado)
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimeType = finfo_file($finfo, $file['tmp_name']);
-            finfo_close($finfo);
-            
             // Leer archivo como binario
             $content = file_get_contents($file['tmp_name']);
             if ($content === false) {
                 throw new Exception("No se pudo leer el archivo {$nombreCampo}");
+            }
+            
+            // Obtener tipo MIME
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            
+            return [
+                'archivo' => $content,
+                'nombre_original' => $file['name'],
+                'tipo_mime' => $mimeType,
+                'tamano' => $file['size']
+            ];
+        }
+        return null;
+    }
+    
+    // ====== FUNCIÓN ESPECIAL PARA PROCESAR FOTOS ======
+    function procesarFoto($nombreCampo, $maxSizeMB = 10) {
+        if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES[$nombreCampo];
+            
+            // Validar tamaño máximo (más grande para fotos)
+            $maxSize = $maxSizeMB * 1024 * 1024;
+            if ($file['size'] > $maxSize) {
+                throw new Exception("La foto de perfil excede el tamaño máximo de {$maxSizeMB}MB");
+            }
+            
+            // Validar tipo de imagen
+            $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+            $fileName = strtolower($file['name']);
+            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+            
+            if (!in_array($fileExtension, $allowedTypes)) {
+                $tiposStr = implode(', ', array_map('strtoupper', $allowedTypes));
+                throw new Exception("Tipo de imagen no permitido. Solo se aceptan: {$tiposStr}");
+            }
+            
+            // Validar tipo MIME de imagen
+            $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            
+            if (!in_array($mimeType, $allowedMimeTypes)) {
+                throw new Exception("Tipo de archivo MIME no permitido para la foto");
+            }
+            
+            // Leer archivo como binario
+            $content = file_get_contents($file['tmp_name']);
+            if ($content === false) {
+                throw new Exception("No se pudo leer la foto");
             }
             
             return [
@@ -84,6 +131,7 @@ try {
     $contrato_data = procesarArchivo('adjuntar_contrato', ['pdf']);
     $acta_inicio_data = procesarArchivo('adjuntar_acta_inicio', ['pdf']);
     $rp_data = procesarArchivo('adjuntar_rp', ['pdf']);
+    $foto_data = procesarFoto('foto_perfil'); // Nuevo: Foto de perfil
     
     // ====== PREPARAR DATOS PARA INSERTAR ======
     $datos = [
@@ -91,6 +139,7 @@ try {
         'cedula' => preg_replace('/[^0-9]/', '', $_POST['cedula']),
         'correo' => filter_var($_POST['correo'], FILTER_SANITIZE_EMAIL),
         'celular' => preg_replace('/[^0-9]/', '', $_POST['celular']),
+        'profesion' => isset($_POST['profesion']) ? trim($_POST['profesion']) : null, // NUEVO CAMPO
         'direccion' => isset($_POST['direccion']) ? trim($_POST['direccion']) : '',
         
         // Nuevos campos de dirección específicos
@@ -123,13 +172,21 @@ try {
         'fecha_rp' => isset($_POST['fecha_rp']) ? $_POST['fecha_rp'] : ''
     ];
     
-    // ====== AGREGAR DATOS DE ARCHIVOS SI EXISTEN ======
+    // ====== PREPARAR ARCHIVOS PARA ENVIAR ======
+    $archivos = [];
+    
+    // Foto de perfil (se maneja aparte en el modelo)
+    if ($foto_data !== null) {
+        $archivos['foto_perfil'] = $_FILES['foto_perfil'];
+    }
+    
     // CV
     if ($cv_data !== null) {
         $datos['cv_archivo'] = $cv_data['archivo'];
         $datos['cv_nombre_original'] = $cv_data['nombre_original'];
         $datos['cv_tipo_mime'] = $cv_data['tipo_mime'];
         $datos['cv_tamano'] = $cv_data['tamano'];
+        $archivos['adjuntar_cv'] = $_FILES['adjuntar_cv'];
     }
     
     // Contrato
@@ -138,6 +195,7 @@ try {
         $datos['contrato_nombre_original'] = $contrato_data['nombre_original'];
         $datos['contrato_tipo_mime'] = $contrato_data['tipo_mime'];
         $datos['contrato_tamano'] = $contrato_data['tamano'];
+        $archivos['adjuntar_contrato'] = $_FILES['adjuntar_contrato'];
     }
     
     // Acta de Inicio
@@ -146,6 +204,7 @@ try {
         $datos['acta_inicio_nombre_original'] = $acta_inicio_data['nombre_original'];
         $datos['acta_inicio_tipo_mime'] = $acta_inicio_data['tipo_mime'];
         $datos['acta_inicio_tamano'] = $acta_inicio_data['tamano'];
+        $archivos['adjuntar_acta_inicio'] = $_FILES['adjuntar_acta_inicio'];
     }
     
     // Registro Presupuestal
@@ -154,6 +213,7 @@ try {
         $datos['rp_nombre_original'] = $rp_data['nombre_original'];
         $datos['rp_tipo_mime'] = $rp_data['tipo_mime'];
         $datos['rp_tamano'] = $rp_data['tamano'];
+        $archivos['adjuntar_rp'] = $_FILES['adjuntar_rp'];
     }
     
     // ====== VALIDACIONES ADICIONALES ======
@@ -175,7 +235,7 @@ try {
     }
     
     // ====== REGISTRAR CONTRATISTA ======
-    $resultado = $contratistaModel->registrarContratistaCompleto($datos);
+    $resultado = $contratistaModel->registrarContratistaCompleto($datos, $archivos);
     
     echo json_encode($resultado);
     

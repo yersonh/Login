@@ -66,11 +66,125 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleDireccionOpcional(municipioTerciario, grupoDireccionTerciario, direccionTerciario);
     }
     
-    setupFileInput('adjuntar_contrato', 'contratoPreview', 'contratoFilename');
-    setupFileInput('adjuntar_acta_inicio', 'actaPreview', 'actaFilename');
-    setupFileInput('adjuntar_rp', 'rpPreview', 'rpFilename');
+    // === CONFIGURACIÓN DE ARCHIVOS - NUEVO: FOTO DE PERFIL ===
+    setupFotoPerfil();
+    setupFileInput('adjuntar_cv', 'cvPreview', 'cvFilename', ['pdf', 'doc', 'docx']);
+    setupFileInput('adjuntar_contrato', 'contratoPreview', 'contratoFilename', ['pdf']);
+    setupFileInput('adjuntar_acta_inicio', 'actaPreview', 'actaFilename', ['pdf']);
+    setupFileInput('adjuntar_rp', 'rpPreview', 'rpFilename', ['pdf']);
     
-    function setupFileInput(inputId, previewId, filenameId) {
+    // === FUNCIÓN PARA MANEJAR FOTO DE PERFIL ===
+    function setupFotoPerfil() {
+        const fotoInput = document.getElementById('foto_perfil');
+        const fotoPreview = document.getElementById('fotoPreviewImg');
+        const fotoPlaceholder = document.querySelector('.foto-placeholder');
+        const fotoError = document.getElementById('fotoError');
+        const fotoErrorMessage = document.getElementById('fotoErrorMessage');
+        
+        if (fotoInput) {
+            fotoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    // Validar tamaño máximo (10MB para fotos)
+                    const maxSize = 10 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        mostrarErrorFoto('La imagen excede el tamaño máximo de 10MB');
+                        this.value = '';
+                        resetearFotoPreview();
+                        return;
+                    }
+                    
+                    // Validar tipo de imagen
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if (!allowedTypes.includes(file.type)) {
+                        mostrarErrorFoto('Solo se permiten imágenes JPG, JPEG, PNG o GIF');
+                        this.value = '';
+                        resetearFotoPreview();
+                        return;
+                    }
+                    
+                    // Leer y mostrar la imagen
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        fotoPreview.src = e.target.result;
+                        fotoPreview.style.display = 'block';
+                        if (fotoPlaceholder) fotoPlaceholder.style.display = 'none';
+                        ocultarErrorFoto();
+                    };
+                    reader.onerror = function() {
+                        mostrarErrorFoto('Error al cargar la imagen');
+                        resetearFotoPreview();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    resetearFotoPreview();
+                }
+            });
+            
+            // Efecto de arrastrar y soltar
+            const fotoContainer = document.querySelector('.foto-container');
+            if (fotoContainer) {
+                fotoContainer.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('highlight');
+                });
+                
+                fotoContainer.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('highlight');
+                });
+                
+                fotoContainer.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('highlight');
+                    
+                    if (e.dataTransfer.files.length) {
+                        const file = e.dataTransfer.files[0];
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fotoInput.files = dataTransfer.files;
+                        
+                        // Disparar evento change
+                        const event = new Event('change', { bubbles: true });
+                        fotoInput.dispatchEvent(event);
+                    }
+                });
+            }
+        }
+        
+        function mostrarErrorFoto(mensaje) {
+            if (fotoError && fotoErrorMessage) {
+                fotoErrorMessage.textContent = mensaje;
+                fotoError.style.display = 'flex';
+            }
+        }
+        
+        function ocultarErrorFoto() {
+            if (fotoError) {
+                fotoError.style.display = 'none';
+            }
+        }
+        
+        function resetearFotoPreview() {
+            if (fotoPreview) {
+                fotoPreview.src = '';
+                fotoPreview.style.display = 'none';
+            }
+            if (fotoPlaceholder) {
+                fotoPlaceholder.style.display = 'flex';
+            }
+            ocultarErrorFoto();
+        }
+        
+        // Botón para eliminar foto
+        window.removeFotoPerfil = function() {
+            if (fotoInput) fotoInput.value = '';
+            resetearFotoPreview();
+        };
+    }
+    
+    function setupFileInput(inputId, previewId, filenameId, allowedExtensions) {
         const fileInput = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
         const filenameSpan = document.getElementById(filenameId);
@@ -88,19 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
 
-                    const allowedExtensions = ['.pdf'];
-                    if (inputId === 'adjuntar_cv') {
-                        allowedExtensions.push('.doc', '.docx');
-                    }
-                    
                     const fileName = file.name.toLowerCase();
-                    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+                    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith('.' + ext));
                     
                     if (!isValidExtension) {
-                        const formatos = inputId === 'adjuntar_cv' 
-                            ? 'PDF, DOC y DOCX' 
-                            : 'PDF';
-                        alert(`Solo se permiten archivos ${formatos}`);
+                        const formatos = allowedExtensions.map(ext => ext.toUpperCase()).join(', ');
+                        alert(`Solo se permiten archivos: ${formatos}`);
                         this.value = '';
                         preview.style.display = 'none';
                         return;
@@ -114,6 +221,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+    
+    // Funciones para eliminar archivos
+    window.removeCV = function() {
+        const input = document.getElementById('adjuntar_cv');
+        const preview = document.getElementById('cvPreview');
+        if (input) input.value = '';
+        if (preview) preview.style.display = 'none';
+    };
     
     window.removeContrato = function() {
         const input = document.getElementById('adjuntar_contrato');
@@ -134,47 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const preview = document.getElementById('rpPreview');
         if (input) input.value = '';
         if (preview) preview.style.display = 'none';
-    };
-    
-    const cvInput = document.getElementById('adjuntar_cv');
-    const cvPreview = document.getElementById('cvPreview');
-    const cvFilename = document.getElementById('cvFilename');
-    
-    if (cvInput && cvPreview && cvFilename) {
-        cvInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            
-            if (file) {
-                const maxSize = 5 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    alert('El archivo excede el tamaño máximo de 5MB');
-                    this.value = '';
-                    cvPreview.style.display = 'none';
-                    return;
-                }
-
-                const allowedExtensions = ['.pdf', '.doc', '.docx'];
-                const fileName = file.name.toLowerCase();
-                const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
-                
-                if (!isValidExtension) {
-                    alert('Solo se permiten archivos PDF, DOC y DOCX');
-                    this.value = '';
-                    cvPreview.style.display = 'none';
-                    return;
-                }
-
-                cvFilename.textContent = file.name;
-                cvPreview.style.display = 'block';
-            } else {
-                cvPreview.style.display = 'none';
-            }
-        });
-    }
-    
-    window.removeCV = function() {
-        if (cvInput) cvInput.value = '';
-        if (cvPreview) cvPreview.style.display = 'none';
     };
     
     // === FUNCIÓN: CALCULAR DURACIÓN DEL CONTRATO ===
@@ -336,6 +410,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (valor.split(' ').length < 2) return 'Ingrese nombre y apellido completos';
                     return null;
                 }
+            },
+            'profesion': {
+                validar: function(valor) {
+                    if (valor.length > 100) return 'La profesión no puede exceder los 100 caracteres';
+                    return null;
+                }
             }
         };
         
@@ -398,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar validaciones en tiempo real
     setupValidacionesEnTiempoReal();
     
-    // === CREAR MODAL DE CONFIRMACIÓN ===
+    // === CREAR MODAL DE CONFIRMACIÓN (ACTUALIZADO) ===
     function crearModalConfirmacion() {
         const modalHTML = `
             <div id="confirmModal" class="modal-overlay" style="display: none;">
@@ -422,6 +502,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <span class="summary-value" id="summaryNombre"></span>
                                     </div>
                                     <div class="summary-item">
+                                        <span class="summary-label">Profesión:</span>
+                                        <span class="summary-value" id="summaryProfesion"></span>
+                                    </div>
+                                    <div class="summary-item">
                                         <span class="summary-label">Cédula:</span>
                                         <span class="summary-value" id="summaryCedula"></span>
                                     </div>
@@ -436,6 +520,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="summary-item">
                                         <span class="summary-label">Tipo de vinculación:</span>
                                         <span class="summary-value" id="summaryTipoVinculacion"></span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Foto de perfil:</span>
+                                        <span class="summary-value" id="summaryFotoPerfil"></span>
                                     </div>
                                 </div>
                             </div>
@@ -598,13 +686,13 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
-    // Función para recopilar datos del formulario
+    // Función para recopilar datos del formulario (ACTUALIZADA)
     function recopilarDatosFormulario() {
         const datos = {};
         
-        // Obtener valores de los campos
+        // Obtener valores de los campos (incluye profesion)
         const campos = [
-            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion',
+            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion', 'profesion',
             'numero_contrato', 'fecha_contrato', 'fecha_inicio', 'fecha_final',
             'duracion_contrato', 'numero_registro_presupuestal', 'fecha_rp',
             'direccion_municipio_principal', 'direccion_municipio_secundario',
@@ -635,24 +723,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Obtener nombres de archivos
-        const archivos = ['adjuntar_cv', 'adjuntar_contrato', 'adjuntar_acta_inicio', 'adjuntar_rp'];
+        // Obtener nombres de archivos (incluye foto_perfil)
+        const archivos = [
+            'foto_perfil', 'adjuntar_cv', 'adjuntar_contrato', 
+            'adjuntar_acta_inicio', 'adjuntar_rp'
+        ];
+        
         archivos.forEach(id => {
             const fileInput = document.getElementById(id);
-            datos[id] = fileInput && fileInput.files[0] ? fileInput.files[0].name : 'No seleccionado';
+            if (fileInput && fileInput.files[0]) {
+                datos[id] = fileInput.files[0].name;
+            } else {
+                datos[id] = id === 'foto_perfil' ? 'No seleccionada' : 'No seleccionado';
+            }
         });
         
         return datos;
     }
     
-    // Función para llenar el modal con datos
+    // Función para llenar el modal con datos (ACTUALIZADA)
     function llenarModalConDatos(datos) {
-        // Datos personales
+        // Datos personales (con profesion)
         document.getElementById('summaryNombre').textContent = datos.nombre_completo || 'No especificado';
+        document.getElementById('summaryProfesion').textContent = datos.profesion || 'No especificado';
         document.getElementById('summaryCedula').textContent = datos.cedula || 'No especificado';
         document.getElementById('summaryCorreo').textContent = datos.correo || 'No especificado';
         document.getElementById('summaryCelular').textContent = datos.celular || 'No especificado';
         document.getElementById('summaryTipoVinculacion').textContent = datos.summaryTipoVinculacion || 'No especificado';
+        document.getElementById('summaryFotoPerfil').textContent = datos.foto_perfil || 'No seleccionada';
         
         // Información geográfica
         document.getElementById('summaryMunicipioPrincipal').textContent = datos.summaryMunicipioPrincipal || 'No especificado';
@@ -719,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Crear el modal al cargar la página
     const modal = crearModalConfirmacion();
     
-    // === FUNCIÓN PARA GUARDAR CONTRATISTA (separada) ===
+    // === FUNCIÓN PARA GUARDAR CONTRATISTA (ACTUALIZADA) ===
     async function guardarContratista() {
         const btnOriginalHTML = guardarBtn.innerHTML;
         guardarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
@@ -727,10 +825,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const formData = new FormData();
         
+        // Agregar todos los campos del formulario (excepto archivos que se manejan aparte)
         const formElements = document.querySelectorAll('input:not([type="file"]), select, textarea');
         formElements.forEach(element => {
             if (element.name && element.value !== undefined) {
-                if (!element.name.includes('adjuntar_')) {
+                if (!element.name.includes('adjuntar_') && element.name !== 'foto_perfil') {
                     if ((element.name === 'id_municipio_secundario' || element.name === 'id_municipio_terciario') 
                         && element.value === '0') {
                         formData.append(element.name, '');
@@ -741,11 +840,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Agregar archivos (incluye foto_perfil)
         const archivos = [
-            'adjuntar_cv', 
-            'adjuntar_contrato', 
-            'adjuntar_acta_inicio', 
-            'adjuntar_rp'
+            'foto_perfil', 'adjuntar_cv', 'adjuntar_contrato', 
+            'adjuntar_acta_inicio', 'adjuntar_rp'
         ];
         
         archivos.forEach(id => {
@@ -875,58 +973,56 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Validaciones específicas adicionales
-            const cedula = document.getElementById('cedula');
-            if (cedula && cedula.value.trim()) {
-                if (cedula.value.trim().length < 5) {
-                    mostrarError(cedula, 'La cédula debe tener al menos 5 dígitos');
-                    cedula.style.borderColor = '#dc3545';
-                    valid = false;
-                    if (!primerCampoInvalido) {
-                        primerCampoInvalido = cedula;
+            const camposValidar = {
+                'cedula': {
+                    validar: function(valor) {
+                        if (valor.length < 5) return 'La cédula debe tener al menos 5 dígitos';
+                        if (!/^\d+$/.test(valor)) return 'La cédula solo debe contener números';
+                        return null;
+                    }
+                },
+                'correo': {
+                    validar: function(valor) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(valor)) return 'Ingrese un correo electrónico válido';
+                        return null;
+                    }
+                },
+                'celular': {
+                    validar: function(valor) {
+                        if (valor.length < 10) return 'El celular debe tener al menos 10 dígitos';
+                        if (!/^\d+$/.test(valor)) return 'El celular solo debe contener números';
+                        return null;
+                    }
+                },
+                'nombre_completo': {
+                    validar: function(valor) {
+                        if (valor.split(' ').length < 2) return 'Ingrese nombre y apellido completos';
+                        return null;
+                    }
+                },
+                'profesion': {
+                    validar: function(valor) {
+                        if (valor.length > 100) return 'La profesión no puede exceder los 100 caracteres';
+                        return null;
                     }
                 }
-                if (!/^\d+$/.test(cedula.value.trim())) {
-                    mostrarError(cedula, 'La cédula solo debe contener números');
-                    cedula.style.borderColor = '#dc3545';
-                    valid = false;
-                    if (!primerCampoInvalido) {
-                        primerCampoInvalido = cedula;
-                    }
-                }
-            }
+            };
             
-            const correo = document.getElementById('correo');
-            if (correo && correo.value.trim()) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(correo.value.trim())) {
-                    mostrarError(correo, 'Ingrese un correo electrónico válido');
-                    correo.style.borderColor = '#dc3545';
-                    valid = false;
-                    if (!primerCampoInvalido) {
-                        primerCampoInvalido = correo;
+            Object.keys(camposValidar).forEach(id => {
+                const campo = document.getElementById(id);
+                if (campo && campo.value.trim()) {
+                    const error = camposValidar[id].validar(campo.value.trim());
+                    if (error) {
+                        mostrarError(campo, error);
+                        campo.style.borderColor = '#dc3545';
+                        valid = false;
+                        if (!primerCampoInvalido) {
+                            primerCampoInvalido = campo;
+                        }
                     }
                 }
-            }
-            
-            const celular = document.getElementById('celular');
-            if (celular && celular.value.trim()) {
-                if (celular.value.trim().length < 10) {
-                    mostrarError(celular, 'El celular debe tener al menos 10 dígitos');
-                    celular.style.borderColor = '#dc3545';
-                    valid = false;
-                    if (!primerCampoInvalido) {
-                        primerCampoInvalido = celular;
-                    }
-                }
-                if (!/^\d+$/.test(celular.value.trim())) {
-                    mostrarError(celular, 'El celular solo debe contener números');
-                    celular.style.borderColor = '#dc3545';
-                    valid = false;
-                    if (!primerCampoInvalido) {
-                        primerCampoInvalido = celular;
-                    }
-                }
-            }
+            });
             
             if (!valid) {
                 alert('Por favor complete todos los campos obligatorios (*) correctamente');
@@ -954,15 +1050,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
+            // Validar foto de perfil (tamaño y tipo)
+            const fotoInput = document.getElementById('foto_perfil');
+            if (fotoInput && fotoInput.files[0]) {
+                const file = fotoInput.files[0];
+                const maxSize = 10 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('La foto de perfil excede el tamaño máximo de 10MB');
+                    return;
+                }
+                
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Solo se permiten imágenes JPG, JPEG, PNG o GIF para la foto de perfil');
+                    return;
+                }
+            }
+            
             // Mostrar modal de confirmación en lugar de guardar directamente
             modal.mostrar();
         });
     }
     
     function limpiarFormulario() {
-        // 1. Campos de texto principales
+        // 1. Campos de texto principales (incluye profesion)
         const camposTextoLimpios = [
-            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion',
+            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion', 'profesion',
             'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal',
             'direccion_municipio_principal', 'direccion_municipio_secundario', 
             'direccion_municipio_terciario'
@@ -973,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (campo) campo.value = '';
         });
 
+        // 2. Campos de fecha
         const fechaCampos = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
         fechaCampos.forEach(id => {
             const campo = document.getElementById(id);
@@ -984,11 +1098,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // 3. Selects
         const selectsLimpiar = [
-            'id_tipo_vinculacion', 
-            'id_area', 
-            'id_municipio_secundario', 
-            'id_municipio_terciario'
+            'id_tipo_vinculacion', 'id_area', 
+            'id_municipio_secundario', 'id_municipio_terciario'
         ];
         
         selectsLimpiar.forEach(id => {
@@ -998,6 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // 4. Municipio principal (restaurar a Villavicencio)
         const municipioPrincipal = document.getElementById('id_municipio_principal');
         if (municipioPrincipal) {
             municipioPrincipal.selectedIndex = 0;
@@ -1008,39 +1122,52 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        // 5. Archivos (incluye foto_perfil)
         const archivos = [
-            'adjuntar_cv', 
-            'adjuntar_contrato', 
-            'adjuntar_acta_inicio', 
-            'adjuntar_rp'
+            'foto_perfil', 'adjuntar_cv', 'adjuntar_contrato', 
+            'adjuntar_acta_inicio', 'adjuntar_rp'
         ];
         
         archivos.forEach(id => {
             const fileInput = document.getElementById(id);
-            const previewId = id === 'adjuntar_cv' ? 'cvPreview' : 
-                             id === 'adjuntar_contrato' ? 'contratoPreview' :
-                             id === 'adjuntar_acta_inicio' ? 'actaPreview' : 'rpPreview';
-            const preview = document.getElementById(previewId);
-            
             if (fileInput) fileInput.value = '';
+        });
+        
+        // 6. Resetear vista previa de foto
+        const fotoPreview = document.getElementById('fotoPreviewImg');
+        const fotoPlaceholder = document.querySelector('.foto-placeholder');
+        if (fotoPreview) {
+            fotoPreview.src = '';
+            fotoPreview.style.display = 'none';
+        }
+        if (fotoPlaceholder) {
+            fotoPlaceholder.style.display = 'flex';
+        }
+        
+        // 7. Ocultar vistas previas de otros archivos
+        const previews = ['cvPreview', 'contratoPreview', 'actaPreview', 'rpPreview'];
+        previews.forEach(id => {
+            const preview = document.getElementById(id);
             if (preview) preview.style.display = 'none';
         });
         
+        // 8. Ocultar grupos de dirección
         if (grupoDireccionSecundario) grupoDireccionSecundario.style.display = 'none';
         if (grupoDireccionTerciario) grupoDireccionTerciario.style.display = 'none';
         
-        // Restablecer estilo del campo de duración
+        // 9. Restablecer estilo del campo de duración
         const duracionContratoInput = document.getElementById('duracion_contrato');
         if (duracionContratoInput) {
             duracionContratoInput.style.borderColor = '#e0e0e0';
         }
         
-        // Limpiar todos los mensajes de error
+        // 10. Limpiar todos los mensajes de error
         document.querySelectorAll('.validation-message').forEach(el => {
             el.style.display = 'none';
         });
     }
 
+    // Funcionalidad adicional para municipios
     const municipioPrincipal = document.getElementById('id_municipio_principal');
     if (municipioPrincipal) {
         municipioPrincipal.addEventListener('change', function() {
@@ -1065,12 +1192,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Prevenir submit con Enter
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
             e.preventDefault();
         }
     });
     
+    // Actualizar hora en tiempo real
     function actualizarHora() {
         const now = new Date();
         const options = { 
