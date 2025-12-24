@@ -7,6 +7,22 @@ require_once __DIR__ . '/../../models/AreaModel.php';
 require_once __DIR__ . '/../../models/MunicipioModel.php';
 require_once __DIR__ . '/../../models/TipoVinculacionModel.php';
 
+// Función para formatear bytes
+function formatBytes($bytes, $precision = 2) {
+    $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    
+    if ($bytes <= 0) {
+        return '0 B';
+    }
+    
+    $pow = floor(log($bytes, 1024));
+    $pow = min($pow, count($units) - 1);
+    
+    $bytes /= pow(1024, $pow);
+    
+    return round($bytes, $precision) . ' ' . $units[$pow];
+}
+
 header("Cache-Control: no-cache, no-store, must-revalidate"); 
 header("Pragma: no-cache"); 
 header("Expires: 0"); 
@@ -319,7 +335,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <div class="current-file">
                                     <div class="file-info">
                                         <i class="fas fa-image"></i>
-                                        <div>
+                                        <div class="file-info-content">
                                             <div class="file-name">Foto actual</div>
                                             <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
                                         </div>
@@ -648,9 +664,9 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <div class="current-file">
                                     <div class="file-info">
                                         <i class="fas fa-file-pdf"></i>
-                                        <div>
+                                        <div class="file-info-content">
                                             <div class="file-name"><?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['cv_tamano'] ?? 0); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['cv_tamano'] ?? 0); ?></div>
                                         </div>
                                     </div>
                                 </div>
@@ -674,9 +690,9 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <div class="current-file">
                                     <div class="file-info">
                                         <i class="fas fa-file-contract"></i>
-                                        <div>
+                                        <div class="file-info-content">
                                             <div class="file-name"><?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['contrato_tamano'] ?? 0); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['contrato_tamano'] ?? 0); ?></div>
                                         </div>
                                     </div>
                                 </div>
@@ -700,9 +716,9 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <div class="current-file">
                                     <div class="file-info">
                                         <i class="fas fa-file-signature"></i>
-                                        <div>
+                                        <div class="file-info-content">
                                             <div class="file-name"><?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
                                         </div>
                                     </div>
                                 </div>
@@ -726,9 +742,9 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <div class="current-file">
                                     <div class="file-info">
                                         <i class="fas fa-file-invoice-dollar"></i>
-                                        <div>
+                                        <div class="file-info-content">
                                             <div class="file-name"><?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['rp_tamano'] ?? 0); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['rp_tamano'] ?? 0); ?></div>
                                         </div>
                                     </div>
                                 </div>
