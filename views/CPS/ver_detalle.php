@@ -80,8 +80,8 @@ try {
     
     // Obtener foto del contratista si existe
     $foto_base64 = null;
-    if (!empty($contratista['foto'])) {
-        $foto_base64 = 'data:' . ($contratista['foto_tipo_mime'] ?? 'image/jpeg') . ';base64,' . base64_encode($contratista['foto']);
+    if (!empty($contratista['foto_contenido'])) {
+        $foto_base64 = 'data:' . ($contratista['foto_tipo_mime'] ?? 'image/jpeg') . ';base64,' . base64_encode($contratista['foto_contenido']);
     }
     
 } catch (Exception $e) {
@@ -606,7 +606,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                     </div>
                                     <div class="info-content-compact">
                                         <div class="info-label-compact">Correo Electrónico</div>
-                                        <div class="info-value-compact"><?php echo !empty($contratista['correo']) ? htmlspecialchars($contratista['correo']) : '<span style="color:#999; font-style:italic">No registrado</span>'; ?></div>
+                                        <div class="info-value-compact"><?php echo !empty($contratista['correo_personal']) ? htmlspecialchars($contratista['correo_personal']) : '<span style="color:#999; font-style:italic">No registrado</span>'; ?></div>
                                     </div>
                                 </div>
                                 

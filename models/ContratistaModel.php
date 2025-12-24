@@ -282,9 +282,11 @@ class ContratistaModel {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-    public function obtenerContratistaPorId($id_detalle) {
+   public function obtenerContratistaPorId($id_detalle) {
     $sql = "SELECT 
-                p.*, dc.*,
+                p.id_persona, p.nombres, p.apellidos, p.telefono, 
+                p.cedula, p.fecha_registro, p.correo_personal, p.profesion,
+                dc.*,
                 a.nombre AS area_nombre,
                 tv.nombre AS tipo_vinculacion_nombre,
                 m1.nombre AS municipio_principal_nombre,
