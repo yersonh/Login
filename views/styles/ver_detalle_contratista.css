@@ -356,7 +356,7 @@
 
 /* === BOTONES DE ACCIÓN === */
 .btn-volver {
-   position: fixed;
+    position: fixed;
     bottom: 25px;
     right: 25px;
     background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -373,6 +373,7 @@
     z-index: 100;
     transition: all 0.3s ease;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-decoration: none;
 }
 
 .btn-volver:hover {
@@ -380,8 +381,14 @@
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
 }
-.back-button i {
-    font-size: 18px;
+
+.btn-volver i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-volver:hover i {
+    transform: translateX(-3px);
 }
 
 /* === MEDIA QUERIES PARA TABLET === */
@@ -429,11 +436,10 @@
     }
     
     .btn-volver {
-        margin-top: 8px;
-        padding: 12px 18px;
-        font-size: 14px;
         bottom: 15px;
         right: 15px;
+        padding: 12px 18px;
+        font-size: 14px;
     }
 }
 
@@ -481,8 +487,9 @@
     
     .btn-volver {
         bottom: 25px;
-        left: 25px;
+        right: 25px;
         padding: 14px 22px;
+        font-size: 1rem;
     }
 }
 
@@ -531,6 +538,8 @@
     .btn-volver {
         font-size: 0.9rem;
         padding: 10px 15px;
+        bottom: 10px;
+        right: 10px;
     }
 }
 
@@ -549,5 +558,43 @@
     .foto-contratista {
         width: 120px;
         height: 120px;
+    }
+}
+
+/* === MEDIA QUERIES ADICIONALES PARA BOTÓN VOLVER === */
+@media (max-width: 576px) {
+    .btn-volver {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-volver {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+}
+
+/* === MEJORAS DE ACCESIBILIDAD TÁCTIL === */
+@media (hover: none) and (pointer: coarse) {
+    .btn-volver:hover {
+        transform: none;
+    }
+    
+    .btn-volver:active {
+        transform: scale(0.95);
+    }
+}
+
+/* === AJUSTES PARA SAFARI iOS === */
+@supports (-webkit-touch-callout: none) {
+    .btn-volver {
+        -webkit-tap-highlight-color: transparent;
     }
 }
