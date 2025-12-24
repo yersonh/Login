@@ -84,14 +84,18 @@ try {
     if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES[$nombreCampo];
         
-        // Validar tamaño máximo (más grande para fotos)
+        // Log para debug
+        error_log("Procesando foto: " . $file['name'] . " - Tamaño: " . $file['size'] . " bytes");
+        error_log("Tipo reportado por PHP: " . $file['type']);
+        
+        // Validar tamaño máximo
         $maxSize = $maxSizeMB * 1024 * 1024;
         if ($file['size'] > $maxSize) {
             throw new Exception("La foto de perfil excede el tamaño máximo de {$maxSizeMB}MB");
         }
         
-        // Validar tipo de imagen por extensión
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        // Validar tipo de imagen por extensión (PRINCIPAL)
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'jfif'];
         $fileName = strtolower($file['name']);
         $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
         
@@ -100,12 +104,34 @@ try {
             throw new Exception("Tipo de imagen no permitido. Solo se aceptan: {$tiposStr}");
         }
         
-        // Obtener tipo MIME
-        $mimeType = mime_content_type($file['tmp_name']);
-        $allowedMimeTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/x-png'];
+        // Validar MIME type con opciones más flexibles
+        $allowedMimeTypes = [
+            'image/jpeg', 
+            'image/pjpeg', 
+            'image/jpg',
+            'image/png', 
+            'image/x-png',  // MIME type alternativo para PNG
+            'image/gif',
+            'image/x-gif'
+        ];
         
-        if (!in_array($mimeType, $allowedMimeTypes)) {
-            throw new Exception("Tipo de archivo no permitido para la foto");
+        // Usar fileinfo como respaldo si mime_content_type falla
+        if (function_exists('mime_content_type')) {
+            $mimeType = mime_content_type($file['tmp_name']);
+        } else {
+            $mimeType = $file['type'];
+        }
+        
+        // Log del MIME type detectado
+        error_log("MIME type detectado: " . $mimeType);
+        
+        // Validación más flexible: aceptar si pasa por extensión O por MIME type
+        $extensionValida = in_array($fileExtension, $allowedExtensions);
+        $mimeTypeValido = in_array($mimeType, $allowedMimeTypes);
+        
+        if (!$extensionValida && !$mimeTypeValido) {
+            error_log("Validación fallida - Extensión: $fileExtension, MIME: $mimeType");
+            throw new Exception("Tipo de archivo no permitido para la foto. Extensión: $fileExtension, Tipo: $mimeType");
         }
         
         // Leer archivo como binario
@@ -114,11 +140,16 @@ try {
             throw new Exception("No se pudo leer la foto");
         }
         
+        // Verificar que realmente sea una imagen válida
+        $imageInfo = @getimagesize($file['tmp_name']);
+        if ($imageInfo === false) {
+            throw new Exception("El archivo no es una imagen válida");
+        }
+        
         return [
             'archivo' => $content,
             'nombre_original' => $file['name'],
             'tipo_mime' => $mimeType
-            // NOTA: No incluimos 'tamano' porque la tabla fotos_perfil no tiene esta columna
         ];
     }
     return null;
