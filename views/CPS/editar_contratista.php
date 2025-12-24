@@ -42,6 +42,17 @@ $tiposVinculacion = [];
 $error = '';
 $success = '';
 
+// Configuración de archivos
+$max_file_size = 5 * 1024 * 1024; // 5MB
+$allowed_image_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+$allowed_doc_types = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+];
+
 try {
     $database = new Database();
     $db = $database->conectar();
@@ -75,6 +86,7 @@ try {
             'cedula' => trim($_POST['cedula'] ?? ''),
             'telefono' => trim($_POST['telefono'] ?? ''),
             'correo_personal' => trim($_POST['correo_personal'] ?? ''),
+            'profesion' => trim($_POST['profesion'] ?? ''),
             'id_area' => (int)($_POST['id_area'] ?? 0),
             'id_tipo_vinculacion' => (int)($_POST['id_tipo_vinculacion'] ?? 0),
             'id_municipio_principal' => (int)($_POST['id_municipio_principal'] ?? 0),
@@ -90,10 +102,7 @@ try {
             'direccion_municipio_principal' => trim($_POST['direccion_municipio_principal'] ?? ''),
             'direccion_municipio_secundario' => trim($_POST['direccion_municipio_secundario'] ?? ''),
             'direccion_municipio_terciario' => trim($_POST['direccion_municipio_terciario'] ?? ''),
-            'cv_nombre_original' => $contratista['cv_nombre_original'] ?? '', // Mantener archivo existente
-            'contrato_nombre_original' => $contratista['contrato_nombre_original'] ?? '',
-            'acta_inicio_nombre_original' => $contratista['acta_inicio_nombre_original'] ?? '',
-            'rp_nombre_original' => $contratista['rp_nombre_original'] ?? ''
+            'direccion' => trim($_POST['direccion_municipio_principal'] ?? '') // Para compatibilidad
         ];
         
         // Validaciones básicas
@@ -104,15 +113,104 @@ try {
         } elseif (empty($datosActualizados['numero_contrato'])) {
             $error = "El número de contrato es obligatorio";
         } else {
-            // Actualizar en la base de datos
-            $resultado = $contratistaModel->actualizarContratista($id_detalle, $datosActualizados);
+            // Preparar archivos para actualización
+            $archivos = [];
             
-            if ($resultado['success']) {
-                $_SESSION['success'] = "Contratista actualizado exitosamente";
-                header("Location: ver_detalle.php?id_detalle=$id_detalle");
-                exit();
-            } else {
-                $error = $resultado['error'] ?? "Error al actualizar el contratista";
+            // Manejar foto de perfil
+            if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+                $foto = $_FILES['foto_perfil'];
+                
+                // Validar tipo de imagen
+                if (!in_array($foto['type'], $allowed_image_types)) {
+                    $error = "Tipo de archivo no permitido para foto. Solo se permiten JPG, PNG y GIF.";
+                } elseif ($foto['size'] > $max_file_size) {
+                    $error = "La foto es demasiado grande. Tamaño máximo: 5MB";
+                } else {
+                    $archivos['foto_perfil'] = $foto;
+                }
+            }
+            
+            // Manejar documentos si no hay error
+            if (empty($error)) {
+                // CV
+                if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
+                    $cv = $_FILES['cv'];
+                    if (!in_array($cv['type'], $allowed_doc_types) && !in_array($cv['type'], $allowed_image_types)) {
+                        $error = "Tipo de archivo no permitido para CV. Solo PDF, Word, Excel e imágenes.";
+                    } elseif ($cv['size'] > $max_file_size) {
+                        $error = "El CV es demasiado grande. Tamaño máximo: 5MB";
+                    } else {
+                        $datosActualizados['cv_nombre_original'] = $cv['name'];
+                        $archivos['adjuntar_cv'] = $cv;
+                    }
+                }
+                
+                // Contrato
+                if (isset($_FILES['contrato']) && $_FILES['contrato']['error'] === UPLOAD_ERR_OK) {
+                    $contrato = $_FILES['contrato'];
+                    if (!in_array($contrato['type'], $allowed_doc_types) && !in_array($contrato['type'], $allowed_image_types)) {
+                        $error = "Tipo de archivo no permitido para contrato. Solo PDF, Word, Excel e imágenes.";
+                    } elseif ($contrato['size'] > $max_file_size) {
+                        $error = "El contrato es demasiado grande. Tamaño máximo: 5MB";
+                    } else {
+                        $datosActualizados['contrato_nombre_original'] = $contrato['name'];
+                        $archivos['adjuntar_contrato'] = $contrato;
+                    }
+                }
+                
+                // Acta de Inicio
+                if (isset($_FILES['acta_inicio']) && $_FILES['acta_inicio']['error'] === UPLOAD_ERR_OK) {
+                    $acta = $_FILES['acta_inicio'];
+                    if (!in_array($acta['type'], $allowed_doc_types) && !in_array($acta['type'], $allowed_image_types)) {
+                        $error = "Tipo de archivo no permitido para acta de inicio. Solo PDF, Word, Excel e imágenes.";
+                    } elseif ($acta['size'] > $max_file_size) {
+                        $error = "El acta de inicio es demasiado grande. Tamaño máximo: 5MB";
+                    } else {
+                        $datosActualizados['acta_inicio_nombre_original'] = $acta['name'];
+                        $archivos['adjuntar_acta_inicio'] = $acta;
+                    }
+                }
+                
+                // Registro Presupuestal (RP)
+                if (isset($_FILES['rp']) && $_FILES['rp']['error'] === UPLOAD_ERR_OK) {
+                    $rp = $_FILES['rp'];
+                    if (!in_array($rp['type'], $allowed_doc_types) && !in_array($rp['type'], $allowed_image_types)) {
+                        $error = "Tipo de archivo no permitido para RP. Solo PDF, Word, Excel e imágenes.";
+                    } elseif ($rp['size'] > $max_file_size) {
+                        $error = "El RP es demasiado grande. Tamaño máximo: 5MB";
+                    } else {
+                        $datosActualizados['rp_nombre_original'] = $rp['name'];
+                        $archivos['adjuntar_rp'] = $rp;
+                    }
+                }
+            }
+            
+            // Si no hay errores, actualizar en la base de datos
+            if (empty($error)) {
+                // Mantener nombres originales si no se subieron nuevos archivos
+                if (empty($datosActualizados['cv_nombre_original'])) {
+                    $datosActualizados['cv_nombre_original'] = $contratista['cv_nombre_original'] ?? '';
+                }
+                if (empty($datosActualizados['contrato_nombre_original'])) {
+                    $datosActualizados['contrato_nombre_original'] = $contratista['contrato_nombre_original'] ?? '';
+                }
+                if (empty($datosActualizados['acta_inicio_nombre_original'])) {
+                    $datosActualizados['acta_inicio_nombre_original'] = $contratista['acta_inicio_nombre_original'] ?? '';
+                }
+                if (empty($datosActualizados['rp_nombre_original'])) {
+                    $datosActualizados['rp_nombre_original'] = $contratista['rp_nombre_original'] ?? '';
+                }
+                
+                // Actualizar en la base de datos
+                $resultado = $contratistaModel->actualizarContratista($id_detalle, $datosActualizados, $archivos);
+                
+                if ($resultado['success']) {
+                    $_SESSION['success'] = "Contratista actualizado exitosamente";
+                    header("Location: ver_detalle.php?id_detalle=$id_detalle");
+                    exit();
+                } else {
+                    $error = $resultado['error'] ?? "Error al actualizar el contratista";
+                }
             }
         }
     }
@@ -223,9 +321,17 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
         }
         
-        .form-control-sm {
-            padding: 8px 12px;
-            font-size: 0.9rem;
+        .form-control-file {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+        }
+        
+        .form-control-file:focus {
+            outline: none;
+            border-color: #1e3c72;
         }
         
         .required {
@@ -237,6 +343,44 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             color: #666;
             margin-top: 5px;
             display: block;
+        }
+        
+        .form-help {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 4px;
+        }
+        
+        .file-info {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #1e3c72;
+        }
+        
+        .file-info i {
+            color: #1e3c72;
+            font-size: 1.1rem;
+        }
+        
+        .file-info .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .file-info .file-size {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .current-file {
+            margin-top: 8px;
         }
         
         .form-actions {
@@ -327,18 +471,49 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             border-left: 4px solid #28a745;
         }
         
-        .file-info {
+        .foto-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #1e3c72;
             background-color: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .foto-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .foto-placeholder {
+            text-align: center;
+            color: #6c757d;
+            padding: 15px;
+        }
+        
+        .foto-placeholder i {
+            font-size: 3rem;
+            color: #adb5bd;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .file-preview {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-top: 8px;
         }
         
-        .file-info i {
+        .file-preview i {
             color: #1e3c72;
         }
         
@@ -419,7 +594,65 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 <?php endif; ?>
                 
                 <!-- Formulario -->
-                <form method="POST" action="" class="form-container" id="formEditarContratista">
+                <form method="POST" action="" class="form-container" id="formEditarContratista" enctype="multipart/form-data">
+                    
+                    <!-- Foto de Perfil -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-camera"></i> Foto de Perfil</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="foto_perfil">
+                                    <i class="fas fa-image"></i> Cambiar Foto
+                                </label>
+                                
+                                <!-- Mostrar foto actual si existe -->
+                                <?php if (!empty($contratista['foto_contenido'])): ?>
+                                <div class="foto-preview">
+                                    <img src="data:<?php echo htmlspecialchars($contratista['foto_tipo_mime'] ?? 'image/jpeg'); ?>;base64,<?php echo base64_encode($contratista['foto_contenido']); ?>" 
+                                         alt="Foto actual del contratista">
+                                </div>
+                                <div class="current-file">
+                                    <div class="file-info">
+                                        <i class="fas fa-image"></i>
+                                        <div>
+                                            <div class="file-name">Foto actual</div>
+                                            <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php else: ?>
+                                <div class="foto-preview">
+                                    <div class="foto-placeholder">
+                                        <i class="fas fa-user"></i>
+                                        <div>Sin foto</div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" 
+                                       id="foto_perfil" 
+                                       name="foto_perfil" 
+                                       class="form-control-file"
+                                       accept="image/jpeg,image/jpg,image/png,image/gif">
+                                <span class="form-help">Formatos permitidos: JPG, PNG, GIF (Máx. 5MB)</span>
+                                <span class="form-text">Dejar en blanco para mantener la foto actual</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profesion">
+                                    <i class="fas fa-graduation-cap"></i> Profesión
+                                </label>
+                                <input type="text" 
+                                       id="profesion" 
+                                       name="profesion" 
+                                       class="form-control"
+                                       placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
+                                       value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
+                                <span class="form-text">Profesión u oficio del contratista</span>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Datos Personales -->
                     <div class="form-section">
@@ -695,39 +928,115 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                         </div>
                     </div>
                     
-                    <!-- Documentos (solo información) -->
+                    <!-- Documentos Adjuntos -->
                     <div class="form-section">
                         <h3><i class="fas fa-paperclip"></i> Documentos Adjuntos</h3>
-                        <p><i class="fas fa-info-circle"></i> Los documentos no se pueden modificar desde esta vista. Si necesitas cambiar un documento, contacta al administrador.</p>
+                        <p><i class="fas fa-info-circle"></i> Puedes actualizar los documentos. Deja en blanco para mantener el documento actual.</p>
                         
                         <div class="form-grid">
-                            <?php if (!empty($contratista['cv_nombre_original'])): ?>
-                            <div class="file-info">
-                                <i class="fas fa-user-graduate"></i>
-                                <span><strong>CV:</strong> <?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></span>
+                            <!-- CV -->
+                            <div class="form-group">
+                                <label for="cv">
+                                    <i class="fas fa-user-graduate"></i> Hoja de Vida (CV)
+                                </label>
+                                
+                                <?php if (!empty($contratista['cv_nombre_original'])): ?>
+                                <div class="current-file">
+                                    <div class="file-info">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <div>
+                                            <div class="file-name"><?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['cv_tamano'] ?? 0); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" 
+                                       id="cv" 
+                                       name="cv" 
+                                       class="form-control-file"
+                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
                             </div>
-                            <?php endif; ?>
                             
-                            <?php if (!empty($contratista['contrato_nombre_original'])): ?>
-                            <div class="file-info">
-                                <i class="fas fa-file-contract"></i>
-                                <span><strong>Contrato:</strong> <?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></span>
+                            <!-- Contrato -->
+                            <div class="form-group">
+                                <label for="contrato">
+                                    <i class="fas fa-file-contract"></i> Contrato
+                                </label>
+                                
+                                <?php if (!empty($contratista['contrato_nombre_original'])): ?>
+                                <div class="current-file">
+                                    <div class="file-info">
+                                        <i class="fas fa-file-contract"></i>
+                                        <div>
+                                            <div class="file-name"><?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['contrato_tamano'] ?? 0); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" 
+                                       id="contrato" 
+                                       name="contrato" 
+                                       class="form-control-file"
+                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
                             </div>
-                            <?php endif; ?>
                             
-                            <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
-                            <div class="file-info">
-                                <i class="fas fa-file-signature"></i>
-                                <span><strong>Acta de inicio:</strong> <?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></span>
+                            <!-- Acta de Inicio -->
+                            <div class="form-group">
+                                <label for="acta_inicio">
+                                    <i class="fas fa-file-signature"></i> Acta de Inicio
+                                </label>
+                                
+                                <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
+                                <div class="current-file">
+                                    <div class="file-info">
+                                        <i class="fas fa-file-signature"></i>
+                                        <div>
+                                            <div class="file-name"><?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" 
+                                       id="acta_inicio" 
+                                       name="acta_inicio" 
+                                       class="form-control-file"
+                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
                             </div>
-                            <?php endif; ?>
                             
-                            <?php if (!empty($contratista['rp_nombre_original'])): ?>
-                            <div class="file-info">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                                <span><strong>RP:</strong> <?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></span>
+                            <!-- Registro Presupuestal (RP) -->
+                            <div class="form-group">
+                                <label for="rp">
+                                    <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal (RP)
+                                </label>
+                                
+                                <?php if (!empty($contratista['rp_nombre_original'])): ?>
+                                <div class="current-file">
+                                    <div class="file-info">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <div>
+                                            <div class="file-name"><?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
+                                            <div class="file-size">Tamaño: <?php echo $this->formatBytes($contratista['rp_tamano'] ?? 0); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" 
+                                       id="rp" 
+                                       name="rp" 
+                                       class="form-control-file"
+                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
                             </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                     
@@ -808,6 +1117,21 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                     cedula.focus();
                 }
                 
+                // Validar tamaño de archivos
+                const fileInputs = form.querySelectorAll('input[type="file"]');
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                
+                fileInputs.forEach(input => {
+                    if (input.files.length > 0) {
+                        const file = input.files[0];
+                        if (file.size > maxSize) {
+                            valid = false;
+                            alert('El archivo "' + file.name + '" es demasiado grande. Tamaño máximo: 5MB');
+                            input.focus();
+                        }
+                    }
+                });
+                
                 // Validar fechas
                 const fechaInicio = document.getElementById('fecha_inicio');
                 const fechaFinal = document.getElementById('fecha_final');
@@ -845,6 +1169,23 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 }
                 e.target.value = value;
             });
+            
+            // Vista previa de foto de perfil
+            const fotoInput = document.getElementById('foto_perfil');
+            const fotoPreview = document.querySelector('.foto-preview img');
+            
+            if (fotoInput && fotoPreview) {
+                fotoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            fotoPreview.src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         });
     </script>
     
