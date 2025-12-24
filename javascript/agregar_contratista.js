@@ -921,14 +921,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Limpiar formulario COMPLETAMENTE (incluye errores)
-            limpiarFormulario();
+            limpiarFormularioCompleto();
 
             // Enfocar el primer campo para nuevo registro
             const primerCampo = document.getElementById('nombre_completo');
             if (primerCampo) {
                 primerCampo.focus();
-                // Asegurar que no tenga estilo de error
-                primerCampo.style.borderColor = '#e0e0e0';
             }
 
             // Resetear estado del botón
@@ -1123,138 +1121,137 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    function limpiarFormulario() {
-    // 1. Campos de texto principales (incluye profesion)
-    const camposTextoLimpios = [
-        'nombre_completo', 'cedula', 'correo', 'celular', 'direccion', 'profesion',
-        'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal',
-        'direccion_municipio_principal', 'direccion_municipio_secundario', 
-        'direccion_municipio_terciario'
-    ];
-    
-    camposTextoLimpios.forEach(id => {
-        const campo = document.getElementById(id);
-        if (campo) {
-            campo.value = '';
-            // RESET ESTILO DE VALIDACIÓN
-            campo.style.borderColor = '#e0e0e0';
-        }
-    });
-
-    // 2. Campos de fecha
-    const fechaCampos = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
-    fechaCampos.forEach(id => {
-        const campo = document.getElementById(id);
-        if (campo) {
-            campo.value = '';
-            // RESET ESTILO DE VALIDACIÓN
-            campo.style.borderColor = '#e0e0e0';
-            if (campo._flatpickr) {
-                campo._flatpickr.clear();
-            }
-        }
-    });
-    
-    // 3. Selects
-    const selectsLimpiar = [
-        'id_tipo_vinculacion', 'id_area', 
-        'id_municipio_secundario', 'id_municipio_terciario'
-    ];
-    
-    selectsLimpiar.forEach(id => {
-        const select = document.getElementById(id);
-        if (select) {
-            select.selectedIndex = 0;
-            // RESET ESTILO DE VALIDACIÓN
-            select.style.borderColor = '#e0e0e0';
-        }
-    });
-
-    // 4. Municipio principal (restaurar a Villavicencio)
-    const municipioPrincipal = document.getElementById('id_municipio_principal');
-    if (municipioPrincipal) {
-        municipioPrincipal.selectedIndex = 0;
-        Array.from(municipioPrincipal.options).forEach(option => {
-            if (option.text.includes('Villavicencio')) {
-                option.selected = true;
+    // FUNCIÓN MEJORADA PARA LIMPIAR FORMULARIO COMPLETAMENTE
+    function limpiarFormularioCompleto() {
+        // 1. Limpiar todos los campos de texto
+        const camposTextoLimpios = [
+            'nombre_completo', 'cedula', 'correo', 'celular', 'direccion', 'profesion',
+            'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal',
+            'direccion_municipio_principal', 'direccion_municipio_secundario', 
+            'direccion_municipio_terciario'
+        ];
+        
+        camposTextoLimpios.forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) {
+                campo.value = '';
+                // Resetear estilo de borde
+                campo.style.borderColor = '#e0e0e0';
             }
         });
-        // RESET ESTILO DE VALIDACIÓN
-        municipioPrincipal.style.borderColor = '#e0e0e0';
-    }
 
-    // 5. Archivos (incluye foto_perfil)
-    const archivos = [
-        'foto_perfil', 'adjuntar_cv', 'adjuntar_contrato', 
-        'adjuntar_acta_inicio', 'adjuntar_rp'
-    ];
-    
-    archivos.forEach(id => {
-        const fileInput = document.getElementById(id);
-        if (fileInput) fileInput.value = '';
-    });
-    
-    // 6. Resetear vista previa de foto
-    const fotoPreview = document.getElementById('fotoPreviewImg');
-    const fotoPlaceholder = document.querySelector('.foto-placeholder');
-    if (fotoPreview) {
-        fotoPreview.src = '';
-        fotoPreview.style.display = 'none';
-    }
-    if (fotoPlaceholder) {
-        fotoPlaceholder.style.display = 'flex';
-    }
-    
-    // 7. Ocultar vistas previas de otros archivos
-    const previews = ['cvPreview', 'contratoPreview', 'actaPreview', 'rpPreview'];
-    previews.forEach(id => {
-        const preview = document.getElementById(id);
-        if (preview) preview.style.display = 'none';
-    });
-    
-    // 8. Ocultar grupos de dirección
-    if (grupoDireccionSecundario) {
-        grupoDireccionSecundario.style.display = 'none';
-        const direccionSec = document.getElementById('direccion_municipio_secundario');
-        if (direccionSec) {
-            direccionSec.value = '';
-            direccionSec.style.borderColor = '#e0e0e0';
+        // 2. Limpiar campos de fecha
+        const fechaCampos = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
+        fechaCampos.forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) {
+                campo.value = '';
+                campo.style.borderColor = '#e0e0e0';
+                if (campo._flatpickr) {
+                    campo._flatpickr.clear();
+                }
+            }
+        });
+        
+        // 3. Limpiar selects
+        const selectsLimpiar = [
+            'id_tipo_vinculacion', 'id_area', 
+            'id_municipio_secundario', 'id_municipio_terciario'
+        ];
+        
+        selectsLimpiar.forEach(id => {
+            const select = document.getElementById(id);
+            if (select) {
+                select.selectedIndex = 0;
+                select.style.borderColor = '#e0e0e0';
+            }
+        });
+
+        // 4. Resetear municipio principal a Villavicencio
+        const municipioPrincipal = document.getElementById('id_municipio_principal');
+        if (municipioPrincipal) {
+            municipioPrincipal.selectedIndex = 0;
+            Array.from(municipioPrincipal.options).forEach(option => {
+                if (option.text.includes('Villavicencio')) {
+                    option.selected = true;
+                }
+            });
+            municipioPrincipal.style.borderColor = '#e0e0e0';
+        }
+
+        // 5. Limpiar archivos
+        const archivos = [
+            'foto_perfil', 'adjuntar_cv', 'adjuntar_contrato', 
+            'adjuntar_acta_inicio', 'adjuntar_rp'
+        ];
+        
+        archivos.forEach(id => {
+            const fileInput = document.getElementById(id);
+            if (fileInput) fileInput.value = '';
+        });
+        
+        // 6. Resetear vista previa de foto
+        const fotoPreview = document.getElementById('fotoPreviewImg');
+        if (fotoPreview) {
+            fotoPreview.src = '';
+            fotoPreview.style.display = 'none';
+        }
+        
+        // 7. Ocultar vistas previas de archivos
+        const previews = ['cvPreview', 'contratoPreview', 'actaPreview', 'rpPreview'];
+        previews.forEach(id => {
+            const preview = document.getElementById(id);
+            if (preview) preview.style.display = 'none';
+        });
+        
+        // 8. Ocultar grupos de dirección y resetear sus campos
+        if (grupoDireccionSecundario) {
+            grupoDireccionSecundario.style.display = 'none';
+            if (direccionSecundario) {
+                direccionSecundario.value = '';
+                direccionSecundario.style.borderColor = '#e0e0e0';
+            }
+        }
+        
+        if (grupoDireccionTerciario) {
+            grupoDireccionTerciario.style.display = 'none';
+            if (direccionTerciario) {
+                direccionTerciario.value = '';
+                direccionTerciario.style.borderColor = '#e0e0e0';
+            }
+        }
+        
+        // 9. Resetear estilo del campo de duración
+        if (duracionContratoInput) {
+            duracionContratoInput.style.borderColor = '#e0e0e0';
+        }
+        
+        // 10. LIMPIAR TODOS LOS MENSAJES DE ERROR (LO MÁS IMPORTANTE)
+        document.querySelectorAll('.validation-message').forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
+        });
+        
+        // 11. Resetear cualquier borde rojo que haya quedado
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            if (element.style.borderColor === 'rgb(220, 53, 69)' || 
+                element.style.borderColor === '#dc3545') {
+                element.style.borderColor = '#e0e0e0';
+            }
+        });
+        
+        // 12. Resetear mensaje de error de foto
+        const fotoError = document.getElementById('fotoError');
+        if (fotoError) {
+            fotoError.style.display = 'none';
+        }
+        
+        // 13. Resetear placeholders de foto
+        const fotoPlaceholder = document.querySelector('.foto-placeholder');
+        if (fotoPlaceholder) {
+            fotoPlaceholder.style.display = 'flex';
         }
     }
-    
-    if (grupoDireccionTerciario) {
-        grupoDireccionTerciario.style.display = 'none';
-        const direccionTer = document.getElementById('direccion_municipio_terciario');
-        if (direccionTer) {
-            direccionTer.value = '';
-            direccionTer.style.borderColor = '#e0e0e0';
-        }
-    }
-    
-    // 9. Restablecer estilo del campo de duración
-    const duracionContratoInput = document.getElementById('duracion_contrato');
-    if (duracionContratoInput) {
-        duracionContratoInput.style.borderColor = '#e0e0e0';
-        duracionContratoInput.style.backgroundColor = '#f8f9fa';
-    }
-    
-    // 10. Limpiar todos los mensajes de error (ESTO ES LO MÁS IMPORTANTE)
-    document.querySelectorAll('.validation-message').forEach(el => {
-        el.style.display = 'none';
-        el.textContent = '';
-    });
-    
-    // 11. También limpiar errores específicos que puedas haber creado
-    document.querySelectorAll('[style*="border-color: #dc3545"]').forEach(el => {
-        el.style.borderColor = '#e0e0e0';
-    });
-    
-    // 12. Resetear el mensaje de error de la foto
-    const fotoError = document.getElementById('fotoError');
-    if (fotoError) {
-        fotoError.style.display = 'none';
-    }
-}
 
     // Funcionalidad adicional para municipios
     const municipioPrincipal = document.getElementById('id_municipio_principal');
