@@ -282,7 +282,7 @@ class ContratistaModel {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-   public function obtenerContratistaPorId($id_detalle) {
+  public function obtenerContratistaPorId($id_detalle) {
     $sql = "SELECT 
                 p.id_persona, p.nombres, p.apellidos, p.telefono, 
                 p.cedula, p.fecha_registro, p.correo_personal, p.profesion,
@@ -326,7 +326,25 @@ class ContratistaModel {
     $stmt->bindParam(':id_detalle', $id_detalle);
     $stmt->execute();
     
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Convertir recursos de PostgreSQL a strings
+    if ($resultado) {
+        // Convertir contenido de foto si existe (PostgreSQL devuelve bytea como recurso)
+        if (isset($resultado['foto_contenido']) && is_resource($resultado['foto_contenido'])) {
+            $resultado['foto_contenido'] = stream_get_contents($resultado['foto_contenido']);
+        }
+        
+        // Convertir otros archivos binarios si también son recursos
+        $camposBinarios = ['cv_archivo', 'contrato_archivo', 'acta_inicio_archivo', 'rp_archivo'];
+        foreach ($camposBinarios as $campo) {
+            if (isset($resultado[$campo]) && is_resource($resultado[$campo])) {
+                $resultado[$campo] = stream_get_contents($resultado[$campo]);
+            }
+        }
+    }
+    
+    return $resultado;
 }
 
     public function obtenerCV($id_detalle) {
