@@ -126,6 +126,68 @@ try {
                     <h3 class="form-subtitle">DATOS PERSONALES</h3>
                     
                     <div class="form-grid">
+                    <!-- Campo de Foto de Perfil - Full width -->
+                    <div class="form-group full-width">
+                        <label class="form-label" for="foto_perfil">
+                            <i class="fas fa-camera"></i> Foto del Contratista
+                            <span class="optional">(Opcional - Max. 2MB)</span>
+                        </label>
+                        
+                        <div class="foto-container">
+                            <!-- Vista previa de la foto -->
+                            <div class="foto-preview" id="fotoPreview">
+                                <div class="foto-placeholder">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Vista previa</span>
+                                    <small>Seleccione una foto</small>
+                                </div>
+                                <img id="fotoPreviewImg" style="display: none; max-width: 100%; border-radius: 8px;">
+                            </div>
+                            
+                            <!-- Input para subir la foto -->
+                            <div class="foto-input-group">
+                                <div class="file-input-container foto-input">
+                                    <input type="file" 
+                                        id="foto_perfil" 
+                                        name="foto_perfil" 
+                                        class="file-input-control" 
+                                        accept=".jpg,.jpeg,.png"
+                                        data-max-size="2">
+                                    <div class="file-input-info">
+                                        <span class="file-input-text">Seleccionar foto...</span>
+                                        <span class="file-input-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="foto-requirements">
+                                    <div class="requirements-list">
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Tamaño máximo: 2MB</span>
+                                        </div>
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Formatos: JPG, JPEG, PNG</span>
+                                        </div>
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Recomendado: 300x300 px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mensaje de error -->
+                                <div class="foto-error" id="fotoError" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span id="fotoErrorMessage"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label" for="nombre_completo">
                                 Nombre completo <span class="required">*</span>
@@ -136,6 +198,15 @@ try {
                                    class="form-control" 
                                    placeholder="Ingrese el nombre completo"
                                    required>
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label" for="profesion">
+                                <i class="fas fa-user-graduate"></i> Profesión / Ocupación
+                            </label>
+                            <input type="text" 
+                                id="profesion" 
+                                name="profesion" 
+                                class="form-control" 
                         </div>
                         
                         <div class="form-group">
@@ -198,6 +269,7 @@ try {
                         </div>
                     </div>
                 </div>
+
                 
                 <!-- Sección 2: Información Geográfica -->
                 <div class="form-section">
