@@ -121,158 +121,80 @@ try {
                     <?php echo date('d/m/Y h:i:s A'); ?>
                 </div>
                 
-               <!-- Sección 1: Datos Personales -->
+                <!-- Sección 1: Datos Personales -->
                 <div class="form-section">
                     <h3 class="form-subtitle">DATOS PERSONALES</h3>
                     
-                    <!-- Contenedor principal para toda la sección -->
-                    <div class="datos-personales-container">
-                        <!-- Campo de Foto de Perfil - Full width -->
-                        <div class="form-group full-width">
-                            <label class="form-label" for="foto_perfil">
-                                <i class="fas fa-camera"></i> Foto del Contratista
-                                <span class="optional">(Opcional - Max. 2MB)</span>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="nombre_completo">
+                                Nombre completo <span class="required">*</span>
                             </label>
-                            
-                            <div class="foto-container">
-                                <!-- Vista previa de la foto -->
-                                <div class="foto-preview" id="fotoPreview">
-                                    <div class="foto-placeholder">
-                                        <i class="fas fa-user-circle"></i>
-                                        <span>Vista previa</span>
-                                        <small>Seleccione una foto</small>
-                                    </div>
-                                    <img id="fotoPreviewImg" style="display: none; max-width: 100%; border-radius: 8px;">
-                                </div>
-                                
-                                <!-- Input para subir la foto -->
-                                <div class="foto-input-group">
-                                    <div class="file-input-container foto-input">
-                                        <input type="file" 
-                                            id="foto_perfil" 
-                                            name="foto_perfil" 
-                                            class="file-input-control" 
-                                            accept=".jpg,.jpeg,.png"
-                                            data-max-size="2">
-                                        <div class="file-input-info">
-                                            <span class="file-input-text">Seleccionar foto...</span>
-                                            <span class="file-input-icon">
-                                                <i class="fas fa-cloud-upload-alt"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="foto-requirements">
-                                        <div class="requirements-list">
-                                            <div class="requirement-item">
-                                                <i class="fas fa-check-circle text-success"></i>
-                                                <span>Tamaño máximo: 2MB</span>
-                                            </div>
-                                            <div class="requirement-item">
-                                                <i class="fas fa-check-circle text-success"></i>
-                                                <span>Formatos: JPG, JPEG, PNG</span>
-                                            </div>
-                                            <div class="requirement-item">
-                                                <i class="fas fa-check-circle text-success"></i>
-                                                <span>Recomendado: 300x300 px</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Mensaje de error -->
-                                    <div class="foto-error" id="fotoError" style="display: none;">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        <span id="fotoErrorMessage"></span>
-                                    </div>
-                                </div>
-                            </div>
+                            <input type="text" 
+                                   id="nombre_completo" 
+                                   name="nombre_completo" 
+                                   class="form-control" 
+                                   placeholder="Ingrese el nombre completo"
+                                   required>
                         </div>
                         
-                        <!-- Grid para los demás campos -->
-                        <div class="datos-personales-fields">
-                            <div class="form-group">
-                                <label class="form-label" for="nombre_completo">
-                                    Nombre completo <span class="required">*</span>
-                                </label>
-                                <input type="text" 
-                                    id="nombre_completo" 
-                                    name="nombre_completo" 
-                                    class="form-control" 
-                                    placeholder="Ingrese el nombre completo"
-                                    required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="profesion">
-                                    <i class="fas fa-user-graduate"></i> Profesión / Ocupación
-                                </label>
-                                <input type="text" 
-                                    id="profesion" 
-                                    name="profesion" 
-                                    class="form-control" 
-                                    placeholder="Ingrese profesión u ocupación">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="cedula">
-                                    Cédula de ciudadanía <span class="required">*</span>
-                                </label>
-                                <input type="text" 
-                                    id="cedula" 
-                                    name="cedula" 
-                                    class="form-control medium" 
-                                    placeholder="Número de identificación"
-                                    required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="correo">
-                                    Correo electrónico <span class="required">*</span>
-                                </label>
-                                <input type="email" 
-                                    id="correo" 
-                                    name="correo" 
-                                    class="form-control" 
-                                    placeholder="ejemplo@dominio.com"
-                                    required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="celular">
-                                    Número de celular <span class="required">*</span>
-                                </label>
-                                <input type="tel" 
-                                    id="celular" 
-                                    name="celular" 
-                                    class="form-control medium" 
-                                    placeholder="Ingrese número de celular"
-                                    required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="direccion">
-                                    <i class="fas fa-home"></i> Dirección
-                                </label>
-                                <input type="text" 
-                                    id="direccion" 
-                                    name="direccion" 
-                                    class="form-control" 
-                                    placeholder="Dirección completa">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="id_tipo_vinculacion">
-                                    <i class="fas fa-handshake"></i> Tipo de vinculación <span class="required">*</span>
-                                </label>
-                                <select id="id_tipo_vinculacion" name="id_tipo_vinculacion" class="form-control" required>
-                                    <option value="">Seleccione</option>
-                                    <?php foreach ($tiposVinculacion as $tipo): ?>
-                                    <option value="<?= htmlspecialchars($tipo['id_tipo']) ?>">
-                                        <?= htmlspecialchars($tipo['nombre']) ?>
-                                    </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cedula">
+                                Cédula de ciudadanía <span class="required">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="cedula" 
+                                   name="cedula" 
+                                   class="form-control medium" 
+                                   placeholder="Número de identificación"
+                                   required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="correo">
+                                Correo electrónico <span class="required">*</span>
+                            </label>
+                            <input type="email" 
+                                   id="correo" 
+                                   name="correo" 
+                                   class="form-control" 
+                                   required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="celular">
+                                Número de celular <span class="required">*</span>
+                            </label>
+                            <input type="tel" 
+                                   id="celular" 
+                                   name="celular" 
+                                   class="form-control medium" 
+                                   required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="direccion">
+                                Dirección
+                            </label>
+                            <input type="text" 
+                                   id="direccion" 
+                                   name="direccion" 
+                                   class="form-control" 
+                                   placeholder="Dirección completa">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="id_tipo_vinculacion">
+                                Tipo de vinculación <span class="required">*</span>
+                            </label>
+                            <select id="id_tipo_vinculacion" name="id_tipo_vinculacion" class="form-control" required>
+                                <option value="">Seleccione</option>
+                                <?php foreach ($tiposVinculacion as $tipo): ?>
+                                <option value="<?= htmlspecialchars($tipo['id_tipo']) ?>">
+                                    <?= htmlspecialchars($tipo['nombre']) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                 </div>
