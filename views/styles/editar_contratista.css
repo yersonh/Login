@@ -1,295 +1,815 @@
+/* styles/editar_contratista.css - CSS para formulario de editar contratistas */
+
+:root {
+    --primary-color: #004a8d;
+    --secondary-color: #003366;
+    --accent-color: #28a745;
+    --warning-color: #ff9800;
+    --warning-hover: #f57c00;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --gray-color: #6c757d;
+    --border-radius: 12px;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+    --modal-z-index: 2000;
+}
+
+/* ========== CONTENEDOR DE EDICIÓN ========== */
 .edit-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .edit-header {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .edit-header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .form-container {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .form-section h3 {
-            color: #1e3c72;
-            margin-top: 0;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
-        }
-        
-        .form-group label i {
-            width: 20px;
-            color: #1e3c72;
-            margin-right: 5px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #1e3c72;
-            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
-        }
-        
-        .form-control-file {
-            padding: 10px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
-        }
-        
-        .form-control-file:focus {
-            outline: none;
-            border-color: #1e3c72;
-        }
-        
-        .required {
-            color: #dc3545;
-        }
-        
-        .form-text {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 5px;
-            display: block;
-        }
-        
-        .form-help {
-            font-size: 0.8rem;
-            color: #6c757d;
-            font-style: italic;
-            margin-top: 4px;
-        }
-        
-        .file-info {
-            background-color: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-left: 4px solid #1e3c72;
-        }
-        
-        .file-info i {
-            color: #1e3c72;
-            font-size: 1.1rem;
-        }
-        
-        .file-info .file-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .file-info .file-size {
-            color: #6c757d;
-            font-size: 0.8rem;
-        }
-        
-        .current-file {
-            margin-top: 8px;
-        }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn-cancelar {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        .btn-cancelar:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
-        }
-        
-        .btn-guardar {
-            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-            color: white;
-        }
-        
-        .btn-guardar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-        }
-        
-        .btn-volver {
-            position: fixed;
-            bottom: 25px;
-            left: 25px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px 22px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-volver:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
-        }
-        
-        .alert {
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-        
-        .foto-preview {
-            width: 150px;
-            height: 150px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 3px solid #1e3c72;
-            background-color: #f8f9fa;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .foto-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .foto-placeholder {
-            text-align: center;
-            color: #6c757d;
-            padding: 15px;
-        }
-        
-        .foto-placeholder i {
-            font-size: 3rem;
-            color: #adb5bd;
-            margin-bottom: 8px;
-            display: block;
-        }
-        
-        .file-preview {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            margin-top: 8px;
-        }
-        
-        .file-preview i {
-            color: #1e3c72;
-        }
-        
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.edit-header {
+    background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-hover) 100%);
+    color: white;
+    padding: 25px;
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.edit-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-header p {
+    margin: 10px 0 0 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* ========== CONTENEDOR DEL FORMULARIO ========== */
+.form-container {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 35px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+}
+
+/* ========== SECCIONES DEL FORMULARIO ========== */
+.form-section {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #eaeaea;
+}
+
+.form-section h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========== GRID DEL FORMULARIO ========== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* ========== GRUPOS DE FORMULARIO ========== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.required {
+    color: #dc3545;
+    margin-left: 2px;
+}
+
+/* ========== CONTROLES DE FORMULARIO ========== */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: var(--transition);
+    background-color: #fafafa;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
+}
+
+.form-control-file {
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-control-file:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* ========== INFORMACIÓN DE ARCHIVOS ========== */
+.file-info {
+    background-color: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border-left: 4px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-info i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.file-info-content {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 2px;
+}
+
+.file-size {
+    font-size: 0.85rem;
+    color: var(--gray-color);
+}
+
+.current-file {
+    margin-top: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== PREVIEW DE FOTO ========== */
+.foto-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid var(--primary-color);
+    background-color: #f8f9fa;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-placeholder {
+    text-align: center;
+    color: var(--gray-color);
+    padding: 15px;
+}
+
+.foto-placeholder i {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* ========== MENSAJES DE AYUDA ========== */
+.form-text {
+    font-size: 0.85rem;
+    color: var(--gray-color);
+    margin-top: 5px;
+    display: block;
+    line-height: 1.4;
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* ========== MENSAJES DE ALERTA ========== */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+/* ========== ACCIONES DEL FORMULARIO ========== */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 25px;
+    border-top: 1px solid #eaeaea;
+}
+
+/* ========== BOTONES ========== */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    min-width: 150px;
+    justify-content: center;
+}
+
+.btn-cancelar {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-cancelar:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(108, 117, 125, 0.25);
+}
+
+.btn-guardar {
+    background: linear-gradient(135deg, var(--accent-color), #218838);
+    color: white;
+}
+
+.btn-guardar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.25);
+}
+
+.btn-guardar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn i {
+    font-size: 18px;
+}
+
+/* ========== BOTÓN VOLVER FLOTANTE ========== */
+.btn-volver {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-decoration: none;
+}
+
+.btn-volver:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+
+.btn-volver i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-volver:hover i {
+    transform: translateX(-3px);
+}
+
+/* ========== RESPONSIVE MEJORADO ========== */
+
+/* ========== DESKTOP GRANDE (> 1200px) ========== */
+@media (min-width: 1201px) {
+    .edit-container {
+        max-width: 1400px;
+        padding: 30px 40px;
+    }
+    
+    .form-container {
+        padding: 40px;
+    }
+    
+    .form-grid {
+        gap: 25px;
+    }
+}
+
+/* ========== TABLETS (768px - 992px) ========== */
+@media (max-width: 992px) {
+    .edit-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.95rem;
+    }
+    
+    .form-container {
+        padding: 30px;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* ========== TABLETS PEQUEÑAS (576px - 768px) ========== */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .app-header, .app-main {
+        padding: 20px;
+    }
+    
+    .edit-container {
+        padding: 15px;
+    }
+    
+    .edit-header {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.4rem;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 25px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-section {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .form-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+    
+    .btn-volver {
+        bottom: 15px;
+        left: 15px;
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+}
+
+/* ========== MÓVILES MEDIANOS (480px - 576px) ========== */
+@media (max-width: 576px) {
+    .app-header, .app-main {
+        padding: 15px;
+    }
+    
+    .edit-header {
+        padding: 18px;
+        border-radius: 8px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.9rem;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .form-section {
+        padding: 18px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    
+    .form-section h3 {
+        font-size: 1rem;
+        margin-bottom: 18px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+        font-size: 14px;
+        border-width: 1.5px;
+    }
+    
+    .foto-preview {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .btn-volver {
+        padding: 10px 15px;
+        font-size: 13px;
+        bottom: 15px;
+        left: 15px;
+    }
+}
+
+/* ========== MÓVILES PEQUEÑOS (< 480px) ========== */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+    
+    .app-container {
+        min-height: calc(100vh - 16px);
+        border-radius: 10px;
+    }
+    
+    .edit-header {
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.85rem;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .form-section {
+        padding: 15px;
+        margin-bottom: 18px;
+        border-radius: 6px;
+    }
+    
+    .form-section h3 {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+    }
+    
+    .form-grid {
+        gap: 12px;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+    
+    .form-control {
+        padding: 9px 10px;
+        font-size: 14px;
+    }
+    
+    .file-info {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    
+    .file-name {
+        font-size: 0.9rem;
+    }
+    
+    .file-size {
+        font-size: 0.8rem;
+    }
+    
+    .foto-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .form-actions {
+        margin-top: 25px;
+        padding-top: 20px;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 13px;
+        min-width: auto;
+    }
+    
+    .btn-volver {
+        bottom: 10px;
+        left: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+}
+
+/* ========== DISPOSITIVOS MUY PEQUEÑOS (altura limitada) ========== */
+@media (max-height: 700px) and (max-width: 768px) {
+    body {
+        padding: 5px 0;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .app-main {
+        padding: 10px 15px;
+    }
+    
+    .edit-container {
+        padding: 10px;
+    }
+    
+    .form-container {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .form-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .form-grid {
+        gap: 12px;
+    }
+    
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    .form-actions {
+        margin-top: 25px;
+        padding-top: 20px;
+    }
+    
+    .btn-volver {
+        bottom: 8px;
+        left: 8px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
+
+/* ========== ORIENTACIÓN HORIZONTAL EN MÓVILES ========== */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .app-container {
+        min-height: auto;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .form-section.foto-section .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .foto-preview {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* ========== MÓVILES MUY PEQUEÑOS (< 375px) ========== */
+@media (max-width: 375px) {
+    .edit-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .foto-preview {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .btn {
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+    
+    .btn-volver {
+        padding: 9px 12px;
+        font-size: 11px;
+    }
+}
+
+/* ========== MEJORAS DE ACCESIBILIDAD TÁCTIL ========== */
+@media (hover: none) and (pointer: coarse) {
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: none;
+    }
+    
+    .btn:hover,
+    .btn-volver:hover {
+        transform: none;
+    }
+    
+    .btn:active,
+    .btn-volver:active {
+        transform: scale(0.98);
+    }
+    
+    .btn-guardar:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+/* ========== AJUSTES PARA SAFARI iOS ========== */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+    
+    /* Mejorar el comportamiento de los botones en iOS */
+    .form-control,
+    .form-control-file,
+    .btn,
+    .btn-volver {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* ========== MEJORAS DE RENDIMIENTO ========== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .btn:hover,
+    .btn-volver:hover,
+    .form-control:focus {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* ========== ESTILOS PARA VALIDACIÓN ========== */
+.form-control.error {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
+.form-control.valid {
+    border-color: var(--accent-color);
+}
+
+.validation-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.validation-message.show {
+    display: block;
+}
+
+/* ========== ESTILOS PARA CAMPOS DE DIRECCIÓN ========== */
+.direccion-opcional {
+    transition: all 0.3s ease;
+}
+
+/* ========== ESTILOS PARA ICONOS DE DOCUMENTOS ========== */
+.form-label .fa-file-pdf {
+    color: #dc3545;
+}
+
+.form-label .fa-file-contract {
+    color: #007bff;
+}
+
+.form-label .fa-file-signature {
+    color: var(--accent-color);
+}
+
+.form-label .fa-file-invoice-dollar {
+    color: #fd7e14;
+}
