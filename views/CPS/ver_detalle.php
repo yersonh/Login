@@ -589,9 +589,13 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 </div>
                 
                 <!-- BOTÓN VOLVER -->
-                <a href="visor_registrados.php" class="btn-volver">
+                 <button class="btn-volver" id="volverBtn" onclick="window.location.href='visor_registrados.php'";>
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver al Menú</span>
+                </button>
+                <!--<a href="visor_registrados.php" class="btn-volver">
                     <i class="fas fa-arrow-left"></i> Volver al Listado
-                </a>
+                </a>-->
             </div>
         </main>
         
