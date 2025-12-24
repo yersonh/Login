@@ -8,9 +8,12 @@ class Persona {
 
     // ================= MÉTODOS BÁSICOS =================
     
-    public function insertar($cedula, $nombres, $apellidos, $telefono, $correo_personal = null) {
-        $sql = "INSERT INTO persona (cedula, nombres, apellidos, telefono, correo_personal)
-                VALUES (:cedula, :nombres, :apellidos, :telefono, :correo_personal)
+    /**
+     * Insertar nueva persona (actualizado con profesion)
+     */
+    public function insertar($cedula, $nombres, $apellidos, $telefono, $correo_personal = null, $profesion = null) {
+        $sql = "INSERT INTO persona (cedula, nombres, apellidos, telefono, correo_personal, profesion)
+                VALUES (:cedula, :nombres, :apellidos, :telefono, :correo_personal, :profesion)
                 RETURNING id_persona";
 
         $stmt = $this->conn->prepare($sql);
@@ -19,6 +22,7 @@ class Persona {
         $stmt->bindParam(':apellidos', $apellidos);
         $stmt->bindParam(':telefono', $telefono);
         $stmt->bindParam(':correo_personal', $correo_personal);
+        $stmt->bindParam(':profesion', $profesion);
 
         try {
             $stmt->execute();
@@ -28,6 +32,13 @@ class Persona {
             error_log("Error al insertar persona: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Insertar persona con todos los campos
+     */
+    public function insertarCompleto($cedula, $nombres, $apellidos, $telefono, $correo_personal = null, $profesion = null) {
+        return $this->insertar($cedula, $nombres, $apellidos, $telefono, $correo_personal, $profesion);
     }
 
     // ================= MÉTODOS PARA FOTOS (TABLA SEPARADA) =================
@@ -54,8 +65,8 @@ class Persona {
             return false;
         }
 
-        // Validar tamaño (máximo 2MB)
-        if ($tamano > 2 * 1024 * 1024) {
+        // Validar tamaño (máximo 10MB - ajustable)
+        if ($tamano > 10 * 1024 * 1024) {
             error_log("Imagen demasiado grande: $tamano bytes");
             return false;
         }
@@ -150,7 +161,7 @@ class Persona {
      */
     public function obtenerConFoto($id_persona) {
         try {
-            // Datos básicos de persona
+            // Datos básicos de persona (incluyendo profesion)
             $sql = "SELECT p.* 
                     FROM persona p
                     WHERE p.id_persona = :id_persona";
@@ -188,6 +199,9 @@ class Persona {
 
     // ================= MÉTODOS ADICIONALES ÚTILES =================
 
+    /**
+     * Buscar persona por cédula (incluye profesion)
+     */
     public function buscarPorCedula($cedula) {
         try {
             $sql = "SELECT * FROM persona WHERE cedula = :cedula";
@@ -201,6 +215,9 @@ class Persona {
         }
     }
 
+    /**
+     * Actualizar persona con todos los campos (incluyendo profesion)
+     */
     public function actualizar($id_persona, $datos) {
         try {
             $campos = [];
@@ -227,6 +244,25 @@ class Persona {
         }
     }
 
+    /**
+     * Actualizar profesion específicamente
+     */
+    public function actualizarProfesion($id_persona, $profesion) {
+        try {
+            $sql = "UPDATE persona SET profesion = :profesion WHERE id_persona = :id_persona";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':profesion', $profesion);
+            $stmt->bindParam(':id_persona', $id_persona);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al actualizar profesion: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Eliminar persona (con cascade para fotos)
+     */
     public function eliminar($id_persona) {
         try {
             // Las fotos se eliminarán automáticamente por ON DELETE CASCADE
@@ -239,4 +275,75 @@ class Persona {
             return false;
         }
     }
+
+    /**
+     * Obtener todas las personas con información básica
+     */
+    public function obtenerTodos($limit = null, $offset = 0) {
+        try {
+            $sql = "SELECT id_persona, cedula, nombres, apellidos, telefono, 
+                           correo_personal, profesion, fecha_registro
+                    FROM persona 
+                    ORDER BY fecha_registro DESC";
+            
+            if ($limit !== null) {
+                $sql .= " LIMIT :limit OFFSET :offset";
+            }
+            
+            $stmt = $this->conn->prepare($sql);
+            
+            if ($limit !== null) {
+                $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+                $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener todas las personas: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Contar total de personas
+     */
+    public function contarTotal() {
+        try {
+            $sql = "SELECT COUNT(*) as total FROM persona";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            error_log("Error al contar personas: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Buscar personas por nombre, cédula o profesión
+     */
+    public function buscar($termino) {
+        try {
+            $sql = "SELECT id_persona, cedula, nombres, apellidos, telefono, 
+                           correo_personal, profesion
+                    FROM persona 
+                    WHERE LOWER(nombres) LIKE LOWER(:termino) 
+                       OR LOWER(apellidos) LIKE LOWER(:termino)
+                       OR LOWER(profesion) LIKE LOWER(:termino)
+                       OR cedula LIKE :termino
+                    ORDER BY nombres, apellidos";
+            
+            $stmt = $this->conn->prepare($sql);
+            $terminoBusqueda = "%" . $termino . "%";
+            $stmt->bindParam(':termino', $terminoBusqueda);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al buscar personas: " . $e->getMessage());
+            return false;
+        }
+    }
 }
+?>

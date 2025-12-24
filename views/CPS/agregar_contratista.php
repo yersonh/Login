@@ -129,7 +129,6 @@ try {
     <div class="form-group full-width">
         <label class="form-label" for="foto_perfil">
             <i class="fas fa-camera"></i> Foto del Contratista
-            <span class="optional">(Opcional - Max. 2MB)</span>
         </label>
         
         <div class="foto-container">
@@ -160,23 +159,6 @@ try {
                     </div>
                 </div>
                 
-                <div class="foto-requirements">
-                    <div class="requirements-list">
-                        <div class="requirement-item">
-                            <i class="fas fa-check-circle text-success"></i>
-                            <span>Tamaño máximo: 2MB</span>
-                        </div>
-                        <div class="requirement-item">
-                            <i class="fas fa-check-circle text-success"></i>
-                            <span>Formatos: JPG, JPEG, PNG</span>
-                        </div>
-                        <div class="requirement-item">
-                            <i class="fas fa-check-circle text-success"></i>
-                            <span>Recomendado: 300x300 px</span>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Mensaje de error -->
                 <div class="foto-error" id="fotoError" style="display: none;">
                     <i class="fas fa-exclamation-circle"></i>
@@ -202,7 +184,7 @@ try {
         
         <div class="form-group">
             <label class="form-label" for="profesion">
-                <i class="fas fa-user-graduate"></i> Profesión / Ocupación
+                Profesión / Ocupación
             </label>
             <input type="text" 
                 id="profesion" 
@@ -260,7 +242,7 @@ try {
         
         <div class="form-group">
             <label class="form-label" for="id_tipo_vinculacion">
-                <i class="fas fa-handshake"></i> Tipo de vinculación <span class="required">*</span>
+                Tipo de vinculación <span class="required">*</span>
             </label>
             <select id="id_tipo_vinculacion" name="id_tipo_vinculacion" class="form-control" required>
                 <option value="">Seleccione</option>
