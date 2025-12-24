@@ -125,7 +125,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     <div class="service-icon">
                         <i class="fas fa-hdd"></i>
                     </div>
-                    <div class="service-name">Drive SME</div>
+                    <div class="service-name">Almacenamiento virtual-Drives</div>
                     <div class="service-desc">Almacenamiento en la nube</div>
                     <div class="service-status status-unavailable">No disponible</div>
                 </div>
