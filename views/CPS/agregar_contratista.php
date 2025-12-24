@@ -144,7 +144,7 @@ try {
                         id="foto_perfil" 
                         name="foto_perfil" 
                         class="file-input-control" 
-                        accept=".jpg,.jpeg,.png"
+                        accept=".jpg,.jpeg,.png,.gif,.JPG,.JPEG,.PNG,.GIF"
                         data-max-size="2">
                     <div class="file-input-info">
                         <span class="file-input-text">Seleccionar foto...</span>

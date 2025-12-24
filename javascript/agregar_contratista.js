@@ -97,11 +97,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Validar tipo de imagen
                     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.JPG', '.JPEG', '.PNG', '.GIF'];
                     if (!allowedTypes.includes(file.type)) {
-                        mostrarErrorFoto('Solo se permiten imágenes JPG, JPEG, PNG o GIF');
-                        this.value = '';
-                        resetearFotoPreview();
-                        return;
+                        // Si falla por MIME type, validar por extensión como respaldo
+                        const fileName = file.name.toLowerCase();
+                        const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+                        
+                        if (!hasValidExtension) {
+                            mostrarErrorFoto('Solo se permiten imágenes JPG, JPEG, PNG o GIF');
+                            this.value = '';
+                            resetearFotoPreview();
+                            return;
+                        }
+                        // Si pasa por extensión pero no por MIME type, continuar con advertencia
+                        console.warn(`Archivo ${file.name} tiene extensión válida pero MIME type inesperado: ${file.type}`);
                     }
                     
                     // Leer y mostrar la imagen
