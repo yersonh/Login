@@ -9,8 +9,6 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'asistente'
 
 require_once '../config/database.php';
 require_once '../models/ContratistaModel.php';
-
-// AGREGAR: ConfigHelper para obtener información del sistema
 require_once '../helpers/config_helper.php';
 
 header('Content-Type: application/json');
@@ -158,8 +156,8 @@ try {
     return null;
 }
     
-    // ====== NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN ======
-    function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consecutivo) {
+    // ====== NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO ======
+    function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consecutivo, $contratistaModel) {
         try {
             // Obtener API Key de las variables de entorno
             $apiKey = getenv('BREVO_API_KEY');
@@ -183,17 +181,77 @@ try {
             // Configurar la URL base para el logo
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
             $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
-            $logo_url = $base_url . "/imagenes/gobernacion.png";
+            $logo_url = $base_url . "/imagenes/sisgoTech.png";
             
-            // Obtener información del sistema
+            // Obtener información del sistema usando ConfigHelper
             $entidad = ConfigHelper::obtener('entidad', 'Gobernación del Meta');
-            $secretaria = ConfigHelper::obtener('secretaria', 'Secretaría de Minas y Energía');
+            $secretaria = "Secretaría de Minas y Energía";
             $sistema = ConfigHelper::obtener('sistema_nombre', 'Sistema SGEA');
             $anioActual = date('Y');
             $fechaActual = date('d/m/Y');
             $horaActual = date('h:i A');
             
-            // Generar contenido HTML del correo
+            // Obtener datos completos del contratista desde la base de datos
+            $datosContratista = $contratistaModel->obtenerContratistaPorId($consecutivo);
+            
+            if (!$datosContratista) {
+                error_log("⚠️ No se pudieron obtener datos del contratista ID: $consecutivo");
+                // Si no hay datos completos, enviar correo básico
+                return enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $secretaria, $sistema, $logo_url, $anioActual);
+            }
+            
+            // Obtener datos para el footer usando ConfigHelper
+            $version = ConfigHelper::obtenerVersionCompleta();
+            $desarrollador = ConfigHelper::obtener('desarrollado_por', 'SisgonTech');
+            $direccionFooter = ConfigHelper::obtener('direccion', 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta');
+            $correoContacto = ConfigHelper::obtener('correo_contacto', 'gobernaciondelmeta@meta.gov.co');
+            $telefono = ConfigHelper::obtener('telefono', '(57 -608) 6 818503');
+            $logoUrl = ConfigHelper::obtenerLogoUrl();
+            
+            // Formatear datos del contratista
+            $nombreCompleto = htmlspecialchars($datosContratista['nombres'] . ' ' . $datosContratista['apellidos']);
+            $identificacion = htmlspecialchars($datosContratista['cedula'] ?? 'No especificada');
+            $profesion = htmlspecialchars($datosContratista['profesion'] ?? 'No especificada');
+            $tipoVinculacion = htmlspecialchars($datosContratista['tipo_vinculacion_nombre'] ?? 'No especificada');
+            $areaTrabajo = htmlspecialchars($datosContratista['area_nombre'] ?? 'No especificada');
+            
+            // Direcciones
+            $direccionPrincipal = htmlspecialchars($datosContratista['direccion_municipio_principal'] ?? 'No especificada');
+            $municipioPrincipal = htmlspecialchars($datosContratista['municipio_principal_nombre'] ?? 'No especificada');
+            
+            // Datos del contrato
+            $numeroContrato = htmlspecialchars($datosContratista['numero_contrato'] ?? 'No especificado');
+            $fechaContrato = isset($datosContratista['fecha_contrato']) ? 
+                date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_contrato']))) : 'No especificada';
+            $fechaInicio = isset($datosContratista['fecha_inicio']) ? 
+                date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_inicio']))) : 'No especificada';
+            $fechaFinal = isset($datosContratista['fecha_final']) ? 
+                date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_final']))) : 'No especificada';
+            $duracionContrato = htmlspecialchars($datosContratista['duracion_contrato'] ?? 'No especificada');
+            
+            // Calcular duración en días
+            $duracionDias = "No calculada";
+            if (isset($datosContratista['fecha_inicio']) && isset($datosContratista['fecha_final'])) {
+                try {
+                    $inicio = DateTime::createFromFormat('d/m/Y', $datosContratista['fecha_inicio']);
+                    $final = DateTime::createFromFormat('d/m/Y', $datosContratista['fecha_final']);
+                    
+                    if ($inicio && $final) {
+                        $diferencia = $inicio->diff($final);
+                        $duracionDias = $diferencia->days . " días";
+                    }
+                } catch (Exception $e) {
+                    $duracionDias = $duracionContrato;
+                }
+            }
+            
+            // Datos RP
+            $numeroRP = !empty($datosContratista['numero_registro_presupuestal']) ? 
+                htmlspecialchars($datosContratista['numero_registro_presupuestal']) : 'No aplica';
+            $fechaRP = isset($datosContratista['fecha_rp']) && !empty($datosContratista['fecha_rp']) ? 
+                date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_rp']))) : 'No aplica';
+            
+            // Generar contenido HTML del correo MEJORADO
             $htmlContent = "
             <!DOCTYPE html>
             <html>
@@ -204,100 +262,232 @@ try {
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                         line-height: 1.6;
                         color: #333;
-                        max-width: 600px;
+                        max-width: 700px;
                         margin: 0 auto;
                         padding: 20px;
                         background-color: #f8f9fa;
                     }
                     .container {
                         background: white;
-                        border-radius: 8px;
+                        border-radius: 10px;
                         overflow: hidden;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                        border: 1px solid #e0e0e0;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+                        border: 1px solid #d1d9e0;
                     }
                     .header {
                         padding: 25px 20px;
                         text-align: center;
-                        border-bottom: 1px solid #e0e0e0;
-                        background: #ffffff;
+                        border-bottom: 2px solid #e9ecef;
+                        background: linear-gradient(135deg, #1a3a5f 0%, #2c5282 100%);
+                        color: white;
                     }
                     .logo {
-                        max-width: 180px;
+                        max-width: 160px;
                         height: auto;
-                        margin-top: 15px;
+                        margin-bottom: 15px;
                     }
                     .content {
                         padding: 30px;
                     }
-                    .info-box {
-                        background: #f8f9fa;
-                        border-left: 4px solid #1e8ee9;
-                        padding: 15px;
-                        margin: 20px 0;
-                        border-radius: 0 4px 4px 0;
+                    .section {
+                        margin-bottom: 25px;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        border: 1px solid #e9ecef;
                     }
-                    .footer {
+                    .section-title {
                         background: #f8f9fa;
+                        padding: 15px 20px;
+                        border-bottom: 1px solid #e9ecef;
+                        font-size: 18px;
+                        color: #1a3a5f;
+                        font-weight: 600;
+                    }
+                    .section-content {
                         padding: 20px;
-                        text-align: center;
-                        color: #666;
-                        font-size: 13px;
-                        border-top: 1px solid #e9ecef;
+                        background: white;
                     }
-                    .highlight {
-                        background: #e8f4fd;
-                        padding: 10px 15px;
-                        border-radius: 4px;
-                        margin: 15px 0;
+                    .data-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                        gap: 15px;
+                    }
+                    .data-item {
+                        margin-bottom: 12px;
+                    }
+                    .data-label {
+                        font-weight: 600;
+                        color: #495057;
+                        margin-bottom: 4px;
+                        font-size: 14px;
+                    }
+                    .data-value {
+                        color: #212529;
+                        font-size: 15px;
+                        padding: 8px 12px;
+                        background: #f8f9fa;
+                        border-radius: 5px;
                         border-left: 3px solid #1e8ee9;
+                    }
+                    .highlight-box {
+                        background: #e8f4fd;
+                        border-left: 4px solid #1e8ee9;
+                        padding: 20px;
+                        margin: 25px 0;
+                        border-radius: 0 8px 8px 0;
+                    }
+                    .footer-email {
+                        background: #1a3a5f;
+                        padding: 25px 20px;
+                        text-align: center;
+                        color: white;
+                        font-size: 13px;
+                        border-top: 2px solid #2c5282;
+                    }
+                    .footer-logo-container {
+                        margin-bottom: 15px;
+                    }
+                    .license-logo {
+                        max-width: 80px;
+                        height: auto;
+                        opacity: 0.8;
+                    }
+                    .footer-line {
+                        margin: 8px 0;
+                        line-height: 1.5;
+                        color: #cbd5e0;
+                    }
+                    .footer-strong {
+                        color: white;
+                        font-weight: 600;
+                    }
+                    .info-icon {
+                        color: #1e8ee9;
+                        margin-right: 8px;
+                    }
+                    .contract-number {
+                        font-size: 22px;
+                        font-weight: 700;
+                        color: #1a3a5f;
+                        text-align: center;
+                        background: #e8f4fd;
+                        padding: 15px;
+                        border-radius: 8px;
+                        margin: 20px 0;
+                        border: 2px dashed #1e8ee9;
+                    }
+                    .saludo {
+                        font-size: 16px;
+                        line-height: 1.8;
+                        margin-bottom: 25px;
                     }
                     @media (max-width: 480px) {
                         .content { padding: 20px; }
+                        .data-grid { grid-template-columns: 1fr; }
                     }
                 </style>
             </head>
             <body>
                 <div class='container'>
                     <div class='header'>
-                        <h2 style='color: #333; margin: 0 0 5px 0; font-size: 20px;'>
-                            $sistema
-                        </h2>
-                        <p style='color: #666; margin: 0 0 15px 0; font-size: 14px;'>
-                            Sistema de Gestión y Enrutamiento Administrativo
-                        </p>
-                        <img src='$logo_url' alt='Logo $entidad' class='logo' style='max-width: 180px;'>
+                        <img src='$logo_url' alt='Logo $entidad' class='logo'>
+                        <h2 style='margin: 0 0 5px 0; font-size: 22px;'>$sistema</h2>
+                        <p style='margin: 0; opacity: 0.9; font-size: 14px;'>Sistema de Gestión y Enrutamiento Administrativo</p>
                     </div>
                     
                     <div class='content'>
-                        <p style='font-size: 15px;'>
-                            Estimado(a) <strong>$nombreContratista</strong>,
-                        </p>
-                        
-                        <p style='font-size: 15px;'>
-                            Le informamos que ha sido <strong>registrado exitosamente</strong> 
-                            en el sistema de contratistas de la <strong>$secretaria</strong> 
-                            de la <strong>$entidad</strong>.
-                        </p>
-                        
-                        <div class='info-box'>
-                            <h3 style='color: #1e8ee9; margin-top: 0;'>Información de registro:</h3>
-                            <p><strong>N° de Contratista:</strong> $consecutivo</p>
-                            <p><strong>Fecha de registro:</strong> $fechaActual</p>
-                            <p><strong>Hora de registro:</strong> $horaActual</p>
+                        <div class='saludo'>
+                            <p>Estimado(a) <strong>$nombreContratista</strong>,</p>
+                            <p>Le informamos que ha sido <strong>registrado exitosamente</strong> en el sistema de contratistas de la <strong>$secretaria</strong> de la <strong>$entidad</strong>.</p>
                         </div>
                         
-                        <div class='highlight'>
-                            <p style='margin: 0;'>
-                                <strong>📋 Importante:</strong> Este registro le permite 
-                                acceder a los servicios y seguimiento de sus contratos 
-                                ante la secretaría.
+                        <div class='contract-number'>
+                            Contratista N°: $consecutivo
+                        </div>
+                        
+                        <!-- SECCIÓN 1: DATOS PERSONALES -->
+                        <div class='section'>
+                            <div class='section-title'>
+                                <i class='fas fa-user info-icon'></i> DATOS PERSONALES
+                            </div>
+                            <div class='section-content'>
+                                <div class='data-grid'>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Nombre completo:</div>
+                                        <div class='data-value'>$nombreCompleto</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Identificación:</div>
+                                        <div class='data-value'>$identificacion</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Profesión:</div>
+                                        <div class='data-value'>$profesion</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Tipo de vinculación:</div>
+                                        <div class='data-value'>$tipoVinculacion</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Área de trabajo:</div>
+                                        <div class='data-value'>$areaTrabajo</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Dirección:</div>
+                                        <div class='data-value'>$direccionPrincipal, $municipioPrincipal</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SECCIÓN 2: DATOS DEL CONTRATO -->
+                        <div class='section'>
+                            <div class='section-title'>
+                                <i class='fas fa-file-contract info-icon'></i> DATOS DEL CONTRATO
+                            </div>
+                            <div class='section-content'>
+                                <div class='data-grid'>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Número de contrato:</div>
+                                        <div class='data-value'>$numeroContrato</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Fecha del contrato:</div>
+                                        <div class='data-value'>$fechaContrato</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Fecha de inicio:</div>
+                                        <div class='data-value'>$fechaInicio</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Fecha de terminación:</div>
+                                        <div class='data-value'>$fechaFinal</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Duración del contrato:</div>
+                                        <div class='data-value'>$duracionContrato ($duracionDias)</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Número RP:</div>
+                                        <div class='data-value'>$numeroRP</div>
+                                    </div>
+                                    <div class='data-item'>
+                                        <div class='data-label'>Fecha RP:</div>
+                                        <div class='data-value'>$fechaRP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class='highlight-box'>
+                            <p style='margin: 0; font-size: 15px;'>
+                                <strong><i class='fas fa-info-circle' style='margin-right: 8px;'></i>Importante:</strong><br>
+                                Este registro le permite acceder a los servicios y seguimiento de sus contratos ante la secretaría.
                             </p>
                         </div>
                         
-                        <p style='font-size: 15px;'>
-                            Si tiene alguna pregunta o requiere asistencia, por favor 
-                            comuníquese con el área de contratación de la secretaría.
+                        <p style='font-size: 15px; margin-top: 25px;'>
+                            Si tiene alguna pregunta o requiere asistencia, por favor comuníquese con el área de contratación de la secretaría.
                         </p>
                         
                         <p style='font-size: 15px; margin-top: 25px;'>
@@ -308,21 +498,91 @@ try {
                         </p>
                     </div>
                     
-                    <div class='footer'>
-                        <p style='margin: 5px 0;'><strong>$sistema</strong></p>
-                        <p style='margin: 5px 0; font-size: 12px;'>$entidad - $secretaria</p>
-                        <p style='margin-top: 15px; font-size: 11px; color: #999;'>
-                            Este es un mensaje automático generado por el sistema.<br>
-                            Favor no responder a esta dirección de correo.<br>
-                            &copy; $anioActual $entidad. Todos los derechos reservados.
-                        </p>
+                    <!-- FOOTER EXACTO COMO SOLICITASTE -->
+                    <div class='footer-email'>
+                        <div class='footer-logo-container'>
+                            <img src='$logoUrl' 
+                                alt='$entidad' 
+                                class='license-logo'
+                                onerror=\"this.onerror=null; this.src='/imagenes/gobernacion.png'\">
+                        </div>
+                        
+                        <!-- Primera línea concatenada -->
+                        <div class='footer-line'>
+                            © $anioActual $entidad $version® desarrollado por 
+                            <span class='footer-strong'>$desarrollador</span>
+                        </div>
+                        
+                        <!-- Segunda línea concatenada -->
+                        <div class='footer-line'>
+                            $direccionFooter - Asesores e-Governance Solutions para Entidades Públicas $anioActual® 
+                            By: Ing. Rubén Darío González García $telefono. Contacto: <span class='footer-strong'>$correoContacto</span> - Reservados todos los derechos de autor.
+                        </div>
                     </div>
                 </div>
             </body>
             </html>
             ";
             
-            // Preparar payload para la API de Brevo
+            // Función auxiliar para correo básico (si falla obtener datos de BD)
+            function enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $secretaria, $sistema, $logo_url, $anioActual) {
+                $htmlBasico = "
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <style>body {font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333;}</style>
+                </head>
+                <body>
+                    <h2>$sistema</h2>
+                    <p>Estimado(a) $nombreContratista,</p>
+                    <p>Ha sido registrado exitosamente como contratista en la $secretaria de la $entidad.</p>
+                    <p><strong>N° de Contratista:</strong> $consecutivo</p>
+                    <p><strong>Fecha de registro:</strong> " . date('d/m/Y') . "</p>
+                    <br>
+                    <p>Atentamente,<br>Equipo de Contratación<br>$secretaria</p>
+                    <hr>
+                    <p style='font-size: 12px; color: #666;'>© $anioActual $entidad</p>
+                </body>
+                </html>
+                ";
+                
+                $payload = [
+                    "sender" => ["name" => $fromName, "email" => $fromEmail],
+                    "to" => [["email" => $correoDestino, "name" => $nombreContratista]],
+                    "subject" => "Confirmación de Registro - Contratista N° $consecutivo",
+                    "htmlContent" => $htmlBasico
+                ];
+                
+                return enviarPayloadBrevo($apiKey, $payload);
+            }
+            
+            // Función para enviar payload a Brevo
+            function enviarPayloadBrevo($apiKey, $payload) {
+                $ch = curl_init("https://api.brevo.com/v3/smtp/email");
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Accept: application/json",
+                    "Content-Type: application/json",
+                    "api-key: $apiKey"
+                ]);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode >= 200 && $httpCode < 300) {
+                    error_log("✅ Correo enviado exitosamente a: " . $correoDestino);
+                    return true;
+                } else {
+                    error_log("❌ Error al enviar correo - Código: $httpCode - Respuesta: $response");
+                    return false;
+                }
+            }
+            
+            // Preparar payload y enviar
             $payload = [
                 "sender" => [
                     "name"  => $fromName,
@@ -338,28 +598,7 @@ try {
                 "htmlContent" => $htmlContent
             ];
             
-            // Enviar usando cURL a la API de Brevo
-            $ch = curl_init("https://api.brevo.com/v3/smtp/email");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Accept: application/json",
-                "Content-Type: application/json",
-                "api-key: $apiKey"
-            ]);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            
-            if ($httpCode >= 200 && $httpCode < 300) {
-                error_log("✅ Correo enviado exitosamente a: $correoDestino");
-                return true;
-            } else {
-                error_log("❌ Error al enviar correo - Código: $httpCode - Respuesta: $response");
-                return false;
-            }
+            return enviarPayloadBrevo($apiKey, $payload);
             
         } catch (Exception $e) {
             error_log("❌ Excepción al enviar correo: " . $e->getMessage());
@@ -381,7 +620,7 @@ try {
         'cedula' => preg_replace('/[^0-9]/', '', $_POST['cedula']),
         'correo' => filter_var($_POST['correo'], FILTER_SANITIZE_EMAIL),
         'celular' => preg_replace('/[^0-9]/', '', $_POST['celular']),
-        'profesion' => isset($_POST['profesion']) ? trim($_POST['profesion']) : null, // NUEVO CAMPO
+        'profesion' => isset($_POST['profesion']) ? trim($_POST['profesion']) : null,
         'direccion' => isset($_POST['direccion']) ? trim($_POST['direccion']) : '',
         
         // Nuevos campos de dirección específicos
@@ -481,24 +720,30 @@ try {
     
     // ====== ENVIAR CORREO DE CONFIRMACIÓN DESPUÉS DE GUARDAR EXITOSAMENTE ======
     if ($resultado['success']) {
-        // Obtener el consecutivo del resultado o usar el ID
-        $consecutivo = $resultado['id_detalle'] ?? $resultado['consecutivo'] ?? 'N/A';
+        // Obtener el ID del contratista registrado
+        $idDetalle = $resultado['id_detalle'] ?? null;
         
-        // Enviar correo de confirmación
-        $correoEnviado = enviarCorreoConfirmacionAPI(
-            $datos['correo'],
-            $datos['nombre_completo'],
-            $consecutivo
-        );
-        
-        // Agregar información del correo al resultado
-        $resultado['correo_enviado'] = $correoEnviado;
-        
-        // Log del resultado del correo
-        if ($correoEnviado) {
-            error_log("✅ Correo de confirmación enviado exitosamente a: " . $datos['correo']);
+        if ($idDetalle) {
+            // Enviar correo de confirmación con datos completos de la BD
+            $correoEnviado = enviarCorreoConfirmacionAPI(
+                $datos['correo'],
+                $datos['nombre_completo'],
+                $idDetalle,
+                $contratistaModel
+            );
+            
+            // Agregar información del correo al resultado
+            $resultado['correo_enviado'] = $correoEnviado;
+            
+            // Log del resultado del correo
+            if ($correoEnviado) {
+                error_log("✅ Correo de confirmación enviado exitosamente a: " . $datos['correo']);
+            } else {
+                error_log("⚠️ Contratista registrado pero falló el envío de correo a: " . $datos['correo']);
+            }
         } else {
-            error_log("⚠️ Contratista registrado pero falló el envío de correo a: " . $datos['correo']);
+            error_log("⚠️ No se pudo obtener ID del contratista para enviar correo");
+            $resultado['correo_enviado'] = false;
         }
     }
     
