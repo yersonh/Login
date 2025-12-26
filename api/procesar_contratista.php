@@ -39,7 +39,7 @@ try {
         }
     }
     
-    // ====== FUNCIÓN PARA PROCESAR ARCHIVOS (GENERAL) ======
+    // FUNCIÓN PARA PROCESAR ARCHIVOS (GENERAL)
     function procesarArchivo($nombreCampo, $tiposPermitidos = ['pdf'], $maxSizeMB = 5) {
         if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES[$nombreCampo];
@@ -80,7 +80,7 @@ try {
         return null;
     }
     
-    // ====== FUNCIÓN ESPECIAL PARA PROCESAR FOTOS ======
+    // FUNCIÓN ESPECIAL PARA PROCESAR FOTOS
     function procesarFoto($nombreCampo, $maxSizeMB = 10) {
     if (isset($_FILES[$nombreCampo]) && $_FILES[$nombreCampo]['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES[$nombreCampo];
@@ -156,7 +156,7 @@ try {
     return null;
 }
     
-    // ====== NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO ======
+    // NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO
     function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consecutivo, $contratistaModel) {
     try {
         // Obtener API Key de las variables de entorno
@@ -530,16 +530,16 @@ try {
         return false;
     }
 }
-    // ====== FIN NUEVA FUNCIÓN ======
+    // FIN NUEVA FUNCIÓN
     
-    // ====== PROCESAR TODOS LOS ARCHIVOS ======
+    // PROCESAR TODOS LOS ARCHIVOS
     $cv_data = procesarArchivo('adjuntar_cv', ['pdf', 'doc', 'docx']);
     $contrato_data = procesarArchivo('adjuntar_contrato', ['pdf']);
     $acta_inicio_data = procesarArchivo('adjuntar_acta_inicio', ['pdf']);
     $rp_data = procesarArchivo('adjuntar_rp', ['pdf']);
     $foto_data = procesarFoto('foto_perfil'); // Nuevo: Foto de perfil
     
-    // ====== PREPARAR DATOS PARA INSERTAR ======
+    // PREPARAR DATOS PARA INSERTAR
     $datos = [
         'nombre_completo' => trim($_POST['nombre_completo']),
         'cedula' => preg_replace('/[^0-9]/', '', $_POST['cedula']),
@@ -578,7 +578,7 @@ try {
         'fecha_rp' => isset($_POST['fecha_rp']) ? $_POST['fecha_rp'] : ''
     ];
     
-    // ====== PREPARAR ARCHIVOS PARA ENVIAR ======
+    // PREPARAR ARCHIVOS PARA ENVIAR
     $archivos = [];
     
     // Foto de perfil (se maneja aparte en el modelo)
@@ -622,7 +622,7 @@ try {
         $archivos['adjuntar_rp'] = $_FILES['adjuntar_rp'];
     }
     
-    // ====== VALIDACIONES ADICIONALES ======
+    // VALIDACIONES ADICIONALES
     if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
         throw new Exception("Correo electrónico inválido");
     }
@@ -640,10 +640,10 @@ try {
         throw new Exception("Debe ingresar la dirección para el municipio terciario");
     }
     
-    // ====== REGISTRAR CONTRATISTA ======
+    // REGISTRAR CONTRATISTA
     $resultado = $contratistaModel->registrarContratistaCompleto($datos, $archivos);
     
-    // ====== ENVIAR CORREO DE CONFIRMACIÓN DESPUÉS DE GUARDAR EXITOSAMENTE ======
+    // ENVIAR CORREO DE CONFIRMACIÓN DESPUÉS DE GUARDAR EXITOSAMENTE
     if ($resultado['success']) {
         // Obtener el ID del contratista registrado
         $idDetalle = $resultado['id_detalle'] ?? null;
