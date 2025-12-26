@@ -254,7 +254,10 @@ try {
         $fechaRP = isset($datosContratista['fecha_rp']) && !empty($datosContratista['fecha_rp']) ? 
             date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_rp']))) : 'No aplica';
         
-        // Generar contenido HTML del correo SIMPLIFICADO
+        // Asunto del correo (OBLIGATORIO para Brevo)
+        $subject = "Confirmación de Registro - Contratista #$consecutivo - $entidad";
+        
+        // Generar contenido HTML del correo SIMPLIFICADO (CORREGIDO)
         $htmlContent = "
         <!DOCTYPE html>
         <html>
@@ -312,12 +315,12 @@ try {
                 }
                 .data-label {
                     font-weight: 800;
-                    color: #000000;;
+                    color: #000000;
                     display: inline;
                     margin-right: 5px;
                 }
                 .data-value {
-                    color: #000000;;
+                    color: #000000;
                     display: inline;
                 }
                 .contract-number {
@@ -426,7 +429,7 @@ try {
                     </p>
                 </div>
                 
-                <!-- FOOTER EXACTO COMO SOLICITASTE -->
+                <!-- FOOTER CORREGIDO -->
                 <div class='footer-email'>
                     <div class='footer-logo-container'>
                         <img src='$logoUrl' 
@@ -435,15 +438,15 @@ try {
                             onerror=\"this.onerror=null; this.src='/imagenes/gobernacion.png'\">
                     </div>
                     
-                    <!-- Primera línea concatenada -->
+                    <!-- Primera línea concatenada CORREGIDA -->
                     <div class='footer-line'>
-                        © $anioActual $entidad $version® desarrollado por 
+                        © $anioActual $entidad " . $version . "® desarrollado por 
                         <span class='footer-strong'>$desarrollador</span>
                     </div>
                     
-                    <!-- Segunda línea concatenada -->
+                    <!-- Segunda línea concatenada CORREGIDA -->
                     <div class='footer-line'>
-                        $direccionFooter - Asesores e-Governance Solutions para Entidades Públicas $anioActual® 
+                        $direccionFooter - Asesores e-Governance Solutions para Entidades Públicas " . $anioActual . "® 
                         By: Ing. Rubén Darío González García $telefono. Contacto: <span class='footer-strong'>$correoContacto</span> - Reservados todos los derechos de autor.
                     </div>
                 </div>
@@ -453,62 +456,65 @@ try {
         ";
             
             // Función auxiliar para correo básico (si falla obtener datos de BD)
-             function enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $sistema, $logo_url, $anioActual) {
-            $htmlBasico = "
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset='UTF-8'>
-                <style>body {font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333;}</style>
-            </head>
-            <body>
-                <h2>$sistema</h2>
-                <p>Estimado(a) $nombreContratista,</p>
-                <p>Ha sido registrado exitosamente como contratista de la $entidad.</p>
-                <p><strong>N° de Contratista:</strong> $consecutivo</p>
-                <p><strong>Fecha de registro:</strong> " . date('d/m/Y') . "</p>
-                <br>
-                <hr>
-                <p style='font-size: 12px; color: #666;'>© $anioActual $entidad</p>
-            </body>
-            </html>
-            ";
-            
-            $payload = [
-                "sender" => ["name" => $fromName, "email" => $fromEmail],
-                "to" => [["email" => $correoDestino, "name" => $nombreContratista]],
-                "htmlContent" => $htmlBasico
-            ];
-            
-            return enviarPayloadBrevo($apiKey, $payload);
-        }
+            function enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $sistema, $logo_url, $anioActual) {
+                $htmlBasico = "
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <style>body {font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333;}</style>
+                </head>
+                <body>
+                    <h2>$sistema</h2>
+                    <p>Estimado(a) $nombreContratista,</p>
+                    <p>Ha sido registrado exitosamente como contratista de la $entidad.</p>
+                    <p><strong>N° de Contratista:</strong> $consecutivo</p>
+                    <p><strong>Fecha de registro:</strong> " . date('d/m/Y') . "</p>
+                    <br>
+                    <hr>
+                    <p style='font-size: 12px; color: #666;'>© $anioActual $entidad</p>
+                </body>
+                </html>
+                ";
+                
+                $subjectBasico = "Confirmación de Registro - Contratista #$consecutivo";
+                
+                $payload = [
+                    "sender" => ["name" => $fromName, "email" => $fromEmail],
+                    "to" => [["email" => $correoDestino, "name" => $nombreContratista]],
+                    "subject" => $subjectBasico,
+                    "htmlContent" => $htmlBasico
+                ];
+                
+                return enviarPayloadBrevo($apiKey, $payload);
+            }
             
             // Función para enviar payload a Brevo
             function enviarPayloadBrevo($apiKey, $payload) {
-            $ch = curl_init("https://api.brevo.com/v3/smtp/email");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Accept: application/json",
-                "Content-Type: application/json",
-                "api-key: $apiKey"
-            ]);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            
-            if ($httpCode >= 200 && $httpCode < 300) {
-                error_log("✅ Correo enviado exitosamente a: " . $correoDestino);
-                return true;
-            } else {
-                error_log("❌ Error al enviar correo - Código: $httpCode - Respuesta: $response");
-                return false;
+                $ch = curl_init("https://api.brevo.com/v3/smtp/email");
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Accept: application/json",
+                    "Content-Type: application/json",
+                    "api-key: $apiKey"
+                ]);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode >= 200 && $httpCode < 300) {
+                    error_log("✅ Correo enviado exitosamente a: " . $payload['to'][0]['email']);
+                    return true;
+                } else {
+                    error_log("❌ Error al enviar correo - Código: $httpCode - Respuesta: $response");
+                    return false;
+                }
             }
-        }
         
-        // Preparar payload y enviar
+        // Preparar payload y enviar (CON SUBJECT AGREGADO)
         $payload = [
             "sender" => [
                 "name"  => $fromName,
@@ -520,6 +526,7 @@ try {
                     "name"  => $nombreContratista
                 ]
             ],
+            "subject" => $subject,
             "htmlContent" => $htmlContent
         ];
         
