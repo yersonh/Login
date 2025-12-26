@@ -185,7 +185,6 @@ try {
         
         // Obtener información del sistema usando ConfigHelper
         $entidad = ConfigHelper::obtener('entidad', 'Gobernación del Meta');
-        $secretaria = "Secretaría de Minas y Energía";
         $sistema = ConfigHelper::obtener('sistema_nombre', 'Sistema SGEA');
         $anioActual = date('Y');
         $fechaActual = date('d/m/Y');
@@ -197,7 +196,7 @@ try {
         if (!$datosContratista) {
             error_log("⚠️ No se pudieron obtener datos del contratista ID: $consecutivo");
             // Si no hay datos completos, enviar correo básico
-            return enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $secretaria, $sistema, $logo_url, $anioActual);
+            return enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $sistema, $logo_url, $anioActual);
         }
         
         // Obtener datos para el footer usando ConfigHelper
@@ -312,13 +311,13 @@ try {
                     line-height: 1.4;
                 }
                 .data-label {
-                    font-weight: 600;
-                    color: #555;
+                    font-weight: 800;
+                    color: #000000;;
                     display: inline;
                     margin-right: 5px;
                 }
                 .data-value {
-                    color: #333;
+                    color: #000000;;
                     display: inline;
                 }
                 .contract-number {
@@ -384,11 +383,7 @@ try {
                 <div class='content'>
                     <div class='saludo'>
                         <p>Estimado(a) <strong>$nombreContratista</strong>,</p>
-                        <p>Le informamos que ha sido <strong>registrado exitosamente</strong> en el sistema de contratistas de la <strong>$secretaria</strong> de la <strong>$entidad</strong>.</p>
-                    </div>
-                    
-                    <div class='contract-number'>
-                        Contratista N°: $consecutivo
+                        <p>Le informamos que ha sido <strong>registrado exitosamente</strong> en el sistema de contratación de la <strong>$entidad</strong>.</p>
                     </div>
                     
                     <!-- SECCIÓN 1: DATOS PERSONALES -->
@@ -484,7 +479,6 @@ try {
             $payload = [
                 "sender" => ["name" => $fromName, "email" => $fromEmail],
                 "to" => [["email" => $correoDestino, "name" => $nombreContratista]],
-                "subject" => "Confirmación de Registro - Contratista N° $consecutivo",
                 "htmlContent" => $htmlBasico
             ];
             
@@ -528,7 +522,6 @@ try {
                     "name"  => $nombreContratista
                 ]
             ],
-            "subject" => "Confirmación de Registro - Contratista N° $consecutivo",
             "htmlContent" => $htmlContent
         ];
         
