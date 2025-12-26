@@ -314,7 +314,7 @@ try {
                     line-height: 1.4;
                 }
                 .data-label {
-                    font-weight: 800;
+                    font-weight: 600;
                     color: #000000;
                     display: inline;
                     margin-right: 5px;
