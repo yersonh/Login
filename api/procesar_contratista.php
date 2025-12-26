@@ -422,7 +422,6 @@ try {
                     <p style='font-size: 14px; margin-top: 20px;'>
                         Atentamente,<br>
                         <strong>Equipo de Contratación</strong><br>
-                        $secretaria<br>
                         $entidad
                     </p>
                 </div>
@@ -454,7 +453,7 @@ try {
         ";
             
             // Función auxiliar para correo básico (si falla obtener datos de BD)
-             function enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $secretaria, $sistema, $logo_url, $anioActual) {
+             function enviarCorreoBasico($apiKey, $fromEmail, $fromName, $correoDestino, $nombreContratista, $consecutivo, $entidad, $sistema, $logo_url, $anioActual) {
             $htmlBasico = "
             <!DOCTYPE html>
             <html>
@@ -465,11 +464,10 @@ try {
             <body>
                 <h2>$sistema</h2>
                 <p>Estimado(a) $nombreContratista,</p>
-                <p>Ha sido registrado exitosamente como contratista en la $secretaria de la $entidad.</p>
+                <p>Ha sido registrado exitosamente como contratista de la $entidad.</p>
                 <p><strong>N° de Contratista:</strong> $consecutivo</p>
                 <p><strong>Fecha de registro:</strong> " . date('d/m/Y') . "</p>
                 <br>
-                <p>Atentamente,<br>Equipo de Contratación<br>$secretaria</p>
                 <hr>
                 <p style='font-size: 12px; color: #666;'>© $anioActual $entidad</p>
             </body>
