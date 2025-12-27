@@ -55,6 +55,34 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
     <link rel="stylesheet" href="../styles/menuDrive.css">
+    <style>
+        /* Estilos para los logos de Google Drive y OneDrive */
+        .service-logo {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        
+        .google-drive-logo {
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .onedrive-logo {
+            background: #0078D4;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        
+        /* Animación para el hover */
+        .service-card:hover .service-logo {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+    </style>
 </head>
 <body>
     
@@ -88,25 +116,35 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
             
             <!-- Grid de servicios - SOLO 2 SERVICIOS -->
             <div class="services-grid">
-                <!-- Servicio 1: Programar actividad -->
-                <div class="service-card" id="programar-actividad">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-plus"></i>
+                <!-- Servicio 1: Google Drive -->
+                <a href="https://drive.google.com" target="_blank" class="service-card-link">
+                    <div class="service-card" id="google-drive">
+                        <div class="service-icon">
+                            <!-- Logo de Google Drive -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Google_Drive_icon_%282020%29.svg/1024px-Google_Drive_icon_%282020%29.svg.png" 
+                                 alt="Google Drive" 
+                                 class="service-logo google-drive-logo">
+                        </div>
+                        <div class="service-name">Google Drive</div>
+                        <div class="service-desc">Almacenamiento en la nube y colaboración de documentos</div>
+                        <div class="service-status status-available">Disponible</div>
                     </div>
-                    <div class="service-name">Programar Actividad</div>
-                    <div class="service-desc">Crear y gestionar nuevas actividades y eventos</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
+                </a>
                 
-                <!-- Servicio 2: Dar de alta -->
-                <div class="service-card" id="dar-de-alta">
-                    <div class="service-icon">
-                        <i class="fas fa-user-plus"></i>
+                <!-- Servicio 2: Microsoft OneDrive -->
+                <a href="https://onedrive.live.com" target="_blank" class="service-card-link">
+                    <div class="service-card" id="onedrive">
+                        <div class="service-icon">
+                            <!-- Logo de Microsoft OneDrive -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Microsoft_Office_OneDrive_%282019%E2%80%93present%29.svg/1024px-Microsoft_Office_OneDrive_%282019%E2%80%93present%29.svg.png" 
+                                 alt="Microsoft OneDrive" 
+                                 class="service-logo onedrive-logo">
+                        </div>
+                        <div class="service-name">Microsoft OneDrive</div>
+                        <div class="service-desc">Almacenamiento en la nube de Microsoft</div>
+                        <div class="service-status status-available">Disponible</div>
                     </div>
-                    <div class="service-name">Dar de Alta actividad</div>
-                    <div class="service-desc">Descargar actividad programada pendiente de ejecución</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
+                </a>
             </div>
         </main>
         
@@ -188,6 +226,19 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
+        
+        // Redirección directa al hacer clic en las tarjetas (backup por si el enlace falla)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Google Drive
+            document.getElementById('google-drive').addEventListener('click', function() {
+                window.open('https://drive.google.com', '_blank');
+            });
+            
+            // OneDrive
+            document.getElementById('onedrive').addEventListener('click', function() {
+                window.open('https://onedrive.live.com', '_blank');
+            });
+        });
     </script>
     
     <script src="../javascript/menu.js"></script>
