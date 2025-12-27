@@ -121,13 +121,13 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 </div>
                 
                 <!-- Servicio 4 Drive SME -->
-                <div class="service-card">
+                <div class="service-card" id="drive-card"; onclick="window.location.href='Drive/menuDrive.php'">
                     <div class="service-icon">
                         <i class="fas fa-hdd"></i>
                     </div>
                     <div class="service-name">Almacenamiento virtual-Drives</div>
                     <div class="service-desc">Almacenamiento en la nube</div>
-                    <div class="service-status status-unavailable">No disponible</div>
+                    <div class="service-status status-available">No disponible</div>
                 </div>
                 
                 <!-- Servicio 5 APP RAI -->
