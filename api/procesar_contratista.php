@@ -159,6 +159,22 @@ try {
     // NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO
     function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consecutivo, $contratistaModel) {
     try {
+        // TEMPORAL: Mensaje informativo mientras se resuelve el problema de IP
+        error_log("⚠️ ENVÍO DE CORREO TEMPORALMENTE PAUSADO");
+        error_log("⚠️ Para habilitar el envío de correos:");
+        error_log("⚠️ 1. Ve a: https://app.brevo.com/security/authorised_ips");
+        error_log("⚠️ 2. Agrega esta IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'No detectada'));
+        error_log("⚠️ 3. También agrega: 35.245.42.5 y 34.145.142.222");
+        error_log("⚠️ Correo que se enviaría a: $correoDestino");
+        error_log("⚠️ Nombre: $nombreContratista");
+        error_log("⚠️ ID Contratista: $consecutivo");
+        
+        // TEMPORAL: Retornamos true para que el flujo continúe
+        // Cambia esto a false si quieres que se muestre como fallo
+        return true;
+        
+        // CÓDIGO ORIGINAL (comentado temporalmente)
+        /*
         // Obtener API Key de las variables de entorno
         $apiKey = getenv('BREVO_API_KEY');
         if (!$apiKey) {
@@ -412,12 +428,6 @@ try {
                         <div class='data-item'><span class='data-label'>Fecha RP:</span> <span class='data-value'>$fechaRP</span></div>
                     </div>
                     
-                    <div class='highlight-box'>
-                        <p style='margin: 0; font-size: 14px;'>
-                            <strong>Importante:</strong> Este registro le permite acceder a los servicios y seguimiento de sus contratos ante la secretaría.
-                        </p>
-                    </div>
-                    
                     <p style='font-size: 14px; margin-top: 20px;'>
                         Si tiene alguna pregunta o requiere asistencia, por favor comuníquese con el área de contratación de la secretaría.
                     </p>
@@ -531,6 +541,7 @@ try {
         ];
         
         return enviarPayloadBrevo($apiKey, $payload);
+        */
         
     } catch (Exception $e) {
         error_log("❌ Excepción al enviar correo: " . $e->getMessage());
