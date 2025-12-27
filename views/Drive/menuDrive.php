@@ -111,7 +111,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         </main>
         
         <button class="logout-btn" id="logoutBtn" onclick="window.location.href='../menuAsistente.php'">
-            <i class="fas fa-sign-out-alt"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>Volver al menú</span>
         </button>
         
