@@ -94,7 +94,7 @@ function obtenerBadgeTipoUsuario($tipo) {
         return $tipos[$tipo];
     }
     
-    return ['texto' => ucfirst($tipo), 'clase' => 'badge-default', 'icono' => 'fa-user'];
+    return ['texto' => ucfirst($tipo), 'clase' => 'badge-default'];
 }
 ?>
 <!DOCTYPE html>
@@ -181,6 +181,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                                 $tipoBadge = obtenerBadgeTipoUsuario($tipoUsuario);
                                 $estado = obtenerEstadoUsuario($usuario['activo'] ?? 0);
                                 $idUsuario = $usuario['id_usuario'] ?? 0;
+                                $estaActivo = ($usuario['activo'] == 1 || $usuario['activo'] === true);
                                 ?>
                                 <tr>
                                     <td><?php echo $fechaRegistro; ?></td>
@@ -188,7 +189,6 @@ function obtenerBadgeTipoUsuario($tipo) {
                                     <td><?php echo $correo; ?></td>
                                     <td>
                                         <span class="type-badge <?php echo $tipoBadge['clase']; ?>">
-                                            <i class="fas <?php echo $tipoBadge['icono']; ?>"></i>
                                             <?php echo $tipoBadge['texto']; ?>
                                         </span>
                                     </td>
@@ -197,22 +197,26 @@ function obtenerBadgeTipoUsuario($tipo) {
                                             <?php echo $estado['texto']; ?>
                                         </span>
                                     </td>
-                                    <td class="actions-cell">
-                                        <?php if ($usuario['activo'] == 1 || $usuario['activo'] === true): ?>
-                                            <button class="btn-action btn-block" 
-                                                    data-id="<?php echo $idUsuario; ?>"
-                                                    data-nombre="<?php echo $nombreCompletoUsuario; ?>"
-                                                    title="Bloquear usuario">
-                                                <i class="fas fa-ban"></i> Bloquear
-                                            </button>
-                                        <?php else: ?>
-                                            <button class="btn-action btn-approve" 
-                                                    data-id="<?php echo $idUsuario; ?>"
-                                                    data-nombre="<?php echo $nombreCompletoUsuario; ?>"
-                                                    title="Activar usuario">
-                                                <i class="fas fa-check-circle"></i> Activar
-                                            </button>
-                                        <?php endif; ?>
+                                    <td>
+                                        <div class="actions-simple">
+                                            <?php if ($estaActivo): ?>
+                                                <!-- Botón para desactivar (X rojo) -->
+                                                <button class="btn-icon-action btn-deactivate" 
+                                                        data-id="<?php echo $idUsuario; ?>"
+                                                        data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        title="Desactivar usuario">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            <?php else: ?>
+                                                <!-- Botón para activar (✓ verde) -->
+                                                <button class="btn-icon-action btn-activate" 
+                                                        data-id="<?php echo $idUsuario; ?>"
+                                                        data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        title="Activar usuario">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -298,14 +302,14 @@ function obtenerBadgeTipoUsuario($tipo) {
                 });
             }
             
-            // Botones de acción (activar/bloquear)
-            const actionButtons = document.querySelectorAll('.btn-action');
+            // Botones de acción (activar/desactivar)
+            const actionButtons = document.querySelectorAll('.btn-icon-action');
             actionButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const userId = this.getAttribute('data-id');
                     const userName = this.getAttribute('data-nombre');
-                    const isActivate = this.classList.contains('btn-approve');
-                    const action = isActivate ? 'activar' : 'bloquear';
+                    const isActivate = this.classList.contains('btn-activate');
+                    const action = isActivate ? 'activar' : 'desactivar';
                     
                     if (confirm(`¿Está seguro que desea ${action} al usuario "${userName}"?`)) {
                         // Aquí iría la llamada AJAX para realizar la acción
@@ -314,28 +318,29 @@ function obtenerBadgeTipoUsuario($tipo) {
                         // Simulación de cambio de estado
                         const row = this.closest('tr');
                         const estadoCell = row.querySelector('.status-badge');
+                        const actionsCell = row.querySelector('.actions-simple');
                         
                         if (isActivate) {
                             // Cambiar a activo
                             estadoCell.textContent = 'Activo';
                             estadoCell.className = 'status-badge status-active';
                             
-                            // Cambiar botón
-                            this.innerHTML = '<i class="fas fa-ban"></i> Bloquear';
-                            this.className = 'btn-action btn-block';
-                            this.title = 'Bloquear usuario';
+                            // Cambiar botón a desactivar (X rojo)
+                            this.innerHTML = '<i class="fas fa-times"></i>';
+                            this.className = 'btn-icon-action btn-deactivate';
+                            this.title = 'Desactivar usuario';
                         } else {
                             // Cambiar a inactivo
                             estadoCell.textContent = 'Inactivo';
                             estadoCell.className = 'status-badge status-blocked';
                             
-                            // Cambiar botón
-                            this.innerHTML = '<i class="fas fa-check-circle"></i> Activar';
-                            this.className = 'btn-action btn-approve';
+                            // Cambiar botón a activar (✓ verde)
+                            this.innerHTML = '<i class="fas fa-check"></i>';
+                            this.className = 'btn-icon-action btn-activate';
                             this.title = 'Activar usuario';
                         }
                         
-                        alert(`Usuario "${userName}" ${isActivate ? 'activado' : 'bloqueado'} exitosamente.`);
+                        alert(`Usuario "${userName}" ${isActivate ? 'activado' : 'desactivado'} exitosamente.`);
                     }
                 });
             });

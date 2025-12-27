@@ -698,3 +698,57 @@ body {
                 min-width: 120px;
             }
         }
+         /* Botones de acción simplificados */
+        .btn-icon-action {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 0 3px;
+        }
+        
+        .btn-activate {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-activate:hover {
+            background-color: #218838;
+            transform: scale(1.1);
+        }
+        
+        .btn-deactivate {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-deactivate:hover {
+            background-color: #c82333;
+            transform: scale(1.1);
+        }
+        
+        /* Contenedor de acciones simplificado */
+        .actions-simple {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        /* Ajustes responsivos */
+        @media (max-width: 768px) {
+            .btn-icon-action {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .actions-simple {
+                gap: 3px;
+            }
+        }
