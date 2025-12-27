@@ -44,7 +44,6 @@ class Usuario {
     }
 
     public function obtenerPorCorreo($correo) {
-        // QUITAR p.foto_perfil de la consulta ya que ya no existe
         $sql = "SELECT u.*, u.fecha_registro, u.fecha_creacion, 
                        p.nombres, p.apellidos, p.telefono, p.cedula
                 FROM usuario u
@@ -103,7 +102,6 @@ class Usuario {
     }
 
     public function obtenerTodos() {
-        // QUITAR p.foto_perfil de la consulta
         $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
                        p.nombres, p.apellidos, p.telefono, p.cedula
                 FROM usuario u
@@ -174,15 +172,13 @@ class Usuario {
             JOIN persona p ON u.id_persona = p.id_persona
             WHERE 1=1";
     
-    // Aplicar filtro según estado
+    // Aplicar filtro según estado - usar TRUE/FALSE para boolean
     if ($estado === 'pendientes') {
-        // Usuarios registrados pero no activados (activo = 0)
-        $sql .= " AND u.activo = 0";
+        $sql .= " AND u.activo IS FALSE";
     } elseif ($estado === 'activos') {
-        $sql .= " AND u.activo = 1";
+        $sql .= " AND u.activo IS TRUE";
     } elseif ($estado === 'inactivos') {
-        // Podrías diferenciar entre pendientes y rechazados si agregas un campo
-        $sql .= " AND u.activo = 0";
+        $sql .= " AND u.activo IS FALSE";
     }
     
     $sql .= " ORDER BY u.fecha_registro DESC";
@@ -204,7 +200,7 @@ public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
             WHERE id_usuario = :id_usuario";
     
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+    $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL); // Esto está bien
     $stmt->bindParam(':id_usuario', $id_usuario);
     
     try {
@@ -218,8 +214,8 @@ public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
 public function contarPorEstado() {
     $sql = "SELECT 
                 COUNT(*) as total,
-                SUM(CASE WHEN activo = 1 THEN 1 ELSE 0 END) as activos,
-                SUM(CASE WHEN activo = 0 THEN 1 ELSE 0 END) as inactivos
+                COUNT(CASE WHEN activo IS TRUE THEN 1 END) as activos,
+                COUNT(CASE WHEN activo IS FALSE THEN 1 END) as inactivos
             FROM usuario";
     
     $stmt = $this->conn->prepare($sql);
@@ -248,6 +244,19 @@ public function obtenerPorId($id_usuario) {
     } catch (PDOException $e) {
         error_log("Error al obtener usuario por ID: " . $e->getMessage());
         return false;
+    }
+}
+public function existeUsuarioParaPersona($id_persona) {
+    $sql = "SELECT COUNT(*) FROM usuario WHERE id_persona = :id_persona";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_persona', $id_persona);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        error_log("Error al verificar usuario para persona: " . $e->getMessage());
+        return true; // Por seguridad, asume que existe
     }
 }
 }
