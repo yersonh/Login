@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const serviceCards = document.querySelectorAll('.service-card');
     const adminCard = document.getElementById('admin-card');
     const CPSCard = document.getElementById('CPS-card');
+    const driveCard = document.getElementById('drive-card');
     const modalClave = document.getElementById('modalClave');
     const inputClave = document.getElementById('inputClave');
     const btnIngresar = document.getElementById('btnIngresarClave');
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             irCPS();
             return;
         }
+
 
         if (statusElement.classList.contains('status-available')) {
             showNotification(`Accediendo a: ${serviceName}`, 'info');

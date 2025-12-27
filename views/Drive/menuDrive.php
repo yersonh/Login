@@ -54,8 +54,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
-    <link rel="stylesheet" href="styles/asistente.css">
-
+    <link rel="stylesheet" href="styles/menu.css">
 </head>
 <body>
     
@@ -75,8 +74,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
-                    <div class="user-role">Asistente</div>
-                    
+                    <div class="user-role">Contratista</div>
                 </div>
             </div>
         </header>
@@ -88,115 +86,35 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 <p>Seleccione uno de los servicios disponibles para acceder a las herramientas y recursos del sistema</p>
             </div>
             
-            <!-- Grid de servicios -->
+            <!-- Grid de servicios - SOLO 2 SERVICIOS -->
             <div class="services-grid">
-                <!-- Servicio 1 CPS -->
-                <div class="service-card CPS-card" id="CPS-card";>
+                <!-- Servicio 1: Programar actividad -->
+                <div class="service-card" id="programar-actividad">
                     <div class="service-icon">
-                        <i class="fas fa-file-contract"></i>
+                        <i class="fas fa-calendar-plus"></i>
                     </div>
-                    <div class="service-name">Gestión CPS</div>
-                    <div class="service-desc">Sistema de Control de Procesos y Seguimiento</div>
+                    <div class="service-name">Programar Actividad</div>
+                    <div class="service-desc">Crear y gestionar nuevas actividades y eventos</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
                 
-                <!-- Servicio 2 Documentos -->
-                <div class="service-card">
+                <!-- Servicio 2: Dar de alta -->
+                <div class="service-card" id="dar-de-alta">
                     <div class="service-icon">
-                        <i class="fas fa-folder-open"></i>
+                        <i class="fas fa-user-plus"></i>
                     </div>
-                    <div class="service-name">Gestión Documental</div>
-                    <div class="service-desc">Repositorio digital de archivos</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 3 Correo -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="service-name">Correo Institucional</div>
-                    <div class="service-desc">Correo electrónico corporativo</div>
-                    <div class="service-status status-unavailable">Disponible</div>
-                </div>
-                
-                <!-- Servicio 4 Drive SME -->
-                <div class="service-card" onclick ="window.location.href='Drive/menuDrive.php>
-                    <div class="service-icon">
-                        <i class="fas fa-hdd"></i>
-                    </div>
-                    <div class="service-name">Almacenamiento virtual-Drives</div>
-                    <div class="service-desc">Almacenamiento en la nube</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 5 APP RAI -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <div class="service-name">APP RAI</div>
-                    <div class="service-desc">Aplicación móvil para Reportes</div>
-                    <div class="service-status status-unavailable">Disponible</div>
-                </div>
-                
-                <!-- Servicio 6 Reuniones Virtuales -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <div class="service-name">Reuniones Virtuales</div>
-                    <div class="service-desc">Videoconferencias colaborativas</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 7 Agenda Digital -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="service-name">Agenda Digital</div>
-                    <div class="service-desc">Calendarios y eventos</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 8 Sistema de Mapas -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="service-name">Sistema de Mapas</div>
-                    <div class="service-desc">Información geográfica</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 9 Gestor de Tareas -->
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="service-name">Gestor de Tareas</div>
-                    <div class="service-desc">Seguimiento de actividades</div>
-                    <div class="service-status status-unavailable">No disponible</div>
-                </div>
-                
-                <!-- Servicio 10: Gestion del sistema -->
-                <div class="service-card admin-card" id="admin-card">
-                    <div class="admin-only-badge">ADMIN</div>
-                    <div class="service-icon">
-                        <i class="fas fa-sliders-h"></i>
-                    </div>
-                    <div class="service-name">Gestión del Sistema</div>
-                    <div class="service-desc">Configuración del sistema y parámetros</div>
+                    <div class="service-name">Dar de Alta actividad</div>
+                    <div class="service-desc">Descargar actividad programada pendiente de ejecución</div>
                     <div class="service-status status-available">Disponible</div>
                 </div>
             </div>
         </main>
-                    <button class="logout-btn" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Cerrar sesión</span>
-                    </button>
-                    
+        
+        <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar sesión</span>
+        </button>
+        
         <footer class="app-footer">
     <div class="footer-center">
         <?php
@@ -265,22 +183,14 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         </div>
     </div>
     
-   <!-- Incluye BASE_URL si es necesario para JavaScript -->
+    <!-- Incluye BASE_URL si es necesario para JavaScript -->
     <script>
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
     </script>
     
-    <script src="../javascript/asistente.js"></script>
-    
-    <!-- Script para evitar retroceder -->
-    <script>
-        history.pushState(null, null, location.href);
-        window.onpopstate = function () {
-            history.go(1);
-        };
-    </script>
+    <script src="../javascript/menu.js"></script>
     
 </body>
 </html>
