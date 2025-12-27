@@ -290,7 +290,6 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         $duracionContrato = htmlspecialchars($datosContratista['duracion_contrato'] ?? 'No especificada');
         
         // Calcular duración en días
-        $duracionDias = "No calculada";
         if (isset($datosContratista['fecha_inicio']) && isset($datosContratista['fecha_final'])) {
             try {
                 $inicio = DateTime::createFromFormat('d/m/Y', $datosContratista['fecha_inicio']);
@@ -397,7 +396,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     margin-bottom: 10px;
                 }
                 .license-logo {
-                    max-width: 60px;
+                    max-width: 120px;
                     height: auto;
                     opacity: 0.7;
                 }
