@@ -110,9 +110,9 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
             </div>
         </main>
         
-        <button class="logout-btn" id="logoutBtn">
+        <button class="logout-btn" id="logoutBtn" onclick="window.location.href='../menuAsistente.php'">
             <i class="fas fa-sign-out-alt"></i>
-            <span>Cerrar sesión</span>
+            <span>Volver al menú</span>
         </button>
         
         <footer class="app-footer">
