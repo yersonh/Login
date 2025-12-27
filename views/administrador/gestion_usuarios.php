@@ -320,7 +320,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                     
                     try {
                         // Enviar solicitud a la API
-                        const response = await fetch('/api/gestion_usuarios.php', {
+                        const response = await fetch('../../api/gestion_usuarios.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
