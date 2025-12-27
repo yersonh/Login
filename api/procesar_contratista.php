@@ -234,7 +234,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
             $fromEmail = 'no-reply@' . $_SERVER['HTTP_HOST'];
         }
         if (!$fromName) {
-            $fromName = 'Sistema SGEA - Secretaría de Minas y Energía';
+            $fromName = 'Sistema HMS - Herramienta de Medición y Seguimiento de compromisos y Tareas ';
         }
         
         // Configurar URLs base
@@ -328,7 +328,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     background: white;
                 }
                 .logo {
-                    max-width: 150px;
+                    max-width: 180px;
                     height: auto;
                     margin-bottom: 10px;
                 }
@@ -404,7 +404,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                 <div class='header'>
                     <img src='$logo_url' alt='Logo $entidad' class='logo'>
                     <h2 style='margin: 0 0 5px 0; font-size: 18px;'>$sistema</h2>
-                    <p style='margin: 0; color: #666; font-size: 13px;'>Sistema de Gestión y Enrutamiento Administrativo</p>
+                    <p style='margin: 0; color: #666; font-size: 13px;'>Herramienta de Medición y Seguimiento de compromisos y Tareas</p>
                 </div>
                 
                 <div class='content'>

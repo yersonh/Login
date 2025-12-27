@@ -429,7 +429,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
             <div class='container'>
                 <div class='header'>
                     <h2 style='color: #333; margin: 0 0 5px 0; font-size: 20px;'>
-                        Sistema SGEA
+                        Sistema HMS
                     </h2>
                     <p style='color: #666; margin: 0 0 15px 0; font-size: 14px;'>
                         Sistema de Gestión y Enrutamiento Administrativo
@@ -444,8 +444,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     
                     <p class='institutional-text'>
                         Hemos recibido una solicitud para restablecer su contraseña en el 
-                        <strong>Sistema SGEA - Sistema de Gestión y Enrutamiento Administrativo</strong> 
-                        de la Gobernación.
+                        <strong>Sistema HMS - Herramienta de Medición y Seguimiento de compromisos y Tareas.
                     </p>
                     
                     <p class='institutional-text'>
@@ -484,7 +483,7 @@ function generarEmailRecuperacion($nombrePersona, $link, $logo_url) {
                     <div style='margin-bottom: 15px;'>
                         <img src='{$logo_url}' alt='Logo Gobernación' style='max-width: 80px; height: auto; opacity: 0.7;'>
                     </div>
-                    <p style='margin: 5px 0;'><strong>Sistema SGEA</strong></p>
+                    <p style='margin: 5px 0;'><strong>Sistema HMS</strong></p>
                     <p style='margin: 5px 0; font-size: 12px;'>Gobernación - Sistema de Gestión y Enrutamiento Administrativo</p>
                     <p style='margin-top: 15px; font-size: 11px; color: #999;'>
                         Este es un mensaje automático generado por el sistema.<br>
