@@ -6,7 +6,7 @@ class Usuario {
         $this->conn = $db;
     }
 
-    public function insertar($id_persona, $correo, $password, $tipo_usuario = 'contratista', $activo = true) {
+    public function insertar($id_persona, $correo, $password, $tipo_usuario = 'contratista', $activo = 0) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $fecha_registro = date('Y-m-d H:i:s');
 
@@ -198,9 +198,6 @@ class Usuario {
     }
 }
 
-/**
- * Cambiar estado de usuario (activar/desactivar)
- */
 public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
     $sql = "UPDATE usuario 
             SET activo = :activo 
@@ -218,9 +215,6 @@ public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
     }
 }
 
-/**
- * Contar usuarios por estado
- */
 public function contarPorEstado() {
     $sql = "SELECT 
                 COUNT(*) as total,
@@ -239,9 +233,6 @@ public function contarPorEstado() {
     }
 }
 
-/**
- * Obtener usuario por ID
- */
 public function obtenerPorId($id_usuario) {
     $sql = "SELECT u.*, p.nombres, p.apellidos, p.telefono, p.cedula
             FROM usuario u

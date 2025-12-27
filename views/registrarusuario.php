@@ -30,40 +30,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
     }
 
     // Recoger y sanitizar datos
-    $nombres = trim(htmlspecialchars($_POST['nombres'] ?? ''));
-    $apellidos = trim(htmlspecialchars($_POST['apellidos'] ?? ''));
+    $cedula = trim(htmlspecialchars($_POST['cedula'] ?? ''));
     $correo = filter_var(trim($_POST['correo'] ?? ''), FILTER_VALIDATE_EMAIL);
-    $telefono = preg_replace('/[^0-9]/', '', $_POST['telefono'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
     // Validaciones
-    if (empty($nombres) || strlen($nombres) > 50) $mensaje = "Nombre inválido";
-    else if (empty($apellidos) || strlen($apellidos) > 50) $mensaje = "Apellido inválido";
-    else if (!$correo || strlen($correo) > 100) $mensaje = "Correo electrónico inválido";
-    else if (empty($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) $mensaje = "Teléfono inválido";
-    else if (empty($password) || strlen($password) < 8) $mensaje = "La contraseña debe tener al menos 8 caracteres";
-    else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) $mensaje = "La contraseña debe contener mayúsculas, minúsculas y números";
-    else if ($password !== $confirm_password) $mensaje = "Las contraseñas no coinciden";
+    if (empty($cedula) || !preg_match('/^[0-9]{5,15}$/', $cedula)) {
+        $mensaje = "Cédula inválida. Debe contener solo números (5-15 dígitos)";
+    } else if (!$correo || strlen($correo) > 100) {
+        $mensaje = "Correo electrónico inválido";
+    } else if (empty($password) || strlen($password) < 8) {
+        $mensaje = "La contraseña debe tener al menos 8 caracteres";
+    } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+        $mensaje = "La contraseña debe contener mayúsculas, minúsculas y números";
+    } else if ($password !== $confirm_password) {
+        $mensaje = "Las contraseñas no coinciden";
+    }
 
     // Registrar usuario si no hay errores
     if (empty($mensaje)) {
-        $resultado = $controller->registrar(
-            $nombres,
-            $apellidos,
-            $correo,
-            $telefono,
-            $password
-        );
+        // Solo pasamos cédula, correo y password
+        // Los demás datos (nombres, apellidos) se buscan en la BD por cédula
+        $resultado = $controller->registrar($cedula, $correo, $password);
 
         if ($resultado) {
             echo "<script>
-                alert('Usuario registrado correctamente.');
-                window.location.href = 'gestion_usuarios.php';
+                alert('Solicitud de usuario enviada correctamente.\\\\n\\\\nSu cuenta está pendiente de aprobación por el administrador.\\\\n\\\\nSe le notificará por correo cuando sea activada.');
+                window.location.href = '../index.php';
             </script>";
             exit;
         } else {
-            $mensaje = "Error al registrar usuario, verifique los datos.";
+            $mensaje = "Error al registrar usuario.\\n\\nPosibles causas:\\n• Cédula no encontrada en el sistema\\n• Ya tiene una cuenta de usuario asociada\\n• El correo electrónico ya está registrado\\n\\nVerifique sus datos o contacte al administrador.";
         }
     }
 }
@@ -266,28 +264,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 </head>
 <body>
     <div class="form-box">
-        <h2>Registrar Usuario</h2>
+        <h2>Crear Cuenta de Usuario</h2>
 
-        <div id="alert-message" class="alert"></div>
+        <?php if (!empty($mensaje)): ?>
+            <div id="alert-message" class="alert alert-error" style="display: block;">
+                <?php echo htmlspecialchars($mensaje); ?>
+            </div>
+        <?php else: ?>
+            <div id="alert-message" class="alert"></div>
+        <?php endif; ?>
 
         <form method="POST" id="registroForm">
             <!-- Token CSRF -->
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             <div class="form-group">
-                <label for="nombres">Nombres:</label>
-                <input type="text" id="nombres" name="nombres" placeholder="Ingresa tus nombres"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
+                <label for="cedula">Cédula registrada *:</label>
+                <input type="text" id="cedula" name="cedula" 
+                       placeholder="Ingresa tu número de cédula"
+                       pattern="[0-9]{5,15}" 
+                       required>
+                <small style="color: #ccc;">Debe coincidir con la cédula con la que fue registrado como contratista</small>
             </div>
 
             <div class="form-group">
-                <label for="apellidos">Apellidos:</label>
-                <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos"
-                    maxlength="50" pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+" required>
-            </div>
-
-            <div class="form-group">
-                <label for="correo">Correo electrónico:</label>
+                <label for="correo">Correo electrónico para acceso *:</label>
                 <div class="input-group">
                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com"
                         maxlength="100" required>
@@ -297,14 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             </div>
 
             <div class="form-group">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" name="telefono" placeholder="Ingresa tu teléfono"
-                    pattern="[0-9]{7,15}" maxlength="15" required>
-                <small style="color: #ccc;">Solo números, 10 dígitos</small>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
+                <label for="password">Contraseña *:</label>
                 <input type="password" id="password" name="password"
                     placeholder="Mínimo 8 caracteres con mayúsculas, minúsculas y números"
                     minlength="8" required>
@@ -312,18 +306,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             </div>
 
             <div class="form-group">
-                <label for="confirm_password">Confirmar Contraseña:</label>
+                <label for="confirm_password">Confirmar Contraseña *:</label>
                 <input type="password" id="confirm_password" name="confirm_password"
                     placeholder="Repite tu contraseña"
                     minlength="8" required>
                 <small id="password-match-error" class="mensaje-error">Las contraseñas no coinciden</small>
             </div>
 
-            <!-- Campos ocultos para rol y estado fijos -->
-            <input type="hidden" name="id_rol" value="2">
-            <input type="hidden" name="id_estado" value="1">
+            <div class="form-group" style="background: rgba(0, 123, 255, 0.1); padding: 10px; border-radius: 5px; border: 1px solid #007bff;">
+                <p style="font-size: 13px; color: #b3d7ff; margin: 0;">
+                    <i class="fas fa-info-circle"></i> 
+                    Nota: Su cuenta quedará en estado <strong>pendiente</strong> hasta que sea aprobada por el administrador.
+                </p>
+            </div>
 
-            <button type="submit" name="registrar" id="btnRegistrar">Registrar</button>
+            <button type="submit" name="registrar" id="btnRegistrar">Enviar Solicitud</button>
         </form>
 
         <a href="menuAdministrador.php" class="volver-link">Volver al inicio</a>
@@ -341,6 +338,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 alerta.style.display = 'none';
             }, 5000);
         }
+
+        // Validar formato de cédula
+        document.getElementById("cedula").addEventListener("input", function(e) {
+            // Solo permitir números
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Habilitar/deshabilitar botón según validación
+            validarFormulario();
+        });
 
         // Verificar fortaleza de contraseña
         document.getElementById("password").addEventListener("input", function(e) {
@@ -362,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             if (/[^A-Za-z0-9]/.test(password)) strength++;
 
             if (strength <= 2) {
-                feedback = "Debil";
+                feedback = "Débil";
                 strengthElement.className = "password-strength strength-weak";
             } else if (strength <= 4) {
                 feedback = "Media";
@@ -376,18 +382,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             
             // Verificar coincidencia de contraseñas
             verificarCoincidenciaContraseñas();
+            validarFormulario();
         });
 
         // Verificar coincidencia de contraseñas
         document.getElementById("confirm_password").addEventListener("input", function(e) {
             verificarCoincidenciaContraseñas();
+            validarFormulario();
         });
 
         function verificarCoincidenciaContraseñas() {
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm_password").value;
             const errorElement = document.getElementById("password-match-error");
-            const btnRegistrar = document.getElementById("btnRegistrar");
 
             if (confirmPassword.length === 0) {
                 errorElement.style.display = "none";
@@ -396,17 +403,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (password !== confirmPassword) {
                 errorElement.style.display = "block";
-                btnRegistrar.disabled = true;
             } else {
                 errorElement.style.display = "none";
-                // Solo habilitar si no hay otros errores
-                const correoError = document.getElementById("correo-alerta").style.display !== "inline";
-                if (correoError) {
-                    btnRegistrar.disabled = false;
-                }
             }
         }
 
+        // Verificar correo en tiempo real
         document.getElementById("correo").addEventListener("blur", function() {
             verificarCorreo(this.value);
         });
@@ -417,27 +419,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             timeoutId = setTimeout(() => {
                 verificarCorreo(this.value);
             }, 1000);
+            validarFormulario();
         });
 
         function verificarCorreo(correo) {
             const alerta = document.getElementById("correo-alerta");
             const mensajeError = document.getElementById("mensaje-error");
-            const btnRegistrar = document.getElementById("btnRegistrar");
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (correo.trim() === "") {
                 alerta.style.display = "none";
                 mensajeError.style.display = "none";
-                btnRegistrar.disabled = false;
                 return;
             }
 
             if (!emailRegex.test(correo)) {
                 alerta.style.display = "inline";
                 mensajeError.style.display = "block";
-                mensajeError.textContent = "Formato de correo invalido";
-                btnRegistrar.disabled = true;
+                mensajeError.textContent = "Formato de correo inválido";
                 return;
             }
 
@@ -459,37 +459,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 if (data.existe) {
                     alerta.style.display = "inline";
                     mensajeError.style.display = "block";
-                    mensajeError.textContent = "Este correo ya esta registrado. Intenta con otro.";
-                    btnRegistrar.disabled = true;
+                    mensajeError.textContent = "Este correo ya está registrado. Intenta con otro.";
                 } else {
                     alerta.style.display = "none";
                     mensajeError.style.display = "none";
-                    // Verificar si las contraseñas coinciden antes de habilitar
-                    const password = document.getElementById("password").value;
-                    const confirmPassword = document.getElementById("confirm_password").value;
-                    if (password === confirmPassword || confirmPassword.length === 0) {
-                        btnRegistrar.disabled = false;
-                    }
                 }
             })
             .catch(err => {
-                console.error("Error en la verificacion:", err);
+                console.error("Error en la verificación:", err);
                 alerta.style.display = "none";
                 mensajeError.style.display = "none";
-                btnRegistrar.disabled = false;
             });
+        }
+
+        // Función para validar todo el formulario
+        function validarFormulario() {
+            const cedula = document.getElementById("cedula").value;
+            const correo = document.getElementById("correo").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+            const correoAlerta = document.getElementById("correo-alerta");
+            const btnRegistrar = document.getElementById("btnRegistrar");
+            
+            // Validar cédula (5-15 dígitos)
+            const cedulaValida = /^[0-9]{5,15}$/.test(cedula);
+            
+            // Validar correo básico
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const correoValido = emailRegex.test(correo);
+            const correoDisponible = correoAlerta.style.display !== "inline";
+            
+            // Validar contraseñas
+            const passwordValida = password.length >= 8 && 
+                                  /[A-Z]/.test(password) && 
+                                  /[a-z]/.test(password) && 
+                                  /[0-9]/.test(password);
+            const passwordsCoinciden = password === confirmPassword || confirmPassword.length === 0;
+            
+            // Habilitar botón si todo es válido
+            if (cedulaValida && correoValido && correoDisponible && passwordValida && passwordsCoinciden) {
+                btnRegistrar.disabled = false;
+            } else {
+                btnRegistrar.disabled = true;
+            }
         }
 
         // Validar formulario antes de enviar
         document.getElementById("registroForm").addEventListener("submit", function(e) {
+            const cedula = document.getElementById("cedula").value;
             const correo = document.getElementById("correo").value;
-            const alerta = document.getElementById("correo-alerta");
+            const correoAlerta = document.getElementById("correo-alerta");
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm_password").value;
 
-            if (alerta.style.display === "inline") {
+            // Validar cédula
+            if (!/^[0-9]{5,15}$/.test(cedula)) {
                 e.preventDefault();
-                mostrarAlerta("Por favor, usa un correo electronico que no este registrado.", "error");
+                mostrarAlerta("La cédula debe contener solo números (5-15 dígitos).", "error");
+                return false;
+            }
+
+            // Validar correo
+            if (correoAlerta.style.display === "inline") {
+                e.preventDefault();
+                mostrarAlerta("Por favor, usa un correo electrónico que no esté registrado.", "error");
                 return false;
             }
 
@@ -502,7 +535,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
 
             if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(password)) {
                 e.preventDefault();
-                mostrarAlerta("La contraseña debe contener mayusculas, minusculas y numeros.", "error");
+                mostrarAlerta("La contraseña debe contener mayúsculas, minúsculas y números.", "error");
                 return false;
             }
 
@@ -513,11 +546,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
                 return false;
             }
 
-            const campos = ['nombres', 'apellidos', 'telefono', 'password', 'confirm_password'];
+            // Validar campos obligatorios
+            const campos = ['cedula', 'correo', 'password', 'confirm_password'];
             for (let campo of campos) {
                 if (!document.getElementById(campo).value.trim()) {
                     e.preventDefault();
-                    mostrarAlerta("Por favor, completa todos los campos.", "error");
+                    mostrarAlerta("Por favor, completa todos los campos obligatorios.", "error");
                     return false;
                 }
             }
@@ -525,8 +559,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar'])) {
             return true;
         });
 
-        document.getElementById("telefono").addEventListener("input", function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
+        // Inicializar validación
+        document.addEventListener("DOMContentLoaded", function() {
+            validarFormulario();
         });
     </script>
 </body>

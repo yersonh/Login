@@ -279,7 +279,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-users" placeholder="Buscar usuario por nombre, email...">
                     </div>
-                    <button class="btn-add-user" onclick="window.location.href='../registro.php'">
+                    <button class="btn-add-user" onclick="window.location.href='../registrarusuario.php'">
                         <i class="fas fa-user-plus"></i> Añadir usuario
                     </button>
                 </div>
@@ -726,7 +726,7 @@ function obtenerBadgeTipoUsuario($tipo) {
         const addUserBtn = document.querySelector('.btn-add-user');
         if (addUserBtn) {
             addUserBtn.addEventListener('click', function() {
-                window.location.href = '../registro.php';
+                window.location.href = '../registrarusuario.php';
             });
         }
     });
