@@ -205,7 +205,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
                                                         title="Desactivar usuario">
-                                                    <i class="fas fa-times"></i>
+                                                    <i class="fas fa-ban"></i>
                                                 </button>
                                             <?php else: ?>
                                                 <!-- Botón para activar (✓ verde) -->
@@ -213,7 +213,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
                                                         title="Activar usuario">
-                                                    <i class="fas fa-check"></i>
+                                                    <i class="fas fa-check-circle"></i>
                                                 </button>
                                             <?php endif; ?>
                                         </div>

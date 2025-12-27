@@ -714,8 +714,8 @@ body {
         }
         
         .btn-activate {
-            background-color: #28a745;
-            color: white;
+            background-color: #e8f5e9;
+            color: #2e7d32;
         }
         
         .btn-activate:hover {
@@ -724,8 +724,8 @@ body {
         }
         
         .btn-deactivate {
-            background-color: #dc3545;
-            color: white;
+            background-color: #ffebee;
+            color: #c62828;
         }
         
         .btn-deactivate:hover {
