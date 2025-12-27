@@ -28,6 +28,7 @@ if (empty($nombreCompleto)) {
 
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
+
 // Obtener año actual
 $anio = date('Y');
 ?>
@@ -67,6 +68,119 @@ $anio = date('Y');
                 </div>
             </div>
         </header>
+
+        <!-- Contenido principal -->
+        <main class="app-main">
+            <!-- Título y controles -->
+            <div class="page-header">
+                <h1 class="page-title">Usuarios registrados</h1>
+                <div class="page-controls">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-users" placeholder="Buscar usuario por nombre, email...">
+                    </div>
+                    <button class="btn-add-user">
+                        <i class="fas fa-user-plus"></i> Añadir usuario
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de usuarios -->
+            <div class="table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha de registro</th>
+                            <th>Nombre completo</th>
+                            <th>Email</th>
+                            <th>Estado usuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Ejemplo de filas (datos estáticos para diseño) -->
+                        <tr>
+                            <td>15/03/2024</td>
+                            <td>Juan Pérez González</td>
+                            <td>juan.perez@email.com</td>
+                            <td><span class="status-badge status-pending">Pendiente</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-approve" title="Aprobar usuario">
+                                    <i class="fas fa-check-circle"></i> Aprobar
+                                </button>
+                                <button class="btn-action btn-block" title="Bloquear usuario">
+                                    <i class="fas fa-ban"></i> Bloquear
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10/03/2024</td>
+                            <td>María Rodríguez López</td>
+                            <td>maria.rodriguez@email.com</td>
+                            <td><span class="status-badge status-active">Activo</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-block" title="Bloquear usuario">
+                                    <i class="fas fa-ban"></i> Bloquear
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>05/03/2024</td>
+                            <td>Carlos Sánchez Martínez</td>
+                            <td>carlos.sanchez@email.com</td>
+                            <td><span class="status-badge status-blocked">Bloqueado</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-approve" title="Aprobar usuario">
+                                    <i class="fas fa-check-circle"></i> Aprobar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>01/03/2024</td>
+                            <td>Ana Gómez Fernández</td>
+                            <td>ana.gomez@email.com</td>
+                            <td><span class="status-badge status-active">Activo</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-block" title="Bloquear usuario">
+                                    <i class="fas fa-ban"></i> Bloquear
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>25/02/2024</td>
+                            <td>Luis Torres Ramírez</td>
+                            <td>luis.torres@email.com</td>
+                            <td><span class="status-badge status-pending">Pendiente</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-approve" title="Aprobar usuario">
+                                    <i class="fas fa-check-circle"></i> Aprobar
+                                </button>
+                                <button class="btn-action btn-block" title="Bloquear usuario">
+                                    <i class="fas fa-ban"></i> Bloquear
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Información de paginación (placeholder) -->
+            <div class="table-info">
+                <div class="total-users">
+                    <span>Total: 5 usuarios</span>
+                </div>
+                <div class="pagination">
+                    <button class="btn-pagination" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="current-page">Página 1</span>
+                    <button class="btn-pagination">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
         <!-- Footer -->
         <footer class="app-footer">
             <div class="footer-center">
