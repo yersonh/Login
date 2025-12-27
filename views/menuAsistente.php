@@ -121,7 +121,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                 </div>
                 
                 <!-- Servicio 4 Drive SME -->
-                <div class="service-card" onclick ="window.location.href='Drive/menuDrive.php>
+                <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-hdd"></i>
                     </div>
