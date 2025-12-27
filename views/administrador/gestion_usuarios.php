@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../helpers/config_helper.php';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/Usuario.php';
+require_once __DIR__ . '/../../models/usuario.php';
 
 // Solo administradores
 if (!isset($_SESSION['usuario_id'])) {
