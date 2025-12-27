@@ -215,8 +215,7 @@ try {
         return null;
     }
     
-    // NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO
-    // NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO
+// NUEVA FUNCIÓN: ENVIAR CORREO DE CONFIRMACIÓN MEJORADO
 function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consecutivo, $contratistaModel) {
     try {
         // Obtener API Key de las variables de entorno
@@ -238,10 +237,11 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
             $fromName = 'Sistema SGEA - Secretaría de Minas y Energía';
         }
         
-        // Configurar la URL base para el logo
+        // Configurar URLs base
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
         $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         $logo_url = $base_url . "/imagenes/sisgoTech.png";
+        $logo_footer_url = $base_url . "/imagenes/gobernacion.png";
         
         // Obtener información del sistema usando ConfigHelper
         $entidad = ConfigHelper::obtener('entidad', 'Gobernación del Meta');
@@ -263,10 +263,6 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         $direccionFooter = ConfigHelper::obtener('direccion', 'Carrera 33 # 38-45, Edificio Central, Plazoleta Los Libertadores, Villavicencio, Meta');
         $correoContacto = ConfigHelper::obtener('correo_contacto', 'gobernaciondelmeta@meta.gov.co');
         $telefono = ConfigHelper::obtener('telefono', '(57 -608) 6 818503');
-        $logoUrl = ConfigHelper::obtenerLogoUrl();
-        
-        // Log para debug del logo
-        error_log("🔍 Logo URL obtenida: " . $logoUrl);
         
         // Formatear datos del contratista
         $nombreCompleto = htmlspecialchars($datosContratista['nombres'] . ' ' . $datosContratista['apellidos']);
@@ -315,10 +311,10 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         $fechaRP = isset($datosContratista['fecha_rp']) && !empty($datosContratista['fecha_rp']) ? 
             date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_rp']))) : 'No aplica';
         
-        // Asunto del correo (OBLIGATORIO para Brevo)
+        // Asunto del correo
         $subject = "Confirmación de Registro - Contratista #$consecutivo - $entidad";
         
-        // Generar contenido HTML del correo SIMPLIFICADO
+        // Generar contenido HTML del correo
         $htmlContent = "
         <!DOCTYPE html>
         <html>
@@ -384,28 +380,10 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     color: #000000;
                     display: inline;
                 }
-                .contract-number {
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: #333;
-                    text-align: center;
-                    background: #f5f5f5;
-                    padding: 12px;
-                    border-radius: 5px;
-                    margin: 20px 0;
-                    border: 1px solid #ddd;
-                }
                 .saludo {
                     font-size: 15px;
                     line-height: 1.6;
                     margin-bottom: 20px;
-                }
-                .highlight-box {
-                    background: #f9f9f9;
-                    padding: 15px;
-                    margin: 20px 0;
-                    border-radius: 5px;
-                    border-left: 3px solid #0066cc;
                 }
                 .footer-email {
                     background: #f5f5f5;
@@ -439,15 +417,15 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         <body>
             <div class='container'>
                 <div class='header'>
-                    <img src='" . htmlspecialchars($logo_url) . "' alt='" . htmlspecialchars($entidad) . "' class='logo'>
-                    <h2 style='margin: 0 0 5px 0; font-size: 18px;'>" . htmlspecialchars($sistema) . "</h2>
+                    <img src='$logo_url' alt='Logo $entidad' class='logo'>
+                    <h2 style='margin: 0 0 5px 0; font-size: 18px;'>$sistema</h2>
                     <p style='margin: 0; color: #666; font-size: 13px;'>Sistema de Gestión y Enrutamiento Administrativo</p>
                 </div>
                 
                 <div class='content'>
                     <div class='saludo'>
-                        <p>Estimado(a) <strong>" . htmlspecialchars($nombreContratista) . "</strong>,</p>
-                        <p>Le informamos que ha sido <strong>registrado exitosamente</strong> en el sistema de contratación de la <strong>" . htmlspecialchars($entidad) . "</strong>.</p>
+                        <p>Estimado(a) <strong>$nombreContratista</strong>,</p>
+                        <p>Le informamos que ha sido <strong>registrado exitosamente</strong> en el sistema de contratación de la <strong>$entidad</strong>.</p>
                     </div>
                     
                     <!-- SECCIÓN 1: DATOS PERSONALES -->
@@ -480,29 +458,28 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     <p style='font-size: 14px; margin-top: 20px;'>
                         Atentamente,<br>
                         <strong>Equipo de Contratación</strong><br>
-                        " . htmlspecialchars($entidad) . "
+                        $entidad
                     </p>
                 </div>
                 
-                <!-- FOOTER CORREGIDO CON LOGO FUNCIONAL -->
+                <!-- FOOTER CON RUTA DIRECTA -->
                 <div class='footer-email'>
                     <div class='footer-logo-container'>
-                        <img src='" . htmlspecialchars($logoUrl) . "' 
-                            alt='" . htmlspecialchars($entidad) . "' 
-                            class='license-logo'
-                            onerror=\"this.onerror=null; this.src='/imagenes/gobernacion.png'\">
+                        <img src='$logo_footer_url' 
+                            alt='$entidad' 
+                            class='license-logo'>
                     </div>
                     
-                    <!-- Primera línea concatenada CORREGIDA -->
+                    <!-- Primera línea -->
                     <div class='footer-line'>
-                        © " . $anioActual . " " . htmlspecialchars($entidad) . " " . htmlspecialchars($version) . "® desarrollado por 
-                        <span class='footer-strong'>" . htmlspecialchars($desarrollador) . "</span>
+                        © $anioActual $entidad $version® desarrollado por 
+                        <span class='footer-strong'>$desarrollador</span>
                     </div>
                     
-                    <!-- Segunda línea concatenada CORREGIDA -->
+                    <!-- Segunda línea -->
                     <div class='footer-line'>
-                        " . htmlspecialchars($direccionFooter) . " - Asesores e-Governance Solutions para Entidades Públicas " . $anioActual . "® 
-                        By: Ing. Rubén Darío González García " . htmlspecialchars($telefono) . ". Contacto: <span class='footer-strong'>" . htmlspecialchars($correoContacto) . "</span> - Reservados todos los derechos de autor.
+                        $direccionFooter - Asesores e-Governance Solutions para Entidades Públicas $anioActual® 
+                        By: Ing. Rubén Darío González García $telefono. Contacto: <span class='footer-strong'>$correoContacto</span> - Reservados todos los derechos de autor.
                     </div>
                 </div>
             </div>
@@ -510,7 +487,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         </html>
         ";
         
-        // Preparar payload y enviar (CON SUBJECT AGREGADO)
+        // Preparar payload y enviar
         $payload = [
             "sender" => [
                 "name"  => $fromName,
