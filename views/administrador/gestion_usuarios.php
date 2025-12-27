@@ -98,68 +98,7 @@ $anio = date('Y');
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Ejemplo de filas (datos estáticos para diseño) -->
-                        <tr>
-                            <td>15/03/2024</td>
-                            <td>Juan Pérez González</td>
-                            <td>juan.perez@email.com</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
-                            <td class="actions-cell">
-                                <button class="btn-action btn-approve" title="Aprobar usuario">
-                                    <i class="fas fa-check-circle"></i> Aprobar
-                                </button>
-                                <button class="btn-action btn-block" title="Bloquear usuario">
-                                    <i class="fas fa-ban"></i> Bloquear
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>10/03/2024</td>
-                            <td>María Rodríguez López</td>
-                            <td>maria.rodriguez@email.com</td>
-                            <td><span class="status-badge status-active">Activo</span></td>
-                            <td class="actions-cell">
-                                <button class="btn-action btn-block" title="Bloquear usuario">
-                                    <i class="fas fa-ban"></i> Bloquear
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>05/03/2024</td>
-                            <td>Carlos Sánchez Martínez</td>
-                            <td>carlos.sanchez@email.com</td>
-                            <td><span class="status-badge status-blocked">Bloqueado</span></td>
-                            <td class="actions-cell">
-                                <button class="btn-action btn-approve" title="Aprobar usuario">
-                                    <i class="fas fa-check-circle"></i> Aprobar
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>01/03/2024</td>
-                            <td>Ana Gómez Fernández</td>
-                            <td>ana.gomez@email.com</td>
-                            <td><span class="status-badge status-active">Activo</span></td>
-                            <td class="actions-cell">
-                                <button class="btn-action btn-block" title="Bloquear usuario">
-                                    <i class="fas fa-ban"></i> Bloquear
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>25/02/2024</td>
-                            <td>Luis Torres Ramírez</td>
-                            <td>luis.torres@email.com</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
-                            <td class="actions-cell">
-                                <button class="btn-action btn-approve" title="Aprobar usuario">
-                                    <i class="fas fa-check-circle"></i> Aprobar
-                                </button>
-                                <button class="btn-action btn-block" title="Bloquear usuario">
-                                    <i class="fas fa-ban"></i> Bloquear
-                                </button>
-                            </td>
-                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
