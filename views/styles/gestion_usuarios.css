@@ -1,0 +1,244 @@
+/* ========== CONTENEDOR PRINCIPAL ========== */
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+/* ========== HEADER ========== */
+.app-header {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 25px 40px;
+    position: relative;
+}
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.department-info h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.department-info h2 {
+    font-size: 20px;
+    font-weight: 400;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.user-profile {
+    text-align: right;
+}
+
+.welcome-user {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap; /* Evita que se rompa en varias líneas */
+}
+
+.welcome-user i {
+    color: #ffd700;
+    flex-shrink: 0; /* Evita que el icono se reduzca */
+}
+
+.welcome-user span {
+    white-space: nowrap; /* Mantiene "Bienvenido(a)" en una línea */
+}
+
+.welcome-user strong {
+    font-size: 25px !important; /* Tamaño fijo para el nombre */
+    font-weight: bold;
+    white-space: nowrap; /* Evita que el nombre se divida */
+    overflow: visible; /* Permite que se vea completo */
+    text-overflow: clip; /* No agrega "..." */
+}
+.user-role {
+    font-size: 14px;
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+.app-footer {
+    background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.footer-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.footer-center p {
+    margin: 5px 0;
+    color: var(--gray-color);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.footer-center strong {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+/* ========== RESPONSIVE - DESKTOP GRANDE (> 1200px) ========== */
+@media (min-width: 1201px) {
+    .app-container {
+        max-width: 1400px;
+    }
+    .app-footer {
+        padding: 25px 30px;
+    }
+}
+/* ========== RESPONSIVE - TABLETS PEQUEÑAS (576px - 768px) ========== */
+@media (max-width: 768px) {
+    .app-container {
+        min-height: auto;
+    }
+    .app-header, .app-main {
+        padding: 20px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    .department-info h2 {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .user-profile {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .welcome-user {
+        justify-content: center;
+        flex-wrap: nowrap; /* Mantiene todo en una línea */
+        white-space: nowrap;
+        overflow: visible; /* Permite que se vea completo */
+    }
+    
+    .welcome-user strong {
+        font-size: 22px !important;
+        overflow: visible; /* Permite que se vea completo */
+    }
+    .app-footer {
+        padding: 20px;
+    }
+    .footer-center p {
+        font-size: 13px;
+    }
+}
+/* ========== RESPONSIVE - MÓVILES PEQUEÑOS (< 480px) ========== */
+@media (max-width: 480px) {
+    .app-container {
+        min-height: calc(100vh - 16px);
+        border-radius: 10px;
+    }
+    .app-header {
+        padding: 15px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    .department-info h1 {
+        font-size: 20px;
+        margin-bottom: 3px;
+    }
+    
+    .department-info h2 {
+        font-size: 18px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .welcome-user {
+        font-size: 15px;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        overflow: visible; /* Permite que se vea completo */
+    }
+    
+    .welcome-user span {
+        display: inline; /* Asegura que "Bienvenido(a)" esté en línea */
+    }
+    
+    .welcome-user strong {
+        font-size: 18px !important;
+        display: inline; /* Asegura que esté en línea */
+        overflow: visible; /* Permite que se vea completo */
+    }
+    
+    .user-role {
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+    .app-footer {
+        padding: 15px;
+    }
+    .footer-center {
+        gap: 8px;
+    }
+    
+    .footer-center p {
+        font-size: 11px;
+        margin: 3px 0;
+    }
+}
+/* ========== RESPONSIVE - DISPOSITIVOS MUY PEQUEÑOS (altura limitada) ========== */
+@media (max-height: 700px) and (max-width: 768px) {
+    .app-container {
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    .app-footer {
+        padding: 15px 20px;
+    }
+}
+/* ========== RESPONSIVE - ORIENTACIÓN HORIZONTAL EN MÓVILES ========== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .app-container {
+        min-height: auto;
+    }
+}
+/* ========== AJUSTES PARA SAFARI iOS ========== */
+@supports (-webkit-touch-callout: none) {
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+}
