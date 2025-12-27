@@ -289,20 +289,6 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
             date('d/m/Y', strtotime(str_replace('/', '-', $datosContratista['fecha_final']))) : 'No especificada';
         $duracionContrato = htmlspecialchars($datosContratista['duracion_contrato'] ?? 'No especificada');
         
-        // Calcular duración en días
-        if (isset($datosContratista['fecha_inicio']) && isset($datosContratista['fecha_final'])) {
-            try {
-                $inicio = DateTime::createFromFormat('d/m/Y', $datosContratista['fecha_inicio']);
-                $final = DateTime::createFromFormat('d/m/Y', $datosContratista['fecha_final']);
-                
-                if ($inicio && $final) {
-                    $diferencia = $inicio->diff($final);
-                    $duracionDias = $diferencia->days . " días";
-                }
-            } catch (Exception $e) {
-                $duracionDias = $duracionContrato;
-            }
-        }
         
         // Datos RP
         $numeroRP = !empty($datosContratista['numero_registro_presupuestal']) ? 
@@ -396,7 +382,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     margin-bottom: 10px;
                 }
                 .license-logo {
-                    max-width: 120px;
+                    max-width: 180px;
                     height: auto;
                     opacity: 0.7;
                 }
@@ -445,7 +431,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                         <div class='data-item'><span class='data-label'>Fecha del contrato:</span> <span class='data-value'>$fechaContrato</span></div>
                         <div class='data-item'><span class='data-label'>Fecha de inicio:</span> <span class='data-value'>$fechaInicio</span></div>
                         <div class='data-item'><span class='data-label'>Fecha de terminación:</span> <span class='data-value'>$fechaFinal</span></div>
-                        <div class='data-item'><span class='data-label'>Duración del contrato:</span> <span class='data-value'>$duracionContrato ($duracionDias)</span></div>
+                        <div class='data-item'><span class='data-label'>Duración del contrato:</span> <span class='data-value'>$duracionContrato</span></div>
                         <div class='data-item'><span class='data-label'>Número RP:</span> <span class='data-value'>$numeroRP</span></div>
                         <div class='data-item'><span class='data-label'>Fecha RP:</span> <span class='data-value'>$fechaRP</span></div>
                     </div>
