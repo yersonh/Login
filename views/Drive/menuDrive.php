@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../helpers/config_helper.php';
+require_once __DIR__ . '/../../helpers/config_helper.php';
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -10,7 +10,7 @@ header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../index.php");
     exit();
 }
 
@@ -18,15 +18,15 @@ if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'asistent
     // Si no es asistente, redirigir según su rol
     if (isset($_SESSION['tipo_usuario'])) {
         if ($_SESSION['tipo_usuario'] === 'administrador') {
-            header("Location: menu.php");
+            header("Location: ../menu.php");
         } else if ($_SESSION['tipo_usuario'] === 'contratista') {
-            header("Location: menu.php");
+            header("Location: ../menu.php");
         } else {
             // Rol desconocido
-            header("Location: ../index.php");
+            header("Location: ../../index.php");
         }
     } else {
-        header("Location: ../index.php");
+        header("Location: ../../index.php");
     }
     exit();
 }

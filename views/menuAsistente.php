@@ -127,7 +127,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                     </div>
                     <div class="service-name">Almacenamiento virtual-Drives</div>
                     <div class="service-desc">Almacenamiento en la nube</div>
-                    <div class="service-status status-available">No disponible</div>
+                    <div class="service-status status-available">Disponible</div>
                 </div>
                 
                 <!-- Servicio 5 APP RAI -->
