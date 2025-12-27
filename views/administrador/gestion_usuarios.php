@@ -32,20 +32,31 @@ if (empty($nombreCompleto)) {
 $tipoUsuario = $_SESSION['tipo_usuario'] ?? '';
 $correoUsuario = $_SESSION['correo'] ?? '';
 
-// Obtener año actual
-$anio = date('Y');
+// Obtener filtro actual
+$filtro = $_GET['filtro'] ?? 'todos';
 
-// 3. Obtener usuarios de la base de datos
+// 3. Obtener usuarios según filtro
 try {
     $database = new Database();
     $db = $database->conectar();
     $usuarioModel = new Usuario($db);
-    $usuarios = $usuarioModel->obtenerTodos();
+    
+    if ($filtro === 'todos') {
+        $usuarios = $usuarioModel->obtenerTodos();
+    } else {
+        $usuarios = $usuarioModel->obtenerPorEstado($filtro);
+    }
+    
     $totalUsuarios = count($usuarios);
+    
+    // Obtener contadores
+    $contadores = $usuarioModel->contarPorEstado();
+    
 } catch (Exception $e) {
     error_log("Error al obtener usuarios: " . $e->getMessage());
     $usuarios = [];
     $totalUsuarios = 0;
+    $contadores = ['total' => 0, 'activos' => 0, 'inactivos' => 0];
 }
 
 // Función para formatear la fecha
@@ -53,19 +64,16 @@ function formatearFecha($fechaBD) {
     if (empty($fechaBD)) {
         return 'No registrada';
     }
-    // Si la fecha ya está en formato d/m/Y, devolverla tal cual
     if (preg_match('/\d{2}\/\d{2}\/\d{4}/', $fechaBD)) {
         return $fechaBD;
     }
-    // Si es de MySQL (YYYY-MM-DD HH:MM:SS) o similar, formatear
     try {
         $fecha = DateTime::createFromFormat('Y-m-d H:i:s', $fechaBD);
         if ($fecha) {
-            return $fecha->format('d/m/Y');
+            return $fecha->format('d/m/Y H:i');
         }
-        // Intentar otros formatos
         $fecha = new DateTime($fechaBD);
-        return $fecha->format('d/m/Y');
+        return $fecha->format('d/m/Y H:i');
     } catch (Exception $e) {
         return $fechaBD;
     }
@@ -76,7 +84,7 @@ function obtenerEstadoUsuario($activo) {
     if ($activo == 1 || $activo === true) {
         return ['texto' => 'Activo', 'clase' => 'status-active'];
     } else {
-        return ['texto' => 'Inactivo', 'clase' => 'status-blocked'];
+        return ['texto' => 'Pendiente', 'clase' => 'status-pending'];
     }
 }
 
@@ -107,6 +115,121 @@ function obtenerBadgeTipoUsuario($tipo) {
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/gestion_usuarios.css">
+    <style>
+        /* Estilos adicionales para los filtros */
+        .filters-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #495057;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background: #f1f3f4;
+            border-color: #adb5bd;
+        }
+        
+        .filter-btn.active {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+        
+        .filter-btn.filter-pending.active {
+            border-color: #ffc107;
+            background: #ffc107;
+        }
+        
+        .filter-btn.filter-active.active {
+            border-color: #28a745;
+            background: #28a745;
+        }
+        
+        .filter-btn.filter-inactive.active {
+            border-color: #dc3545;
+            background: #dc3545;
+        }
+        
+        .filter-count {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .filter-btn.active .filter-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .action-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-icon-action.btn-approve {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .btn-icon-action.btn-approve:hover {
+            background: rgba(40, 167, 69, 0.2);
+        }
+        
+        .btn-icon-action.btn-reject {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .btn-icon-action.btn-reject:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-icon-action.btn-view {
+            color: #17a2b8;
+            background: rgba(23, 162, 184, 0.1);
+        }
+        
+        .btn-icon-action.btn-view:hover {
+            background: rgba(23, 162, 184, 0.2);
+        }
+        
+        /* Estilo para usuarios pendientes en la tabla */
+        tr.user-pending td {
+            background-color: #fffdf6;
+        }
+        
+        tr.user-pending:hover td {
+            background-color: #fff9e6;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -138,15 +261,52 @@ function obtenerBadgeTipoUsuario($tipo) {
         <main class="app-main">
             <!-- Título y controles -->
             <div class="page-header">
-                <h1 class="page-title">Usuarios registrados</h1>
+                <h1 class="page-title">
+                    <?php 
+                    if ($filtro === 'pendientes') {
+                        echo 'Solicitudes Pendientes';
+                    } elseif ($filtro === 'activos') {
+                        echo 'Usuarios Activos';
+                    } elseif ($filtro === 'inactivos') {
+                        echo 'Usuarios Inactivos';
+                    } else {
+                        echo 'Todos los Usuarios';
+                    }
+                    ?>
+                </h1>
                 <div class="page-controls">
                     <div class="search-container">
                         <i class="fas fa-search"></i>
                         <input type="text" id="search-users" placeholder="Buscar usuario por nombre, email...">
                     </div>
-                    <button class="btn-add-user">
+                    <button class="btn-add-user" onclick="window.location.href='../registro.php'">
                         <i class="fas fa-user-plus"></i> Añadir usuario
                     </button>
+                </div>
+            </div>
+
+            <!-- Filtros de estado -->
+            <div class="filters-container">
+                <div class="filter-buttons">
+                    <a href="?filtro=todos" class="filter-btn <?php echo $filtro == 'todos' ? 'active' : ''; ?>">
+                        <i class="fas fa-users"></i> Todos
+                        <span class="filter-count"><?php echo $contadores['total']; ?></span>
+                    </a>
+                    
+                    <a href="?filtro=pendientes" class="filter-btn filter-pending <?php echo $filtro == 'pendientes' ? 'active' : ''; ?>">
+                        <i class="fas fa-clock"></i> Pendientes
+                        <span class="filter-count"><?php echo $contadores['inactivos']; ?></span>
+                    </a>
+                    
+                    <a href="?filtro=activos" class="filter-btn filter-active <?php echo $filtro == 'activos' ? 'active' : ''; ?>">
+                        <i class="fas fa-check-circle"></i> Activos
+                        <span class="filter-count"><?php echo $contadores['activos']; ?></span>
+                    </a>
+                    
+                    <a href="?filtro=inactivos" class="filter-btn filter-inactive <?php echo $filtro == 'inactivos' ? 'active' : ''; ?>">
+                        <i class="fas fa-ban"></i> Inactivos
+                        <span class="filter-count"><?php echo $contadores['inactivos']; ?></span>
+                    </a>
                 </div>
             </div>
 
@@ -168,7 +328,19 @@ function obtenerBadgeTipoUsuario($tipo) {
                             <tr>
                                 <td colspan="6" class="no-users">
                                     <i class="fas fa-users-slash"></i>
-                                    <p>No hay usuarios registrados en el sistema</p>
+                                    <p>
+                                        <?php 
+                                        if ($filtro === 'pendientes') {
+                                            echo 'No hay solicitudes pendientes de aprobación';
+                                        } elseif ($filtro === 'activos') {
+                                            echo 'No hay usuarios activos';
+                                        } elseif ($filtro === 'inactivos') {
+                                            echo 'No hay usuarios inactivos';
+                                        } else {
+                                            echo 'No hay usuarios registrados en el sistema';
+                                        }
+                                        ?>
+                                    </p>
                                 </td>
                             </tr>
                         <?php else: ?>
@@ -182,8 +354,9 @@ function obtenerBadgeTipoUsuario($tipo) {
                                 $estado = obtenerEstadoUsuario($usuario['activo'] ?? 0);
                                 $idUsuario = $usuario['id_usuario'] ?? 0;
                                 $estaActivo = ($usuario['activo'] == 1 || $usuario['activo'] === true);
+                                $esPendiente = !$estaActivo;
                                 ?>
-                                <tr>
+                                <tr class="<?php echo $esPendiente ? 'user-pending' : ''; ?>">
                                     <td><?php echo $fechaRegistro; ?></td>
                                     <td><?php echo $nombreCompletoUsuario; ?></td>
                                     <td><?php echo $correo; ?></td>
@@ -198,24 +371,46 @@ function obtenerBadgeTipoUsuario($tipo) {
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="actions-simple">
+                                        <div class="action-group">
                                             <?php if ($estaActivo): ?>
-                                                <!-- Botón para desactivar (X rojo) -->
+                                                <!-- Usuario activo: mostrar opción para desactivar -->
                                                 <button class="btn-icon-action btn-deactivate" 
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
                                                         title="Desactivar usuario">
                                                     <i class="fas fa-ban"></i>
                                                 </button>
+                                                
                                             <?php else: ?>
-                                                <!-- Botón para activar (✓ verde) -->
-                                                <button class="btn-icon-action btn-activate" 
+                                                <!-- Usuario pendiente: mostrar opciones de aprobación -->
+                                                <button class="btn-icon-action btn-approve" 
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
-                                                        title="Activar usuario">
+                                                        title="Aprobar usuario">
                                                     <i class="fas fa-check-circle"></i>
                                                 </button>
+                                                
+                                                <button class="btn-icon-action btn-reject" 
+                                                        data-id="<?php echo $idUsuario; ?>"
+                                                        data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        title="Mantener como pendiente">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </button>
+                                                
+                                                <!-- Botón para ver detalles -->
+                                                <button class="btn-icon-action btn-view" 
+                                                        onclick="verDetallesUsuario(<?php echo $idUsuario; ?>)"
+                                                        title="Ver detalles del usuario">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
                                             <?php endif; ?>
+                                            
+                                            <!-- Botón para editar siempre visible -->
+                                            <button class="btn-icon-action btn-edit" 
+                                                    onclick="editarUsuario(<?php echo $idUsuario; ?>)"
+                                                    title="Editar usuario">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -228,17 +423,21 @@ function obtenerBadgeTipoUsuario($tipo) {
             <!-- Información de paginación -->
             <div class="table-info">
                 <div class="total-users">
-                    <span>Total: <?php echo $totalUsuarios; ?> usuario(s)</span>
+                    <span>
+                        <?php 
+                        if ($filtro === 'todos') {
+                            echo "Total: {$contadores['total']} usuario(s)";
+                        } elseif ($filtro === 'pendientes') {
+                            echo "Pendientes de aprobación: {$contadores['inactivos']} usuario(s)";
+                        } elseif ($filtro === 'activos') {
+                            echo "Activos: {$contadores['activos']} usuario(s)";
+                        } elseif ($filtro === 'inactivos') {
+                            echo "Inactivos: {$contadores['inactivos']} usuario(s)";
+                        }
+                        ?>
+                    </span>
                 </div>
-                <div class="pagination">
-                    <button class="btn-pagination" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="current-page">Página 1</span>
-                    <button class="btn-pagination">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+                <!-- Aquí podrías agregar paginación si es necesario -->
             </div>
         </main>
 
@@ -278,8 +477,8 @@ function obtenerBadgeTipoUsuario($tipo) {
         </footer>
     </div>
 
-    <!-- JavaScript para funcionalidad básica -->
-  <script>
+    <!-- JavaScript para funcionalidad -->
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Buscador de usuarios
         const searchInput = document.getElementById('search-users');
@@ -289,7 +488,6 @@ function obtenerBadgeTipoUsuario($tipo) {
                 const rows = document.querySelectorAll('.users-table tbody tr');
                 
                 rows.forEach(row => {
-                    // Verificar que no sea la fila de "no hay usuarios"
                     if (row.classList.contains('no-users')) return;
                     
                     const text = row.textContent.toLowerCase();
@@ -302,37 +500,42 @@ function obtenerBadgeTipoUsuario($tipo) {
             });
         }
         
-        // Botones de acción (activar/desactivar)
-        const actionButtons = document.querySelectorAll('.btn-icon-action');
-        actionButtons.forEach(button => {
+        // Función para cambiar estado
+        async function cambiarEstadoUsuario(usuarioId, nuevoEstado, accion) {
+            try {
+                const response = await fetch('../../api/gestion_usuarios.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        accion: accion,
+                        id_usuario: usuarioId,
+                        nuevo_estado: nuevoEstado
+                    })
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return { success: false, error: 'Error de conexión' };
+            }
+        }
+        
+        // Botón para aprobar usuario
+        document.querySelectorAll('.btn-approve').forEach(button => {
             button.addEventListener('click', async function() {
                 const userId = this.getAttribute('data-id');
                 const userName = this.getAttribute('data-nombre');
-                const isActivate = this.classList.contains('btn-activate');
-                const action = isActivate ? 'activar' : 'desactivar';
-                const nuevoEstado = isActivate ? 1 : 0;
                 
-                if (confirm(`¿Está seguro que desea ${action} al usuario "${userName}"?`)) {
+                if (confirm(`¿Está seguro que desea APROBAR al usuario "${userName}"?\n\nEl usuario podrá acceder al sistema después de esta acción.`)) {
                     // Mostrar indicador de carga
                     const originalHTML = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     this.disabled = true;
                     
                     try {
-                        // Enviar solicitud a la API
-                        const response = await fetch('../../api/gestion_usuarios.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                accion: 'cambiar_estado',
-                                id_usuario: userId,
-                                nuevo_estado: nuevoEstado
-                            })
-                        });
-                        
-                        const data = await response.json();
+                        const data = await cambiarEstadoUsuario(userId, 1, 'aprobar_usuario');
                         
                         if (data.success) {
                             // Actualizar visualmente
@@ -343,143 +546,205 @@ function obtenerBadgeTipoUsuario($tipo) {
                             estadoCell.textContent = data.estado_texto;
                             estadoCell.className = `status-badge ${data.estado_clase}`;
                             
-                            // Cambiar botón
-                            if (nuevoEstado == 1) {
-                                // Ahora está activo, mostrar botón para desactivar
-                                this.innerHTML = '<i class="fas fa-ban"></i>';
-                                this.className = 'btn-icon-action btn-deactivate';
-                                this.title = 'Desactivar usuario';
-                            } else {
-                                // Ahora está inactivo, mostrar botón para activar
-                                this.innerHTML = '<i class="fas fa-check-circle"></i>';
-                                this.className = 'btn-icon-action btn-activate';
-                                this.title = 'Activar usuario';
-                            }
+                            // Cambiar botones (ahora está activo)
+                            const actionGroup = row.querySelector('.action-group');
+                            actionGroup.innerHTML = `
+                                <button class="btn-icon-action btn-deactivate" 
+                                        data-id="${userId}"
+                                        data-nombre="${userName}"
+                                        title="Desactivar usuario">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="btn-icon-action btn-edit" 
+                                        onclick="editarUsuario(${userId})"
+                                        title="Editar usuario">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            `;
+                            
+                            // Volver a agregar event listeners
+                            row.querySelector('.btn-deactivate').addEventListener('click', function() {
+                                const userId = this.getAttribute('data-id');
+                                const userName = this.getAttribute('data-nombre');
+                                if (confirm(`¿Desactivar al usuario "${userName}"?`)) {
+                                    cambiarEstadoUsuario(userId, 0, 'cambiar_estado');
+                                }
+                            });
+                            
+                            // Remover clase de pendiente
+                            row.classList.remove('user-pending');
                             
                             // Mostrar mensaje de éxito
-                            showNotification(data.message, 'success');
+                            showNotification('Usuario aprobado correctamente', 'success');
+                            
+                            // Actualizar contador de filtros
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
                             
                         } else {
-                            // Restaurar botón
-                            if (nuevoEstado == 1) {
-                                this.innerHTML = '<i class="fas fa-check-circle"></i>';
-                            } else {
-                                this.innerHTML = '<i class="fas fa-ban"></i>';
-                            }
-                            
-                            throw new Error(data.error || 'Error desconocido');
+                            throw new Error(data.error || 'Error al aprobar usuario');
                         }
                         
                     } catch (error) {
-                        // Restaurar botón original
+                        // Restaurar botón
                         this.innerHTML = originalHTML;
+                        this.disabled = false;
                         
                         // Mostrar error
                         showNotification(`Error: ${error.message}`, 'error');
-                        console.error('Error:', error);
-                        
-                    } finally {
-                        this.disabled = false;
                     }
                 }
             });
+        });
+        
+        // Botón para rechazar/mantener pendiente
+        document.querySelectorAll('.btn-reject').forEach(button => {
+            button.addEventListener('click', async function() {
+                const userId = this.getAttribute('data-id');
+                const userName = this.getAttribute('data-nombre');
+                
+                if (confirm(`¿Mantener al usuario "${userName}" como PENDIENTE?\n\nEl usuario NO podrá acceder al sistema.`)) {
+                    // Mostrar indicador de carga
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    this.disabled = true;
+                    
+                    try {
+                        // Simplemente mostramos mensaje, no cambiamos estado (ya está inactivo)
+                        setTimeout(() => {
+                            this.innerHTML = originalHTML;
+                            this.disabled = false;
+                            showNotification('Usuario mantenido como pendiente', 'info');
+                        }, 1000);
+                        
+                    } catch (error) {
+                        this.innerHTML = originalHTML;
+                        this.disabled = false;
+                        showNotification('Error: ' + error.message, 'error');
+                    }
+                }
+            });
+        });
+        
+        // Botón para desactivar usuario activo
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-deactivate')) {
+                const button = e.target.closest('.btn-deactivate');
+                const userId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-nombre');
+                
+                if (confirm(`¿Está seguro que desea DESACTIVAR al usuario "${userName}"?\n\nEl usuario NO podrá acceder al sistema.`)) {
+                    // Mostrar indicador de carga
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    button.disabled = true;
+                    
+                    cambiarEstadoUsuario(userId, 0, 'cambiar_estado')
+                        .then(data => {
+                            if (data.success) {
+                                // Actualizar visualmente
+                                const row = button.closest('tr');
+                                const estadoCell = row.querySelector('.status-badge');
+                                
+                                // Actualizar estado
+                                estadoCell.textContent = data.estado_texto;
+                                estadoCell.className = `status-badge ${data.estado_clase}`;
+                                
+                                // Cambiar botones (ahora está inactivo/pendiente)
+                                const actionGroup = row.querySelector('.action-group');
+                                const userName = button.getAttribute('data-nombre');
+                                const userId = button.getAttribute('data-id');
+                                
+                                actionGroup.innerHTML = `
+                                    <button class="btn-icon-action btn-approve" 
+                                            data-id="${userId}"
+                                            data-nombre="${userName}"
+                                            title="Aprobar usuario">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                    <button class="btn-icon-action btn-reject" 
+                                            data-id="${userId}"
+                                            data-nombre="${userName}"
+                                            title="Mantener como pendiente">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                    <button class="btn-icon-action btn-view" 
+                                            onclick="verDetallesUsuario(${userId})"
+                                            title="Ver detalles del usuario">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon-action btn-edit" 
+                                            onclick="editarUsuario(${userId})"
+                                            title="Editar usuario">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                `;
+                                
+                                // Agregar clase de pendiente
+                                row.classList.add('user-pending');
+                                
+                                // Volver a agregar event listeners
+                                row.querySelector('.btn-approve').addEventListener('click', function() {
+                                    const userId = this.getAttribute('data-id');
+                                    const userName = this.getAttribute('data-nombre');
+                                    if (confirm(`¿Aprobar al usuario "${userName}"?`)) {
+                                        cambiarEstadoUsuario(userId, 1, 'aprobar_usuario');
+                                    }
+                                });
+                                
+                                row.querySelector('.btn-reject').addEventListener('click', function() {
+                                    const userName = this.getAttribute('data-nombre');
+                                    showNotification(`Usuario "${userName}" mantenido como pendiente`, 'info');
+                                });
+                                
+                                // Mostrar mensaje de éxito
+                                showNotification('Usuario desactivado correctamente', 'success');
+                                
+                                // Actualizar contador de filtros
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                                
+                            } else {
+                                throw new Error(data.error || 'Error al desactivar usuario');
+                            }
+                        })
+                        .catch(error => {
+                            // Restaurar botón
+                            button.innerHTML = originalHTML;
+                            button.disabled = false;
+                            
+                            // Mostrar error
+                            showNotification(`Error: ${error.message}`, 'error');
+                        });
+                }
+            }
         });
         
         // Botón "Añadir usuario"
         const addUserBtn = document.querySelector('.btn-add-user');
         if (addUserBtn) {
             addUserBtn.addEventListener('click', function() {
-                alert('Funcionalidad de añadir usuario aún no implementada.');
+                window.location.href = '../registro.php';
             });
-        }
-        
-        // Función para mostrar notificaciones
-        function showNotification(message, type = 'info') {
-            // Crear elemento de notificación
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                    <span>${message}</span>
-                </div>
-                <button class="notification-close"><i class="fas fa-times"></i></button>
-            `;
-            
-            // Agregar estilos
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: ${type === 'success' ? '#d4edda' : '#f8d7da'};
-                color: ${type === 'success' ? '#155724' : '#721c24'};
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                min-width: 300px;
-                max-width: 400px;
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};
-            `;
-            
-            // Estilos para el contenido
-            const contentStyle = `
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                flex: 1;
-            `;
-            notification.querySelector('.notification-content').style.cssText = contentStyle;
-            
-            // Estilo para el botón de cerrar
-            const closeBtn = notification.querySelector('.notification-close');
-            closeBtn.style.cssText = `
-                background: none;
-                border: none;
-                cursor: pointer;
-                color: inherit;
-                margin-left: 10px;
-                opacity: 0.7;
-                transition: opacity 0.2s;
-            `;
-            
-            // Animación
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                .notification-close:hover { opacity: 1; }
-            `;
-            document.head.appendChild(style);
-            
-            // Agregar al documento
-            document.body.appendChild(notification);
-            
-            // Cerrar al hacer clic en el botón
-            closeBtn.addEventListener('click', () => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                notification.style.transform = 'translateX(100%)';
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            });
-            
-            // Cerrar automáticamente después de 5 segundos
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    notification.style.transform = 'translateX(100%)';
-                    notification.style.opacity = '0';
-                    setTimeout(() => notification.remove(), 300);
-                }
-            }, 5000);
         }
     });
-</script>
+    
+    // Funciones auxiliares
+    function verDetallesUsuario(idUsuario) {
+        alert(`Ver detalles del usuario ID: ${idUsuario}\n\nEsta funcionalidad se implementará posteriormente.`);
+    }
+    
+    function editarUsuario(idUsuario) {
+        alert(`Editar usuario ID: ${idUsuario}\n\nEsta funcionalidad se implementará posteriormente.`);
+    }
+    
+    // Función para mostrar notificaciones (mantén la que ya tienes)
+    function showNotification(message, type = 'info') {
+        // ... tu código existente para notificaciones ...
+        // (Mantén tu función showNotification actual)
+    }
+    </script>
 </body>
 </html>

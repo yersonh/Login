@@ -167,5 +167,97 @@ class Usuario {
             return false;
         }
     }
+    public function obtenerPorEstado($estado = 'todos') {
+    $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
+                   p.nombres, p.apellidos, p.telefono, p.cedula
+            FROM usuario u
+            JOIN persona p ON u.id_persona = p.id_persona
+            WHERE 1=1";
+    
+    // Aplicar filtro según estado
+    if ($estado === 'pendientes') {
+        // Usuarios registrados pero no activados (activo = 0)
+        $sql .= " AND u.activo = 0";
+    } elseif ($estado === 'activos') {
+        $sql .= " AND u.activo = 1";
+    } elseif ($estado === 'inactivos') {
+        // Podrías diferenciar entre pendientes y rechazados si agregas un campo
+        $sql .= " AND u.activo = 0";
+    }
+    
+    $sql .= " ORDER BY u.fecha_registro DESC";
+    
+    $stmt = $this->conn->prepare($sql);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al obtener usuarios por estado: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Cambiar estado de usuario (activar/desactivar)
+ */
+public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
+    $sql = "UPDATE usuario 
+            SET activo = :activo 
+            WHERE id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error al cambiar estado de usuario: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Contar usuarios por estado
+ */
+public function contarPorEstado() {
+    $sql = "SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN activo = 1 THEN 1 ELSE 0 END) as activos,
+                SUM(CASE WHEN activo = 0 THEN 1 ELSE 0 END) as inactivos
+            FROM usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al contar usuarios por estado: " . $e->getMessage());
+        return ['total' => 0, 'activos' => 0, 'inactivos' => 0];
+    }
+}
+
+/**
+ * Obtener usuario por ID
+ */
+public function obtenerPorId($id_usuario) {
+    $sql = "SELECT u.*, p.nombres, p.apellidos, p.telefono, p.cedula
+            FROM usuario u
+            JOIN persona p ON u.id_persona = p.id_persona
+            WHERE u.id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al obtener usuario por ID: " . $e->getMessage());
+        return false;
+    }
+}
 }
 ?>
