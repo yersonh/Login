@@ -326,7 +326,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                             estadoCell.className = 'status-badge status-active';
                             
                             // Cambiar botón a desactivar (X rojo)
-                            this.innerHTML = '<i class="fas fa-times"></i>';
+                            this.innerHTML = '<i class="fas fa-ban"></i>';
                             this.className = 'btn-icon-action btn-deactivate';
                             this.title = 'Desactivar usuario';
                         } else {
@@ -335,7 +335,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                             estadoCell.className = 'status-badge status-blocked';
                             
                             // Cambiar botón a activar (✓ verde)
-                            this.innerHTML = '<i class="fas fa-check"></i>';
+                            this.innerHTML = '<i class="fas fa-check-circle"></i>';
                             this.className = 'btn-icon-action btn-activate';
                             this.title = 'Activar usuario';
                         }
