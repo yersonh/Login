@@ -237,7 +237,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 </li>
 
                 <li class="nav-item">
-                    <a href="gestion_usuarios.php" class="nav-link active">
+                    <a href="administrador/gestion_usuarios.php" class="nav-link active">
                         <span class="nav-icon"><i class="fas fa-users-cog"></i></span>
                         <span class="nav-text">Gestión de Usuarios</span>
                     </a>
