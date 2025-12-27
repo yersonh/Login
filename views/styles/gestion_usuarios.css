@@ -719,7 +719,7 @@ body {
         }
         
         .btn-activate:hover {
-            background-color: #218838;
+            background-color: #BFF5AE;
             transform: scale(1.1);
         }
         
@@ -729,7 +729,7 @@ body {
         }
         
         .btn-deactivate:hover {
-            background-color: #c82333;
+            background-color: #FFB0B1;
             transform: scale(1.1);
         }
         
