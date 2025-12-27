@@ -55,6 +55,82 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Enlace al archivo CSS modularizado -->
     <link rel="stylesheet" href="../styles/menuDrive.css">
+    <style>
+        /* Estilos para eliminar subrayado y decoración de enlaces */
+        .service-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .service-card-link:hover {
+            text-decoration: none;
+        }
+        
+        /* Estilos para los iconos circulares */
+        .service-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        /* Icono específico para Google Drive */
+        #google-drive .service-icon {
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+        }
+        
+        /* Icono específico para OneDrive */
+        #onedrive .service-icon {
+            background: linear-gradient(135deg, #0078D4 0%, #00A4EF 100%);
+        }
+        
+        .service-card:hover .service-icon {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Estilos para los iconos SVG/FA dentro del círculo */
+        .service-icon i {
+            font-size: 45px;
+            color: white;
+        }
+        
+        /* Ajuste del nombre del servicio */
+        .service-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        /* Ajuste de la descripción */
+        .service-desc {
+            font-size: 13px;
+            color: #7f8c8d;
+            line-height: 1.4;
+            padding: 0 10px;
+            margin-bottom: 15px;
+        }
+        
+        /* Mejorar la apariencia de las tarjetas */
+        .service-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .service-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
     
@@ -88,25 +164,29 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
             
             <!-- Grid de servicios - SOLO 2 SERVICIOS -->
             <div class="services-grid">
-                <!-- Servicio 1: Programar actividad -->
-                <div class="service-card" id="programar-actividad">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-plus"></i>
+                <!-- Servicio 1: Google Drive -->
+                <a href="https://drive.google.com" target="_blank" class="service-card-link">
+                    <div class="service-card" id="google-drive">
+                        <div class="service-icon">
+                            <i class="fab fa-google-drive"></i>
+                        </div>
+                        <div class="service-name">Google Drive</div>
+                        <div class="service-desc">Almacenamiento en la nube y colaboración de documentos</div>
+                        <div class="service-status status-available">Disponible</div>
                     </div>
-                    <div class="service-name">Programar Actividad</div>
-                    <div class="service-desc">Crear y gestionar nuevas actividades y eventos</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
+                </a>
                 
-                <!-- Servicio 2: Dar de alta -->
-                <div class="service-card" id="dar-de-alta">
-                    <div class="service-icon">
-                        <i class="fas fa-user-plus"></i>
+                <!-- Servicio 2: Microsoft OneDrive -->
+                <a href="https://onedrive.live.com" target="_blank" class="service-card-link">
+                    <div class="service-card" id="onedrive">
+                        <div class="service-icon">
+                            <i class="fab fa-microsoft"></i>
+                        </div>
+                        <div class="service-name">Microsoft OneDrive</div>
+                        <div class="service-desc">Almacenamiento en la nube de Microsoft</div>
+                        <div class="service-status status-available">Disponible</div>
                     </div>
-                    <div class="service-name">Dar de Alta actividad</div>
-                    <div class="service-desc">Descargar actividad programada pendiente de ejecución</div>
-                    <div class="service-status status-available">Disponible</div>
-                </div>
+                </a>
             </div>
         </main>
         
@@ -188,7 +268,31 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
         const USER_CORREO = "<?php echo $_SESSION['correo'] ?? 'No identificado'; ?>";
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
+        
+        // Redirección directa al hacer clic en las tarjetas (backup por si el enlace falla)
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.service-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Si ya hay un enlace, no hacer nada adicional
+                    if (this.closest('a')) {
+                        return;
+                    }
+                    
+                    // Redirección según el ID
+                    if (this.id === 'google-drive') {
+                        window.open('https://drive.google.com', '_blank');
+                    } else if (this.id === 'onedrive') {
+                        window.open('https://onedrive.live.com', '_blank');
+                    }
+                });
+            });
+        });
     </script>
+    
+    <!-- Asegurar que FontAwesome esté cargado para los íconos -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     
     <script src="../javascript/menu.js"></script>
     
