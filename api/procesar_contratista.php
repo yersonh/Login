@@ -245,7 +245,7 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
         
         // Obtener información del sistema usando ConfigHelper
         $entidad = ConfigHelper::obtener('entidad', 'Gobernación del Meta');
-        $sistema = ConfigHelper::obtener('sistema_nombre', 'Sistema SGEA');
+        $sistema = ConfigHelper::obtener('sistema_nombre', 'Sistema HMS');
         $anioActual = date('Y');
         
         // Obtener datos completos del contratista desde la base de datos
