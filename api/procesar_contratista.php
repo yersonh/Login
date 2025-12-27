@@ -435,6 +435,26 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                         <div class='data-item'><span class='data-label'>Número RP:</span> <span class='data-value'>$numeroRP</span></div>
                         <div class='data-item'><span class='data-label'>Fecha RP:</span> <span class='data-value'>$fechaRP</span></div>
                     </div>
+                     <!-- NUEVA SECCIÓN: ACCESO AL SISTEMA -->
+                <div class='highlight-box'>
+                    <h3 style='margin-top: 0; color: #0066cc;'>Acceso al Sistema</h3>
+                    <p style='font-size: 15px; line-height: 1.6; margin-bottom: 15px;'>
+                        Para acceder al sistema, por favor cree su usuario en el siguiente enlace:
+                    </p>
+                    
+                    <div style='text-align: center; margin: 20px 0;'>
+                        <a href='https://login-production-a68d.up.railway.app/index.php' class='login-button' target='_blank'>
+                            Crear Usuario en el Sistema
+                        </a>
+                    </div>
+                    
+                    <p style='font-size: 14px; margin-bottom: 0;'>
+                        <strong>Enlace directo:</strong> 
+                        <a href='https://login-production-a68d.up.railway.app/index.php' style='color: #0066cc; word-break: break-all;'>
+                            https://login-production-a68d.up.railway.app/index.php
+                        </a>
+                    </p>
+                </div>
                     
                     <p style='font-size: 14px; margin-top: 20px;'>
                         Si tiene alguna pregunta o requiere asistencia, por favor comuníquese con el área de contratación de la secretaría.
