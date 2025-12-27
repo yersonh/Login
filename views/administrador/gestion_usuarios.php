@@ -279,80 +279,207 @@ function obtenerBadgeTipoUsuario($tipo) {
     </div>
 
     <!-- JavaScript para funcionalidad básica -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Buscador de usuarios
-            const searchInput = document.getElementById('search-users');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const rows = document.querySelectorAll('.users-table tbody tr');
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Buscador de usuarios
+        const searchInput = document.getElementById('search-users');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.users-table tbody tr');
+                
+                rows.forEach(row => {
+                    // Verificar que no sea la fila de "no hay usuarios"
+                    if (row.classList.contains('no-users')) return;
                     
-                    rows.forEach(row => {
-                        // Verificar que no sea la fila de "no hay usuarios"
-                        if (row.classList.contains('no-users')) return;
-                        
-                        const text = row.textContent.toLowerCase();
-                        if (text.includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-            }
-            
-            // Botones de acción (activar/desactivar)
-            const actionButtons = document.querySelectorAll('.btn-icon-action');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    const userName = this.getAttribute('data-nombre');
-                    const isActivate = this.classList.contains('btn-activate');
-                    const action = isActivate ? 'activar' : 'desactivar';
-                    
-                    if (confirm(`¿Está seguro que desea ${action} al usuario "${userName}"?`)) {
-                        // Aquí iría la llamada AJAX para realizar la acción
-                        console.log(`${action.toUpperCase()} usuario ID: ${userId}`);
-                        
-                        // Simulación de cambio de estado
-                        const row = this.closest('tr');
-                        const estadoCell = row.querySelector('.status-badge');
-                        const actionsCell = row.querySelector('.actions-simple');
-                        
-                        if (isActivate) {
-                            // Cambiar a activo
-                            estadoCell.textContent = 'Activo';
-                            estadoCell.className = 'status-badge status-active';
-                            
-                            // Cambiar botón a desactivar (X rojo)
-                            this.innerHTML = '<i class="fas fa-ban"></i>';
-                            this.className = 'btn-icon-action btn-deactivate';
-                            this.title = 'Desactivar usuario';
-                        } else {
-                            // Cambiar a inactivo
-                            estadoCell.textContent = 'Inactivo';
-                            estadoCell.className = 'status-badge status-blocked';
-                            
-                            // Cambiar botón a activar (✓ verde)
-                            this.innerHTML = '<i class="fas fa-check-circle"></i>';
-                            this.className = 'btn-icon-action btn-activate';
-                            this.title = 'Activar usuario';
-                        }
-                        
-                        alert(`Usuario "${userName}" ${isActivate ? 'activado' : 'desactivado'} exitosamente.`);
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
                     }
                 });
             });
-            
-            // Botón "Añadir usuario"
-            const addUserBtn = document.querySelector('.btn-add-user');
-            if (addUserBtn) {
-                addUserBtn.addEventListener('click', function() {
-                    alert('Funcionalidad de añadir usuario aún no implementada.');
-                });
-            }
+        }
+        
+        // Botones de acción (activar/desactivar)
+        const actionButtons = document.querySelectorAll('.btn-icon-action');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const userId = this.getAttribute('data-id');
+                const userName = this.getAttribute('data-nombre');
+                const isActivate = this.classList.contains('btn-activate');
+                const action = isActivate ? 'activar' : 'desactivar';
+                const nuevoEstado = isActivate ? 1 : 0;
+                
+                if (confirm(`¿Está seguro que desea ${action} al usuario "${userName}"?`)) {
+                    // Mostrar indicador de carga
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    this.disabled = true;
+                    
+                    try {
+                        // Enviar solicitud a la API
+                        const response = await fetch('/api/gestion_usuarios.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                accion: 'cambiar_estado',
+                                id_usuario: userId,
+                                nuevo_estado: nuevoEstado
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Actualizar visualmente
+                            const row = this.closest('tr');
+                            const estadoCell = row.querySelector('.status-badge');
+                            
+                            // Actualizar estado
+                            estadoCell.textContent = data.estado_texto;
+                            estadoCell.className = `status-badge ${data.estado_clase}`;
+                            
+                            // Cambiar botón
+                            if (nuevoEstado == 1) {
+                                // Ahora está activo, mostrar botón para desactivar
+                                this.innerHTML = '<i class="fas fa-ban"></i>';
+                                this.className = 'btn-icon-action btn-deactivate';
+                                this.title = 'Desactivar usuario';
+                            } else {
+                                // Ahora está inactivo, mostrar botón para activar
+                                this.innerHTML = '<i class="fas fa-check-circle"></i>';
+                                this.className = 'btn-icon-action btn-activate';
+                                this.title = 'Activar usuario';
+                            }
+                            
+                            // Mostrar mensaje de éxito
+                            showNotification(data.message, 'success');
+                            
+                        } else {
+                            // Restaurar botón
+                            if (nuevoEstado == 1) {
+                                this.innerHTML = '<i class="fas fa-check-circle"></i>';
+                            } else {
+                                this.innerHTML = '<i class="fas fa-ban"></i>';
+                            }
+                            
+                            throw new Error(data.error || 'Error desconocido');
+                        }
+                        
+                    } catch (error) {
+                        // Restaurar botón original
+                        this.innerHTML = originalHTML;
+                        
+                        // Mostrar error
+                        showNotification(`Error: ${error.message}`, 'error');
+                        console.error('Error:', error);
+                        
+                    } finally {
+                        this.disabled = false;
+                    }
+                }
+            });
         });
-    </script>
+        
+        // Botón "Añadir usuario"
+        const addUserBtn = document.querySelector('.btn-add-user');
+        if (addUserBtn) {
+            addUserBtn.addEventListener('click', function() {
+                alert('Funcionalidad de añadir usuario aún no implementada.');
+            });
+        }
+        
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="notification-close"><i class="fas fa-times"></i></button>
+            `;
+            
+            // Agregar estilos
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+                color: ${type === 'success' ? '#155724' : '#721c24'};
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                min-width: 300px;
+                max-width: 400px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};
+            `;
+            
+            // Estilos para el contenido
+            const contentStyle = `
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+            `;
+            notification.querySelector('.notification-content').style.cssText = contentStyle;
+            
+            // Estilo para el botón de cerrar
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.style.cssText = `
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: inherit;
+                margin-left: 10px;
+                opacity: 0.7;
+                transition: opacity 0.2s;
+            `;
+            
+            // Animación
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                .notification-close:hover { opacity: 1; }
+            `;
+            document.head.appendChild(style);
+            
+            // Agregar al documento
+            document.body.appendChild(notification);
+            
+            // Cerrar al hacer clic en el botón
+            closeBtn.addEventListener('click', () => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                notification.style.transform = 'translateX(100%)';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            });
+            
+            // Cerrar automáticamente después de 5 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    notification.style.transform = 'translateX(100%)';
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+    });
+</script>
 </body>
 </html>
