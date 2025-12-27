@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../helpers/config_helper.php';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/usuario.php';
+require_once __DIR__ . '/../../models/Usuario.php';
 
 // Solo administradores
 if (!isset($_SESSION['usuario_id'])) {
@@ -79,6 +79,23 @@ function obtenerEstadoUsuario($activo) {
         return ['texto' => 'Inactivo', 'clase' => 'status-blocked'];
     }
 }
+
+// Función para obtener el badge del tipo de usuario
+function obtenerBadgeTipoUsuario($tipo) {
+    $tipos = [
+        'administrador' => ['texto' => 'Administrador', 'clase' => 'badge-admin', 'icono' => 'fa-user-shield'],
+        'asistente' => ['texto' => 'Asistente', 'clase' => 'badge-assistant', 'icono' => 'fa-user-tie'],
+        'contratista' => ['texto' => 'Contratista', 'clase' => 'badge-contractor', 'icono' => 'fa-user-hard-hat'],
+        'superadmin' => ['texto' => 'Super Admin', 'clase' => 'badge-superadmin', 'icono' => 'fa-user-crown']
+    ];
+    
+    $tipo = strtolower($tipo);
+    if (isset($tipos[$tipo])) {
+        return $tipos[$tipo];
+    }
+    
+    return ['texto' => ucfirst($tipo), 'clase' => 'badge-default', 'icono' => 'fa-user'];
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -90,27 +107,6 @@ function obtenerEstadoUsuario($activo) {
     <link rel="shortcut icon" href="/imagenes/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/gestion_usuarios.css">
-    <style>
-        /* Estilos adicionales para estados */
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .no-users {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray-color);
-            font-style: italic;
-        }
-        
-        .no-users i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-    </style>
 </head>
 <body>
     <div class="app-container">
@@ -162,6 +158,7 @@ function obtenerEstadoUsuario($activo) {
                             <th>Fecha de registro</th>
                             <th>Nombre completo</th>
                             <th>Email</th>
+                            <th>Tipo de usuario</th>
                             <th>Estado usuario</th>
                             <th>Acciones</th>
                         </tr>
@@ -169,7 +166,7 @@ function obtenerEstadoUsuario($activo) {
                     <tbody>
                         <?php if (empty($usuarios)): ?>
                             <tr>
-                                <td colspan="5" class="no-users">
+                                <td colspan="6" class="no-users">
                                     <i class="fas fa-users-slash"></i>
                                     <p>No hay usuarios registrados en el sistema</p>
                                 </td>
@@ -181,6 +178,7 @@ function obtenerEstadoUsuario($activo) {
                                 $correo = htmlspecialchars($usuario['correo'] ?? '');
                                 $fechaRegistro = formatearFecha($usuario['fecha_registro'] ?? '');
                                 $tipoUsuario = htmlspecialchars($usuario['tipo_usuario'] ?? 'contratista');
+                                $tipoBadge = obtenerBadgeTipoUsuario($tipoUsuario);
                                 $estado = obtenerEstadoUsuario($usuario['activo'] ?? 0);
                                 $idUsuario = $usuario['id_usuario'] ?? 0;
                                 ?>
@@ -188,6 +186,12 @@ function obtenerEstadoUsuario($activo) {
                                     <td><?php echo $fechaRegistro; ?></td>
                                     <td><?php echo $nombreCompletoUsuario; ?></td>
                                     <td><?php echo $correo; ?></td>
+                                    <td>
+                                        <span class="type-badge <?php echo $tipoBadge['clase']; ?>">
+                                            <i class="fas <?php echo $tipoBadge['icono']; ?>"></i>
+                                            <?php echo $tipoBadge['texto']; ?>
+                                        </span>
+                                    </td>
                                     <td>
                                         <span class="status-badge <?php echo $estado['clase']; ?>">
                                             <?php echo $estado['texto']; ?>
@@ -208,10 +212,6 @@ function obtenerEstadoUsuario($activo) {
                                                     title="Activar usuario">
                                                 <i class="fas fa-check-circle"></i> Activar
                                             </button>
-                                        <?php endif; ?>
-                                        
-                                        <?php if ($tipoUsuario === 'contratista' && ($usuario['activo'] == 1 || $usuario['activo'] === true)): ?>
-                                            <!-- Aquí podrías agregar más acciones si las necesitas -->
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -286,7 +286,7 @@ function obtenerEstadoUsuario($activo) {
                     
                     rows.forEach(row => {
                         // Verificar que no sea la fila de "no hay usuarios"
-                        if (row.classList.contains('no-users-row')) return;
+                        if (row.classList.contains('no-users')) return;
                         
                         const text = row.textContent.toLowerCase();
                         if (text.includes(searchTerm)) {
@@ -311,21 +311,31 @@ function obtenerEstadoUsuario($activo) {
                         // Aquí iría la llamada AJAX para realizar la acción
                         console.log(`${action.toUpperCase()} usuario ID: ${userId}`);
                         
-                        // Por ahora, solo recargamos la página
-                        // window.location.reload();
+                        // Simulación de cambio de estado
+                        const row = this.closest('tr');
+                        const estadoCell = row.querySelector('.status-badge');
                         
-                        // En producción, harías una llamada AJAX
-                        // fetch(`/api/usuarios/${action}/${userId}`, { method: 'POST' })
-                        // .then(response => response.json())
-                        // .then(data => {
-                        //     if (data.success) {
-                        //         window.location.reload();
-                        //     } else {
-                        //         alert('Error: ' + data.error);
-                        //     }
-                        // });
+                        if (isActivate) {
+                            // Cambiar a activo
+                            estadoCell.textContent = 'Activo';
+                            estadoCell.className = 'status-badge status-active';
+                            
+                            // Cambiar botón
+                            this.innerHTML = '<i class="fas fa-ban"></i> Bloquear';
+                            this.className = 'btn-action btn-block';
+                            this.title = 'Bloquear usuario';
+                        } else {
+                            // Cambiar a inactivo
+                            estadoCell.textContent = 'Inactivo';
+                            estadoCell.className = 'status-badge status-blocked';
+                            
+                            // Cambiar botón
+                            this.innerHTML = '<i class="fas fa-check-circle"></i> Activar';
+                            this.className = 'btn-action btn-approve';
+                            this.title = 'Activar usuario';
+                        }
                         
-                        alert(`Funcionalidad de ${action} usuario aún no implementada.`);
+                        alert(`Usuario "${userName}" ${isActivate ? 'activado' : 'bloqueado'} exitosamente.`);
                     }
                 });
             });
