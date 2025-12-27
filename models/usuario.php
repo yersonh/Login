@@ -167,18 +167,19 @@ class Usuario {
     }
     public function obtenerPorEstado($estado = 'todos') {
     $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
+                   u.fecha_aprobacion, u.notificado_aprobacion, u.aprobado_por,
                    p.nombres, p.apellidos, p.telefono, p.cedula
             FROM usuario u
             JOIN persona p ON u.id_persona = p.id_persona
             WHERE 1=1";
     
-    // Aplicar filtro según estado - usar TRUE/FALSE para boolean
+    // Aplicar filtro según estado
     if ($estado === 'pendientes') {
-        $sql .= " AND u.activo IS FALSE";
+        $sql .= " AND u.activo IS FALSE AND u.fecha_aprobacion IS NULL";
     } elseif ($estado === 'activos') {
         $sql .= " AND u.activo IS TRUE";
     } elseif ($estado === 'inactivos') {
-        $sql .= " AND u.activo IS FALSE";
+        $sql .= " AND u.activo IS FALSE AND u.fecha_aprobacion IS NOT NULL";
     }
     
     $sql .= " ORDER BY u.fecha_registro DESC";
@@ -257,6 +258,94 @@ public function existeUsuarioParaPersona($id_persona) {
     } catch (PDOException $e) {
         error_log("Error al verificar usuario para persona: " . $e->getMessage());
         return true; // Por seguridad, asume que existe
+    }
+}
+// En Usuario.php, agrega estos métodos:
+
+public function aprobarUsuario($id_usuario, $admin_id) {
+    $sql = "UPDATE usuario 
+            SET activo = TRUE,
+                notificado_aprobacion = TRUE,
+                fecha_aprobacion = NOW(),
+                aprobado_por = :admin_id
+            WHERE id_usuario = :id_usuario
+            RETURNING id_persona, correo";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':admin_id', $admin_id);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al aprobar usuario: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function desactivarUsuario($id_usuario) {
+    $sql = "UPDATE usuario 
+            SET activo = FALSE 
+            WHERE id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error al desactivar usuario: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function activarUsuario($id_usuario) {
+    $sql = "UPDATE usuario 
+            SET activo = TRUE 
+            WHERE id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error al activar usuario: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function esPrimeraAprobacion($id_usuario) {
+    $sql = "SELECT notificado_aprobacion FROM usuario WHERE id_usuario = :id_usuario";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result && $result['notificado_aprobacion'] === false;
+    } catch (PDOException $e) {
+        error_log("Error al verificar primera aprobación: " . $e->getMessage());
+        return false;
+    }
+}
+
+public function obtenerInfoParaCorreo($id_usuario) {
+    $sql = "SELECT u.correo, p.nombres, p.apellidos, p.correo_personal, p.cedula
+            FROM usuario u
+            JOIN persona p ON u.id_persona = p.id_persona
+            WHERE u.id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    
+    try {
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al obtener info para correo: " . $e->getMessage());
+        return false;
     }
 }
 }

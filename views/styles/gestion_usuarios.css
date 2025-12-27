@@ -752,3 +752,43 @@ body {
                 gap: 3px;
             }
         }
+.badge-notificado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin: 0 5px;
+    cursor: help;
+}
+
+.btn-approve {
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.btn-approve:hover {
+    background: rgba(40, 167, 69, 0.2);
+}
+
+.btn-activate {
+    color: #17a2b8;
+    background: rgba(23, 162, 184, 0.1);
+}
+
+.btn-activate:hover {
+    background: rgba(23, 162, 184, 0.2);
+}
+
+.btn-keep-pending {
+    color: #ffc107;
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.btn-keep-pending:hover {
+    background: rgba(255, 193, 7, 0.2);
+}

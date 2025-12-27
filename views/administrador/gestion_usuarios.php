@@ -80,11 +80,16 @@ function formatearFecha($fechaBD) {
 }
 
 // Función para determinar el estado del usuario
-function obtenerEstadoUsuario($activo) {
+function obtenerEstadoUsuario($activo, $fechaAprobacion = null) {
     if ($activo == 1 || $activo === true) {
         return ['texto' => 'Activo', 'clase' => 'status-active'];
     } else {
-        return ['texto' => 'Pendiente', 'clase' => 'status-pending'];
+        // Si tiene fecha_aprobacion pero está inactivo, es "Inactivo"
+        if ($fechaAprobacion) {
+            return ['texto' => 'Inactivo', 'clase' => 'status-blocked'];
+        } else {
+            return ['texto' => 'Pendiente', 'clase' => 'status-pending'];
+        }
     }
 }
 
@@ -189,9 +194,22 @@ function obtenerBadgeTipoUsuario($tipo) {
             border: 1px solid #ffeaa7;
         }
         
+        .status-blocked {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
         .action-group {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
         
         .btn-icon-action.btn-approve {
@@ -203,22 +221,62 @@ function obtenerBadgeTipoUsuario($tipo) {
             background: rgba(40, 167, 69, 0.2);
         }
         
-        .btn-icon-action.btn-reject {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
-        }
-        
-        .btn-icon-action.btn-reject:hover {
-            background: rgba(220, 53, 69, 0.2);
-        }
-        
-        .btn-icon-action.btn-view {
+        .btn-icon-action.btn-activate {
             color: #17a2b8;
             background: rgba(23, 162, 184, 0.1);
         }
         
-        .btn-icon-action.btn-view:hover {
+        .btn-icon-action.btn-activate:hover {
             background: rgba(23, 162, 184, 0.2);
+        }
+        
+        .btn-icon-action.btn-deactivate {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .btn-icon-action.btn-deactivate:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-icon-action.btn-keep-pending {
+            color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+        
+        .btn-icon-action.btn-keep-pending:hover {
+            background: rgba(255, 193, 7, 0.2);
+        }
+        
+        .btn-icon-action.btn-view {
+            color: #6f42c1;
+            background: rgba(111, 66, 193, 0.1);
+        }
+        
+        .btn-icon-action.btn-view:hover {
+            background: rgba(111, 66, 193, 0.2);
+        }
+        
+        .btn-icon-action.btn-edit {
+            color: #fd7e14;
+            background: rgba(253, 126, 20, 0.1);
+        }
+        
+        .btn-icon-action.btn-edit:hover {
+            background: rgba(253, 126, 20, 0.2);
+        }
+        
+        .badge-notificado {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #28a745;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: help;
         }
         
         /* Estilo para usuarios pendientes en la tabla */
@@ -228,6 +286,14 @@ function obtenerBadgeTipoUsuario($tipo) {
         
         tr.user-pending:hover td {
             background-color: #fff9e6;
+        }
+        
+        tr.user-inactivo td {
+            background-color: #fef5f5;
+        }
+        
+        tr.user-inactivo:hover td {
+            background-color: #fde8e8;
         }
     </style>
 </head>
@@ -351,12 +417,27 @@ function obtenerBadgeTipoUsuario($tipo) {
                                 $fechaRegistro = formatearFecha($usuario['fecha_registro'] ?? '');
                                 $tipoUsuario = htmlspecialchars($usuario['tipo_usuario'] ?? 'contratista');
                                 $tipoBadge = obtenerBadgeTipoUsuario($tipoUsuario);
-                                $estado = obtenerEstadoUsuario($usuario['activo'] ?? 0);
                                 $idUsuario = $usuario['id_usuario'] ?? 0;
                                 $estaActivo = ($usuario['activo'] == 1 || $usuario['activo'] === true);
-                                $esPendiente = !$estaActivo;
+                                $fechaAprobacion = $usuario['fecha_aprobacion'] ?? null;
+                                $notificadoAprobacion = $usuario['notificado_aprobacion'] ?? false;
+                                
+                                // Determinar el tipo de usuario inactivo
+                                $esPendienteNuevo = !$estaActivo && empty($fechaAprobacion);
+                                $esInactivoPeroYaAprobado = !$estaActivo && !empty($fechaAprobacion);
+                                
+                                // Obtener estado con texto correcto
+                                $estado = obtenerEstadoUsuario($estaActivo, $fechaAprobacion);
+                                
+                                // Determinar clase CSS para la fila
+                                $claseFila = '';
+                                if ($esPendienteNuevo) {
+                                    $claseFila = 'user-pending';
+                                } elseif ($esInactivoPeroYaAprobado) {
+                                    $claseFila = 'user-inactivo';
+                                }
                                 ?>
-                                <tr class="<?php echo $esPendiente ? 'user-pending' : ''; ?>">
+                                <tr class="<?php echo $claseFila; ?>">
                                     <td><?php echo $fechaRegistro; ?></td>
                                     <td><?php echo $nombreCompletoUsuario; ?></td>
                                     <td><?php echo $correo; ?></td>
@@ -377,35 +458,55 @@ function obtenerBadgeTipoUsuario($tipo) {
                                                 <button class="btn-icon-action btn-deactivate" 
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        data-accion="desactivar_usuario"
                                                         title="Desactivar usuario">
                                                     <i class="fas fa-ban"></i>
                                                 </button>
                                                 
-                                            <?php else: ?>
-                                                <!-- Usuario pendiente: mostrar opciones de aprobación -->
+                                            <?php elseif ($esPendienteNuevo): ?>
+                                                <!-- Usuario pendiente (nunca aprobado): mostrar aprobar/mantener pendiente -->
                                                 <button class="btn-icon-action btn-approve" 
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
-                                                        title="Aprobar usuario">
+                                                        data-accion="aprobar_usuario"
+                                                        title="Aprobar usuario (se enviará correo de notificación)">
                                                     <i class="fas fa-check-circle"></i>
                                                 </button>
                                                 
-                                                <button class="btn-icon-action btn-reject" 
+                                                <button class="btn-icon-action btn-keep-pending" 
                                                         data-id="<?php echo $idUsuario; ?>"
                                                         data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        data-accion="mantener_pendiente"
                                                         title="Mantener como pendiente">
-                                                    <i class="fas fa-times-circle"></i>
+                                                    <i class="fas fa-clock"></i>
                                                 </button>
                                                 
-                                                <!-- Botón para ver detalles -->
-                                                <button class="btn-icon-action btn-view" 
-                                                        onclick="verDetallesUsuario(<?php echo $idUsuario; ?>)"
-                                                        title="Ver detalles del usuario">
-                                                    <i class="fas fa-eye"></i>
+                                            <?php elseif ($esInactivoPeroYaAprobado): ?>
+                                                <!-- Usuario inactivo pero ya fue aprobado antes: mostrar solo activar -->
+                                                <button class="btn-icon-action btn-activate" 
+                                                        data-id="<?php echo $idUsuario; ?>"
+                                                        data-nombre="<?php echo $nombreCompletoUsuario; ?>"
+                                                        data-accion="activar_usuario"
+                                                        title="Activar usuario (sin enviar correo)">
+                                                    <i class="fas fa-check-circle"></i>
                                                 </button>
                                             <?php endif; ?>
                                             
-                                            <!-- Botón para editar siempre visible -->
+                                            <!-- Indicador de notificación -->
+                                            <?php if ($notificadoAprobacion && !empty($fechaAprobacion)): ?>
+                                                <span class="badge-notificado" title="Correo de aprobación enviado">
+                                                    <i class="fas fa-envelope"></i>
+                                                </span>
+                                            <?php endif; ?>
+                                            
+                                            <!-- Botón para ver detalles -->
+                                            <button class="btn-icon-action btn-view" 
+                                                    onclick="verDetallesUsuario(<?php echo $idUsuario; ?>)"
+                                                    title="Ver detalles del usuario">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            
+                                            <!-- Botón para editar -->
                                             <button class="btn-icon-action btn-edit" 
                                                     onclick="editarUsuario(<?php echo $idUsuario; ?>)"
                                                     title="Editar usuario">
@@ -501,7 +602,7 @@ function obtenerBadgeTipoUsuario($tipo) {
         }
         
         // Función para cambiar estado
-        async function cambiarEstadoUsuario(usuarioId, nuevoEstado, accion) {
+        async function cambiarEstadoUsuario(usuarioId, accion) {
             try {
                 const response = await fetch('../../api/gestion_usuarios.php', {
                     method: 'POST',
@@ -510,8 +611,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                     },
                     body: JSON.stringify({
                         accion: accion,
-                        id_usuario: usuarioId,
-                        nuevo_estado: nuevoEstado
+                        id_usuario: usuarioId
                     })
                 });
                 
@@ -522,203 +622,83 @@ function obtenerBadgeTipoUsuario($tipo) {
             }
         }
         
-        // Botón para aprobar usuario
-        document.querySelectorAll('.btn-approve').forEach(button => {
-            button.addEventListener('click', async function() {
-                const userId = this.getAttribute('data-id');
-                const userName = this.getAttribute('data-nombre');
+        // Función para manejar clic en botones de acción
+        function manejarAccionUsuario(button, accion, mensajeConfirmacion) {
+            const userId = button.getAttribute('data-id');
+            const userName = button.getAttribute('data-nombre');
+            
+            if (confirm(mensajeConfirmacion)) {
+                // Mostrar indicador de carga
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                button.disabled = true;
                 
-                if (confirm(`¿Está seguro que desea APROBAR al usuario "${userName}"?\n\nEl usuario podrá acceder al sistema después de esta acción.`)) {
-                    // Mostrar indicador de carga
-                    const originalHTML = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
-                    
-                    try {
-                        const data = await cambiarEstadoUsuario(userId, 1, 'aprobar_usuario');
-                        
+                cambiarEstadoUsuario(userId, accion)
+                    .then(data => {
                         if (data.success) {
-                            // Actualizar visualmente
-                            const row = this.closest('tr');
-                            const estadoCell = row.querySelector('.status-badge');
-                            
-                            // Actualizar estado
-                            estadoCell.textContent = data.estado_texto;
-                            estadoCell.className = `status-badge ${data.estado_clase}`;
-                            
-                            // Cambiar botones (ahora está activo)
-                            const actionGroup = row.querySelector('.action-group');
-                            actionGroup.innerHTML = `
-                                <button class="btn-icon-action btn-deactivate" 
-                                        data-id="${userId}"
-                                        data-nombre="${userName}"
-                                        title="Desactivar usuario">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                                <button class="btn-icon-action btn-edit" 
-                                        onclick="editarUsuario(${userId})"
-                                        title="Editar usuario">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            `;
-                            
-                            // Volver a agregar event listeners
-                            row.querySelector('.btn-deactivate').addEventListener('click', function() {
-                                const userId = this.getAttribute('data-id');
-                                const userName = this.getAttribute('data-nombre');
-                                if (confirm(`¿Desactivar al usuario "${userName}"?`)) {
-                                    cambiarEstadoUsuario(userId, 0, 'cambiar_estado');
-                                }
-                            });
-                            
-                            // Remover clase de pendiente
-                            row.classList.remove('user-pending');
-                            
                             // Mostrar mensaje de éxito
-                            showNotification('Usuario aprobado correctamente', 'success');
+                            showNotification(data.message, 'success');
                             
-                            // Actualizar contador de filtros
+                            // Recargar la página después de 1.5 segundos
                             setTimeout(() => {
                                 location.reload();
                             }, 1500);
-                            
                         } else {
-                            throw new Error(data.error || 'Error al aprobar usuario');
+                            throw new Error(data.error || 'Error al procesar la solicitud');
                         }
-                        
-                    } catch (error) {
+                    })
+                    .catch(error => {
                         // Restaurar botón
-                        this.innerHTML = originalHTML;
-                        this.disabled = false;
+                        button.innerHTML = originalHTML;
+                        button.disabled = false;
                         
                         // Mostrar error
                         showNotification(`Error: ${error.message}`, 'error');
-                    }
-                }
-            });
-        });
+                    });
+            }
+        }
         
-        // Botón para rechazar/mantener pendiente
-        document.querySelectorAll('.btn-reject').forEach(button => {
-            button.addEventListener('click', async function() {
-                const userId = this.getAttribute('data-id');
-                const userName = this.getAttribute('data-nombre');
-                
-                if (confirm(`¿Mantener al usuario "${userName}" como PENDIENTE?\n\nEl usuario NO podrá acceder al sistema.`)) {
-                    // Mostrar indicador de carga
-                    const originalHTML = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
-                    
-                    try {
-                        // Simplemente mostramos mensaje, no cambiamos estado (ya está inactivo)
-                        setTimeout(() => {
-                            this.innerHTML = originalHTML;
-                            this.disabled = false;
-                            showNotification('Usuario mantenido como pendiente', 'info');
-                        }, 1000);
-                        
-                    } catch (error) {
-                        this.innerHTML = originalHTML;
-                        this.disabled = false;
-                        showNotification('Error: ' + error.message, 'error');
-                    }
-                }
-            });
-        });
-        
-        // Botón para desactivar usuario activo
+        // Botón para aprobar usuario (primera aprobación)
         document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-deactivate')) {
-                const button = e.target.closest('.btn-deactivate');
-                const userId = button.getAttribute('data-id');
+            const button = e.target.closest('.btn-approve');
+            if (button) {
+                e.preventDefault();
                 const userName = button.getAttribute('data-nombre');
-                
-                if (confirm(`¿Está seguro que desea DESACTIVAR al usuario "${userName}"?\n\nEl usuario NO podrá acceder al sistema.`)) {
-                    // Mostrar indicador de carga
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    button.disabled = true;
-                    
-                    cambiarEstadoUsuario(userId, 0, 'cambiar_estado')
-                        .then(data => {
-                            if (data.success) {
-                                // Actualizar visualmente
-                                const row = button.closest('tr');
-                                const estadoCell = row.querySelector('.status-badge');
-                                
-                                // Actualizar estado
-                                estadoCell.textContent = data.estado_texto;
-                                estadoCell.className = `status-badge ${data.estado_clase}`;
-                                
-                                // Cambiar botones (ahora está inactivo/pendiente)
-                                const actionGroup = row.querySelector('.action-group');
-                                const userName = button.getAttribute('data-nombre');
-                                const userId = button.getAttribute('data-id');
-                                
-                                actionGroup.innerHTML = `
-                                    <button class="btn-icon-action btn-approve" 
-                                            data-id="${userId}"
-                                            data-nombre="${userName}"
-                                            title="Aprobar usuario">
-                                        <i class="fas fa-check-circle"></i>
-                                    </button>
-                                    <button class="btn-icon-action btn-reject" 
-                                            data-id="${userId}"
-                                            data-nombre="${userName}"
-                                            title="Mantener como pendiente">
-                                        <i class="fas fa-times-circle"></i>
-                                    </button>
-                                    <button class="btn-icon-action btn-view" 
-                                            onclick="verDetallesUsuario(${userId})"
-                                            title="Ver detalles del usuario">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-icon-action btn-edit" 
-                                            onclick="editarUsuario(${userId})"
-                                            title="Editar usuario">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                `;
-                                
-                                // Agregar clase de pendiente
-                                row.classList.add('user-pending');
-                                
-                                // Volver a agregar event listeners
-                                row.querySelector('.btn-approve').addEventListener('click', function() {
-                                    const userId = this.getAttribute('data-id');
-                                    const userName = this.getAttribute('data-nombre');
-                                    if (confirm(`¿Aprobar al usuario "${userName}"?`)) {
-                                        cambiarEstadoUsuario(userId, 1, 'aprobar_usuario');
-                                    }
-                                });
-                                
-                                row.querySelector('.btn-reject').addEventListener('click', function() {
-                                    const userName = this.getAttribute('data-nombre');
-                                    showNotification(`Usuario "${userName}" mantenido como pendiente`, 'info');
-                                });
-                                
-                                // Mostrar mensaje de éxito
-                                showNotification('Usuario desactivado correctamente', 'success');
-                                
-                                // Actualizar contador de filtros
-                                setTimeout(() => {
-                                    location.reload();
-                                }, 1500);
-                                
-                            } else {
-                                throw new Error(data.error || 'Error al desactivar usuario');
-                            }
-                        })
-                        .catch(error => {
-                            // Restaurar botón
-                            button.innerHTML = originalHTML;
-                            button.disabled = false;
-                            
-                            // Mostrar error
-                            showNotification(`Error: ${error.message}`, 'error');
-                        });
-                }
+                const mensaje = `¿Está seguro que desea APROBAR al usuario "${userName}"?\n\nSe enviará un correo de notificación al contratista.`;
+                manejarAccionUsuario(button, 'aprobar_usuario', mensaje);
+            }
+        });
+        
+        // Botón para activar usuario (reactivación)
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-activate');
+            if (button) {
+                e.preventDefault();
+                const userName = button.getAttribute('data-nombre');
+                const mensaje = `¿Activar al usuario "${userName}"?`;
+                manejarAccionUsuario(button, 'activar_usuario', mensaje);
+            }
+        });
+        
+        // Botón para desactivar usuario
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-deactivate');
+            if (button) {
+                e.preventDefault();
+                const userName = button.getAttribute('data-nombre');
+                const mensaje = `¿Está seguro que desea DESACTIVAR al usuario "${userName}"?\n\nEl usuario NO podrá acceder al sistema.`;
+                manejarAccionUsuario(button, 'desactivar_usuario', mensaje);
+            }
+        });
+        
+        // Botón para mantener pendiente
+        document.addEventListener('click', function(e) {
+            const button = e.target.closest('.btn-keep-pending');
+            if (button) {
+                e.preventDefault();
+                const userName = button.getAttribute('data-nombre');
+                const mensaje = `¿Mantener al usuario "${userName}" como pendiente?`;
+                manejarAccionUsuario(button, 'mantener_pendiente', mensaje);
             }
         });
         
@@ -740,10 +720,91 @@ function obtenerBadgeTipoUsuario($tipo) {
         alert(`Editar usuario ID: ${idUsuario}\n\nEsta funcionalidad se implementará posteriormente.`);
     }
     
-    // Función para mostrar notificaciones (mantén la que ya tienes)
+    // Función para mostrar notificaciones
     function showNotification(message, type = 'info') {
-        // ... tu código existente para notificaciones ...
-        // (Mantén tu función showNotification actual)
+        // Crear elemento de notificación
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close"><i class="fas fa-times"></i></button>
+        `;
+        
+        // Agregar estilos
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
+            color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 300px;
+            max-width: 400px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            border: 1px solid ${type === 'success' ? '#c3e6cb' : type === 'error' ? '#f5c6cb' : '#bee5eb'};
+        `;
+        
+        // Estilos para el contenido
+        const contentStyle = `
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        `;
+        notification.querySelector('.notification-content').style.cssText = contentStyle;
+        
+        // Estilo para el botón de cerrar
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        `;
+        
+        // Animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            .notification-close:hover { opacity: 1; }
+        `;
+        document.head.appendChild(style);
+        
+        // Agregar al documento
+        document.body.appendChild(notification);
+        
+        // Cerrar al hacer clic en el botón
+        closeBtn.addEventListener('click', () => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        });
+        
+        // Cerrar automáticamente después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease';
+                notification.style.transform = 'translateX(100%)';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
     }
     </script>
 </body>
