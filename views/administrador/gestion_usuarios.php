@@ -83,10 +83,10 @@ function obtenerEstadoUsuario($activo) {
 // Función para obtener el badge del tipo de usuario
 function obtenerBadgeTipoUsuario($tipo) {
     $tipos = [
-        'administrador' => ['texto' => 'Administrador', 'clase' => 'badge-admin', 'icono' => 'fa-user-shield'],
-        'asistente' => ['texto' => 'Asistente', 'clase' => 'badge-assistant', 'icono' => 'fa-user-tie'],
-        'contratista' => ['texto' => 'Contratista', 'clase' => 'badge-contractor', 'icono' => 'fa-user-hard-hat'],
-        'superadmin' => ['texto' => 'Super Admin', 'clase' => 'badge-superadmin', 'icono' => 'fa-user-crown']
+        'administrador' => ['texto' => 'Administrador', 'clase' => 'badge-admin'],
+        'asistente' => ['texto' => 'Asistente', 'clase' => 'badge-assistant'],
+        'contratista' => ['texto' => 'Contratista', 'clase' => 'badge-contractor'],
+        'superadmin' => ['texto' => 'Super Admin', 'clase' => 'badge-superadmin']
     ];
     
     $tipo = strtolower($tipo);
