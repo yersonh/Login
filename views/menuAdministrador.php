@@ -212,7 +212,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             justify-content: center;
             align-items: center;
             padding: 15px;
-            display: flex;
+            display: none; /* IMPORTANTE: Inicialmente oculto */
         }
         
         .mobile-warning-content {
@@ -570,8 +570,8 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         <?php endif; ?>
     </div>
     
-    <!-- MODAL PARA DISPOSITIVOS MÓVILES - VERSIÓN SIMPLE QUE SIEMPRE SE MUESTRA PRIMERO -->
-    <div id="mobileWarningModal" class="mobile-warning-modal" style="display: none;">
+    <!-- MODAL PARA DISPOSITIVOS MÓVILES - SE MUESTRA SIEMPRE EN MÓVILES -->
+    <div id="mobileWarningModal" class="mobile-warning-modal">
         <div class="mobile-warning-content">
             <div class="modal-header">
                 <i class="fas fa-desktop"></i>
@@ -671,48 +671,38 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
         
-        // CÓDIGO SIMPLIFICADO PARA EL MODAL - DEBE FUNCIONAR SIEMPRE
+        // CÓDIGO SIMPLIFICADO: MOSTRAR MODAL SIEMPRE EN MÓVILES
         document.addEventListener('DOMContentLoaded', function() {
-            // SOLUCIÓN DIRECTA: Mostrar modal inmediatamente en móviles
+            // Función para detectar si es dispositivo móvil
             function esDispositivoMovil() {
-                // Método 1: Detectar por user agent
+                // Método 1: Por user agent (el más confiable)
                 const userAgent = navigator.userAgent || navigator.vendor || window.opera;
                 const esMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
                 
-                // Método 2: Detectar por tamaño de pantalla
+                // Método 2: Por tamaño de pantalla
                 const esPantallaPequena = window.innerWidth <= 768;
                 
-                // Método 3: Detectar por touch
+                // Método 3: Por capacidades táctiles
                 const tieneTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
                 
-                // Si alguno es verdadero, es móvil
+                // Si es móvil por UA O pantalla pequeña O tiene touch
                 return esMobileUA || esPantallaPequena || tieneTouch;
             }
             
-            // FORZAR PRUEBA: Cambia esto a true para probar
-            const FORZAR_MOSTRAR = false; // Cambia a true para probar en PC
-            
-            // Verificar si es móvil o forzar mostrar
-            if (esDispositivoMovil() || FORZAR_MOSTRAR) {
-                console.log("Dispositivo detectado como móvil o forzado a mostrar");
+            // Verificar si es dispositivo móvil
+            if (esDispositivoMovil()) {
+                console.log("Es dispositivo móvil - Mostrando modal...");
                 
-                // Solo mostrar si no se ha mostrado en esta sesión
-                if (!sessionStorage.getItem('mobileWarningShown')) {
-                    console.log("Mostrando modal...");
-                    
-                    // Mostrar modal inmediatamente
+                // Pequeño delay para que cargue la página
+                setTimeout(() => {
                     const modal = document.getElementById('mobileWarningModal');
                     if (modal) {
-                        // Pequeño delay para que cargue la página
-                        setTimeout(() => {
-                            modal.style.display = 'flex';
-                            sessionStorage.setItem('mobileWarningShown', 'true');
-                            console.log("Modal mostrado correctamente");
-                        }, 500); // Medio segundo de delay
+                        modal.style.display = 'flex';
+                        console.log("Modal mostrado correctamente");
                     }
-                } else {
-                    console.log("Modal ya se mostró en esta sesión");
-                }
+                }, 800); // 0.8 segundos
+            } else {
+                console.log("No es dispositivo móvil - Modal no se muestra");
             }
             
             // Configurar botones para cerrar el modal
@@ -724,7 +714,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 continueBtn.addEventListener('click', function() {
                     if (modal) {
                         modal.style.display = 'none';
-                        console.log("Modal cerrado con 'Continuar en Móvil'");
                     }
                 });
             }
@@ -733,7 +722,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 understandBtn.addEventListener('click', function() {
                     if (modal) {
                         modal.style.display = 'none';
-                        console.log("Modal cerrado con 'Entendido'");
                     }
                 });
             }
@@ -743,19 +731,18 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 modal.addEventListener('click', function(event) {
                     if (event.target === modal) {
                         modal.style.display = 'none';
-                        console.log("Modal cerrado al hacer clic fuera");
                     }
                 });
             }
-            
-            // Log para debugging
-            console.log("Modal cargado. Estado:", {
-                esMovil: esDispositivoMovil(),
-                yaMostrado: sessionStorage.getItem('mobileWarningShown'),
-                anchoPantalla: window.innerWidth,
-                userAgent: navigator.userAgent
-            });
         });
+        
+        // Función adicional para forzar mostrar modal (para pruebas en PC)
+        function mostrarModalForzado() {
+            const modal = document.getElementById('mobileWarningModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
     </script>
      <!-- Script para evitar retroceder -->
     <script>
