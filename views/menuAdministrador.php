@@ -1,60 +1,3 @@
-<?php
-session_start();
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../helpers/config_helper.php';
-$database = new Database();
-$db = $database->conectar();
-
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
-
-// Verificar que sea administrador (ya sea administrador original o asistente con acceso)
-if ($_SESSION['tipo_usuario'] !== 'administrador') {
-    if ($_SESSION['tipo_usuario'] === 'asistente') {
-        header("Location: menuAsistente.php");
-    } else {
-        header("Location: ../index.php");
-    }
-    exit();
-}
-
-$fotoPerfil = '../imagenes/usuarios/imagendefault.png';
-
-try {
-    $query = "SELECT p.foto_perfil 
-              FROM usuario u 
-              INNER JOIN persona p ON u.id_persona = p.id_persona 
-              WHERE u.id_usuario = :id_usuario";
-    
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':id_usuario', $_SESSION['usuario_id']);
-    $stmt->execute();
-    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($resultado && !empty($resultado['foto_perfil'])) {
-        $fotoBD = $resultado['foto_perfil'];
-        $fotoPerfil = (strpos($fotoBD, '/') === 0) ? '..' . $fotoBD : $fotoBD;
-    }
-} catch (Exception $e) {
-    error_log("Error cargando foto: " . $e->getMessage());
-}
-
-$nombreUsuario = $_SESSION['nombres'] ?? '';
-$apellidoUsuario = $_SESSION['apellidos'] ?? '';
-$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
-
-if (empty($nombreCompleto)) {
-    $nombreCompleto = 'Administrador del Sistema';
-}
-
-$correoUsuario = $_SESSION['correo'] ?? '';
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,6 +9,159 @@ $correoUsuario = $_SESSION['correo'] ?? '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/admin.css">
     <style>
+        /* Estilos para el modal informativo */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: modalFadeIn 0.4s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .modal-header i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            color: #4dabf7;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .modal-body p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .modal-features {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .feature-item i {
+            color: #1e88e5;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            color: white;
+        }
+        
+        .modal-btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            transform: translateY(-2px);
+        }
+        
+        .modal-btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .mobile-warning {
+            color: #dc3545;
+            font-weight: 600;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        /* Estilos para pantallas móviles */
+        @media (max-width: 768px) {
+            .modal-container {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
+        }
 
         .user-avatar img {
             width: 100%;
@@ -332,7 +428,112 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         </button>
         <?php endif; ?>
     </div>
+    
+    <!-- Modal Informativo para Dispositivos Móviles -->
+    <div class="modal-overlay" id="mobileWarningModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <i class="fas fa-desktop"></i>
+                <h2>Recomendación de Uso</h2>
+            </div>
+            <div class="modal-body">
+                <p>El <strong>Panel Administrativo</strong> está optimizado para su uso en <strong>computadores de escritorio o laptops</strong>.</p>
+                
+                <div class="modal-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Mejor visualización en pantallas grandes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Navegación más fácil con mouse y teclado</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Acceso completo a todas las funcionalidades</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Interfaz diseñada para productividad</span>
+                    </div>
+                </div>
+                
+                <p>Puede continuar usando el panel en su dispositivo móvil, pero es posible que algunas funciones no se muestren de manera óptima.</p>
+                
+                <div class="mobile-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Recomendamos usar un computador para la mejor experiencia
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" id="continueMobileBtn">
+                        Continuar en Móvil
+                    </button>
+                    <button class="modal-btn modal-btn-secondary" id="understandBtn">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
+        // Mostrar modal en dispositivos móviles
+        function mostrarModalMobile() {
+            // Verificar si es un dispositivo móvil
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Solo mostrar si es móvil y no se ha mostrado antes en esta sesión
+            if (isMobile && !sessionStorage.getItem('mobileWarningShown')) {
+                setTimeout(() => {
+                    const modal = document.getElementById('mobileWarningModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        // Evitar scroll del body cuando el modal está abierto
+                        document.body.style.overflow = 'hidden';
+                    }
+                }, 1000); // Pequeño delay para que cargue la página primero
+            }
+        }
+        
+        // Cerrar modal y guardar preferencia
+        function cerrarModal() {
+            const modal = document.getElementById('mobileWarningModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Restaurar scroll
+                sessionStorage.setItem('mobileWarningShown', 'true');
+            }
+        }
+        
+        // Event listeners para los botones del modal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar modal al cargar
+            mostrarModalMobile();
+            
+            // Botón "Continuar en Móvil"
+            const continueBtn = document.getElementById('continueMobileBtn');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', cerrarModal);
+            }
+            
+            // Botón "Entendido"
+            const understandBtn = document.getElementById('understandBtn');
+            if (understandBtn) {
+                understandBtn.addEventListener('click', cerrarModal);
+            }
+            
+            // Cerrar modal haciendo clic fuera de él
+            const modalOverlay = document.getElementById('mobileWarningModal');
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', function(e) {
+                    if (e.target === modalOverlay) {
+                        cerrarModal();
+                    }
+                });
+            }
+        });
+        
         function volverComoAsistente() {
             if (confirm('¿Desea volver a su sesión original como asistente?')) {
                 const btn = document.querySelector('.return-assistant-btn');
