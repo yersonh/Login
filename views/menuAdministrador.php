@@ -200,7 +200,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             color: #92400e;
         }
         
-        /* ESTILOS NUEVOS PARA EL MODAL */
+        /* ESTILOS NUEVOS PARA EL MODAL - OPTIMIZADO PARA MÓVILES */
         .mobile-warning-modal {
             display: none;
             position: fixed;
@@ -208,27 +208,30 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.92);
             z-index: 999999;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
         
         .mobile-warning-content {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            animation: modalAppear 0.5s ease-out;
+            animation: modalAppear 0.4s ease-out;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
         
         @keyframes modalAppear {
             from {
                 opacity: 0;
-                transform: translateY(30px) scale(0.95);
+                transform: translateY(20px) scale(0.97);
             }
             to {
                 opacity: 1;
@@ -239,48 +242,53 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         .modal-header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
+            flex-shrink: 0;
         }
         
         .modal-header i {
-            font-size: 56px;
-            margin-bottom: 20px;
+            font-size: 42px;
+            margin-bottom: 12px;
             display: block;
             color: #90caf9;
         }
         
         .modal-header h2 {
             margin: 0;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
+            line-height: 1.3;
         }
         
         .modal-body {
-            padding: 30px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal-body p {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 15px;
+            line-height: 1.5;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
         
         .modal-features {
             background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 25px 0;
-            border-left: 4px solid #1e88e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #1e88e5;
         }
         
         .feature-item {
             display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 10px 5px;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding: 5px 0;
         }
         
         .feature-item:last-child {
@@ -289,57 +297,62 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         
         .feature-item i {
             color: #1e88e5;
-            margin-right: 12px;
-            font-size: 16px;
-            min-width: 24px;
+            margin-right: 10px;
+            font-size: 14px;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
         
         .feature-item span {
-            font-size: 14px;
+            font-size: 13px;
             color: #444;
+            line-height: 1.4;
         }
         
         .modal-warning {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
             border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 12px;
+            margin: 15px 0;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .modal-warning i {
             color: #f39c12;
-            font-size: 20px;
+            font-size: 18px;
+            flex-shrink: 0;
         }
         
         .modal-warning span {
             color: #856404;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.3;
         }
         
         .modal-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 12px;
+            margin-top: 20px;
+            flex-shrink: 0;
         }
         
         .modal-btn {
             flex: 1;
-            padding: 14px 20px;
+            padding: 12px 15px;
             border: none;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .modal-btn-primary {
@@ -347,10 +360,10 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             color: white;
         }
         
-        .modal-btn-primary:hover {
+        .modal-btn-primary:hover, .modal-btn-primary:active {
             background: linear-gradient(135deg, #1565c0, #0a3a7a);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
         }
         
         .modal-btn-secondary {
@@ -359,39 +372,118 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             border: 2px solid #dee2e6;
         }
         
-        .modal-btn-secondary:hover {
+        .modal-btn-secondary:hover, .modal-btn-secondary:active {
             background: #e9ecef;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        @media (max-width: 576px) {
+        /* Optimizaciones para pantallas pequeñas */
+        @media (max-width: 480px) {
+            .mobile-warning-modal {
+                padding: 10px;
+            }
+            
             .mobile-warning-content {
-                max-width: 100%;
+                max-height: 85vh;
+                border-radius: 10px;
             }
             
             .modal-header {
-                padding: 20px;
+                padding: 16px;
             }
             
             .modal-header i {
-                font-size: 48px;
+                font-size: 36px;
+                margin-bottom: 10px;
             }
             
             .modal-header h2 {
-                font-size: 20px;
+                font-size: 18px;
             }
             
             .modal-body {
-                padding: 20px;
+                padding: 16px;
+            }
+            
+            .modal-body p {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .modal-features {
+                padding: 12px;
+                margin: 12px 0;
+            }
+            
+            .feature-item {
+                margin-bottom: 6px;
+                padding: 4px 0;
+            }
+            
+            .feature-item i {
+                font-size: 13px;
+                margin-top: 1px;
+            }
+            
+            .feature-item span {
+                font-size: 12px;
+            }
+            
+            .modal-warning {
+                padding: 10px;
+                margin: 12px 0;
+            }
+            
+            .modal-warning i {
+                font-size: 16px;
+            }
+            
+            .modal-warning span {
+                font-size: 12px;
             }
             
             .modal-buttons {
                 flex-direction: column;
+                gap: 10px;
+                margin-top: 15px;
             }
             
             .modal-btn {
-                width: 100%;
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+        }
+        
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            .modal-header {
+                padding: 14px;
+            }
+            
+            .modal-header h2 {
+                font-size: 17px;
+            }
+            
+            .modal-body {
+                padding: 14px;
+            }
+            
+            .modal-body p {
+                font-size: 13px;
+            }
+        }
+        
+        /* Para orientación horizontal en móviles */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .mobile-warning-content {
+                max-width: 350px;
+                max-height: 85vh;
+            }
+            
+            .modal-body {
+                max-height: 50vh;
+                overflow-y: auto;
             }
         }
     </style>
@@ -651,7 +743,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         // Guardar en sesión que ya se mostró
                         sessionStorage.setItem('mobileWarningShown', 'true');
                     }
-                }, 1500); // Esperar 1.5 segundos para que cargue la página
+                }, 1000); // REDUCIDO A 1 SEGUNDO
             }
             
             // Configurar botones del modal
@@ -678,6 +770,32 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                         modal.style.display = 'none';
                     }
                 });
+            }
+            
+            // Mejorar la experiencia táctil en móviles
+            if (esDispositivoMovil()) {
+                // Agregar efecto táctil a los botones del modal
+                const modalButtons = document.querySelectorAll('.modal-btn');
+                modalButtons.forEach(btn => {
+                    btn.addEventListener('touchstart', function() {
+                        this.style.transform = 'translateY(-1px)';
+                        this.style.opacity = '0.9';
+                    });
+                    
+                    btn.addEventListener('touchend', function() {
+                        this.style.transform = '';
+                        this.style.opacity = '';
+                    });
+                });
+                
+                // Optimizar scroll en el modal
+                const modalBody = document.querySelector('.modal-body');
+                if (modalBody) {
+                    modalBody.addEventListener('touchmove', function(e) {
+                        // Permitir scroll solo dentro del modal
+                        e.stopPropagation();
+                    });
+                }
             }
         });
     </script>
