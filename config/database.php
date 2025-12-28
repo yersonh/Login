@@ -19,11 +19,11 @@ class Database {
             // URL: postgresql://postgres:password@caboose.proxy.rlwy.net:12657/railway
             $dbParts = parse_url($databasePublicUrl);
             
-            $this->host = $dbParts['host'] ?? ''; // caboose.proxy.rlwy.net
-            $this->port = $dbParts['port'] ?? '5432'; // 12657
+            $this->host = $dbParts['host'] ?? ''; // tramway.proxy.rlwy.net
+            $this->port = $dbParts['port'] ?? '5432'; // 40922
             $this->dbname = ltrim($dbParts['path'] ?? '', '/'); // railway
             $this->user = $dbParts['user'] ?? ''; // postgres
-            $this->password = $dbParts['pass'] ?? ''; // oyAQNLFfrwhhVhcQcQXelSNbsTKaMOfJ
+            $this->password = $dbParts['pass'] ?? ''; // uJAiDBcEGlFtGNwQrvalMhxygCMwtEpq
         }
         // SEGUNDO intentar con DATABASE_URL (interna, sin SSL)
         else if ($databaseUrl = getenv('DATABASE_URL')) {
@@ -34,13 +34,13 @@ class Database {
             $this->user = $dbParts['user'] ?? '';
             $this->password = $dbParts['pass'] ?? '';
         }
-        // TERCERO variables individuales
+        // TERCERO variables individuales - ACTUALIZADO CON TUS NUEVAS CREDENCIALES
         else {
             $this->host = getenv('PGHOST') ?: 'postgres.railway.internal';
             $this->port = getenv('PGPORT') ?: '5432';
             $this->dbname = getenv('PGDATABASE') ?: 'railway';
             $this->user = getenv('PGUSER') ?: 'postgres';
-            $this->password = getenv('PGPASSWORD') ?: 'oyAQNLFfrwhhVhcQcQXelSNbsTKaMOfJ';
+            $this->password = getenv('PGPASSWORD') ?: 'uJAiDBcEGlFtGNwQrvalMhxygCMwtEpq'; // ACTUALIZADO
         }
     }
 
