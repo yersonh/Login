@@ -1,3 +1,60 @@
+<?php
+session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../helpers/config_helper.php';
+$database = new Database();
+$db = $database->conectar();
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// Verificar que sea administrador (ya sea administrador original o asistente con acceso)
+if ($_SESSION['tipo_usuario'] !== 'administrador') {
+    if ($_SESSION['tipo_usuario'] === 'asistente') {
+        header("Location: menuAsistente.php");
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+$fotoPerfil = '../imagenes/usuarios/imagendefault.png';
+
+try {
+    $query = "SELECT p.foto_perfil 
+              FROM usuario u 
+              INNER JOIN persona p ON u.id_persona = p.id_persona 
+              WHERE u.id_usuario = :id_usuario";
+    
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':id_usuario', $_SESSION['usuario_id']);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($resultado && !empty($resultado['foto_perfil'])) {
+        $fotoBD = $resultado['foto_perfil'];
+        $fotoPerfil = (strpos($fotoBD, '/') === 0) ? '..' . $fotoBD : $fotoBD;
+    }
+} catch (Exception $e) {
+    error_log("Error cargando foto: " . $e->getMessage());
+}
+
+$nombreUsuario = $_SESSION['nombres'] ?? '';
+$apellidoUsuario = $_SESSION['apellidos'] ?? '';
+$nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
+
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Administrador del Sistema';
+}
+
+$correoUsuario = $_SESSION['correo'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,160 +66,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/admin.css">
     <style>
-        /* Estilos para el modal informativo */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-container {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: modalFadeIn 0.4s ease-out;
-        }
-        
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .modal-header i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            display: block;
-            color: #4dabf7;
-        }
-        
-        .modal-header h2 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 600;
-        }
-        
-        .modal-body {
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .modal-body p {
-            margin-bottom: 15px;
-            line-height: 1.6;
-            color: #333;
-            font-size: 15px;
-        }
-        
-        .modal-features {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 0;
-        }
-        
-        .feature-item i {
-            color: #1e88e5;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        
-        .modal-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 15px;
-        }
-        
-        .modal-btn-primary {
-            background: linear-gradient(135deg, #1e88e5, #1565c0);
-            color: white;
-        }
-        
-        .modal-btn-primary:hover {
-            background: linear-gradient(135deg, #1565c0, #0d47a1);
-            transform: translateY(-2px);
-        }
-        
-        .modal-btn-secondary {
-            background: #f8f9fa;
-            color: #495057;
-            border: 1px solid #dee2e6;
-        }
-        
-        .modal-btn-secondary:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
-        }
-        
-        .mobile-warning {
-            color: #dc3545;
-            font-weight: 600;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        
-        /* Estilos para pantallas móviles */
-        @media (max-width: 768px) {
-            .modal-container {
-                width: 95%;
-                margin: 10px;
-            }
-            
-            .modal-body {
-                padding: 20px;
-            }
-            
-            .modal-buttons {
-                flex-direction: column;
-            }
-            
-            .modal-btn {
-                width: 100%;
-            }
-        }
-
+        /* ESTILOS EXISTENTES - NO MODIFICAR */
         .user-avatar img {
             width: 100%;
             height: 100%;
@@ -294,6 +198,201 @@
         
         .access-info-banner .banner-link:hover {
             color: #92400e;
+        }
+        
+        /* ESTILOS NUEVOS PARA EL MODAL */
+        .mobile-warning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .mobile-warning-content {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            animation: modalAppear 0.5s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .modal-header i {
+            font-size: 56px;
+            margin-bottom: 20px;
+            display: block;
+            color: #90caf9;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-body p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-features {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            border-left: 4px solid #1e88e5;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px 5px;
+        }
+        
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .feature-item i {
+            color: #1e88e5;
+            margin-right: 12px;
+            font-size: 16px;
+            min-width: 24px;
+        }
+        
+        .feature-item span {
+            font-size: 14px;
+            color: #444;
+        }
+        
+        .modal-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .modal-warning i {
+            color: #f39c12;
+            font-size: 20px;
+        }
+        
+        .modal-warning span {
+            color: #856404;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+        }
+        
+        .modal-btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #0a3a7a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+        }
+        
+        .modal-btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 576px) {
+            .mobile-warning-content {
+                max-width: 100%;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .modal-header i {
+                font-size: 48px;
+            }
+            
+            .modal-header h2 {
+                font-size: 20px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -429,9 +528,9 @@
         <?php endif; ?>
     </div>
     
-    <!-- Modal Informativo para Dispositivos Móviles -->
-    <div class="modal-overlay" id="mobileWarningModal">
-        <div class="modal-container">
+    <!-- MODAL PARA DISPOSITIVOS MÓVILES - SOLO SE MUESTRA EN MÓVILES -->
+    <div id="mobileWarningModal" class="mobile-warning-modal">
+        <div class="mobile-warning-content">
             <div class="modal-header">
                 <i class="fas fa-desktop"></i>
                 <h2>Recomendación de Uso</h2>
@@ -458,18 +557,18 @@
                     </div>
                 </div>
                 
-                <p>Puede continuar usando el panel en su dispositivo móvil, pero es posible que algunas funciones no se muestren de manera óptima.</p>
-                
-                <div class="mobile-warning">
+                <div class="modal-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Recomendamos usar un computador para la mejor experiencia
+                    <span>Recomendamos usar un computador para la mejor experiencia</span>
                 </div>
                 
                 <div class="modal-buttons">
                     <button class="modal-btn modal-btn-primary" id="continueMobileBtn">
+                        <i class="fas fa-mobile-alt"></i>
                         Continuar en Móvil
                     </button>
                     <button class="modal-btn modal-btn-secondary" id="understandBtn">
+                        <i class="fas fa-check"></i>
                         Entendido
                     </button>
                 </div>
@@ -478,62 +577,7 @@
     </div>
     
     <script>
-        // Mostrar modal en dispositivos móviles
-        function mostrarModalMobile() {
-            // Verificar si es un dispositivo móvil
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            // Solo mostrar si es móvil y no se ha mostrado antes en esta sesión
-            if (isMobile && !sessionStorage.getItem('mobileWarningShown')) {
-                setTimeout(() => {
-                    const modal = document.getElementById('mobileWarningModal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        // Evitar scroll del body cuando el modal está abierto
-                        document.body.style.overflow = 'hidden';
-                    }
-                }, 1000); // Pequeño delay para que cargue la página primero
-            }
-        }
-        
-        // Cerrar modal y guardar preferencia
-        function cerrarModal() {
-            const modal = document.getElementById('mobileWarningModal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Restaurar scroll
-                sessionStorage.setItem('mobileWarningShown', 'true');
-            }
-        }
-        
-        // Event listeners para los botones del modal
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mostrar modal al cargar
-            mostrarModalMobile();
-            
-            // Botón "Continuar en Móvil"
-            const continueBtn = document.getElementById('continueMobileBtn');
-            if (continueBtn) {
-                continueBtn.addEventListener('click', cerrarModal);
-            }
-            
-            // Botón "Entendido"
-            const understandBtn = document.getElementById('understandBtn');
-            if (understandBtn) {
-                understandBtn.addEventListener('click', cerrarModal);
-            }
-            
-            // Cerrar modal haciendo clic fuera de él
-            const modalOverlay = document.getElementById('mobileWarningModal');
-            if (modalOverlay) {
-                modalOverlay.addEventListener('click', function(e) {
-                    if (e.target === modalOverlay) {
-                        cerrarModal();
-                    }
-                });
-            }
-        });
-        
+        // FUNCIONES EXISTENTES - NO MODIFICAR
         function volverComoAsistente() {
             if (confirm('¿Desea volver a su sesión original como asistente?')) {
                 const btn = document.querySelector('.return-assistant-btn');
@@ -585,6 +629,57 @@
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
         
+        // NUEVO CÓDIGO PARA EL MODAL
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar si es dispositivo móvil
+            function esDispositivoMovil() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                       (window.innerWidth <= 768);
+            }
+            
+            // Verificar si ya se mostró el modal en esta sesión
+            function yaSeMostroModal() {
+                return sessionStorage.getItem('mobileWarningShown') === 'true';
+            }
+            
+            // Mostrar modal si es móvil y no se ha mostrado antes
+            if (esDispositivoMovil() && !yaSeMostroModal()) {
+                setTimeout(function() {
+                    const modal = document.getElementById('mobileWarningModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        // Guardar en sesión que ya se mostró
+                        sessionStorage.setItem('mobileWarningShown', 'true');
+                    }
+                }, 1500); // Esperar 1.5 segundos para que cargue la página
+            }
+            
+            // Configurar botones del modal
+            const continueBtn = document.getElementById('continueMobileBtn');
+            const understandBtn = document.getElementById('understandBtn');
+            const modal = document.getElementById('mobileWarningModal');
+            
+            if (continueBtn) {
+                continueBtn.addEventListener('click', function() {
+                    if (modal) modal.style.display = 'none';
+                });
+            }
+            
+            if (understandBtn) {
+                understandBtn.addEventListener('click', function() {
+                    if (modal) modal.style.display = 'none';
+                });
+            }
+            
+            // Cerrar modal al hacer clic fuera
+            if (modal) {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
     </script>
      <!-- Script para evitar retroceder -->
     <script>
