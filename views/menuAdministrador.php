@@ -202,7 +202,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         
         /* ESTILOS NUEVOS PARA EL MODAL - OPTIMIZADO PARA MÓVILES */
         .mobile-warning-modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -213,6 +212,7 @@ $correoUsuario = $_SESSION['correo'] ?? '';
             justify-content: center;
             align-items: center;
             padding: 15px;
+            display: none;
         }
         
         .mobile-warning-content {
@@ -454,38 +454,6 @@ $correoUsuario = $_SESSION['correo'] ?? '';
                 font-size: 13px;
             }
         }
-        
-        /* Para pantallas muy pequeñas */
-        @media (max-width: 360px) {
-            .modal-header {
-                padding: 14px;
-            }
-            
-            .modal-header h2 {
-                font-size: 17px;
-            }
-            
-            .modal-body {
-                padding: 14px;
-            }
-            
-            .modal-body p {
-                font-size: 13px;
-            }
-        }
-        
-        /* Para orientación horizontal en móviles */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .mobile-warning-content {
-                max-width: 350px;
-                max-height: 85vh;
-            }
-            
-            .modal-body {
-                max-height: 50vh;
-                overflow-y: auto;
-            }
-        }
     </style>
 </head>
 <body>
@@ -721,80 +689,55 @@ $correoUsuario = $_SESSION['correo'] ?? '';
         const USER_TIPO = "<?php echo $_SESSION['tipo_usuario'] ?? 'No definido'; ?>";
         const USER_NOMBRE_COMPLETO = <?php echo json_encode($nombreCompleto); ?>;
         
-        // NUEVO CÓDIGO PARA EL MODAL
+        // NUEVO CÓDIGO PARA EL MODAL - VERSIÓN SIMPLIFICADA
         document.addEventListener('DOMContentLoaded', function() {
-            // Detectar si es dispositivo móvil
+            // Función mejorada para detectar móviles
             function esDispositivoMovil() {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                       (window.innerWidth <= 768);
-            }
-            
-            // Verificar si ya se mostró el modal en esta sesión
-            function yaSeMostroModal() {
-                return sessionStorage.getItem('mobileWarningShown') === 'true';
-            }
-            
-            // Mostrar modal si es móvil y no se ha mostrado antes
-            if (esDispositivoMovil() && !yaSeMostroModal()) {
-                setTimeout(function() {
-                    const modal = document.getElementById('mobileWarningModal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        // Guardar en sesión que ya se mostró
-                        sessionStorage.setItem('mobileWarningShown', 'true');
-                    }
-                }, 1000); // REDUCIDO A 1 SEGUNDO
-            }
-            
-            // Configurar botones del modal
-            const continueBtn = document.getElementById('continueMobileBtn');
-            const understandBtn = document.getElementById('understandBtn');
-            const modal = document.getElementById('mobileWarningModal');
-            
-            if (continueBtn) {
-                continueBtn.addEventListener('click', function() {
-                    if (modal) modal.style.display = 'none';
-                });
-            }
-            
-            if (understandBtn) {
-                understandBtn.addEventListener('click', function() {
-                    if (modal) modal.style.display = 'none';
-                });
-            }
-            
-            // Cerrar modal al hacer clic fuera
-            if (modal) {
-                modal.addEventListener('click', function(event) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-            }
-            
-            // Mejorar la experiencia táctil en móviles
-            if (esDispositivoMovil()) {
-                // Agregar efecto táctil a los botones del modal
-                const modalButtons = document.querySelectorAll('.modal-btn');
-                modalButtons.forEach(btn => {
-                    btn.addEventListener('touchstart', function() {
-                        this.style.transform = 'translateY(-1px)';
-                        this.style.opacity = '0.9';
-                    });
-                    
-                    btn.addEventListener('touchend', function() {
-                        this.style.transform = '';
-                        this.style.opacity = '';
-                    });
-                });
+                // Verificar por user agent
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const esMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
                 
-                // Optimizar scroll en el modal
-                const modalBody = document.querySelector('.modal-body');
-                if (modalBody) {
-                    modalBody.addEventListener('touchmove', function(e) {
-                        // Permitir scroll solo dentro del modal
-                        e.stopPropagation();
-                    });
+                // Verificar por tamaño de pantalla
+                const esPantallaPequena = window.innerWidth <= 768;
+                
+                return esMobile || esPantallaPequena;
+            }
+            
+            // Mostrar modal si es móvil
+            if (esDispositivoMovil()) {
+                // Solo mostrar una vez por sesión
+                if (!sessionStorage.getItem('mobileWarningShown')) {
+                    setTimeout(function() {
+                        const modal = document.getElementById('mobileWarningModal');
+                        if (modal) {
+                            modal.style.display = 'flex';
+                            // Guardar que ya se mostró
+                            sessionStorage.setItem('mobileWarningShown', 'true');
+                            
+                            // Agregar listener para cerrar al hacer clic en botones
+                            const continueBtn = document.getElementById('continueMobileBtn');
+                            const understandBtn = document.getElementById('understandBtn');
+                            
+                            if (continueBtn) {
+                                continueBtn.addEventListener('click', function() {
+                                    modal.style.display = 'none';
+                                });
+                            }
+                            
+                            if (understandBtn) {
+                                understandBtn.addEventListener('click', function() {
+                                    modal.style.display = 'none';
+                                });
+                            }
+                            
+                            // Cerrar al hacer clic fuera del contenido
+                            modal.addEventListener('click', function(event) {
+                                if (event.target === modal) {
+                                    modal.style.display = 'none';
+                                }
+                            });
+                        }
+                    }, 1000); // 1 segundo
                 }
             }
         });
