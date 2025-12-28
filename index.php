@@ -57,7 +57,10 @@ if (!isset($_SESSION['usuario_id']) && isset($_COOKIE['remember_token'])) {
             // cargarPermisos($_SESSION['tipo_usuario']);
 
             // Redirigir según rol (usar rutas relativas)
-            if ($_SESSION['tipo_usuario'] === 'asistente') {
+            // AGREGAR VERIFICACIÓN PARA SUPERADMIN
+            if ($_SESSION['tipo_usuario'] === 'superAdmin') {
+                header("Location: views/superAdmin.php");
+            } else if ($_SESSION['tipo_usuario'] === 'asistente') {
                 header("Location: views/menuAsistente.php");
             } else {
                 header("Location: views/menu.php");
@@ -105,10 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 $_SESSION['correo'] = $usuario['correo'];
                 $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'] ?? 'usuario';
                 
-                // NOTA: Por ahora mantenemos simple con solo tipo_usuario
-                // Si en el futuro necesitamos permisos granulares, descomentar:
-                // cargarPermisos($_SESSION['tipo_usuario']);
-                
                 // Log de login exitoso
                 error_log("LOGIN EXITOSO - Usuario: " . $usuario['correo'] . 
                         " - Rol: " . $_SESSION['tipo_usuario'] . 
@@ -149,7 +148,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 }
 
                 // Redirigir según rol
-                if ($_SESSION['tipo_usuario'] === 'asistente') {
+                // AGREGAR VERIFICACIÓN PARA SUPERADMIN
+                if ($_SESSION['tipo_usuario'] === 'superAdmin') {
+                    header("Location: views/superAdmin.php");
+                } else if ($_SESSION['tipo_usuario'] === 'asistente') {
                     header("Location: views/menuAsistente.php");
                 } else {
                     header("Location: views/menu.php");
@@ -191,42 +193,6 @@ if (rand(1, 10) === 1) {
     }
 }
 
-/* 
- * FUNCIÓN COMENTADA - Para uso futuro si necesitamos permisos granulares
- * 
-function cargarPermisos($tipoUsuario) {
-    switch ($tipoUsuario) {
-        case 'administrador':
-            $_SESSION['permisos'] = [
-                'parametrizacion',
-                'gestion_usuarios', 
-                'ver_reportes',
-                'configurar_sistema',
-                'acceso_completo'
-            ];
-            break;
-            
-        case 'asistente':
-            $_SESSION['permisos'] = [
-                'ver_reportes',
-                'consultar_datos',
-                'gestion_documental'
-            ];
-            break;
-            
-        case 'usuario':
-        default:
-            $_SESSION['permisos'] = [
-                'consultar_datos'
-            ];
-            break;
-    }
-}
-*/
-
-/**
- * Limpiar tokens de recordar expirados
- */
 function limpiarTokensExpirados($db) {
     try {
         $stmt = $db->prepare("DELETE FROM remember_tokens WHERE expiracion < NOW()");
