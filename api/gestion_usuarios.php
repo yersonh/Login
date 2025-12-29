@@ -31,45 +31,46 @@ try {
                 }
                 
                 $id_usuario = intval($input['id_usuario']);
+                $correoEnviado = false;
                 
-                // Aprobar usuario (con notificación)
+                // **PASO 1: Verificar si es primera aprobación ANTES de aprobar**
+                if ($usuarioModel->esPrimeraAprobacion($id_usuario)) {
+                    // **PASO 2: Obtener información para el correo ANTES de aprobar**
+                    $infoUsuario = $usuarioModel->obtenerInfoParaCorreo($id_usuario);
+                    
+                    if ($infoUsuario && !empty($infoUsuario['correo_personal'])) {
+                        $nombreCompleto = trim($infoUsuario['nombres'] . ' ' . $infoUsuario['apellidos']);
+                        
+                        // **PASO 3: Enviar correo usando EmailHelper ANTES de aprobar**
+                        $correoEnviado = EmailHelper::enviarCorreoAprobacion(
+                            $infoUsuario['correo_personal'],
+                            $nombreCompleto,
+                            $infoUsuario['correo']
+                        );
+                        
+                        if ($correoEnviado) {
+                            error_log("✅ Correo de aprobación enviado a: " . 
+                                     $infoUsuario['correo_personal'] . 
+                                     " (Usuario ID: $id_usuario)");
+                        } else {
+                            error_log("⚠️ No se pudo enviar correo de aprobación a: " . 
+                                     $infoUsuario['correo_personal']);
+                        }
+                    } else {
+                        error_log("⚠️ Usuario sin correo personal para notificación (ID: $id_usuario)");
+                    }
+                }
+                
+                // **PASO 4: FINALMENTE aprobar el usuario**
                 $resultado = $usuarioModel->aprobarUsuario($id_usuario, $admin_id);
                 
                 if ($resultado) {
-                    // Verificar si es primera aprobación para enviar correo
-                    if ($usuarioModel->esPrimeraAprobacion($id_usuario)) {
-                        // Obtener información para el correo
-                        $infoUsuario = $usuarioModel->obtenerInfoParaCorreo($id_usuario);
-                        
-                        if ($infoUsuario && !empty($infoUsuario['correo_personal'])) {
-                            $nombreCompleto = trim($infoUsuario['nombres'] . ' ' . $infoUsuario['apellidos']);
-                            
-                            // Enviar correo usando EmailHelper
-                            $correoEnviado = EmailHelper::enviarCorreoAprobacion(
-                                $infoUsuario['correo_personal'],
-                                $nombreCompleto,
-                                $infoUsuario['correo']
-                            );
-                            
-                            if ($correoEnviado) {
-                                error_log("✅ Correo de aprobación enviado a: " . 
-                                         $infoUsuario['correo_personal'] . 
-                                         " (Usuario ID: $id_usuario)");
-                            } else {
-                                error_log("⚠️ No se pudo enviar correo de aprobación a: " . 
-                                         $infoUsuario['correo_personal']);
-                            }
-                        } else {
-                            error_log("⚠️ Usuario sin correo personal para notificación (ID: $id_usuario)");
-                        }
-                    }
-                    
                     echo json_encode([
                         'success' => true,
                         'message' => 'Usuario aprobado correctamente',
                         'estado_texto' => 'Activo',
                         'estado_clase' => 'status-active',
-                        'correo_enviado' => isset($correoEnviado) ? $correoEnviado : false
+                        'correo_enviado' => $correoEnviado
                     ]);
                 } else {
                     throw new Exception('Error al aprobar el usuario');

@@ -440,8 +440,8 @@ function enviarCorreoConfirmacionAPI($correoDestino, $nombreContratista, $consec
                     <h3 style='margin-top: 0; color: #0066cc;'>Acceso al Sistema</h3>
                     <p style='font-size: 15px; line-height: 1.6; margin-bottom: 15px;'>
                         Para acceder al sistema, por favor cree su usuario en el siguiente enlace:
-                        <a href='https://login-production-a68d.up.railway.app/index.php' style='color: #0066cc; word-break: break-all;'>
-                            https://login-production-a68d.up.railway.app/index.php
+                        <a href='https://login-production-ba2b.up.railway.app/index.php' style='color: #0066cc; word-break: break-all;'>
+                            hhttps://login-production-ba2b.up.railway.app/index.php
                         </a>
                     </p>
                 </div>
