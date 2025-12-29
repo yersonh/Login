@@ -348,5 +348,124 @@ public function obtenerInfoParaCorreo($id_usuario) {
         return false;
     }
 }
+public function desactivarUsuariosContratosVencidos() {
+    try {
+        // Consulta para obtener usuarios con contratos vencidos
+        $sql = "SELECT u.id_usuario, u.correo, 
+                       p.nombres, p.apellidos, p.correo_personal,
+                       dc.fecha_final
+                FROM usuario u
+                JOIN persona p ON u.id_persona = p.id_persona
+                JOIN detalle_contrato dc ON p.id_persona = dc.id_persona
+                WHERE u.activo = true
+                  AND u.tipo_usuario = 'contratista'
+                  AND dc.fecha_final < CURRENT_DATE
+                  AND NOT EXISTS (
+                      SELECT 1 FROM detalle_contrato dc2
+                      WHERE dc2.id_persona = p.id_persona
+                        AND dc2.fecha_final >= CURRENT_DATE
+                  )";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $usuariosVencidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $desactivados = 0;
+        $errores = 0;
+        
+        foreach ($usuariosVencidos as $usuario) {
+            try {
+                // Desactivar usuario
+                $desactivado = $this->desactivarUsuario($usuario['id_usuario']);
+                
+                if ($desactivado) {
+                    $desactivados++;
+                    
+                    // Registrar en log
+                    error_log("📅 Usuario desactivado por contrato vencido: " . 
+                             $usuario['correo'] . 
+                             " (Fecha fin: " . $usuario['fecha_final'] . ")");
+                    
+                    // Opcional: Enviar correo de notificación
+                    $this->notificarContratoVencido($usuario);
+                } else {
+                    $errores++;
+                    error_log("❌ Error al desactivar usuario: " . $usuario['correo']);
+                }
+            } catch (Exception $e) {
+                $errores++;
+                error_log("❌ Excepción al desactivar usuario: " . $e->getMessage());
+            }
+        }
+        
+        return [
+            'total_encontrados' => count($usuariosVencidos),
+            'desactivados' => $desactivados,
+            'errores' => $errores
+        ];
+        
+    } catch (Exception $e) {
+        error_log("❌ Error en desactivarUsuariosContratosVencidos: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Método para notificar por correo sobre contrato vencido
+ */
+private function notificarContratoVencido($usuario) {
+    // Puedes implementar esto más adelante
+    // Por ahora solo log
+    error_log("📧 Debería notificar a " . $usuario['correo_personal'] . 
+              " sobre vencimiento de contrato");
+    return true;
+}
+
+/**
+ * Verificar si un usuario específico tiene contrato vencido
+ */
+public function tieneContratoVencido($id_usuario) {
+    $sql = "SELECT COUNT(*) as vencido
+            FROM usuario u
+            JOIN persona p ON u.id_persona = p.id_persona
+            JOIN detalle_contrato dc ON p.id_persona = dc.id_persona
+            WHERE u.id_usuario = :id_usuario
+              AND u.tipo_usuario = 'contratista'
+              AND dc.fecha_final < CURRENT_DATE
+              AND NOT EXISTS (
+                  SELECT 1 FROM detalle_contrato dc2
+                  WHERE dc2.id_persona = p.id_persona
+                    AND dc2.fecha_final >= CURRENT_DATE
+              )";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    return $resultado && $resultado['vencido'] > 0;
+}
+
+/**
+ * Desactivar usuario con motivo específico
+ */
+public function desactivarUsuarioConMotivo($id_usuario, $motivo = 'administrador') {
+    $sql = "UPDATE usuario 
+            SET activo = FALSE,
+                motivo_desactivacion = :motivo,
+                fecha_desactivacion = CURRENT_TIMESTAMP
+            WHERE id_usuario = :id_usuario";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id_usuario', $id_usuario);
+    $stmt->bindParam(':motivo', $motivo);
+    
+    try {
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error al desactivar usuario con motivo: " . $e->getMessage());
+        return false;
+    }
+}
 }
 ?>

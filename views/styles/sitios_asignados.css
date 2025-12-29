@@ -538,7 +538,7 @@ body {
 .volver-btn {
     position: fixed;
     bottom: 25px;
-    left: 25px;
+    right: 25px;
     background: linear-gradient(135deg, #f59e0b, #d97706);
     color: white;
     border: none;
@@ -550,7 +550,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    z-index: 1000 !important; /* CAMBIO: Aumentado a 1000 */
+    z-index: 100;
     transition: all 0.3s ease;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -583,31 +583,18 @@ body {
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .volver-btn {
-        bottom: 20px;
-        right: 20px;
+        bottom: 15px;
+        right: 15px;
         padding: 12px 18px;
         font-size: 14px;
-    }
-    
-    .volver-btn i {
-        font-size: 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .volver-btn {
-        bottom: 15px;
-        right: 15px;
-        padding: 10px 15px;
-        font-size: 13px;
-    }
-    
-    .volver-btn span {
-        display: none; /* Solo mostrar ícono en móviles pequeños */
-    }
-    
-    .volver-btn i {
-        font-size: 16px;
-        margin: 0;
+     .volver-btn {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
     }
 }
