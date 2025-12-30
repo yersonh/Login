@@ -648,6 +648,7 @@ body {
 @media (min-width: 769px) {
     /* Labels - reducir espacio debajo (que afecta la altura total) */
     .search-container .form-label {
+         font-size: 11px !important;
         margin-bottom: 4px !important; /* Reducido de 6px */
         line-height: 1.2 !important; /* Más compacto */
     }
