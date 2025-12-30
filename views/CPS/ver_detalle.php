@@ -522,9 +522,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                     <i class="fas fa-arrow-left"></i>
                     <span>Volver al Menú</span>
                 </button>
-                <!--<a href="visor_registrados.php" class="btn-volver">
-                    <i class="fas fa-arrow-left"></i> Volver al Listado
-                </a>-->
             </div>
         </main>
         
