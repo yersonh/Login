@@ -252,103 +252,105 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function crearBotonMovil() {
-        if (document.getElementById('mobileSearchBtn')) {
-            mobileSearchBtn = document.getElementById('mobileSearchBtn');
-            return;
-        }
-        
-        mobileSearchBtn = document.createElement('button');
-        mobileSearchBtn.id = 'mobileSearchBtn';
-        mobileSearchBtn.type = 'button';
-        mobileSearchBtn.className = 'btn-open-search';
-        mobileSearchBtn.innerHTML = `
-            <i class="fas fa-search"></i>
-            <span>Buscar Contratistas</span>
-        `;
-        
-        const bottomPosition = 140;
-        
-        mobileSearchBtn.style.cssText = `
-            position: fixed;
-            bottom: ${bottomPosition}px;
-            right: 20px;
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 14px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
-            display: none;
-            align-items: center;
-            gap: 10px;
-            z-index: 1001;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            pointer-events: auto;
-        `;
-        
-        document.body.appendChild(mobileSearchBtn);
-        
-        originalMobileBtnBottom = bottomPosition;
-        
-        mobileSearchBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            abrirBuscadorMovil();
-        });
-        
-        mobileSearchBtn.addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            abrirBuscadorMovil();
-        }, { passive: false });
+    if (document.getElementById('mobileSearchBtn')) {
+        mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        return;
     }
     
+    mobileSearchBtn = document.createElement('button');
+    mobileSearchBtn.id = 'mobileSearchBtn';
+    mobileSearchBtn.type = 'button';
+    mobileSearchBtn.className = 'btn-open-search';
+    mobileSearchBtn.innerHTML = `
+        <i class="fas fa-search"></i>
+        <span>Buscar Contratistas</span>
+    `;
+    
+    // POSICIÓN MEJORADA - esquina inferior derecha
+    mobileSearchBtn.style.cssText = `
+        position: fixed;
+        bottom: 25px; /* Ajustado para estar más abajo */
+        right: 20px;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        display: none;
+        align-items: center;
+        gap: 10px;
+        z-index: 1001;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        pointer-events: auto;
+    `;
+    
+    document.body.appendChild(mobileSearchBtn);
+    
+    // Eventos
+    mobileSearchBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        abrirBuscadorMovil();
+    });
+    
+    mobileSearchBtn.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        abrirBuscadorMovil();
+    }, { passive: false });
+}
+    
     function configurarVisibilidadBuscador() {
-        if (isMobile()) {
-            if (searchContainer) {
-                searchContainer.style.display = 'none';
-            }
-            if (mobileSearchBtn) {
-                mobileSearchBtn.style.display = 'flex';
-            }
-            
-            const closeBtn = document.getElementById('closeSearchBtn');
-            if (closeBtn) {
-                closeBtn.style.display = 'flex';
-            }
-            
-        } else {
-            if (searchContainer) {
-                searchContainer.style.display = 'block';
-                searchContainer.className = 'search-container';
-                searchContainer.style.position = '';
-                searchContainer.style.background = '';
-            }
-            
-            if (mobileSearchBtn) {
-                mobileSearchBtn.style.display = 'none';
-            }
-            
-            const closeBtn = document.getElementById('closeSearchBtn');
-            if (closeBtn) {
-                closeBtn.style.display = 'none';
-            }
-            
-            isModalOpen = false;
+    if (isMobile()) {
+        // En móvil: ocultar buscador Leaflet, mostrar botón flotante
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
         }
+        
+        // Solo mostrar el botón si NO está abierto el modal
+        if (mobileSearchBtn && !isModalOpen) {
+            mobileSearchBtn.style.display = 'flex';
+        }
+        
+        const closeBtn = document.getElementById('closeSearchBtn');
+        if (closeBtn) {
+            closeBtn.style.display = 'flex';
+        }
+        
+    } else {
+        // En PC: mostrar buscador normal, ocultar botón flotante
+        if (searchContainer) {
+            searchContainer.style.display = 'block';
+            searchContainer.className = 'search-container';
+            searchContainer.style.position = '';
+            searchContainer.style.background = '';
+        }
+        
+        if (mobileSearchBtn) {
+            mobileSearchBtn.style.display = 'none';
+        }
+        
+        const closeBtn = document.getElementById('closeSearchBtn');
+        if (closeBtn) {
+            closeBtn.style.display = 'none';
+        }
+        
+        isModalOpen = false;
     }
+}
     
     function abrirBuscadorMovil() {
         if (searchContainer) {
             isModalOpen = true;
             
             if (mobileSearchBtn) {
-                mobileSearchBtn.style.display = 'none';
+            mobileSearchBtn.style.display = 'none';
             }
             
             searchContainer.style.display = 'flex';
@@ -382,25 +384,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function cerrarBuscadorMovil() {
-        if (searchContainer) {
-            isModalOpen = false;
-            keyboardVisible = false;
-            
-            searchContainer.style.display = 'none';
-            searchContainer.className = 'search-container';
-            
-            if (mapa) {
-                mapa.getContainer().style.pointerEvents = 'auto';
-            }
-            
-            document.body.classList.remove('modal-open');
-            
-            if (mobileSearchBtn && isMobile()) {
-                mobileSearchBtn.style.display = 'flex';
-                mobileSearchBtn.style.bottom = originalMobileBtnBottom + 'px';
-            }
+    if (searchContainer) {
+        isModalOpen = false;
+        keyboardVisible = false;
+        
+        searchContainer.style.display = 'none';
+        searchContainer.className = 'search-container';
+        
+        if (mapa) {
+            mapa.getContainer().style.pointerEvents = 'auto';
         }
+        
+        document.body.classList.remove('modal-open');
+        
+        // MOSTRAR EL BOTÓN NUEVAMENTE cuando se cierra el modal
+        if (mobileSearchBtn && isMobile()) {
+            mobileSearchBtn.style.display = 'flex';
+        }
+        
+        console.log('✅ Buscador móvil cerrado');
     }
+}
     
     // Añadir controles básicos
     L.control.scale().addTo(mapa);

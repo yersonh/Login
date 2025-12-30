@@ -684,3 +684,21 @@ body {
         padding-bottom: 8px !important; /* Ajustado */
     }
 }
+/* ================= BOTÓN MÓVIL MEJORADO ================= */
+@media (max-width: 768px) {
+    .btn-open-search {
+        position: fixed !important;
+        bottom: 25px !important; /* Más abajo */
+        right: 20px !important;
+        z-index: 1001 !important;
+        display: none !important; /* Oculto por defecto, se muestra con JS */
+    }
+    
+    /* Cuando el modal está abierto, el botón debe estar detrás */
+    .search-container.modal-open ~ .btn-open-search {
+        display: none !important;
+        z-index: 1 !important; /* Detrás del modal */
+        opacity: 0 !important;
+        visibility: hidden !important;
+    }
+}
