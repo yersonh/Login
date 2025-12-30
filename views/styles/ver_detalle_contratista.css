@@ -631,13 +631,13 @@
     /* En horizontal móvil: foto y documentos a la derecha */
     .foto-profesion-card,
     .documentos-card {
-        order: 2;
+        order: 1;
     }
     
     .info-personal-card,
     .info-contrato-card,
     .info-laboral-card {
-        order: 1;
+        order: 2;
     }
     
     .foto-contratista {
