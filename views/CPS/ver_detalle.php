@@ -394,16 +394,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <?php endif; ?>
                             </div>
                             
-                            <?php if (!empty($contratista['profesion'])): ?>
-                                <div class="profesion-badge">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    <?php echo htmlspecialchars($contratista['profesion']); ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="no-profesion">
-                                    <i class="fas fa-graduation-cap"></i> Profesión no especificada
-                                </div>
-                            <?php endif; ?>
                         </div>
                         
                         <!-- DOCUMENTOS ADJUNTOS -->
