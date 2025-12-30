@@ -98,86 +98,99 @@ document.addEventListener('DOMContentLoaded', function() {
             searchContainer.style.cssText = 'position: relative; z-index: 1000; pointer-events: auto;';
             
             searchContainer.innerHTML = `
-                <div class="card search-panel" id="searchCard" style="width: 420px; max-width: 90vw; position: relative; pointer-events: auto;">
-                    <div class="card-header bg-primary text-white py-2 position-relative">
-                        <h6 class="mb-0">
-                            <i class="fas fa-search me-2"></i>Buscar Contratistas
-                        </h6>
-                        <button type="button" id="closeSearchBtn" class="btn-close-search" style="display: none;" aria-label="Cerrar buscador">
-                            <i class="fas fa-times"></i>
-                        </button>
+    <div class="card search-panel" id="searchCard" style="width: 380px; max-width: 95vw; position: relative; pointer-events: auto;">
+        <div class="card-header bg-primary text-white py-2 position-relative" style="padding: 12px 16px;">
+            <h6 class="mb-0" style="font-size: 15px; font-weight: 600;">
+                <i class="fas fa-search me-2"></i>Buscar Contratistas
+            </h6>
+            <button type="button" id="closeSearchBtn" class="btn-close-search" style="display: none;" aria-label="Cerrar buscador">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="card-body p-3" id="searchBody" style="pointer-events: auto; padding: 20px;">
+            <!-- Búsqueda por nombre -->
+            <div class="mb-3" style="margin-bottom: 12px;">
+                <label class="form-label small fw-semibold text-secondary" style="font-size: 12px; margin-bottom: 4px;">
+                    <i class="fas fa-user me-1"></i>Nombre del contratista
+                </label>
+                <input type="text" 
+                    id="inputNombre" 
+                    class="form-control search-input" 
+                    placeholder="Ingrese nombre o apellido"
+                    data-prevent-close="true"
+                    style="font-size: 14px; padding: 10px 12px; min-height: 42px;">
+            </div>
+            
+            <!-- Filtro por municipio -->
+            <div class="mb-3" style="margin-bottom: 12px;">
+                <label class="form-label small fw-semibold text-secondary" style="font-size: 12px; margin-bottom: 4px;">
+                    <i class="fas fa-map-marker-alt me-1"></i>Municipio
+                </label>
+                <select id="selectMunicipio" class="form-select search-select" data-prevent-close="true"
+                        style="font-size: 14px; padding: 10px 12px; min-height: 42px;">
+                    <option value="">Todos los municipios</option>
+                </select>
+            </div>
+            
+            <!-- Área -->
+            <div class="mb-3" style="margin-bottom: 12px;">
+                <label class="form-label small fw-semibold text-secondary" style="font-size: 12px; margin-bottom: 4px;">
+                    <i class="fas fa-building me-1"></i>Área
+                </label>
+                <select id="selectArea" class="form-select search-select" data-prevent-close="true"
+                        style="font-size: 14px; padding: 10px 12px; min-height: 42px;">
+                    <option value="">Todas las áreas</option>
+                </select>
+            </div>
+            
+            <!-- Tipo de Vinculación -->
+            <div class="mb-4" style="margin-bottom: 16px;">
+                <label class="form-label small fw-semibold text-secondary" style="font-size: 12px; margin-bottom: 4px;">
+                    <i class="fas fa-handshake me-1"></i>Tipo de Vinculación
+                </label>
+                <select id="selectTipoVinculacion" class="form-select search-select" data-prevent-close="true"
+                        style="font-size: 14px; padding: 10px 12px; min-height: 42px;">
+                    <option value="">Todos los tipos</option>
+                </select>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="d-flex gap-2" style="gap: 8px;">
+                <button type="button" id="btnBuscar" onclick="buscarContratistas()" 
+                        class="btn btn-primary flex-grow-1 search-button" data-prevent-close="true"
+                        style="min-height: 42px; padding: 10px 12px; font-size: 14px;">
+                    <i class="fas fa-search me-1"></i>Buscar
+                </button>
+                <button type="button" onclick="limpiarBusqueda()" 
+                        class="btn btn-outline-secondary search-button" data-prevent-close="true"
+                        style="min-height: 42px; padding: 10px 12px; font-size: 14px;">
+                    <i class="fas fa-times me-1"></i>Limpiar
+                </button>
+            </div>
+            
+            <!-- Indicador de búsqueda -->
+            <div id="indicadorBusqueda" class="mt-2" style="display: none; margin-top: 8px;">
+                <div class="d-flex align-items-center text-primary">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">Buscando...</span>
                     </div>
-                    <div class="card-body p-3" id="searchBody" style="pointer-events: auto;">
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-user me-1"></i>Nombre del contratista
-                            </label>
-                            <input type="text" 
-                                id="inputNombre" 
-                                class="form-control search-input" 
-                                placeholder="Ingrese nombre o apellido"
-                                data-prevent-close="true">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-map-marker-alt me-1"></i>Municipio
-                            </label>
-                            <select id="selectMunicipio" class="form-select search-select" data-prevent-close="true">
-                                <option value="">Todos los municipios</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-building me-1"></i>Área
-                            </label>
-                            <select id="selectArea" class="form-select search-select" data-prevent-close="true">
-                                <option value="">Todas las áreas</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label small fw-semibold text-secondary">
-                                <i class="fas fa-handshake me-1"></i>Tipo de Vinculación
-                            </label>
-                            <select id="selectTipoVinculacion" class="form-select search-select" data-prevent-close="true">
-                                <option value="">Todos los tipos</option>
-                            </select>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="button" id="btnBuscar" onclick="buscarContratistas()" 
-                                    class="btn btn-primary flex-grow-1 search-button" data-prevent-close="true">
-                                <i class="fas fa-search me-1"></i>Buscar
-                            </button>
-                            <button type="button" onclick="limpiarBusqueda()" 
-                                    class="btn btn-outline-secondary search-button" data-prevent-close="true">
-                                <i class="fas fa-times me-1"></i>Limpiar
-                            </button>
-                        </div>
-                        
-                        <div id="indicadorBusqueda" class="mt-2" style="display: none;">
-                            <div class="d-flex align-items-center text-primary">
-                                <div class="spinner-border spinner-border-sm me-2" role="status">
-                                    <span class="visually-hidden">Buscando...</span>
-                                </div>
-                                <small class="fw-medium">Buscando contratistas...</small>
-                            </div>
-                        </div>
-                        
-                        <div id="resultadosBusqueda" class="mt-4" style="display: none;">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0 text-primary">
-                                    <i class="fas fa-list me-1"></i>Resultados de búsqueda
-                                </h6>
-                                <span class="badge bg-primary" id="contadorResultados">0</span>
-                            </div>
-                            <div id="listaResultados" class="resultados-list"></div>
-                        </div>
-                    </div>
+                    <small class="fw-medium" style="font-size: 12px;">Buscando contratistas...</small>
                 </div>
-            `;
+            </div>
+            
+            <!-- Resultados de búsqueda -->
+            <div id="resultadosBusqueda" class="mt-4" style="display: none; margin-top: 16px;">
+                <div class="d-flex justify-content-between align-items-center mb-2" style="margin-bottom: 8px;">
+                    <h6 class="mb-0 text-primary" style="font-size: 13px;">
+                        <i class="fas fa-list me-1"></i>Resultados de búsqueda
+                    </h6>
+                    <span class="badge bg-primary" id="contadorResultados" style="font-size: 11px; padding: 3px 8px;">0</span>
+                </div>
+                <div id="listaResultados" class="resultados-list"></div>
+            </div>
+        </div>
+    </div>
+`;
             
             L.DomEvent.disableClickPropagation(searchContainer);
             L.DomEvent.disableScrollPropagation(searchContainer);
@@ -1627,14 +1640,181 @@ const mobileStyles = `
         animation: modalFadeIn 0.3s ease-out;
         transform-origin: center center;
         pointer-events: auto !important;
-        max-height: 80vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        max-height: 85vh !important; /* Aumentado */
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         margin: 0 !important;
         width: 95% !important;
-        max-width: 400px !important;
+        max-width: 380px !important; /* Reducido */
+        border-radius: 12px !important;
+        background: white !important;
+    }
+    /* Header del card - más compacto */
+    .search-container.modal-open .card-header {
+        padding: 12px 16px !important;
+        border-radius: 12px 12px 0 0 !important;
+        background: linear-gradient(135deg, #2c3e50, #3498db) !important;
+    }
+    .search-container.modal-open .card-header h6 {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+        /* Body del card - más compacto */
+    .search-container.modal-open .card-body {
+        padding: 20px !important; /* Reducido */
+        max-height: calc(85vh - 60px) !important; /* Ajustado */
+        overflow-y: auto !important;
+    }
+    .search-container.modal-open .form-label {
+        font-size: 12px !important; /* Reducido */
+        font-weight: 600 !important;
+        color: #495057 !important;
+        margin-bottom: 4px !important; /* Reducido */
+        letter-spacing: 0.2px !important;
+        display: block !important;
+        width: 100% !important;
+    }
+        /* Inputs y selects más compactos */
+    .search-container.modal-open .search-input,
+    .search-container.modal-open .search-select {
+        font-size: 14px !important; /* Reducido */
+        padding: 10px 12px !important; /* Reducido */
+        min-height: 42px !important; /* Reducido */
+        pointer-events: auto !important;
+        -webkit-user-select: text !important;
+        user-select: text !important;
+        touch-action: manipulation !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 6px !important;
+        margin-bottom: 8px !important; /* Espacio reducido entre campos */
+    }
+        /* Botones más compactos */
+    .search-container.modal-open .search-button {
+        min-height: 42px !important; /* Reducido */
+        padding: 10px 12px !important; /* Reducido */
+        font-size: 14px !important; /* Reducido */
+        pointer-events: auto !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+    }
+        /* Margen entre grupos de campos reducido */
+    .search-container.modal-open .mb-3 {
+        margin-bottom: 12px !important; /* Reducido de 16px */
+    }
+
+    .search-container.modal-open .mb-4 {
+        margin-bottom: 16px !important; /* Reducido de 24px */
+    }
+
+    /* Espacio entre botones reducido */
+    .search-container.modal-open .d-flex.gap-2 {
+        gap: 8px !important; /* Reducido */
+    }
+        /* Resultados de búsqueda más compactos */
+.search-container.modal-open .resultados-list {
+    max-height: 35vh !important; /* Reducido */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin-top: 8px !important;
+}
+
+/* Items de resultados más compactos */
+.search-container.modal-open .result-item {
+    padding: 10px 12px !important; /* Reducido */
+    margin-bottom: 6px !important; /* Reducido */
+    border-radius: 6px !important;
+}
+
+.search-container.modal-open .result-item .fw-semibold {
+    font-size: 13px !important; /* Reducido */
+    margin-bottom: 4px !important; /* Reducido */
+}
+
+.search-container.modal-open .result-item .small {
+    font-size: 11px !important; /* Reducido */
+}
+
+/* Badges más pequeños en resultados */
+.search-container.modal-open .result-item .badge {
+    font-size: 10px !important; /* Reducido */
+    padding: 3px 6px !important; /* Reducido */
+    margin: 1px !important;
+}
+    /* Botón de ver en mapa más pequeño */
+.search-container.modal-open .result-item .btn-outline-primary {
+    padding: 4px 8px !important; /* Reducido */
+    font-size: 11px !important; /* Reducido */
+}
+
+/* Contador de resultados más pequeño */
+.search-container.modal-open #contadorResultados {
+    font-size: 11px !important; /* Reducido */
+    padding: 3px 8px !important; /* Reducido */
+}
+
+/* Título de resultados más pequeño */
+.search-container.modal-open #resultadosBusqueda h6 {
+    font-size: 13px !important; /* Reducido */
+    padding-bottom: 8px !important; /* Reducido */
+}
+
+/* Indicador de búsqueda más compacto */
+.search-container.modal-open #indicadorBusqueda {
+    margin-top: 8px !important; /* Reducido */
+}
+
+.search-container.modal-open #indicadorBusqueda small {
+    font-size: 12px !important; /* Reducido */
+}
+
+/* Scrollbar más delgado */
+.search-container.modal-open .card::-webkit-scrollbar {
+    width: 4px !important; /* Reducido */
+}
+
+.search-container.modal-open .card::-webkit-scrollbar-track {
+    background: #f8f9fa !important;
+    border-radius: 2px !important;
+}
+
+.search-container.modal-open .card::-webkit-scrollbar-thumb {
+    background: #dee2e6 !important;
+    border-radius: 2px !important;
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .search-container.modal-open .card {
+        max-width: 92% !important;
+        max-height: 90vh !important;
     }
     
+    .search-container.modal-open .card-body {
+        padding: 16px !important; /* Más reducido en móviles pequeños */
+    }
+    
+    .search-container.modal-open .search-input,
+    .search-container.modal-open .search-select {
+        font-size: 13px !important;
+        padding: 9px 11px !important;
+        min-height: 40px !important;
+    }
+    
+    .search-container.modal-open .search-button {
+        min-height: 40px !important;
+        padding: 9px 11px !important;
+        font-size: 13px !important;
+    }
+    
+    .search-container.modal-open .form-label {
+        font-size: 11px !important;
+    }
+}
     @keyframes modalFadeIn {
         from {
             opacity: 0;
