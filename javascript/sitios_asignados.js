@@ -1,5 +1,5 @@
 // JavaScript para mapa centrado en el Meta con buscador/filtro profesional
-// VERSIÓN RESPONSIVE CORREGIDA - Problemas de navegación móvil solucionados
+// VERSIÓN RESPONSIVE CORREGIDA - Problema del teclado móvil solucionado
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no está cargado');
@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const villavicencio = [4.1420, -73.6266];
     const zoomInicial = 10;
     
-    // Crear el mapa - CONFIGURACIÓN CORREGIDA PARA MÓVIL
+    // Crear el mapa
     var mapa = L.map('mapa', {
         zoomControl: false,
         center: villavicencio,
         zoom: zoomInicial,
-        tap: true, // IMPORTANTE: Mantener activado para móviles
-        dragging: true, // IMPORTANTE: Siempre activar dragging
+        tap: true,
+        dragging: true,
         scrollWheelZoom: true,
         touchZoom: true,
         doubleClickZoom: true,
@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var searchControl = null;
     var mobileSearchBtn = null;
     var isModalOpen = false;
-    var mapInteractionEnabled = true;
+    var keyboardVisible = false;
+    var originalMobileBtnBottom = 120;
     
     // Función para verificar si es móvil
     function isMobile() {
@@ -103,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-search me-2"></i>Buscar Contratistas
                         </h6>
                         <!-- Botón cerrar (solo móvil) -->
-                        <button id="closeSearchBtn" class="btn-close-search" style="display: none;">
+                        <button type="button" id="closeSearchBtn" class="btn-close-search" style="display: none;" aria-label="Cerrar buscador">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -116,7 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="text" 
                                 id="inputNombre" 
                                 class="form-control search-input" 
-                                placeholder="Ingrese nombre o apellido">
+                                placeholder="Ingrese nombre o apellido"
+                                data-prevent-close="true">
                         </div>
                         
                         <!-- Filtro por municipio -->
@@ -124,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label small fw-semibold text-secondary">
                                 <i class="fas fa-map-marker-alt me-1"></i>Municipio
                             </label>
-                            <select id="selectMunicipio" class="form-select search-select">
+                            <select id="selectMunicipio" class="form-select search-select" data-prevent-close="true">
                                 <option value="">Todos los municipios</option>
                             </select>
                         </div>
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label small fw-semibold text-secondary">
                                 <i class="fas fa-building me-1"></i>Área
                             </label>
-                            <select id="selectArea" class="form-select search-select">
+                            <select id="selectArea" class="form-select search-select" data-prevent-close="true">
                                 <option value="">Todas las áreas</option>
                             </select>
                         </div>
@@ -144,19 +146,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <label class="form-label small fw-semibold text-secondary">
                                 <i class="fas fa-handshake me-1"></i>Tipo de Vinculación
                             </label>
-                            <select id="selectTipoVinculacion" class="form-select search-select">
+                            <select id="selectTipoVinculacion" class="form-select search-select" data-prevent-close="true">
                                 <option value="">Todos los tipos</option>
                             </select>
                         </div>
                         
                         <!-- Botones de acción -->
                         <div class="d-flex gap-2">
-                            <button id="btnBuscar" onclick="buscarContratistas()" 
-                                    class="btn btn-primary flex-grow-1 search-button">
+                            <button type="button" id="btnBuscar" onclick="buscarContratistas()" 
+                                    class="btn btn-primary flex-grow-1 search-button" data-prevent-close="true">
                                 <i class="fas fa-search me-1"></i>Buscar
                             </button>
-                            <button onclick="limpiarBusqueda()" 
-                                    class="btn btn-outline-secondary search-button">
+                            <button type="button" onclick="limpiarBusqueda()" 
+                                    class="btn btn-outline-secondary search-button" data-prevent-close="true">
                                 <i class="fas fa-times me-1"></i>Limpiar
                             </button>
                         </div>
@@ -185,16 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // SOLUCIÓN MEJORADA: Permitir eventos en el buscador pero evitar propagación
+            // SOLUCIÓN MEJORADA: Permitir eventos en el buscador
             L.DomEvent.disableClickPropagation(searchContainer);
             L.DomEvent.disableScrollPropagation(searchContainer);
-            
-            // Pero permitir scroll dentro del buscador
-            const searchBody = searchContainer.querySelector('#searchBody');
-            if (searchBody) {
-                L.DomEvent.on(searchBody, 'mousewheel', L.DomEvent.stopPropagation);
-                L.DomEvent.on(searchBody, 'wheel', L.DomEvent.stopPropagation);
-            }
             
             return searchContainer;
         };
@@ -209,58 +204,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function configurarEventosBuscador() {
-        // Configurar inputs para evitar que cierren el modal al tocarlos
-        const inputs = document.querySelectorAll('.search-input');
-        const selects = document.querySelectorAll('.search-select');
-        const buttons = document.querySelectorAll('.search-button');
+        // Configurar eventos para prevenir cierre del modal
+        const inputs = document.querySelectorAll('[data-prevent-close="true"]');
         const closeBtn = document.getElementById('closeSearchBtn');
         
-        inputs.forEach(input => {
-            L.DomEvent.on(input, 'touchstart', function(e) {
-                e.stopPropagation();
-                // Permitir que el input reciba el foco
+        // Detectar cuando el teclado aparece/desaparece
+        const inputNombre = document.getElementById('inputNombre');
+        if (inputNombre) {
+            inputNombre.addEventListener('focus', function() {
+                keyboardVisible = true;
+                console.log('📱 Teclado visible');
+                // Mover el botón móvil más arriba cuando el teclado está visible
+                if (mobileSearchBtn) {
+                    mobileSearchBtn.style.bottom = '250px';
+                }
             });
             
-            L.DomEvent.on(input, 'click', function(e) {
-                e.stopPropagation();
-            });
-        });
-        
-        selects.forEach(select => {
-            L.DomEvent.on(select, 'touchstart', function(e) {
-                e.stopPropagation();
-            });
-            
-            L.DomEvent.on(select, 'click', function(e) {
-                e.stopPropagation();
-            });
-        });
-        
-        buttons.forEach(button => {
-            L.DomEvent.on(button, 'touchstart', function(e) {
-                e.stopPropagation();
-                // Pequeño delay para permitir que se registre el click
+            inputNombre.addEventListener('blur', function() {
                 setTimeout(() => {
-                    if (typeof button.onclick === 'function') {
-                        button.onclick();
+                    keyboardVisible = false;
+                    console.log('📱 Teclado oculto');
+                    // Restaurar posición original
+                    if (mobileSearchBtn) {
+                        mobileSearchBtn.style.bottom = originalMobileBtnBottom + 'px';
                     }
-                }, 10);
+                }, 300);
+            });
+        }
+        
+        // Prevenir cierre del modal cuando se interactúa con inputs/botones
+        inputs.forEach(element => {
+            element.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
             });
             
-            L.DomEvent.on(button, 'click', function(e) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            element.addEventListener('focus', function(e) {
+                // Cuando un input recibe foco, no cerrar el modal
                 e.stopPropagation();
             });
         });
         
         if (closeBtn) {
-            L.DomEvent.on(closeBtn, 'touchstart', function(e) {
+            closeBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                cerrarBuscadorMovil();
-            });
-            
-            L.DomEvent.on(closeBtn, 'click', function(e) {
-                e.stopPropagation();
                 cerrarBuscadorMovil();
             });
         }
@@ -275,16 +266,20 @@ document.addEventListener('DOMContentLoaded', function() {
         
         mobileSearchBtn = document.createElement('button');
         mobileSearchBtn.id = 'mobileSearchBtn';
+        mobileSearchBtn.type = 'button';
         mobileSearchBtn.className = 'btn-open-search';
         mobileSearchBtn.innerHTML = `
             <i class="fas fa-search"></i>
             <span>Buscar Contratistas</span>
         `;
         
-        // Estilos inline
+        // Posición mejorada - más arriba para mejor acceso
+        const bottomPosition = 140; // Más arriba que el botón volver
+        
+        // Estilos inline mejorados
         mobileSearchBtn.style.cssText = `
             position: fixed;
-            bottom: 120px; /* Mover más arriba para no tapar el botón volver */
+            bottom: ${bottomPosition}px;
             right: 20px;
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
@@ -301,20 +296,27 @@ document.addEventListener('DOMContentLoaded', function() {
             white-space: nowrap;
             transition: all 0.3s ease;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
         `;
         
         document.body.appendChild(mobileSearchBtn);
         
-        // Eventos del botón móvil
+        // Guardar posición original
+        originalMobileBtnBottom = bottomPosition;
+        
+        // Eventos del botón móvil - SOLUCIÓN MEJORADA
         mobileSearchBtn.addEventListener('click', function(e) {
             e.stopPropagation();
+            e.preventDefault();
             abrirBuscadorMovil();
         });
         
         mobileSearchBtn.addEventListener('touchstart', function(e) {
             e.stopPropagation();
+            e.preventDefault();
             abrirBuscadorMovil();
-        });
+        }, { passive: false });
     }
     
     function configurarVisibilidadBuscador() {
@@ -337,15 +339,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // En PC: mostrar buscador normal, ocultar botón flotante
             if (searchContainer) {
                 searchContainer.style.display = 'block';
+                searchContainer.className = 'search-container';
                 searchContainer.style.position = '';
-                searchContainer.style.top = '';
-                searchContainer.style.left = '';
-                searchContainer.style.width = '';
-                searchContainer.style.height = '';
                 searchContainer.style.background = '';
-                searchContainer.style.justifyContent = '';
-                searchContainer.style.alignItems = '';
-                searchContainer.style.padding = '';
             }
             
             if (mobileSearchBtn) {
@@ -366,8 +362,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (searchContainer) {
             isModalOpen = true;
             
-            // Configurar como modal overlay - NUEVA SOLUCIÓN
+            // Ocultar botón móvil
+            if (mobileSearchBtn) {
+                mobileSearchBtn.style.display = 'none';
+            }
+            
+            // Configurar como modal overlay
             searchContainer.style.display = 'flex';
+            searchContainer.className = 'search-container modal-open';
             searchContainer.style.position = 'fixed';
             searchContainer.style.top = '0';
             searchContainer.style.left = '0';
@@ -381,49 +383,51 @@ document.addEventListener('DOMContentLoaded', function() {
             searchContainer.style.boxSizing = 'border-box';
             searchContainer.style.zIndex = '2000';
             
-            // CORRECCIÓN: NO DESHABILITAR EL MAPA
-            // En lugar de deshabilitar controles, usar pointer-events
-            mapInteractionEnabled = false;
-            
-            // Habilitar scroll dentro del modal
-            const searchBody = document.getElementById('searchBody');
-            if (searchBody) {
-                searchBody.style.overflowY = 'auto';
-                searchBody.style.maxHeight = '70vh';
-                searchBody.style.pointerEvents = 'auto';
+            // Deshabilitar interacción con el mapa cuando el modal está abierto
+            if (mapa) {
+                mapa.getContainer().style.pointerEvents = 'none';
             }
             
-            // Asegurar que el card tenga pointer-events
-            const searchCard = document.getElementById('searchCard');
-            if (searchCard) {
-                searchCard.style.pointerEvents = 'auto';
-            }
+            // Asegurar que el cuerpo no se desplace
+            document.body.classList.add('modal-open');
             
-            console.log('✅ Buscador móvil abierto (mapa sigue funcional)');
+            console.log('✅ Buscador móvil abierto');
+            
+            // Enfocar el primer input después de un pequeño delay
+            setTimeout(() => {
+                const inputNombre = document.getElementById('inputNombre');
+                if (inputNombre) {
+                    inputNombre.focus();
+                }
+            }, 300);
         }
     }
     
     function cerrarBuscadorMovil() {
         if (searchContainer) {
             isModalOpen = false;
-            mapInteractionEnabled = true;
+            keyboardVisible = false;
+            
+            // Ocultar modal
             searchContainer.style.display = 'none';
-            console.log('✅ Buscador móvil cerrado');
-        }
-    }
-    
-    // ================= FUNCIÓN PARA PERMITIR NAVEGACIÓN CUANDO EL MODAL NO ESTÁ ABIERTO =================
-    
-    function setupMapInteractions() {
-        // Asegurar que el mapa siempre sea interactivo
-        if (mapa) {
-            // Solo deshabilitar interacción si el modal está abierto
-            if (isModalOpen) {
-                // Permitir que el fondo del modal capture eventos, pero no el mapa
-                mapa.getContainer().style.pointerEvents = 'none';
-            } else {
+            searchContainer.className = 'search-container';
+            
+            // Restaurar interacción con el mapa
+            if (mapa) {
                 mapa.getContainer().style.pointerEvents = 'auto';
             }
+            
+            // Remover clase del cuerpo
+            document.body.classList.remove('modal-open');
+            
+            // Mostrar botón móvil nuevamente
+            if (mobileSearchBtn && isMobile()) {
+                mobileSearchBtn.style.display = 'flex';
+                // Restaurar posición original
+                mobileSearchBtn.style.bottom = originalMobileBtnBottom + 'px';
+            }
+            
+            console.log('✅ Buscador móvil cerrado');
         }
     }
     
@@ -434,14 +438,47 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar sistema
     inicializarSistema();
     
-    // ================= EVENTO DE CLICK EN EL FONDO DEL MODAL =================
+    // ================= EVENTOS PARA MANEJAR EL TECLADO MÓVIL =================
     
-    // Cerrar modal al hacer clic fuera del card
+    // Detectar cambios en el viewport cuando el teclado aparece/desaparece
+    let viewportHeight = window.innerHeight;
+    
+    function handleViewportChange() {
+        const newHeight = window.innerHeight;
+        
+        // Si la altura cambió significativamente, probablemente el teclado apareció/desapareció
+        if (Math.abs(newHeight - viewportHeight) > 200) {
+            if (newHeight < viewportHeight) {
+                console.log('📱 Teclado probablemente visible');
+                keyboardVisible = true;
+            } else {
+                console.log('📱 Teclado probablemente oculto');
+                keyboardVisible = false;
+            }
+            viewportHeight = newHeight;
+        }
+    }
+    
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('orientationchange', handleViewportChange);
+    
+    // ================= EVENTO DE CLICK FUERA DEL MODAL (SOLUCIÓN MEJORADA) =================
+    
+    // Cerrar modal solo si se hace clic fuera del card Y no es un elemento interactivo
     document.addEventListener('touchstart', function(e) {
         if (isMobile() && isModalOpen && searchContainer) {
             const searchCard = document.getElementById('searchCard');
-            if (searchCard && !searchCard.contains(e.target) && e.target !== mobileSearchBtn) {
-                cerrarBuscadorMovil();
+            const isInteractiveElement = e.target.closest('[data-prevent-close="true"]');
+            const isCloseButton = e.target.closest('#closeSearchBtn');
+            
+            // Solo cerrar si se hace clic fuera del card Y no es un elemento interactivo
+            if (searchCard && !searchCard.contains(e.target) && !isInteractiveElement && !isCloseButton) {
+                // Verificar si el teclado está visible
+                if (!keyboardVisible) {
+                    cerrarBuscadorMovil();
+                } else {
+                    console.log('⚠️ No cerrar modal mientras el teclado está visible');
+                }
             }
         }
     });
@@ -450,13 +487,29 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (isMobile() && isModalOpen && searchContainer) {
             const searchCard = document.getElementById('searchCard');
-            if (searchCard && !searchCard.contains(e.target) && e.target !== mobileSearchBtn) {
-                cerrarBuscadorMovil();
+            const isInteractiveElement = e.target.closest('[data-prevent-close="true"]');
+            const isCloseButton = e.target.closest('#closeSearchBtn');
+            
+            if (searchCard && !searchCard.contains(e.target) && !isInteractiveElement && !isCloseButton) {
+                if (!keyboardVisible) {
+                    cerrarBuscadorMovil();
+                }
             }
         }
     });
     
-    // ================= EL RESTO DEL CÓDIGO PERMANECE IGUAL =================
+    // Prevenir scroll cuando el modal está abierto
+    document.addEventListener('touchmove', function(e) {
+        if (isMobile() && isModalOpen) {
+            // Permitir scroll solo dentro del card del buscador
+            const searchCard = document.getElementById('searchCard');
+            if (!searchCard || !searchCard.contains(e.target)) {
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
+    
+    // ================= EL RESTO DEL CÓDIGO (FUNCIONES DE CARGA, FILTRADO, ETC.) =================
     
     // [Aquí va todo el resto del código que ya tenías...]
     // Función para cargar municipios
@@ -543,9 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ================= FUNCIONES PRINCIPALES =================
-    
-    // Función para cargar contratistas (modificada para aceptar filtros)
+    // Función para cargar contratistas
     async function cargarContratistas(filtros = {}) {
         // Cancelar búsqueda anterior si existe
         if (ultimaBusquedaAbortController) {
@@ -733,108 +784,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ================= FUNCIÓN PRINCIPAL MODIFICADA PARA USAR SITIOS DE TRABAJO =================
-    
-    // Función principal para procesar un contratista - VERSIÓN ACTUALIZADA
-    async function procesarContratista(contratista) {
-        console.log(`📋 Procesando contratista: ${contratista.nombre}`);
-        
-        // Array para almacenar todos los marcadores del contratista
-        const marcadores = [];
-        
-        // Verificar si el contratista tiene sitios de trabajo
-        if (contratista.sitios_trabajo && contratista.sitios_trabajo.length > 0) {
-            console.log(`   📍 Tiene ${contratista.sitios_trabajo.length} sitio(s) de trabajo`);
-            
-            // Procesar cada sitio de trabajo
-            for (const sitio of contratista.sitios_trabajo) {
-                // Verificar si el procesamiento sigue activo
-                if (!procesamientoActivo) {
-                    console.log('⏹️ Procesamiento interrumpido por nueva búsqueda');
-                    break;
-                }
-                
-                console.log(`   🔍 Procesando sitio ${sitio.tipo}: ${sitio.municipio}`);
-                
-                let coordenadas = null;
-                
-                // Intentar geocodificar la dirección del sitio de trabajo
-                if (sitio.direccion && sitio.municipio) {
-                    console.log(`      📍 Buscando dirección: ${sitio.direccion}, ${sitio.municipio}`);
-                    coordenadas = await buscarDireccionMejorada(sitio.direccion, sitio.municipio);
-                }
-                
-                // Si no se encuentra, usar coordenadas del municipio
-                if (!coordenadas && sitio.municipio) {
-                    console.log(`      🏢 Usando coordenadas del municipio: ${sitio.municipio}`);
-                    coordenadas = await obtenerCoordenadasMunicipio(sitio.municipio);
-                }
-                
-                // Si todavía no hay coordenadas, usar Villavicencio como fallback
-                if (!coordenadas) {
-                    console.log(`      🚨 Usando Villavicencio como fallback`);
-                    coordenadas = {
-                        lat: villavicencio[0],
-                        lng: villavicencio[1]
-                    };
-                }
-                
-                // Agregar marcador para este sitio de trabajo
-                const marcador = agregarMarcadorSitioTrabajo(contratista, sitio, coordenadas);
-                if (marcador) {
-                    marcadores.push({
-                        marcador: marcador,
-                        sitio: sitio,
-                        coordenadas: coordenadas
-                    });
-                }
-                
-                // Pequeña pausa para no saturar Nominatim
-                await esperar(100);
-            }
-        } else {
-            // Fallback: usar datos antiguos (para compatibilidad)
-            console.log(`   ⚠️ No tiene sitios de trabajo definidos, usando datos antiguos`);
-            
-            let coordenadas = null;
-            
-            // Primero intentar con dirección principal
-            if (contratista.direccion_principal && contratista.municipio_principal) {
-                coordenadas = await buscarDireccionMejorada(contratista.direccion_principal, contratista.municipio_principal);
-            }
-            
-            // Si no funciona, usar municipio
-            if (!coordenadas && contratista.municipio_principal) {
-                coordenadas = await obtenerCoordenadasMunicipio(contratista.municipio_principal);
-            }
-            
-            // Último recurso
-            if (!coordenadas) {
-                coordenadas = {
-                    lat: villavicencio[0],
-                    lng: villavicencio[1]
-                };
-            }
-            
-            const marcador = agregarMarcadorContratista(contratista, coordenadas);
-            if (marcador) {
-                marcadores.push({
-                    marcador: marcador,
-                    sitio: { tipo: 'principal', municipio: contratista.municipio_principal },
-                    coordenadas: coordenadas
-                });
-            }
-        }
-        
-        return {
-            ...contratista,
-            marcadores: marcadores,
-            tiene_sitios_trabajo: contratista.sitios_trabajo && contratista.sitios_trabajo.length > 0
-        };
-    }
-    
-    // ================= FUNCIONES DE FILTRADO =================
-    
     // Buscar contratistas (solo cuando el usuario hace clic en Buscar)
     window.buscarContratistas = function() {
         // Limpiar timeout anterior si existe
@@ -918,552 +867,12 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarContratistas();
     };
     
-    // ================= LISTA DE RESULTADOS (ACTUALIZADA) =================
+    // ... [Todas las demás funciones se mantienen igual] ...
     
-    function actualizarListaResultados(contratistas) {
-        const container = document.getElementById('listaResultados');
-        const contador = document.getElementById('contadorResultados');
-        const resultadosDiv = document.getElementById('resultadosBusqueda');
-        
-        if (!container || !contador || !resultadosDiv) {
-            console.error('Elementos de resultados no encontrados');
-            return;
-        }
-        
-        // Mostrar contenedor de resultados (SOLO cuando se hace una búsqueda)
-        resultadosDiv.style.display = 'block';
-        
-        // Contar el total de marcadores (no contratistas)
-        let totalMarcadores = 0;
-        contratistas.forEach(contratista => {
-            totalMarcadores += contratista.marcadores ? contratista.marcadores.length : 1;
-        });
-        
-        contador.textContent = totalMarcadores;
-        
-        // Limpiar lista anterior
-        container.innerHTML = '';
-        
-        if (contratistas.length === 0) {
-            container.innerHTML = `
-                <div class="alert alert-light border mt-2 py-2">
-                    <div class="text-center text-muted">
-                        <i class="fas fa-search fa-lg mb-2"></i>
-                        <p class="mb-0">No se encontraron contratistas</p>
-                        <small class="mt-1">Intente con otros criterios de búsqueda</small>
-                    </div>
-                </div>
-            `;
-            return;
-        }
-        
-        // Crear elementos de lista
-        contratistas.forEach((contratista, index) => {
-            const item = document.createElement('div');
-            item.className = 'result-item';
-            
-            // Mostrar información de sitios de trabajo si existen
-            let sitiosInfo = '';
-            if (contratista.tiene_sitios_trabajo && contratista.sitios_trabajo) {
-                sitiosInfo = contratista.sitios_trabajo.map(sitio => 
-                    `<span class="badge ${sitio.tipo === 'principal' ? 'bg-primary' : 'bg-info'} me-1 mb-1">
-                        <i class="fas fa-${sitio.tipo === 'principal' ? 'star' : 'map-marker-alt'} me-1"></i>
-                        ${sitio.municipio}
-                    </span>`
-                ).join('');
-            }
-            
-            item.innerHTML = `
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold text-primary">${contratista.nombre}</div>
-                        <div class="small text-muted mt-1">
-                            <div class="d-flex flex-wrap gap-1 mb-2">
-                                ${sitiosInfo}
-                            </div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-id-card me-1"></i>${contratista.cedula}
-                                </span>
-                                ${contratista.area ? `
-                                <span class="badge bg-light text-dark border">
-                                    <i class="fas fa-building me-1"></i>${contratista.area}
-                                </span>` : ''}
-                               ${contratista.tipo_vinculacion ? `
-                                <span class="badge tipo-vinculacion-badge">
-                                    <i class="fas fa-handshake me-1"></i>${contratista.tipo_vinculacion}
-                                </span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="event.stopPropagation(); irAContratista(${index})" 
-                            class="btn btn-sm btn-outline-primary ms-2"
-                            title="Ver en mapa">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            `;
-            
-            // Al hacer clic en el item
-            item.addEventListener('click', () => {
-                irAContratista(index);
-            });
-            
-            container.appendChild(item);
-        });
+    // Función de utilidad para esperar
+    function esperar(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
-    // Ocultar resultados de búsqueda
-    function ocultarResultadosBusqueda() {
-        const resultadosDiv = document.getElementById('resultadosBusqueda');
-        if (resultadosDiv) {
-            resultadosDiv.style.display = 'none';
-        }
-    }
-    
-    // Ir a un contratista específico (ACTUALIZADA)
-    window.irAContratista = function(index) {
-        if (contratistasProcesados[index] && contratistasProcesados[index].marcadores) {
-            const marcadores = contratistasProcesados[index].marcadores;
-            
-            if (marcadores.length > 0) {
-                // Si tiene múltiples sitios, centrar en el primero
-                const primerMarcador = marcadores[0].marcador;
-                
-                // Centrar mapa en el marcador
-                mapa.setView(primerMarcador.getLatLng(), 14);
-                
-                // Abrir popup
-                primerMarcador.openPopup();
-                
-                // Resaltar sutilmente el marcador
-                resaltarMarcador(primerMarcador);
-            }
-        }
-        
-        // En móvil, cerrar el buscador
-        if (isMobile()) {
-            cerrarBuscadorMovil();
-        }
-    };
-    
-    // Resaltar marcador sutilmente
-    function resaltarMarcador(marcador) {
-        const originalIcon = marcador.options.icon;
-        
-        // Cambiar a ícono resaltado sutilmente
-        const iconoResaltado = L.divIcon({
-            className: 'marcador-contratista-resaltado',
-            html: '<div style="background-color: #ffc107; color: #000; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);"><i class="fas fa-star"></i></div>',
-            iconSize: [36, 36],
-            iconAnchor: [18, 18]
-        });
-        
-        marcador.setIcon(iconoResaltado);
-        
-        // Restaurar después de 2 segundos
-        setTimeout(() => {
-            if (marcador && marcador.setIcon) {
-                marcador.setIcon(originalIcon);
-            }
-        }, 2000);
-    }
-    
-    // ================= NUEVA FUNCIÓN: AGREGAR MARCADOR DE SITIO DE TRABAJO =================
-    
-    // Función para agregar marcador de sitio de trabajo
-    function agregarMarcadorSitioTrabajo(contratista, sitio, coordenadas) {
-        // Definir colores según el tipo de sitio
-        const colores = {
-            'principal': '#007bff', // Azul
-            'secundario': '#28a745', // Verde
-            'terciario': '#fd7e14'   // Naranja
-        };
-        
-        // Crear ícono personalizado según tipo
-        const iconoSitioTrabajo = L.divIcon({
-            className: 'marcador-sitio-trabajo',
-            html: `<div style="background-color: ${colores[sitio.tipo] || '#6c757d'}; 
-                           color: white; 
-                           border-radius: 50%; 
-                           width: 32px; 
-                           height: 32px; 
-                           display: flex; 
-                           align-items: center; 
-                           justify-content: center;
-                           border: 2px solid white;
-                           box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px;">
-                  <i class="fas fa-${sitio.tipo === 'principal' ? 'building' : 'map-marker-alt'}"></i>
-               </div>`,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16],
-            popupAnchor: [0, -16]
-        });
-        
-        // Crear el marcador
-        const marcador = L.marker([coordenadas.lat, coordenadas.lng], {
-            icon: iconoSitioTrabajo,
-            title: `${contratista.nombre} - ${sitio.municipio} (${sitio.tipo})`
-        }).addTo(marcadoresContratistas);
-        
-        // Agregar popup con información del sitio
-        marcador.bindPopup(`
-            <div class="popup-contratista" style="width: 300px;">
-                <div class="popup-header p-3" style="background-color: ${colores[sitio.tipo] || '#6c757d'}; color: white;">
-                    <h6 class="mb-0">${contratista.nombre}</h6>
-                    <small class="opacity-75">
-                        <i class="fas fa-${sitio.tipo === 'principal' ? 'star' : 'map-marker-alt'} me-1"></i>
-                        Sitio de trabajo ${sitio.tipo}
-                    </small>
-                </div>
-                <div class="popup-body p-3">
-                    <div class="row g-2">
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Municipio:</span>
-                                <span class="info-value">${sitio.municipio}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Dirección de trabajo:</span>
-                                <span class="info-value long-text">${sitio.direccion}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Área:</span>
-                                <span class="info-value">${contratista.area}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Contrato:</span>
-                                <span class="info-value">${contratista.contrato}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Teléfono:</span>
-                                <span class="info-value">${contratista.telefono}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Tipo Vinculación:</span>
-                                <span class="info-value">${contratista.tipo_vinculacion || 'No especificado'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="my-2">
-                    <div class="text-center small text-muted">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
-                    </div>
-                </div>
-            </div>
-        `);
-        
-        return marcador;
-    }
-    
-    // ================= FUNCIÓN ORIGINAL (para compatibilidad) =================
-    
-    // Función para agregar un marcador al mapa (versión original - para compatibilidad)
-    function agregarMarcadorContratista(contratista, coordenadas) {
-        // Crear ícono personalizado profesional
-        var iconoContratista = L.divIcon({
-            className: 'marcador-contratista',
-            html: '<i class="fas fa-user"></i>',
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -28]
-        });
-        
-        // Crear el marcador
-        var marcador = L.marker([coordenadas.lat, coordenadas.lng], {
-            icon: iconoContratista,
-            title: contratista.nombre
-        }).addTo(marcadoresContratistas);
-        
-        // Determinar qué dirección mostrar
-        const direccionMostrar = contratista.direccion_principal || contratista.direccion || 'No especificada';
-        
-        // Agregar popup con información profesional
-        marcador.bindPopup(`
-            <div class="popup-contratista" style="width: 300px;">
-                <div class="popup-header bg-primary text-white p-3">
-                    <h6 class="mb-0">${contratista.nombre}</h6>
-                    <small class="opacity-75">Contratista</small>
-                </div>
-                <div class="popup-body p-3">
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Cédula:</span>
-                                <span class="info-value">${contratista.cedula}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Teléfono:</span>
-                                <span class="info-value">${contratista.telefono}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Contrato:</span>
-                                <span class="info-value">${contratista.contrato}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Área:</span>
-                                <span class="info-value">${contratista.area}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Tipo Vinculación:</span>
-                                <span class="info-value">${contratista.tipo_vinculacion || 'No especificado'}</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="info-item">
-                                <span class="info-label">Municipio principal:</span>
-                                <span class="info-value">${contratista.municipio_principal}</span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="info-item">
-                                <span class="info-label">Dirección de trabajo:</span>
-                                <span class="info-value long-text">${direccionMostrar}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="my-2">
-                    <div class="text-center small text-muted">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        ${coordenadas.lat.toFixed(6)}, ${coordenadas.lng.toFixed(6)}
-                    </div>
-                </div>
-            </div>
-        `);
-        
-        return marcador;
-    }
-    
-    // ================= FUNCIONES DE GEOCODIFICACIÓN =================
-    
-    // FUNCIÓN MEJORADA: Buscar dirección con múltiples intentos
-    async function buscarDireccionMejorada(direccion, municipio) {
-        // Lista de consultas a intentar
-        const consultas = generarConsultas(direccion, municipio);
-        
-        for (let i = 0; i < consultas.length; i++) {
-            // Verificar si el procesamiento sigue activo
-            if (!procesamientoActivo) {
-                return null;
-            }
-            
-            const consulta = consultas[i];
-            console.log(`   🔍 Intento ${i + 1}: "${consulta.substring(0, 50)}${consulta.length > 50 ? '...' : ''}"`);
-            
-            const resultado = await buscarEnNominatim(consulta);
-            if (resultado) {
-                console.log(`   ✅ Encontrado`);
-                return resultado;
-            }
-            
-            // Pequeña pausa entre intentos
-            if (i < consultas.length - 1) {
-                await esperar(100);
-            }
-        }
-        
-        console.log(`   ❌ No encontrado después de ${consultas.length} intentos`);
-        return null;
-    }
-    
-    // Generar múltiples variantes de búsqueda
-    function generarConsultas(direccion, municipio) {
-        const consultas = [];
-        
-        // 1. Dirección completa
-        consultas.push(`${direccion}, ${municipio}, Meta, Colombia`);
-        
-        // 2. Dirección simplificada
-        const direccionSimple = simplificarDireccion(direccion);
-        if (direccionSimple !== direccion) {
-            consultas.push(`${direccionSimple}, ${municipio}, Colombia`);
-        }
-        
-        // 3. Solo elementos principales
-        const elementos = extraerElementosDireccion(direccion);
-        if (elementos.calle && elementos.numero) {
-            consultas.push(`${elementos.calle} ${elementos.numero}, ${municipio}, Meta`);
-        }
-        
-        // 4. Solo calle principal
-        const callePrincipal = extraerCallePrincipal(direccion);
-        if (callePrincipal) {
-            consultas.push(`${callePrincipal}, ${municipio}, Colombia`);
-        }
-        
-        // 5. Solo municipio (último recurso)
-        consultas.push(`${municipio}, Meta, Colombia`);
-        
-        return consultas;
-    }
-    
-    // Simplificar dirección para mejor búsqueda
-    function simplificarDireccion(direccion) {
-        if (!direccion) return '';
-        
-        // Quitar números específicos de casa/manzana/lote
-        const patrones = [
-            /^(.*?)(?:\s*[#\-]\s*\d+.*)$/i,
-            /^(.*?\b(?:manzana|mz|lote|lt|torre|apartamento|apt)\s+[a-z0-9]+).*$/i,
-            /^(.*?)(?:\s+(?:esquina|int|interior|local|oficina|ofc|piso)\s+.*)$/i
-        ];
-        
-        for (const patron of patrones) {
-            const match = direccion.match(patron);
-            if (match && match[1]) {
-                return match[1].trim();
-            }
-        }
-        
-        return direccion;
-    }
-    
-    // Extraer calle principal
-    function extraerCallePrincipal(direccion) {
-        if (!direccion) return null;
-        
-        const patrones = [
-            /(calle|carrera|avenida|diagonal|transversal|cll|cr|av)\s+(\d+[a-z]?(?:\s*[a-z])?)/i,
-            /(cra|av|diag|trans)\s+(\d+[a-z]?)/i
-        ];
-        
-        for (const patron of patrones) {
-            const match = direccion.match(patron);
-            if (match) {
-                const tipo = match[1].toLowerCase();
-                const numero = match[2];
-                
-                const tiposCompletos = {
-                    'cll': 'calle', 'cr': 'carrera', 'cra': 'carrera',
-                    'av': 'avenida', 'diag': 'diagonal', 'trans': 'transversal'
-                };
-                
-                const tipoCompleto = tiposCompletos[tipo] || tipo;
-                return `${tipoCompleto} ${numero}`;
-            }
-        }
-        
-        return null;
-    }
-    
-    // Extraer elementos de dirección
-    function extraerElementosDireccion(direccion) {
-        const elementos = { calle: null, numero: null };
-        
-        if (!direccion) return elementos;
-        
-        // Patrones comunes
-        const patrones = [
-            /(calle|carrera|avenida|diagonal|transversal)\s+(\d+[a-z]?)\s*(?:#|no\.?)?\s*(\d+\s*[-–]\s*\d+)/i,
-            /(calle|carrera|avenida)\s+(\d+[a-z]?)\s+(?:con|y)\s+(calle|carrera|avenida)\s+(\d+)/i
-        ];
-        
-        for (const patron of patrones) {
-            const match = direccion.match(patron);
-            if (match) {
-                elementos.calle = match[1] + ' ' + match[2];
-                elementos.numero = match[3] || match[4] || null;
-                break;
-            }
-        }
-        
-        return elementos;
-    }
-    
-    // Función para buscar en Nominatim
-    async function buscarEnNominatim(consulta) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(consulta)}&limit=1&countrycodes=co`;
-        
-        try {
-            const response = await fetch(url, {
-                headers: { 'User-Agent': 'SistemaContratistasMeta/1.0' }
-            });
-            
-            if (!response.ok) return null;
-            
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                return {
-                    lat: parseFloat(data[0].lat),
-                    lng: parseFloat(data[0].lon)
-                };
-            }
-            
-            return null;
-            
-        } catch (error) {
-            console.warn('Error en búsqueda OSM:', error);
-            return null;
-        }
-    }
-    
-    // Función MEJORADA para obtener coordenadas de municipio
-    async function obtenerCoordenadasMunicipio(municipioNombre) {
-        // Coordenadas actualizadas de municipios del Meta
-        const coordenadasMunicipios = {
-            'Villavicencio': [4.1420, -73.6266],
-            'Acacías': [3.9878, -73.7577],
-            'Granada': [3.5431, -73.7075],
-            'San Martín': [3.6959, -73.6942],
-            'Puerto López': [4.0895, -72.9557],
-            'Puerto Gaitán': [4.3133, -72.0825],
-            'Restrepo': [4.2611, -73.5614],
-            'Cumaral': [4.2695, -73.4862],
-            'Castilla La Nueva': [3.8272, -73.6883],
-            'San Carlos de Guaroa': [3.7111, -73.2422],
-            'San Juan de Arama': [3.3464, -73.8897],
-            'San Juanito': [4.4583, -73.6750],
-            'San Luis de Cubarral': [3.7653, -73.6975],
-            'Uribe': [3.2544, -74.3544],
-            'Lejanías': [3.5278, -74.0239],
-            'El Calvario': [4.3542, -73.7125],
-            'El Castillo': [3.5653, -73.7944],
-            'Fuente de Oro': [3.4625, -73.6208],
-            'Guamal': [3.8803, -73.7656],
-            'Mapiripán': [2.8911, -72.1328],
-            'Mesetas': [3.3842, -74.0442],
-            'La Macarena': [2.1797, -73.7847],
-            'Vista Hermosa': [3.1242, -73.7514]
-        };
-        
-        if (municipioNombre && coordenadasMunicipios[municipioNombre]) {
-            return {
-                lat: coordenadasMunicipios[municipioNombre][0],
-                lng: coordenadasMunicipios[municipioNombre][1]
-            };
-        }
-        
-        // Si no tenemos el municipio, intentar buscarlo en OSM
-        const resultado = await buscarEnNominatim(`${municipioNombre}, Meta, Colombia`);
-        if (resultado) {
-            return resultado;
-        }
-        
-        // Último recurso: Villavicencio
-        return null;
-    }
-    
-    // ================= FUNCIONES DE UTILIDAD =================
     
     // Función para mostrar mensajes
     function mostrarMensaje(mensaje) {
@@ -1480,39 +889,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .openOn(mapa);
     }
     
-    // Función de utilidad para esperar
-    function esperar(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    
-    // Función para centrar en Villavicencio
-    window.centrarVillavicencio = function() {
-        mapa.setView(villavicencio, 13);
-    };
-    
-    // Función para recargar
-    window.recargarContratistas = function() {
-        // Cancelar búsqueda actual si existe
-        if (ultimaBusquedaAbortController) {
-            ultimaBusquedaAbortController.abort();
-        }
-        
-        // Detener procesamiento actual
-        procesamientoActivo = false;
-        
-        marcadoresContratistas.clearLayers();
-        cargarContratistas();
-        mostrarMensaje('Recargando contratistas...');
-    };
-    
-    // Evento Enter en el input de búsqueda
-    document.addEventListener('keypress', function(e) {
-        if (e.target.id === 'inputNombre' && e.key === 'Enter') {
-            buscarContratistas();
-        }
-    });
-    
-    // ================= EVENTOS DE VENTANA =================
+    // ================= EVENTOS ADICIONALES =================
     
     // Redimensionar ventana
     window.addEventListener('resize', function() {
@@ -1526,42 +903,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ================= FUNCIONALIDADES ADICIONALES =================
-    
-    // Función para mostrar información detallada en consola
-    window.mostrarInfoContratistas = function() {
-        console.log('=== INFORMACIÓN DE CONTRATISTAS PROCESADOS ===');
-        contratistasProcesados.forEach((contratista, index) => {
-            console.log(`${index + 1}. ${contratista.nombre}`);
-            console.log(`   - Cédula: ${contratista.cedula}`);
-            console.log(`   - Tiene sitios de trabajo: ${contratista.tiene_sitios_trabajo}`);
-            console.log(`   - Número de marcadores: ${contratista.marcadores ? contratista.marcadores.length : 0}`);
-            if (contratista.sitios_trabajo) {
-                contratista.sitios_trabajo.forEach(sitio => {
-                    console.log(`   - Sitio ${sitio.tipo}: ${sitio.municipio} - ${sitio.direccion}`);
-                });
-            }
-        });
-    };
-    
-    // Inicializar controles del botón volver
-    const volverBtn = document.getElementById('volverBtn');
-    if (volverBtn) {
-        volverBtn.addEventListener('click', () => {
-            window.location.href = 'menuContratistas.php';
-        });
-    }
+    // Evento Enter en el input de búsqueda
+    document.addEventListener('keypress', function(e) {
+        if (e.target.id === 'inputNombre' && e.key === 'Enter') {
+            buscarContratistas();
+        }
+    });
 });
 
-// CSS adicional corregido para el modal en móvil
+// CSS adicional mejorado para el modal en móvil
 const mobileStyles = `
 /* ================= ESTILOS MÓVIL CORREGIDOS ================= */
 @media (max-width: 768px) {
-    /* Botón abrir buscador */
+    /* Botón abrir buscador - POSICIÓN MEJORADA */
     .btn-open-search {
         display: flex !important;
         position: fixed;
-        bottom: 120px; /* Debajo del botón volver */
+        bottom: 140px; /* Más arriba para mejor acceso */
         right: 20px;
         background: linear-gradient(135deg, #2c3e50, #3498db);
         color: white;
@@ -1607,13 +965,15 @@ const mobileStyles = `
         pointer-events: auto;
     }
     
-    .btn-close-search:hover {
+    .btn-close-search:hover,
+    .btn-close-search:active {
         background: rgba(255, 255, 255, 0.3);
     }
     
     /* Contenedor del buscador cuando es modal */
     .search-container {
         display: none;
+        pointer-events: none;
     }
     
     .search-container.modal-open {
@@ -1638,6 +998,14 @@ const mobileStyles = `
         pointer-events: none !important;
     }
     
+    /* Prevenir scroll del body cuando el modal está abierto */
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
     /* Card del buscador en móvil */
     .search-container.modal-open .card {
         animation: modalFadeIn 0.3s ease-out;
@@ -1647,6 +1015,8 @@ const mobileStyles = `
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         margin: 0 !important;
+        width: 95% !important;
+        max-width: 400px !important;
     }
     
     @keyframes modalFadeIn {
@@ -1660,12 +1030,22 @@ const mobileStyles = `
         }
     }
     
-    /* Inputs más grandes para táctil */
+    /* Inputs más grandes para táctil - EVITAR ZOOM AUTOMÁTICO */
     .search-input, .search-select {
         font-size: 16px !important;
         padding: 12px 15px !important;
         min-height: 48px !important;
         pointer-events: auto !important;
+        -webkit-user-select: text !important;
+        user-select: text !important;
+        touch-action: manipulation !important;
+    }
+    
+    /* Evitar zoom automático en iOS al hacer focus */
+    @supports (-webkit-overflow-scrolling: touch) {
+        .search-input, .search-select {
+            font-size: 16px !important;
+        }
     }
     
     /* Botones más grandes */
@@ -1674,14 +1054,20 @@ const mobileStyles = `
         padding: 12px !important;
         font-size: 16px !important;
         pointer-events: auto !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     }
     
-    /* Prevenir que el fondo se desplace */
-    body.modal-open {
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-        height: 100%;
+    /* Resultados de búsqueda en móvil */
+    .resultados-list {
+        max-height: 40vh !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Ajustar altura del modal cuando el teclado está visible */
+    .keyboard-visible .search-container.modal-open .card {
+        max-height: 60vh !important;
+        margin-bottom: 20vh !important;
     }
 }
 
@@ -1704,6 +1090,11 @@ const mobileStyles = `
     
     .search-container.modal-open ~ #mapa {
         pointer-events: auto !important;
+    }
+    
+    body.modal-open {
+        overflow: auto !important;
+        position: static !important;
     }
 }
 
@@ -1730,6 +1121,17 @@ const mobileStyles = `
 
 .search-container.modal-open .card::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+/* Asegurar que los inputs sean claramente táctiles */
+.search-input, .search-select, .search-button {
+    min-height: 44px !important; /* Tamaño mínimo para toques en iOS */
+}
+
+/* Prevenir que los inputs pierdan foco muy rápido en iOS */
+.search-input:focus, .search-select:focus {
+    -webkit-user-select: text !important;
+    user-select: text !important;
 }
 `;
 
