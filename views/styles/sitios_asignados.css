@@ -590,6 +590,7 @@ body {
         padding: 12px 18px;
         font-size: 14px;
         z-index: 1001;
+        width: auto !important;
     }
 }
 
@@ -599,8 +600,7 @@ body {
         right: 15px;
         padding: 12px 16px;
         font-size: 13px;
-        min-width: auto; /* Permitir que se ajuste al contenido */
-        max-width: 90vw; /* Limitar ancho máximo */
         z-index: 1002;
+        width: auto !important;
     }
 }
