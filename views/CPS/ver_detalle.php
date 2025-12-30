@@ -513,21 +513,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                     </button>
                                 </div>
                             </div>
-                            
-                            <!-- FOTO COMO DOCUMENTO (SI EXISTE) -->
-                            <?php if ($foto_base64): ?>
-                            <div class="foto-documento-item">
-                                <div class="foto-documento-header">
-                                    <div class="foto-documento-icon">
-                                        <i class="fas fa-camera"></i>
-                                    </div>
-                                    <div style="font-weight: 600; color: #333;">Foto de Perfil</div>
-                                </div>
-                                <div class="foto-info-text">
-                                    <i class="fas fa-info-circle"></i> La foto del contratista está disponible y se muestra en la sección superior.
-                                </div>
-                            </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
