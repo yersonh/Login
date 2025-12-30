@@ -643,3 +643,35 @@ body {
     bottom: 0;
     left: 0;
 }
+/* ================= REDUCIR ALTURA DE LABELS Y COMBO BOXES EN PC ================= */
+
+@media (min-width: 769px) {
+    /* Labels - reducir espacio debajo (que afecta la altura total) */
+    .search-container .form-label {
+        margin-bottom: 4px !important; /* Reducido de 6px */
+        line-height: 1.2 !important; /* Más compacto */
+    }
+    
+    /* Combo boxes - reducir altura */
+    .search-container .form-select {
+        min-height: 36px !important; /* Reducido (era alrededor de 42px) */
+        height: 36px !important; /* Fuerza la altura */
+        padding-top: 6px !important; /* Reducir padding vertical */
+        padding-bottom: 6px !important; /* Reducir padding vertical */
+    }
+    
+    /* Inputs de texto también para consistencia */
+    .search-container .form-control {
+        min-height: 36px !important; /* Reducido */
+        height: 36px !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+    
+    /* Botones también más bajos para consistencia */
+    .search-container .btn {
+        min-height: 36px !important; /* Reducido */
+        padding-top: 8px !important; /* Ajustado */
+        padding-bottom: 8px !important; /* Ajustado */
+    }
+}
