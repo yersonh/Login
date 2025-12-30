@@ -53,98 +53,39 @@
     margin-bottom: 25px;
 }
 
-/* En móvil, todo va en una sola columna en este orden:
-   1. Foto
-   2. Información personal  
-   3. Información del contrato
-   4. Información laboral y ubicación
-   5. Documentos
-*/
-
-/* === FOTO - PRIMERA EN MÓVIL === */
-.foto-profesion-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid #eaeaea;
-    text-align: center;
-    order: 1;
-}
-
-.foto-contratista {
-    width: 150px;
-    height: 150px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 3px solid #1e3c72;
-    background-color: #f8f9fa;
-    margin: 0 auto 12px auto;
+/* En móvil, reorganizamos el orden con flexbox y order */
+.left-column {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    order: 2; /* Información va DESPUÉS de la foto */
 }
 
-.foto-contratista img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    order: 1; /* Foto va PRIMERO */
 }
 
-.foto-placeholder {
-    text-align: center;
-    color: #6c757d;
-    padding: 15px;
+/* Dentro de .right-column, aseguramos que Foto vaya antes que Documentos */
+.foto-profesion-card {
+    order: 1; /* Foto primero en .right-column */
 }
 
-.foto-placeholder i {
-    font-size: 3rem;
-    color: #adb5bd;
-    margin-bottom: 8px;
-    display: block;
-}
-
-/* === INFORMACIÓN PERSONAL - SEGUNDA EN MÓVIL === */
-.info-personal-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid #eaeaea;
-    order: 2;
-}
-
-/* === INFORMACIÓN DEL CONTRATO - TERCERA EN MÓVIL === */
-.info-contrato-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid #eaeaea;
-    order: 3;
-}
-
-/* === INFORMACIÓN LABORAL Y UBICACIÓN - CUARTA EN MÓVIL === */
-.info-laboral-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid #eaeaea;
-    order: 4;
-}
-
-/* === DOCUMENTOS - ÚLTIMOS EN MÓVIL === */
 .documentos-card {
+    order: 2; /* Documentos después en .right-column */
+}
+
+/* === TARJETAS DE INFORMACIÓN === */
+.info-card {
     background: white;
     border-radius: 10px;
     padding: 18px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     border: 1px solid #eaeaea;
-    order: 5;
 }
 
-/* === ESTILOS COMUNES PARA TARJETAS DE INFORMACIÓN === */
 .info-card h3 {
     color: #1e3c72;
     margin-top: 0;
@@ -204,7 +145,57 @@
     word-break: break-word;
 }
 
-/* === ESTILOS PARA DOCUMENTOS === */
+/* === SECCIÓN DE FOTO Y PROFESIÓN === */
+.foto-profesion-card {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #eaeaea;
+    text-align: center;
+}
+
+.foto-contratista {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid #1e3c72;
+    background-color: #f8f9fa;
+    margin: 0 auto 12px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-contratista img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-placeholder {
+    text-align: center;
+    color: #6c757d;
+    padding: 15px;
+}
+
+.foto-placeholder i {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* === DOCUMENTOS ADJUNTOS === */
+.documentos-card {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #eaeaea;
+}
+
 .documentos-card h3 {
     color: #1e3c72;
     margin-top: 0;
@@ -371,46 +362,21 @@
         display: grid;
         grid-template-columns: 2fr 1fr;
         gap: 25px;
-        margin-bottom: 25px;
     }
     
     /* Resetear órdenes para tablet/desktop */
-    .foto-profesion-card,
-    .info-personal-card,
-    .info-contrato-card,
-    .info-laboral-card,
-    .documentos-card {
-        order: 0;
-    }
-    
-    /* Columna izquierda en tablet/desktop */
     .left-column {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
         order: 1;
     }
     
-    /* Columna derecha en tablet/desktop */
     .right-column {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
         order: 2;
     }
     
-    /* Mover tarjetas a sus columnas correspondientes */
-    .info-personal-card,
-    .info-contrato-card,
-    .info-laboral-card {
-        /* Estas van a la columna izquierda */
-        grid-column: 1;
-    }
-    
+    /* Resetear órdenes dentro de .right-column */
     .foto-profesion-card,
     .documentos-card {
-        /* Estas van a la columna derecha */
-        grid-column: 2;
+        order: 0;
     }
     
     .info-grid-compact {
@@ -447,7 +413,7 @@
     
     .main-content-grid {
         display: grid;
-        grid-template-columns: 2.2fr 1.8fr; /* Más balanceado */
+        grid-template-columns: 2.2fr 1.8fr;
         gap: 30px;
         align-items: start;
     }
@@ -455,7 +421,7 @@
     .right-column {
         order: 2;
         display: grid;
-        grid-template-rows: auto 1fr; /* Foto arriba, documentos abajo */
+        grid-template-rows: auto 1fr;
         gap: 20px;
         height: fit-content;
     }
@@ -519,10 +485,8 @@
         min-height: 34px;
     }
     
-    /* Ajustes adicionales para las tarjetas de información */
-    .info-personal-card,
-    .info-contrato-card,
-    .info-laboral-card,
+    /* Ajustes adicionales */
+    .info-card,
     .foto-profesion-card,
     .documentos-card {
         padding: 20px;
@@ -589,9 +553,7 @@
         font-size: 1.3rem;
     }
     
-    .info-personal-card,
-    .info-contrato-card,
-    .info-laboral-card,
+    .info-card,
     .foto-profesion-card,
     .documentos-card {
         padding: 15px;
@@ -628,15 +590,11 @@
         gap: 15px;
     }
     
-    /* En horizontal móvil: foto y documentos a la derecha */
-    .foto-profesion-card,
-    .documentos-card {
+    .left-column {
         order: 1;
     }
     
-    .info-personal-card,
-    .info-contrato-card,
-    .info-laboral-card {
+    .right-column {
         order: 2;
     }
     
