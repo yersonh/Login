@@ -963,3 +963,422 @@ body {
         transform: none;
     }
 }
+/* ================= RESPONSIVE MÓVIL MEJORADO PARA VISTA DE CONTRATISTAS ================= */
+
+@media (max-width: 768px) {
+    /* 1. ESTADÍSTICAS - Convertir en filas apiladas */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .stat-card {
+        padding: 15px !important;
+        gap: 12px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+    
+    .stat-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .stat-number {
+        font-size: 26px !important;
+        margin-bottom: 3px !important;
+    }
+    
+    .stat-label {
+        font-size: 13px !important;
+    }
+    
+    /* 2. HERRAMIENTAS DE BÚSQUEDA - Reorganizar */
+    .tools-section {
+        padding: 15px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .search-container {
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .search-box {
+        width: 100% !important;
+    }
+    
+    .search-input {
+        padding: 12px 15px 12px 45px !important;
+        font-size: 15px !important;
+    }
+    
+    .search-actions {
+        width: 100% !important;
+        display: flex !important;
+        gap: 10px !important;
+    }
+    
+    .btn-refresh {
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+        flex: 1 !important;
+        justify-content: center !important;
+    }
+    
+    /* 3. FILTROS - Convertir en acordeón o grid apilado */
+    .filter-container {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .filter-group {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    
+    .filter-select {
+        width: 100% !important;
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+    }
+    
+    /* 4. TABLA HEADER - Ajustar */
+    .table-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 15px !important;
+    }
+    
+    .table-header h4 {
+        font-size: 18px !important;
+    }
+    
+    .table-count {
+        font-size: 13px !important;
+    }
+    
+    /* 5. TABLA - Mejorar visualización en móvil */
+    .table-responsive {
+        border-radius: 8px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .contratistas-table {
+        min-width: 900px !important; /* Permite scroll horizontal */
+    }
+    
+    .contratistas-table th {
+        padding: 12px 8px !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+    }
+    
+    .contratistas-table td {
+        padding: 10px 8px !important;
+    }
+    
+    /* 6. CONTENIDO DE CELDAS - Más compacto para móvil */
+    .compact-info {
+        font-size: 13px !important;
+        gap: 2px !important;
+        min-width: 150px !important;
+    }
+    
+    .info-line {
+        font-size: 12px !important;
+        gap: 4px !important;
+    }
+    
+    .info-line i {
+        width: 14px !important;
+        font-size: 12px !important;
+    }
+    
+    /* 7. MUNICIPIOS - Más compacto */
+    .municipios-container {
+        gap: 3px !important;
+        min-width: 120px !important;
+    }
+    
+    .municipio-item {
+        font-size: 12px !important;
+        padding: 3px 5px !important;
+    }
+    
+    .municipio-icon {
+        font-size: 11px !important;
+    }
+    
+    /* 8. DOCUMENTOS - Ajustar tamaño de íconos */
+    .document-icons {
+        gap: 6px !important;
+        justify-content: center !important;
+    }
+    
+    .doc-icon {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+    
+    /* 9. ESTADOS - Más compacto */
+    .status-badges {
+        gap: 3px !important;
+        align-items: center !important;
+    }
+    
+    .badge {
+        padding: 3px 8px !important;
+        font-size: 11px !important;
+        justify-content: center !important;
+    }
+    
+    /* 10. ACCIONES - Botones más pequeños */
+    .action-buttons {
+        gap: 6px !important;
+        justify-content: center !important;
+    }
+    
+    .btn-action {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+    
+    /* 11. BOTÓN VOLVER - Ajustar para móvil */
+    .volver-btn {
+        padding: 10px 15px !important;
+        font-size: 13px !important;
+        bottom: 15px !important;
+        left: 15px !important;
+        z-index: 100 !important;
+    }
+}
+
+/* Móviles más pequeños (480px o menos) */
+@media (max-width: 480px) {
+    /* Estadísticas aún más compactas */
+    .stat-card {
+        padding: 12px !important;
+        gap: 10px !important;
+    }
+    
+    .stat-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 18px !important;
+    }
+    
+    .stat-number {
+        font-size: 24px !important;
+    }
+    
+    .stat-label {
+        font-size: 12px !important;
+    }
+    
+    /* Búsqueda más compacta */
+    .search-input {
+        padding: 10px 15px 10px 45px !important;
+        font-size: 14px !important;
+    }
+    
+    .btn-refresh {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    /* Filtros en columna única */
+    .filter-group {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .filter-select {
+        padding: 9px 10px !important;
+        font-size: 13px !important;
+    }
+    
+    /* Tabla aún más compacta */
+    .contratistas-table {
+        min-width: 1000px !important;
+    }
+    
+    .contratistas-table th {
+        padding: 10px 6px !important;
+        font-size: 13px !important;
+    }
+    
+    .contratistas-table td {
+        padding: 8px 6px !important;
+    }
+    
+    /* Contenido aún más compacto */
+    .compact-info {
+        font-size: 12px !important;
+        min-width: 140px !important;
+    }
+    
+    .info-line {
+        font-size: 11px !important;
+    }
+    
+    /* Botones más pequeños */
+    .btn-action {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 13px !important;
+    }
+    
+    /* Botón volver más pequeño */
+    .volver-btn {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        bottom: 10px !important;
+        left: 10px !important;
+    }
+}
+
+/* Opcional: Si quieres que los filtros sean un acordeón en móvil muy pequeño */
+@media (max-width: 360px) {
+    .tools-section {
+        padding: 12px !important;
+    }
+    
+    .search-actions .btn-refresh span {
+        display: none; /* Ocultar texto, solo mostrar ícono */
+    }
+    
+    .search-actions .btn-refresh i {
+        margin: 0 !important;
+    }
+    
+    .btn-refresh {
+        width: 40px !important;
+        height: 40px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+    
+    /* Los filtros se pueden convertir en botones desplegables si es necesario */
+}
+
+/* Mejoras táctiles para móviles */
+@media (hover: none) and (pointer: coarse) {
+    .btn-refresh, .btn-action, .doc-icon {
+        min-height: 44px !important; /* Tamaño mínimo para toques */
+        min-width: 44px !important;
+    }
+    
+    .filter-select {
+        font-size: 16px !important; /* Evita zoom automático en iOS */
+    }
+    
+    .search-input {
+        font-size: 16px !important; /* Evita zoom automático en iOS */
+    }
+}
+
+/* Scroll horizontal suave para tabla en móvil */
+@media (max-width: 768px) {
+    .table-responsive {
+        scrollbar-width: thin !important;
+        scrollbar-color: #c1c1c1 #f1f1f1 !important;
+    }
+    
+    .table-responsive::-webkit-scrollbar {
+        height: 6px !important;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+        border-radius: 3px !important;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+        border-radius: 3px !important;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8 !important;
+    }
+}
+
+/* Si quieres un diseño alternativo para la tabla en móvil (más radical) */
+@media (max-width: 768px) {
+    /* Opción: Ocultar columnas menos importantes en móvil */
+    .contratistas-table th:nth-child(3), /* Información */
+    .contratistas-table td:nth-child(3) {
+        display: none !important;
+    }
+    
+    .contratistas-table {
+        min-width: 700px !important; /* Menos ancho */
+    }
+}
+
+/* Otra opción: Convertir tabla en cards en móvil (más moderno) */
+@media (max-width: 768px) {
+    /* Descomenta esto si quieres cards en lugar de tabla */
+    /*
+    .table-responsive {
+        overflow-x: visible !important;
+    }
+    
+    .contratistas-table {
+        display: block !important;
+        min-width: auto !important;
+    }
+    
+    .contratistas-table thead {
+        display: none !important;
+    }
+    
+    .contratistas-table tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    .contratistas-table tr {
+        display: block !important;
+        background: white !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+    }
+    
+    .contratistas-table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 10px 0 !important;
+        border-bottom: 1px solid #eee !important;
+    }
+    
+    .contratistas-table td:last-child {
+        border-bottom: none !important;
+    }
+    
+    .contratistas-table td::before {
+        content: attr(data-label) !important;
+        font-weight: 600 !important;
+        color: #666 !important;
+        margin-right: 10px !important;
+        flex: 1 !important;
+    }
+    
+    .contratistas-table td > * {
+        flex: 2 !important;
+    }
+    */
+}
