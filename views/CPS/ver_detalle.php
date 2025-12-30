@@ -517,52 +517,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                     </div>
                 </div>
                 
-                <!-- INFORMACIÓN DEL SISTEMA -->
-                <div class="info-card" style="margin-top: 20px;">
-                    <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                    <div class="info-grid-compact">
-                        <div class="info-item-compact">
-                            <div class="info-icon-compact">
-                                <i class="fas fa-calendar-plus"></i>
-                            </div>
-                            <div class="info-content-compact">
-                                <div class="info-label-compact">Fecha de Registro</div>
-                                <div class="info-value-compact"><?php echo $created_at; ?></div>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item-compact">
-                            <div class="info-icon-compact">
-                                <i class="fas fa-id-badge"></i>
-                            </div>
-                            <div class="info-content-compact">
-                                <div class="info-label-compact">ID Persona</div>
-                                <div class="info-value-compact"><?php echo htmlspecialchars($contratista['id_persona'] ?? 'N/A'); ?></div>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item-compact">
-                            <div class="info-icon-compact">
-                                <i class="fas fa-id-badge"></i>
-                            </div>
-                            <div class="info-content-compact">
-                                <div class="info-label-compact">ID Detalle</div>
-                                <div class="info-value-compact"><?php echo htmlspecialchars($contratista['id_detalle'] ?? 'N/A'); ?></div>
-                            </div>
-                        </div>
-                        
-                        <div class="info-item-compact">
-                            <div class="info-icon-compact">
-                                <i class="fas fa-code"></i>
-                            </div>
-                            <div class="info-content-compact">
-                                <div class="info-label-compact">Referencia</div>
-                                <div class="info-value-compact">CT-<?php echo str_pad($contratista['id_detalle'] ?? '0', 5, '0', STR_PAD_LEFT); ?></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- BOTÓN VOLVER -->
                  <button class="btn-volver" id="volverBtn" onclick="window.location.href='visor_registrados.php'";>
                     <i class="fas fa-arrow-left"></i>
