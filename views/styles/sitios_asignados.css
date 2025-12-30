@@ -647,14 +647,18 @@ body {
 
 @media (min-width: 769px) {
     /* Labels - reducir espacio debajo (que afecta la altura total) */
-    .search-container .form-label {
-        margin-bottom: 4px !important; /* Reducido de 6px */
-        line-height: 1.2 !important; /* Más compacto */
+     .search-container .form-label {
+        margin-bottom: 2px !important;  /* Reducir MUCHO el espacio debajo */
+        padding-top: 0 !important;      /* Quitar padding arriba si tiene */
+        padding-bottom: 0 !important;   /* Quitar padding abajo si tiene */
+        min-height: auto !important;    /* Quitar altura mínima si tiene */
+        height: auto !important;        /* Asegurar que sea solo lo que ocupa el texto */
+        line-height: 1 !important;      /* Mínimo espacio entre líneas */
     }
-    .search-container label[for="inputNombre"] {
-        font-size: 11px !important;        /* Esto reduce la altura del texto */
-        line-height: 1.1 !important;       /* Esto hace el texto más compacto */
-        margin-bottom: 3px !important;     /* Esto reduce espacio debajo */
+    
+    /* Y también reducir el espacio entre los grupos de campos */
+    .search-container .mb-3 {
+        margin-bottom: 8px !important;  /* Reducir espacio entre label+input y siguiente grupo */
     }
     
     /* Combo boxes - reducir altura */
