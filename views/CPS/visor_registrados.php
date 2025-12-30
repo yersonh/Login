@@ -416,10 +416,10 @@ try {
                                placeholder="Buscar por nombre, cédula, contrato, municipio...">
                     </div>
                     <div class="search-actions">
-                        <button id="clearFiltersBtn" class="btn-refresh" title="Limpiar filtros">
+                        <button id="clearFiltersBtn" class="btn-refresh" title="Limpiar todos los filtros y búsquedas">
                             <i class="fas fa-broom"></i> Limpiar
                         </button>
-                        <button id="refreshBtn" class="btn-refresh">
+                        <button id="refreshBtn" class="btn-refresh" title="Recargar datos desde el servidor">
                             <i class="fas fa-sync-alt"></i> Actualizar
                         </button>
                     </div>
@@ -496,7 +496,7 @@ try {
                         </thead>
                         <tbody>
                             <?php if (empty($contratistas)): ?>
-                                <tr class="empty-row">
+                                <tr class="empty-row" data-is-original="true">
                                     <td colspan="8">
                                         <div class="empty-state">
                                             <i class="fas fa-users-slash"></i>
@@ -786,7 +786,7 @@ try {
     
     <!-- Scripts -->
     <script>
-        // Función para filtrar tabla
+        // Función para filtrar tabla - CORREGIDA
         function filtrarTabla() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatus').value;
@@ -794,10 +794,17 @@ try {
             const filterVinculacion = document.getElementById('filterVinculacion').value;
             const filterMunicipio = document.getElementById('filterMunicipio').value;
             
-            const rows = document.querySelectorAll('.contratista-row');
+            const tbody = document.querySelector('#contratistasTable tbody');
+            const allRows = tbody.querySelectorAll('.contratista-row');
             let visibleCount = 0;
             
-            rows.forEach(row => {
+            // Primero, mostrar todas las filas originales
+            allRows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            // Ahora filtrar
+            allRows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 const estadoContrato = row.getAttribute('data-estado-contrato');
                 const area = row.getAttribute('data-area').toLowerCase();
@@ -843,40 +850,70 @@ try {
             
             // Mostrar mensaje si no hay resultados
             const emptyRow = document.querySelector('.empty-row');
-            if (visibleCount === 0 && rows.length > 0) {
-                if (!emptyRow) {
-                    const tbody = document.querySelector('#contratistasTable tbody');
-                    const firstRow = rows[0];
-                    const newRow = firstRow.cloneNode(true);
-                    newRow.innerHTML = `
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <i class="fas fa-search"></i>
-                                <h5>No se encontraron resultados</h5>
-                                <p>Intenta con otros términos de búsqueda o filtros.</p>
-                                <button onclick="limpiarFiltros()" class="btn btn-primary" style="margin-top: 15px;">
-                                    <i class="fas fa-broom"></i> Limpiar filtros
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    newRow.classList.add('empty-row');
-                    tbody.innerHTML = '';
-                    tbody.appendChild(newRow);
+            const originalEmptyRow = document.querySelector('tr.empty-row[data-is-original="true"]');
+            
+            if (visibleCount === 0 && allRows.length > 0) {
+                // Eliminar fila vacía anterior si existe (pero no la original)
+                if (emptyRow && !emptyRow.hasAttribute('data-is-original')) {
+                    emptyRow.remove();
                 }
-            } else if (emptyRow && visibleCount > 0) {
-                emptyRow.remove();
+                
+                // Crear nueva fila de "no resultados"
+                const newRow = document.createElement('tr');
+                newRow.classList.add('empty-row');
+                newRow.innerHTML = `
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h5>No se encontraron resultados</h5>
+                            <p>Intenta con otros términos de búsqueda o filtros.</p>
+                            <button onclick="limpiarFiltros()" class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-broom"></i> Limpiar filtros
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+            } else {
+                // Eliminar fila de "no resultados" si existe (pero no la original)
+                if (emptyRow && !emptyRow.hasAttribute('data-is-original')) {
+                    emptyRow.remove();
+                }
+                
+                // Si hay una fila vacía original y ahora tenemos resultados, quitarla
+                if (originalEmptyRow && visibleCount > 0) {
+                    originalEmptyRow.remove();
+                }
             }
         }
         
-        // Función para limpiar filtros
+        // Función para limpiar filtros - MEJORADA
         function limpiarFiltros() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('filterStatus').selectedIndex = 0;
-            document.getElementById('filterArea').selectedIndex = 0;
-            document.getElementById('filterVinculacion').selectedIndex = 0;
-            document.getElementById('filterMunicipio').selectedIndex = 0;
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterArea').value = '';
+            document.getElementById('filterVinculacion').value = '';
+            document.getElementById('filterMunicipio').value = '';
+            
+            // Forzar una nueva búsqueda
             filtrarTabla();
+            
+            // Enfocar el campo de búsqueda
+            document.getElementById('searchInput').focus();
+        }
+        
+        // Función para recargar datos - NUEVA
+        function recargarDatos() {
+            // Mostrar indicador de carga
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalHTML = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+            refreshBtn.disabled = true;
+            
+            // Recargar la página después de un breve retraso para mostrar el spinner
+            setTimeout(() => {
+                location.reload();
+            }, 500);
         }
         
         // Funciones para descargar documentos
@@ -900,7 +937,7 @@ try {
             window.open(`../../controllers/descargar_rp.php?id=${idDetalle}`, '_blank');
         }
         
-        // Event listeners
+        // Event listeners actualizados
         document.addEventListener('DOMContentLoaded', function() {
             // Buscar
             document.getElementById('searchInput').addEventListener('input', filtrarTabla);
@@ -913,7 +950,7 @@ try {
             
             // Botones
             document.getElementById('clearFiltersBtn').addEventListener('click', limpiarFiltros);
-            document.getElementById('refreshBtn').addEventListener('click', () => location.reload());
+            document.getElementById('refreshBtn').addEventListener('click', recargarDatos); // Cambiado a recargarDatos
             document.getElementById('volverBtn').addEventListener('click', () => {
                 window.location.href = 'menuContratistas.php';
             });
@@ -922,6 +959,9 @@ try {
             document.getElementById('searchInput').addEventListener('keyup', function(event) {
                 if (event.key === 'Enter') filtrarTabla();
             });
+            
+            // También filtrar al cargar la página (por si hay parámetros en URL)
+            filtrarTabla();
         });
         
         // Funciones placeholder para acciones
