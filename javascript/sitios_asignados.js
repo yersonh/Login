@@ -264,48 +264,17 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileSearchBtn.innerHTML = `
         <i class="fas fa-search"></i>
         <span>Buscar Contratistas</span>
-    `;// ALINEAR CON EL BOTÓN VOLVER
-    // Usamos la misma lógica de responsive que el botón volver
-    const getBottomPosition = () => {
-        if (window.innerWidth <= 480) {
-            return '10px'; // Igual que .volver-btn en móvil pequeño
-        } else if (window.innerWidth <= 768) {
-            return '15px'; // Igual que .volver-btn en móvil
-        } else {
-            return '25px'; // Igual que .volver-btn en desktop
-        }
-    };
-    // POSICIÓN MEJORADA - esquina inferior derecha
+    `;
+    
+    // ESTILOS MÍNIMOS - el CSS hará el resto
     mobileSearchBtn.style.cssText = `
-        position: fixed;
-        bottom: 25px; /* Ajustado para estar más abajo */
-        right: 20px;
-        background: linear-gradient(135deg, #2c3e50, #3498db);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 14px 20px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
         display: none;
-        align-items: center;
-        gap: 10px;
-        z-index: 1001;
-        white-space: nowrap;
-        transition: all 0.3s ease;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        -webkit-tap-highlight-color: transparent;
         pointer-events: auto;
     `;
     
     document.body.appendChild(mobileSearchBtn);
-    // Actualizar posición cuando cambie el tamaño de la ventana
-    window.addEventListener('resize', () => {
-        mobileSearchBtn.style.bottom = getBottomPosition();
-    });
     
-    // Eventos
+    // Eventos simples
     mobileSearchBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         e.preventDefault();
