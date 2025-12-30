@@ -54,27 +54,25 @@
 }
 
 /* En móvil, reorganizamos el orden con flexbox y order */
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    order: 2; /* Información va DESPUÉS de la foto */
-}
+/* El orden debe ser:
+   1. Foto
+   2. Información Personal
+   3. Información del Contrato
+   4. Información Laboral
+   5. Documentos
+*/
 
-.right-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    order: 1; /* Foto va PRIMERO */
-}
-
-/* Dentro de .right-column, aseguramos que Foto vaya antes que Documentos */
+/* Para lograr esto, necesitamos reestructurar el orden de las columnas y sus contenidos */
 .foto-profesion-card {
-    order: 1; /* Foto primero en .right-column */
+    order: 1; /* Foto es la primera */
+}
+
+.left-column {
+    order: 2; /* Información viene después de la foto */
 }
 
 .documentos-card {
-    order: 2; /* Documentos después en .right-column */
+    order: 3; /* Documentos son los últimos */
 }
 
 /* === TARJETAS DE INFORMACIÓN === */
@@ -365,18 +363,21 @@
     }
     
     /* Resetear órdenes para tablet/desktop */
-    .left-column {
-        order: 1;
+    .foto-profesion-card,
+    .left-column,
+    .documentos-card {
+        order: 0;
     }
     
     .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
         order: 2;
     }
     
-    /* Resetear órdenes dentro de .right-column */
-    .foto-profesion-card,
-    .documentos-card {
-        order: 0;
+    .left-column {
+        order: 1;
     }
     
     .info-grid-compact {
@@ -590,12 +591,23 @@
         gap: 15px;
     }
     
-    .left-column {
+    /* En horizontal, mantener orden lógico */
+    .foto-profesion-card {
         order: 1;
+        grid-column: 1;
+        grid-row: 1;
     }
     
-    .right-column {
+    .left-column {
         order: 2;
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+    
+    .documentos-card {
+        order: 3;
+        grid-column: 1;
+        grid-row: 2;
     }
     
     .foto-contratista {
