@@ -541,6 +541,10 @@ function obtenerBadgeTipoUsuario($tipo) {
                 <!-- Aquí podrías agregar paginación si es necesario -->
             </div>
         </main>
+        <button class="volver-btn" id="volverBtn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver al Menú</span>
+        </button>
 
         <!-- Footer -->
         <footer class="app-footer">
