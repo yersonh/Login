@@ -264,8 +264,17 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileSearchBtn.innerHTML = `
         <i class="fas fa-search"></i>
         <span>Buscar Contratistas</span>
-    `;
-    
+    `;// ALINEAR CON EL BOTÓN VOLVER
+    // Usamos la misma lógica de responsive que el botón volver
+    const getBottomPosition = () => {
+        if (window.innerWidth <= 480) {
+            return '10px'; // Igual que .volver-btn en móvil pequeño
+        } else if (window.innerWidth <= 768) {
+            return '15px'; // Igual que .volver-btn en móvil
+        } else {
+            return '25px'; // Igual que .volver-btn en desktop
+        }
+    };
     // POSICIÓN MEJORADA - esquina inferior derecha
     mobileSearchBtn.style.cssText = `
         position: fixed;
@@ -291,6 +300,10 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     document.body.appendChild(mobileSearchBtn);
+    // Actualizar posición cuando cambie el tamaño de la ventana
+    window.addEventListener('resize', () => {
+        mobileSearchBtn.style.bottom = getBottomPosition();
+    });
     
     // Eventos
     mobileSearchBtn.addEventListener('click', function(e) {
