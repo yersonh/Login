@@ -541,7 +541,7 @@ function obtenerBadgeTipoUsuario($tipo) {
                 <!-- Aquí podrías agregar paginación si es necesario -->
             </div>
         </main>
-        <button class="volver-btn" id="volverBtn">
+        <button class="volver-btn" id="volverBtn"  onclick="window.location.href='../menuAdministrador.php'">
             <i class="fas fa-arrow-left"></i>
             <span>Volver al Menú</span>
         </button>
