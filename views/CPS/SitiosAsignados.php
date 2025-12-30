@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="../styles/sitios_asignados.css">
+    <style>
+        /* ESTILOS TEMPORALES PARA DEBUG */
+        .debug-border {
+            border: 2px solid red !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -32,14 +38,16 @@
         <span>Buscar Contratistas</span>
     </button>
 
-    <!-- BUSCADOR PARA PC (normal) -->
-    <div class="search-container" id="searchContainerPC">
+    <!-- BUSCADOR (se transforma en móvil) -->
+    <div class="search-container" id="searchContainer">
         <div class="card">
             <div class="card-header">
                 <h6>Buscar Contratistas</h6>
+                <button class="btn-close-search" id="closeSearchBtn">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="card-body">
-                <!-- Contenido del formulario para PC -->
                 <div class="mb-3">
                     <label class="form-label">Nombre del Contratista</label>
                     <input type="text" class="form-control" id="nombreContratista" 
@@ -50,7 +58,9 @@
                     <label class="form-label">Tipo de Servicio</label>
                     <select class="form-select" id="tipoServicio">
                         <option value="">Todos los servicios</option>
-                        <!-- Tus opciones -->
+                        <option value="construccion">Construcción</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                        <option value="consultoria">Consultoría</option>
                     </select>
                 </div>
                 
@@ -62,65 +72,6 @@
                         <i class="fas fa-undo me-2"></i> Limpiar filtros
                     </button>
                 </div>
-                
-                <!-- Resultados -->
-                <div id="resultadosBusqueda" class="mt-4" style="display: none;">
-                    <h6>
-                        <i class="fas fa-list"></i> Resultados
-                        <span id="contadorResultados" class="ms-2">0</span>
-                    </h6>
-                    <div class="resultados-list" id="listaResultados">
-                        <!-- Los resultados se cargarán aquí -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BUSCADOR PARA MÓVIL (modal) -->
-    <div class="search-container mobile-modal" id="searchContainerMobile">
-        <div class="card">
-            <div class="card-header">
-                <h6>Buscar Contratistas</h6>
-                <button class="btn-close-search" id="closeSearchBtn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <!-- MISMO contenido que para PC -->
-                <div class="mb-3">
-                    <label class="form-label">Nombre del Contratista</label>
-                    <input type="text" class="form-control" id="nombreContratistaMobile" 
-                           placeholder="Buscar por nombre...">
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Tipo de Servicio</label>
-                    <select class="form-select" id="tipoServicioMobile">
-                        <option value="">Todos los servicios</option>
-                        <!-- Tus opciones -->
-                    </select>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-primary" id="btnBuscarMobile">
-                        <i class="fas fa-search me-2"></i> Buscar
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" id="btnLimpiarMobile">
-                        <i class="fas fa-undo me-2"></i> Limpiar filtros
-                    </button>
-                </div>
-                
-                <!-- Resultados -->
-                <div id="resultadosBusquedaMobile" class="mt-4" style="display: none;">
-                    <h6>
-                        <i class="fas fa-list"></i> Resultados
-                        <span id="contadorResultadosMobile" class="ms-2">0</span>
-                    </h6>
-                    <div class="resultados-list" id="listaResultadosMobile">
-                        <!-- Los resultados se cargarán aquí -->
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -128,117 +79,122 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // Control de búsqueda en móvil - VERSIÓN SIMPLIFICADA Y FUNCIONAL
+        // CONTROL SIMPLIFICADO Y FUNCIONAL
         document.addEventListener('DOMContentLoaded', function() {
-            const searchContainerPC = document.getElementById('searchContainerPC');
-            const searchContainerMobile = document.getElementById('searchContainerMobile');
+            const searchContainer = document.getElementById('searchContainer');
             const openSearchBtn = document.getElementById('openSearchBtn');
             const closeSearchBtn = document.getElementById('closeSearchBtn');
             const volverBtn = document.getElementById('volverBtn');
             
-            // Función para verificar si es móvil
+            console.log('Iniciando control de búsqueda...');
+            
+            // Verificar si estamos en móvil
             function isMobile() {
                 return window.innerWidth <= 768;
             }
             
-            // Función para inicializar visibilidad
-            function initSearchVisibility() {
+            // Configurar visibilidad inicial
+            function setupInitialView() {
                 if (isMobile()) {
-                    // En móvil: mostrar botón flotante y modal oculto
+                    console.log('Modo MÓVIL activado');
+                    // En móvil: ocultar buscador, mostrar botón
+                    searchContainer.style.display = 'none';
                     openSearchBtn.style.display = 'flex';
-                    searchContainerPC.style.display = 'none';
-                    searchContainerMobile.style.display = 'none'; // Ocultar inicialmente
-                    
-                    console.log('Móvil detectado - Configurando modal');
+                    // Añadir clase para estilos móviles
+                    searchContainer.classList.add('mobile-modal');
                 } else {
-                    // En PC: mostrar buscador normal, ocultar botón flotante y modal
+                    console.log('Modo PC activado');
+                    // En PC: mostrar buscador, ocultar botón
+                    searchContainer.style.display = 'block';
                     openSearchBtn.style.display = 'none';
-                    searchContainerPC.style.display = 'block';
-                    searchContainerMobile.style.display = 'none';
-                    
-                    console.log('PC detectado - Mostrando buscador normal');
+                    // Quitar clase de móvil
+                    searchContainer.classList.remove('mobile-modal');
                 }
             }
             
-            // Función para abrir modal en móvil
-            function openSearchModal() {
-                console.log('Abriendo modal de búsqueda');
-                searchContainerMobile.style.display = 'flex';
-                // Usar setTimeout para asegurar que el display se aplique antes de la animación
+            // Abrir buscador en móvil
+            function openSearch() {
+                console.log('Abriendo buscador móvil');
+                searchContainer.style.display = 'flex';
                 setTimeout(() => {
-                    searchContainerMobile.classList.add('active');
+                    searchContainer.classList.add('active');
                 }, 10);
                 
-                // Deshabilitar interacción con el mapa si existe
-                if (window.map) {
-                    window.map.dragging.disable();
-                    window.map.scrollWheelZoom.disable();
+                // Si hay un mapa, deshabilitar interacción temporalmente
+                if (typeof map !== 'undefined' && map) {
+                    map.dragging.disable();
+                    map.scrollWheelZoom.disable();
                 }
             }
             
-            // Función para cerrar modal
-            function closeSearchModal() {
-                console.log('Cerrando modal de búsqueda');
-                searchContainerMobile.classList.remove('active');
-                
-                // Esperar a que termine la animación para ocultar
+            // Cerrar buscador en móvil
+            function closeSearch() {
+                console.log('Cerrando buscador móvil');
+                searchContainer.classList.remove('active');
                 setTimeout(() => {
-                    searchContainerMobile.style.display = 'none';
+                    if (isMobile()) {
+                        searchContainer.style.display = 'none';
+                    }
                 }, 300);
                 
                 // Rehabilitar interacción con el mapa
-                if (window.map) {
-                    window.map.dragging.enable();
-                    window.map.scrollWheelZoom.enable();
+                if (typeof map !== 'undefined' && map) {
+                    map.dragging.enable();
+                    map.scrollWheelZoom.enable();
                 }
             }
             
-            // Inicializar al cargar
-            initSearchVisibility();
+            // Inicializar
+            setupInitialView();
             
-            // Event listeners
-            openSearchBtn.addEventListener('click', openSearchModal);
-            closeSearchBtn.addEventListener('click', closeSearchModal);
+            // Event Listeners
+            openSearchBtn.addEventListener('click', openSearch);
+            closeSearchBtn.addEventListener('click', closeSearch);
             
-            // Cerrar modal al hacer clic fuera del card
-            searchContainerMobile.addEventListener('click', function(e) {
-                if (e.target === searchContainerMobile) {
-                    closeSearchModal();
+            // Cerrar al hacer clic fuera (solo en móvil)
+            searchContainer.addEventListener('click', function(e) {
+                if (isMobile() && e.target === searchContainer) {
+                    closeSearch();
                 }
             });
             
-            // Cerrar con tecla Escape
+            // Cerrar con Escape
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && searchContainerMobile.classList.contains('active')) {
-                    closeSearchModal();
+                if (e.key === 'Escape' && isMobile() && searchContainer.classList.contains('active')) {
+                    closeSearch();
                 }
             });
             
             // Botón volver
-            volverBtn.addEventListener('click', () => {
+            volverBtn.addEventListener('click', function() {
                 window.location.href = 'menuContratistas.php';
             });
             
-            // Revisar al cambiar tamaño de ventana
-            window.addEventListener('resize', initSearchVisibility);
+            // Re-configurar al cambiar tamaño
+            window.addEventListener('resize', function() {
+                setupInitialView();
+            });
             
-            // Sincronizar valores entre PC y móvil (opcional)
-            function syncSearchFields() {
-                const pcNombre = document.getElementById('nombreContratista');
-                const mobileNombre = document.getElementById('nombreContratistaMobile');
+            // DEMO: Simular búsqueda
+            document.getElementById('btnBuscar').addEventListener('click', function() {
+                const nombre = document.getElementById('nombreContratista').value;
+                const servicio = document.getElementById('tipoServicio').value;
                 
-                if (pcNombre && mobileNombre) {
-                    pcNombre.addEventListener('input', function() {
-                        mobileNombre.value = this.value;
-                    });
-                    
-                    mobileNombre.addEventListener('input', function() {
-                        pcNombre.value = this.value;
-                    });
+                if (nombre || servicio) {
+                    alert(`Buscando: ${nombre || 'Todos'} - Servicio: ${servicio || 'Todos'}`);
+                    // En móvil, cerrar después de buscar
+                    if (isMobile()) {
+                        setTimeout(closeSearch, 500);
+                    }
+                } else {
+                    alert('Por favor ingresa algún criterio de búsqueda');
                 }
-            }
+            });
             
-            syncSearchFields();
+            document.getElementById('btnLimpiar').addEventListener('click', function() {
+                document.getElementById('nombreContratista').value = '';
+                document.getElementById('tipoServicio').value = '';
+            });
         });
     </script>
 
