@@ -1,5 +1,5 @@
 // JavaScript para mapa centrado en el Meta con buscador/filtro profesional
-// VERSIÓN RESPONSIVE MEJORADA - Solucionado problema táctil en móvil
+// VERSIÓN RESPONSIVE CORREGIDA - Problemas de navegación móvil solucionados
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no está cargado');
@@ -11,13 +11,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const villavicencio = [4.1420, -73.6266];
     const zoomInicial = 10;
     
-    // Crear el mapa
+    // Crear el mapa - CONFIGURACIÓN CORREGIDA PARA MÓVIL
     var mapa = L.map('mapa', {
         zoomControl: false,
         center: villavicencio,
         zoom: zoomInicial,
-        tap: false, // IMPORTANTE: Desactivar tap de Leaflet para móviles
-        dragging: !L.Browser.mobile // Desactivar dragging en móvil si es necesario
+        tap: true, // IMPORTANTE: Mantener activado para móviles
+        dragging: true, // IMPORTANTE: Siempre activar dragging
+        scrollWheelZoom: true,
+        touchZoom: true,
+        doubleClickZoom: true,
+        boxZoom: true,
+        keyboard: true
     });
     
     // Añadir capa de OpenStreetMap
@@ -47,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var searchControl = null;
     var mobileSearchBtn = null;
     var isModalOpen = false;
+    var mapInteractionEnabled = true;
     
     // Función para verificar si es móvil
     function isMobile() {
@@ -75,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ================= BUSCADOR RESPONSIVE MEJORADO =================
+    // ================= BUSCADOR RESPONSIVE CORREGIDO =================
     
     function inicializarBuscador() {
         // Si ya existe, limpiar
@@ -88,15 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         searchControl.onAdd = function(map) {
             searchContainer = L.DomUtil.create('div', 'search-container');
-            searchContainer.style.cssText = 'position: relative; z-index: 1000;';
-            
-            // Configurar específicamente para eventos táctiles
-            L.DomEvent.on(searchContainer, 'touchstart', L.DomEvent.stopPropagation);
-            L.DomEvent.on(searchContainer, 'touchend', L.DomEvent.stopPropagation);
-            L.DomEvent.on(searchContainer, 'touchmove', L.DomEvent.stopPropagation);
+            searchContainer.style.cssText = 'position: relative; z-index: 1000; pointer-events: auto;';
             
             searchContainer.innerHTML = `
-                <div class="card search-panel" style="width: 420px; max-width: 90vw; position: relative;">
+                <div class="card search-panel" id="searchCard" style="width: 420px; max-width: 90vw; position: relative; pointer-events: auto;">
                     <div class="card-header bg-primary text-white py-2 position-relative">
                         <h6 class="mb-0">
                             <i class="fas fa-search me-2"></i>Buscar Contratistas
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="card-body p-3" id="searchBody">
+                    <div class="card-body p-3" id="searchBody" style="pointer-events: auto;">
                         <!-- Búsqueda por nombre -->
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-secondary">
@@ -115,8 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="text" 
                                 id="inputNombre" 
                                 class="form-control search-input" 
-                                placeholder="Ingrese nombre o apellido"
-                                readonly>
+                                placeholder="Ingrese nombre o apellido">
                         </div>
                         
                         <!-- Filtro por municipio -->
@@ -185,12 +185,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // IMPORTANTE: Deshabilitar completamente la propagación de eventos del mapa
+            // SOLUCIÓN MEJORADA: Permitir eventos en el buscador pero evitar propagación
             L.DomEvent.disableClickPropagation(searchContainer);
             L.DomEvent.disableScrollPropagation(searchContainer);
             
-            // Deshabilitar todos los eventos de Leaflet en el contenedor
-            searchContainer.style.pointerEvents = 'auto';
+            // Pero permitir scroll dentro del buscador
+            const searchBody = searchContainer.querySelector('#searchBody');
+            if (searchBody) {
+                L.DomEvent.on(searchBody, 'mousewheel', L.DomEvent.stopPropagation);
+                L.DomEvent.on(searchBody, 'wheel', L.DomEvent.stopPropagation);
+            }
             
             return searchContainer;
         };
@@ -200,49 +204,31 @@ document.addEventListener('DOMContentLoaded', function() {
         // Crear botón flotante para móvil
         crearBotonMovil();
         
-        // Configurar inputs para móvil (después de que se creen)
-        setTimeout(configurarInputsMoviles, 100);
+        // Configurar eventos para inputs (después de que se creen)
+        setTimeout(configurarEventosBuscador, 100);
     }
     
-    function configurarInputsMoviles() {
+    function configurarEventosBuscador() {
+        // Configurar inputs para evitar que cierren el modal al tocarlos
         const inputs = document.querySelectorAll('.search-input');
         const selects = document.querySelectorAll('.search-select');
         const buttons = document.querySelectorAll('.search-button');
+        const closeBtn = document.getElementById('closeSearchBtn');
         
-        // Prevenir eventos táctiles en inputs
         inputs.forEach(input => {
             L.DomEvent.on(input, 'touchstart', function(e) {
                 e.stopPropagation();
-                e.preventDefault();
-                
-                // Remover atributo readonly temporalmente para permitir escritura
-                this.removeAttribute('readonly');
-                this.focus();
-                
-                // Asegurar que el teclado virtual se muestre en iOS/Android
-                if (isMobile()) {
-                    this.setAttribute('inputmode', 'text');
-                }
+                // Permitir que el input reciba el foco
             });
             
             L.DomEvent.on(input, 'click', function(e) {
                 e.stopPropagation();
-                this.removeAttribute('readonly');
-                this.focus();
-            });
-            
-            // Cuando pierde el foco, volver a readonly para evitar conflictos
-            L.DomEvent.on(input, 'blur', function() {
-                this.setAttribute('readonly', 'true');
             });
         });
         
-        // Prevenir eventos táctiles en selects
         selects.forEach(select => {
             L.DomEvent.on(select, 'touchstart', function(e) {
                 e.stopPropagation();
-                e.preventDefault();
-                this.focus();
             });
             
             L.DomEvent.on(select, 'click', function(e) {
@@ -250,19 +236,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Prevenir eventos táctiles en botones
         buttons.forEach(button => {
             L.DomEvent.on(button, 'touchstart', function(e) {
                 e.stopPropagation();
-                e.preventDefault();
-                // Pequeño delay para evitar cerrar el modal
+                // Pequeño delay para permitir que se registre el click
                 setTimeout(() => {
-                    if (typeof this.onclick === 'function') {
-                        this.onclick();
+                    if (typeof button.onclick === 'function') {
+                        button.onclick();
                     }
-                }, 100);
+                }, 10);
+            });
+            
+            L.DomEvent.on(button, 'click', function(e) {
+                e.stopPropagation();
             });
         });
+        
+        if (closeBtn) {
+            L.DomEvent.on(closeBtn, 'touchstart', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                cerrarBuscadorMovil();
+            });
+            
+            L.DomEvent.on(closeBtn, 'click', function(e) {
+                e.stopPropagation();
+                cerrarBuscadorMovil();
+            });
+        }
     }
     
     function crearBotonMovil() {
@@ -280,10 +281,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>Buscar Contratistas</span>
         `;
         
-        // Estilos inline para asegurar visibilidad
+        // Estilos inline
         mobileSearchBtn.style.cssText = `
             position: fixed;
-            bottom: 80px;
+            bottom: 120px; /* Mover más arriba para no tapar el botón volver */
             right: 20px;
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
@@ -304,32 +305,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.body.appendChild(mobileSearchBtn);
         
-        // Eventos táctiles mejorados para el botón móvil
-        L.DomEvent.on(mobileSearchBtn, 'touchstart', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            abrirBuscadorMovil();
-        });
-        
-        L.DomEvent.on(mobileSearchBtn, 'click', function(e) {
+        // Eventos del botón móvil
+        mobileSearchBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             abrirBuscadorMovil();
         });
         
-        // Botón cerrar en móvil
-        const closeBtn = document.getElementById('closeSearchBtn');
-        if (closeBtn) {
-            L.DomEvent.on(closeBtn, 'touchstart', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                cerrarBuscadorMovil();
-            });
-            
-            L.DomEvent.on(closeBtn, 'click', function(e) {
-                e.stopPropagation();
-                cerrarBuscadorMovil();
-            });
-        }
+        mobileSearchBtn.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+            abrirBuscadorMovil();
+        });
     }
     
     function configurarVisibilidadBuscador() {
@@ -337,21 +322,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // En móvil: ocultar buscador Leaflet, mostrar botón flotante
             if (searchContainer) {
                 searchContainer.style.display = 'none';
-                searchContainer.style.zIndex = '2000';
             }
             if (mobileSearchBtn) {
                 mobileSearchBtn.style.display = 'flex';
-            }
-            
-            // Convertir buscador en modal con mejor control táctil
-            if (searchContainer) {
-                const card = searchContainer.querySelector('.card');
-                if (card) {
-                    card.style.margin = '0';
-                    card.style.maxHeight = '90vh';
-                    card.style.overflowY = 'auto';
-                    card.style.webkitOverflowScrolling = 'touch'; // Mejor scroll en iOS
-                }
             }
             
             // Mostrar botón cerrar
@@ -369,20 +342,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchContainer.style.left = '';
                 searchContainer.style.width = '';
                 searchContainer.style.height = '';
-                searchContainer.style.zIndex = '';
                 searchContainer.style.background = '';
                 searchContainer.style.justifyContent = '';
                 searchContainer.style.alignItems = '';
                 searchContainer.style.padding = '';
-                searchContainer.style.boxSizing = '';
-                
-                // Restaurar card
-                const card = searchContainer.querySelector('.card');
-                if (card) {
-                    card.style.margin = '';
-                    card.style.maxHeight = '';
-                    card.style.overflowY = '';
-                }
             }
             
             if (mobileSearchBtn) {
@@ -403,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (searchContainer) {
             isModalOpen = true;
             
-            // Configurar como modal overlay
+            // Configurar como modal overlay - NUEVA SOLUCIÓN
             searchContainer.style.display = 'flex';
             searchContainer.style.position = 'fixed';
             searchContainer.style.top = '0';
@@ -418,53 +381,49 @@ document.addEventListener('DOMContentLoaded', function() {
             searchContainer.style.boxSizing = 'border-box';
             searchContainer.style.zIndex = '2000';
             
-            // Deshabilitar completamente el mapa
-            if (mapa) {
-                mapa.dragging.disable();
-                mapa.scrollWheelZoom.disable();
-                mapa.touchZoom.disable();
-                mapa.doubleClickZoom.disable();
-                mapa.boxZoom.disable();
-                mapa.keyboard.disable();
-            }
+            // CORRECCIÓN: NO DESHABILITAR EL MAPA
+            // En lugar de deshabilitar controles, usar pointer-events
+            mapInteractionEnabled = false;
             
             // Habilitar scroll dentro del modal
             const searchBody = document.getElementById('searchBody');
             if (searchBody) {
                 searchBody.style.overflowY = 'auto';
                 searchBody.style.maxHeight = '70vh';
+                searchBody.style.pointerEvents = 'auto';
             }
             
-            // Remover readonly de inputs
-            setTimeout(() => {
-                const inputs = document.querySelectorAll('.search-input');
-                inputs.forEach(input => {
-                    input.removeAttribute('readonly');
-                });
-            }, 300);
+            // Asegurar que el card tenga pointer-events
+            const searchCard = document.getElementById('searchCard');
+            if (searchCard) {
+                searchCard.style.pointerEvents = 'auto';
+            }
+            
+            console.log('✅ Buscador móvil abierto (mapa sigue funcional)');
         }
     }
     
     function cerrarBuscadorMovil() {
         if (searchContainer) {
             isModalOpen = false;
+            mapInteractionEnabled = true;
             searchContainer.style.display = 'none';
-            
-            // Rehabilitar el mapa
-            if (mapa) {
-                mapa.dragging.enable();
-                mapa.scrollWheelZoom.enable();
-                mapa.touchZoom.enable();
-                mapa.doubleClickZoom.enable();
-                mapa.boxZoom.enable();
-                mapa.keyboard.enable();
+            console.log('✅ Buscador móvil cerrado');
+        }
+    }
+    
+    // ================= FUNCIÓN PARA PERMITIR NAVEGACIÓN CUANDO EL MODAL NO ESTÁ ABIERTO =================
+    
+    function setupMapInteractions() {
+        // Asegurar que el mapa siempre sea interactivo
+        if (mapa) {
+            // Solo deshabilitar interacción si el modal está abierto
+            if (isModalOpen) {
+                // Permitir que el fondo del modal capture eventos, pero no el mapa
+                mapa.getContainer().style.pointerEvents = 'none';
+            } else {
+                mapa.getContainer().style.pointerEvents = 'auto';
             }
-            
-            // Poner readonly en inputs nuevamente
-            const inputs = document.querySelectorAll('.search-input');
-            inputs.forEach(input => {
-                input.setAttribute('readonly', 'true');
-            });
         }
     }
     
@@ -475,8 +434,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar sistema
     inicializarSistema();
     
-    // ================= FUNCIONES DE CARGA DE DATOS =================
+    // ================= EVENTO DE CLICK EN EL FONDO DEL MODAL =================
     
+    // Cerrar modal al hacer clic fuera del card
+    document.addEventListener('touchstart', function(e) {
+        if (isMobile() && isModalOpen && searchContainer) {
+            const searchCard = document.getElementById('searchCard');
+            if (searchCard && !searchCard.contains(e.target) && e.target !== mobileSearchBtn) {
+                cerrarBuscadorMovil();
+            }
+        }
+    });
+    
+    // También para click normal (mouse)
+    document.addEventListener('click', function(e) {
+        if (isMobile() && isModalOpen && searchContainer) {
+            const searchCard = document.getElementById('searchCard');
+            if (searchCard && !searchCard.contains(e.target) && e.target !== mobileSearchBtn) {
+                cerrarBuscadorMovil();
+            }
+        }
+    });
+    
+    // ================= EL RESTO DEL CÓDIGO PERMANECE IGUAL =================
+    
+    // [Aquí va todo el resto del código que ya tenías...]
     // Función para cargar municipios
     async function cargarMunicipios() {
         console.log('🔄 Cargando municipios...');
@@ -1537,37 +1519,12 @@ document.addEventListener('DOMContentLoaded', function() {
         configurarVisibilidadBuscador();
     });
     
-    // Cerrar buscador móvil al hacer clic fuera
-    document.addEventListener('touchstart', function(e) {
-        if (isMobile() && isModalOpen && searchContainer && 
-            searchContainer.style.display === 'flex') {
-            
-            // Verificar si el clic fue en el overlay (no en el card)
-            const card = searchContainer.querySelector('.card');
-            if (card && !card.contains(e.target)) {
-                e.stopPropagation();
-                e.preventDefault();
-                cerrarBuscadorMovil();
-            }
-        }
-    });
-    
     // Cerrar con tecla Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isMobile() && isModalOpen) {
             cerrarBuscadorMovil();
         }
     });
-    
-    // Prevenir comportamiento por defecto en inputs cuando el modal está abierto
-    document.addEventListener('touchmove', function(e) {
-        if (isModalOpen) {
-            const target = e.target;
-            if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA') {
-                e.stopPropagation();
-            }
-        }
-    }, { passive: false });
     
     // ================= FUNCIONALIDADES ADICIONALES =================
     
@@ -1596,13 +1553,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// CSS adicional mejorado para el modal en móvil
+// CSS adicional corregido para el modal en móvil
 const mobileStyles = `
+/* ================= ESTILOS MÓVIL CORREGIDOS ================= */
 @media (max-width: 768px) {
+    /* Botón abrir buscador */
     .btn-open-search {
         display: flex !important;
         position: fixed;
-        bottom: 80px;
+        bottom: 120px; /* Debajo del botón volver */
         right: 20px;
         background: linear-gradient(135deg, #2c3e50, #3498db);
         color: white;
@@ -1619,8 +1578,14 @@ const mobileStyles = `
         transition: all 0.3s ease;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         -webkit-tap-highlight-color: transparent;
+        pointer-events: auto;
     }
     
+    .btn-open-search:active {
+        transform: scale(0.95);
+    }
+    
+    /* Botón cerrar buscador */
     .btn-close-search {
         display: flex !important;
         position: absolute;
@@ -1639,15 +1604,49 @@ const mobileStyles = `
         z-index: 10;
         transition: background 0.2s;
         -webkit-tap-highlight-color: transparent;
+        pointer-events: auto;
     }
     
     .btn-close-search:hover {
         background: rgba(255, 255, 255, 0.3);
     }
     
-    .search-container .card {
+    /* Contenedor del buscador cuando es modal */
+    .search-container {
+        display: none;
+    }
+    
+    .search-container.modal-open {
+        display: flex !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        backdrop-filter: blur(3px) !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+        z-index: 2000 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* El mapa debe estar detrás cuando el modal está abierto */
+    .search-container.modal-open ~ #mapa {
+        pointer-events: none !important;
+    }
+    
+    /* Card del buscador en móvil */
+    .search-container.modal-open .card {
         animation: modalFadeIn 0.3s ease-out;
         transform-origin: center center;
+        pointer-events: auto !important;
+        max-height: 80vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 !important;
     }
     
     @keyframes modalFadeIn {
@@ -1661,16 +1660,12 @@ const mobileStyles = `
         }
     }
     
-    /* Mejorar scroll en iOS */
-    .search-container * {
-        -webkit-overflow-scrolling: touch !important;
-    }
-    
     /* Inputs más grandes para táctil */
     .search-input, .search-select {
-        font-size: 16px !important; /* Evita zoom automático en iOS */
+        font-size: 16px !important;
         padding: 12px 15px !important;
         min-height: 48px !important;
+        pointer-events: auto !important;
     }
     
     /* Botones más grandes */
@@ -1678,6 +1673,15 @@ const mobileStyles = `
         min-height: 48px !important;
         padding: 12px !important;
         font-size: 16px !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Prevenir que el fondo se desplace */
+    body.modal-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
     }
 }
 
@@ -1689,6 +1693,18 @@ const mobileStyles = `
     .btn-close-search {
         display: none !important;
     }
+    
+    .search-container.modal-open {
+        display: block !important;
+        position: relative !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+    }
+    
+    .search-container.modal-open ~ #mapa {
+        pointer-events: auto !important;
+    }
 }
 
 /* Mejorar experiencia táctil */
@@ -1697,21 +1713,27 @@ const mobileStyles = `
     outline-offset: 2px !important;
 }
 
-/* Evitar selección de texto en móvil */
-.search-container {
-    user-select: none;
-    -webkit-user-select: none;
+/* Scrollbar en móvil */
+.search-container.modal-open .card::-webkit-scrollbar {
+    width: 6px;
 }
 
-.search-container input, 
-.search-container select, 
-.search-container textarea {
-    user-select: text;
-    -webkit-user-select: text;
+.search-container.modal-open .card::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.search-container.modal-open .card::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.search-container.modal-open .card::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 `;
 
-// Inyectar estilos mejorados
+// Inyectar estilos
 const style = document.createElement('style');
 style.textContent = mobileStyles;
 document.head.appendChild(style);
