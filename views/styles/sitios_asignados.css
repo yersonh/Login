@@ -186,24 +186,123 @@ body {
 }
 /* ================= RESPONSIVE PARA POPUPS ================= */
 
-/* Ajustes para pantallas pequeñas */
+/* ================= BUSCADOR PARA MÓVILES (OPCIÓN 1) - CORREGIDO ================= */
 @media (max-width: 768px) {
-    .popup-contratista {
-        min-width: 260px;
-        max-width: 280px;
+    /* Modal overlay para móviles - REEMPLAZAR la sección anterior completa */
+    .search-container.mobile-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2000;
+        background: rgba(0, 0, 0, 0.7);
+        display: none; /* Inicialmente oculto */
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
     
-    .info-label {
-        flex: 0 0 80px; /* Ancho más pequeño en móviles */
-        font-size: 10px;
+    .search-container.mobile-modal.active {
+        display: flex;
+        opacity: 1;
     }
     
-    .info-value {
-        font-size: 12px;
+    .search-container.mobile-modal .card {
+        width: 100%;
+        max-width: 450px;
+        max-height: 85vh;
+        overflow-y: auto;
+        margin: 0;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
     
-    .info-value.long-text {
-        font-size: 11px;
+    .search-container.mobile-modal.active .card {
+        transform: translateY(0);
+    }
+    
+    /* Botón para cerrar dentro del card */
+    .search-container.mobile-modal .card .btn-close-search {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        z-index: 10;
+        transition: all 0.2s;
+    }
+    
+    .search-container.mobile-modal .card .btn-close-search:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(1.1);
+    }
+    
+    /* Botón para abrir el buscador en móviles */
+    .btn-open-search {
+        position: fixed;
+        bottom: 80px; /* Encima del botón volver */
+        right: 20px;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        display: none; /* Oculto por defecto, JS lo mostrará en móvil */
+        align-items: center;
+        gap: 10px;
+        z-index: 1001;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-open-search:hover {
+        background: linear-gradient(135deg, #1a252f, #2980b9);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    }
+    
+    .btn-open-search i {
+        font-size: 18px;
+    }
+    
+    /* Ocultar buscador normal en móvil */
+    .search-container:not(.mobile-modal) {
+        display: none !important;
+    }
+    
+    /* Ajustes para móviles muy pequeños */
+    @media (max-width: 480px) {
+        .search-container.mobile-modal .card {
+            max-height: 90vh;
+        }
+        
+        .btn-open-search {
+            bottom: 70px;
+            right: 15px;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+        
+        .search-container.mobile-modal {
+            padding: 10px;
+        }
     }
 }
 /* ================= ESTILOS PARA BUSCADOR ================= */
