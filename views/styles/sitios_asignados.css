@@ -648,9 +648,13 @@ body {
 @media (min-width: 769px) {
     /* Labels - reducir espacio debajo (que afecta la altura total) */
     .search-container .form-label {
-         font-size: 11px !important;
         margin-bottom: 4px !important; /* Reducido de 6px */
         line-height: 1.2 !important; /* Más compacto */
+    }
+    .search-container label[for="inputNombre"] {
+        font-size: 11px !important;        /* Esto reduce la altura del texto */
+        line-height: 1.1 !important;       /* Esto hace el texto más compacto */
+        margin-bottom: 3px !important;     /* Esto reduce espacio debajo */
     }
     
     /* Combo boxes - reducir altura */
