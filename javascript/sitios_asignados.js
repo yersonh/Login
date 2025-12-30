@@ -1,5 +1,5 @@
 // JavaScript para mapa centrado en el Meta con buscador/filtro profesional
-// VERSIÓN ACTUALIZADA - Usa direcciones de trabajo (sitios de trabajo) en lugar de dirección personal
+// VERSIÓN RESPONSIVE - Buscador modal en móvil
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no está cargado');
@@ -40,40 +40,63 @@ document.addEventListener('DOMContentLoaded', function() {
     var timeoutDebounce = null;
     var procesamientoActivo = false;
     
-    // Inicializar buscador
-    inicializarBuscador();
+    // Variables para control del buscador
+    var searchContainer = null;
+    var searchControl = null;
+    var mobileSearchBtn = null;
     
-    // 1. Cargar datos iniciales
-    Promise.all([
-        cargarMunicipios(),
-        cargarAreas(),
-        cargarTiposVinculacion()
-    ]).then(() => {
-        // 2. Luego cargar todos los contratistas (sin mostrar resultados en el buscador)
-        cargarContratistas();
-    }).catch(error => {
-        console.error('❌ Error cargando datos iniciales:', error);
-        mostrarMensaje('Error al cargar datos iniciales');
-    });
+    // Función para verificar si es móvil
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
     
-    // Añadir controles básicos
-    L.control.scale().addTo(mapa);
-    L.control.zoom({ position: 'bottomright' }).addTo(mapa);
+    // Inicializar sistema
+    function inicializarSistema() {
+        // 1. Crear buscador
+        inicializarBuscador();
+        
+        // 2. Configurar visibilidad según dispositivo
+        configurarVisibilidadBuscador();
+        
+        // 3. Cargar datos iniciales
+        Promise.all([
+            cargarMunicipios(),
+            cargarAreas(),
+            cargarTiposVinculacion()
+        ]).then(() => {
+            // 4. Luego cargar todos los contratistas
+            cargarContratistas();
+        }).catch(error => {
+            console.error('❌ Error cargando datos iniciales:', error);
+            mostrarMensaje('Error al cargar datos iniciales');
+        });
+    }
     
-    // ================= BUSCADOR Y FILTROS =================
+    // ================= BUSCADOR RESPONSIVE =================
     
     function inicializarBuscador() {
-        // Crear contenedor para el buscador
-        const searchContainer = L.control({ position: 'topright' });
+        // Si ya existe, limpiar
+        if (searchControl) {
+            mapa.removeControl(searchControl);
+        }
         
-        searchContainer.onAdd = function(map) {
-            const div = L.DomUtil.create('div', 'search-container');
-            div.innerHTML = `
+        // Crear contenedor para el buscador
+        searchControl = L.control({ position: 'topright' });
+        
+        searchControl.onAdd = function(map) {
+            searchContainer = L.DomUtil.create('div', 'search-container');
+            searchContainer.style.cssText = 'position: relative; z-index: 1000;';
+            
+            searchContainer.innerHTML = `
                 <div class="card search-panel" style="width: 420px; max-width: 90vw;">
-                    <div class="card-header bg-primary text-white py-2">
+                    <div class="card-header bg-primary text-white py-2 position-relative">
                         <h6 class="mb-0">
                             <i class="fas fa-search me-2"></i>Buscar Contratistas
                         </h6>
+                        <!-- Botón cerrar (solo móvil) -->
+                        <button id="closeSearchBtn" class="btn-close-search" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                     <div class="card-body p-3">
                         <!-- Búsqueda por nombre -->
@@ -154,14 +177,157 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             // Prevenir eventos del mapa en el buscador
-            L.DomEvent.disableClickPropagation(div);
-            L.DomEvent.disableScrollPropagation(div);
+            L.DomEvent.disableClickPropagation(searchContainer);
+            L.DomEvent.disableScrollPropagation(searchContainer);
             
-            return div;
+            return searchContainer;
         };
         
-        searchContainer.addTo(mapa);
+        searchControl.addTo(mapa);
+        
+        // Crear botón flotante para móvil
+        crearBotonMovil();
     }
+    
+    function crearBotonMovil() {
+        // Si ya existe, no crear otro
+        if (document.getElementById('mobileSearchBtn')) {
+            mobileSearchBtn = document.getElementById('mobileSearchBtn');
+            return;
+        }
+        
+        mobileSearchBtn = document.createElement('button');
+        mobileSearchBtn.id = 'mobileSearchBtn';
+        mobileSearchBtn.className = 'btn-open-search';
+        mobileSearchBtn.innerHTML = `
+            <i class="fas fa-search"></i>
+            <span>Buscar Contratistas</span>
+        `;
+        
+        // Estilos inline para asegurar visibilidad
+        mobileSearchBtn.style.cssText = `
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+            display: none; /* Oculto por defecto, se mostrará solo en móvil */
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+        
+        document.body.appendChild(mobileSearchBtn);
+        
+        // Eventos del botón móvil
+        mobileSearchBtn.addEventListener('click', abrirBuscadorMovil);
+        
+        // Botón cerrar en móvil
+        const closeBtn = document.getElementById('closeSearchBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', cerrarBuscadorMovil);
+        }
+    }
+    
+    function configurarVisibilidadBuscador() {
+        if (isMobile()) {
+            // En móvil: ocultar buscador Leaflet, mostrar botón flotante
+            if (searchContainer) {
+                searchContainer.style.display = 'none';
+            }
+            if (mobileSearchBtn) {
+                mobileSearchBtn.style.display = 'flex';
+            }
+            
+            // Convertir buscador en modal
+            if (searchContainer) {
+                searchContainer.style.position = 'fixed';
+                searchContainer.style.top = '0';
+                searchContainer.style.left = '0';
+                searchContainer.style.width = '100%';
+                searchContainer.style.height = '100%';
+                searchContainer.style.zIndex = '2000';
+                searchContainer.style.background = 'rgba(0, 0, 0, 0.8)';
+                searchContainer.style.justifyContent = 'center';
+                searchContainer.style.alignItems = 'center';
+                searchContainer.style.padding = '15px';
+                searchContainer.style.boxSizing = 'border-box';
+                searchContainer.style.display = 'none'; // Oculto inicialmente
+            }
+            
+            // Mostrar botón cerrar
+            const closeBtn = document.getElementById('closeSearchBtn');
+            if (closeBtn) {
+                closeBtn.style.display = 'block';
+            }
+            
+        } else {
+            // En PC: mostrar buscador normal, ocultar botón flotante
+            if (searchContainer) {
+                searchContainer.style.display = 'block';
+                searchContainer.style.position = '';
+                searchContainer.style.top = '';
+                searchContainer.style.left = '';
+                searchContainer.style.width = '';
+                searchContainer.style.height = '';
+                searchContainer.style.zIndex = '';
+                searchContainer.style.background = '';
+                searchContainer.style.justifyContent = '';
+                searchContainer.style.alignItems = '';
+                searchContainer.style.padding = '';
+                searchContainer.style.boxSizing = '';
+            }
+            if (mobileSearchBtn) {
+                mobileSearchBtn.style.display = 'none';
+            }
+            
+            // Ocultar botón cerrar
+            const closeBtn = document.getElementById('closeSearchBtn');
+            if (closeBtn) {
+                closeBtn.style.display = 'none';
+            }
+        }
+    }
+    
+    function abrirBuscadorMovil() {
+        if (searchContainer) {
+            searchContainer.style.display = 'flex';
+            
+            // Deshabilitar interacción con el mapa
+            if (mapa) {
+                mapa.dragging.disable();
+                mapa.scrollWheelZoom.disable();
+            }
+        }
+    }
+    
+    function cerrarBuscadorMovil() {
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
+            
+            // Rehabilitar interacción con el mapa
+            if (mapa) {
+                mapa.dragging.enable();
+                mapa.scrollWheelZoom.enable();
+            }
+        }
+    }
+    
+    // Añadir controles básicos
+    L.control.scale().addTo(mapa);
+    L.control.zoom({ position: 'bottomright' }).addTo(mapa);
+    
+    // Inicializar sistema
+    inicializarSistema();
     
     // ================= FUNCIONES DE CARGA DE DATOS =================
     
@@ -218,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Llenar select de municipios
     function llenarSelectMunicipios() {
         const select = document.getElementById('selectMunicipio');
+        if (!select) return;
         
         // Ordenar municipios alfabéticamente
         municipiosCargados.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -234,6 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Llenar select de áreas
     function llenarSelectAreas() {
         const select = document.getElementById('selectArea');
+        if (!select) return;
         
         // Ordenar áreas alfabéticamente
         areasCargadas.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -386,14 +554,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicador = document.getElementById('indicadorBusqueda');
         const btnBuscar = document.getElementById('btnBuscar');
         
-        if (mostrar) {
-            indicador.style.display = 'block';
-            btnBuscar.disabled = true;
-            btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Buscando...';
-        } else {
-            indicador.style.display = 'none';
-            btnBuscar.disabled = false;
-            btnBuscar.innerHTML = '<i class="fas fa-search me-1"></i>Buscar';
+        if (indicador && btnBuscar) {
+            if (mostrar) {
+                indicador.style.display = 'block';
+                btnBuscar.disabled = true;
+                btnBuscar.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Buscando...';
+            } else {
+                indicador.style.display = 'none';
+                btnBuscar.disabled = false;
+                btnBuscar.innerHTML = '<i class="fas fa-search me-1"></i>Buscar';
+            }
         }
     }
     
@@ -424,6 +594,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Llenar select de tipos de vinculación
     function llenarSelectTiposVinculacion() {
         const select = document.getElementById('selectTipoVinculacion');
+        if (!select) return;
         
         // Agregar opciones
         tiposVinculacionCargados.forEach(tipo => {
@@ -545,11 +716,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Usar debounce para evitar múltiples clics rápidos
         timeoutDebounce = setTimeout(() => {
+            const inputNombre = document.getElementById('inputNombre');
+            const selectMunicipio = document.getElementById('selectMunicipio');
+            const selectArea = document.getElementById('selectArea');
+            const selectTipoVinculacion = document.getElementById('selectTipoVinculacion');
+            
+            if (!inputNombre || !selectMunicipio || !selectArea || !selectTipoVinculacion) {
+                console.error('Elementos del buscador no encontrados');
+                return;
+            }
+            
             const filtros = {
-                nombre: document.getElementById('inputNombre').value.trim(),
-                municipio: document.getElementById('selectMunicipio').value,
-                area: document.getElementById('selectArea').value,
-                tipo_vinculacion: document.getElementById('selectTipoVinculacion').value
+                nombre: inputNombre.value.trim(),
+                municipio: selectMunicipio.value,
+                area: selectArea.value,
+                tipo_vinculacion: selectTipoVinculacion.value
             };
             
             // Verificar si hay algún filtro activo
@@ -564,6 +745,13 @@ document.addEventListener('DOMContentLoaded', function() {
             procesamientoActivo = false;
             
             cargarContratistas(filtros);
+            
+            // En móvil, cerrar el buscador después de buscar
+            if (isMobile()) {
+                setTimeout(() => {
+                    cerrarBuscadorMovil();
+                }, 500);
+            }
         }, 300); // Debounce de 300ms
     };
     
@@ -582,10 +770,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Detener procesamiento actual
         procesamientoActivo = false;
         
-        document.getElementById('inputNombre').value = '';
-        document.getElementById('selectMunicipio').selectedIndex = 0;
-        document.getElementById('selectArea').selectedIndex = 0;
-        document.getElementById('selectTipoVinculacion').selectedIndex = 0;
+        const inputNombre = document.getElementById('inputNombre');
+        const selectMunicipio = document.getElementById('selectMunicipio');
+        const selectArea = document.getElementById('selectArea');
+        const selectTipoVinculacion = document.getElementById('selectTipoVinculacion');
+        
+        if (inputNombre) inputNombre.value = '';
+        if (selectMunicipio) selectMunicipio.selectedIndex = 0;
+        if (selectArea) selectArea.selectedIndex = 0;
+        if (selectTipoVinculacion) selectTipoVinculacion.selectedIndex = 0;
         
         // Ocultar resultados de búsqueda
         ocultarResultadosBusqueda();
@@ -603,6 +796,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('listaResultados');
         const contador = document.getElementById('contadorResultados');
         const resultadosDiv = document.getElementById('resultadosBusqueda');
+        
+        if (!container || !contador || !resultadosDiv) {
+            console.error('Elementos de resultados no encontrados');
+            return;
+        }
         
         // Mostrar contenedor de resultados (SOLO cuando se hace una búsqueda)
         resultadosDiv.style.display = 'block';
@@ -689,7 +887,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Ocultar resultados de búsqueda
     function ocultarResultadosBusqueda() {
-        document.getElementById('resultadosBusqueda').style.display = 'none';
+        const resultadosDiv = document.getElementById('resultadosBusqueda');
+        if (resultadosDiv) {
+            resultadosDiv.style.display = 'none';
+        }
     }
     
     // Ir a un contratista específico (ACTUALIZADA)
@@ -710,6 +911,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Resaltar sutilmente el marcador
                 resaltarMarcador(primerMarcador);
             }
+        }
+        
+        // En móvil, cerrar el buscador
+        if (isMobile()) {
+            cerrarBuscadorMovil();
         }
     };
     
@@ -1178,6 +1384,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // ================= EVENTOS DE VENTANA =================
+    
+    // Redimensionar ventana
+    window.addEventListener('resize', function() {
+        configurarVisibilidadBuscador();
+    });
+    
+    // Cerrar buscador móvil al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (isMobile() && searchContainer && 
+            searchContainer.style.display === 'flex' &&
+            !searchContainer.contains(e.target) &&
+            e.target !== mobileSearchBtn) {
+            cerrarBuscadorMovil();
+        }
+    });
+    
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMobile() && 
+            searchContainer && searchContainer.style.display === 'flex') {
+            cerrarBuscadorMovil();
+        }
+    });
+    
     // ================= FUNCIONALIDADES ADICIONALES =================
     
     // Función para mostrar información detallada en consola
@@ -1195,4 +1426,76 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     };
+    
+    // Inicializar controles del botón volver
+    const volverBtn = document.getElementById('volverBtn');
+    if (volverBtn) {
+        volverBtn.addEventListener('click', () => {
+            window.location.href = 'menuContratistas.php';
+        });
+    }
 });
+
+// CSS adicional para el modal en móvil (se puede agregar dinámicamente)
+const mobileStyles = `
+@media (max-width: 768px) {
+    .btn-open-search {
+        display: flex !important;
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        align-items: center;
+        gap: 10px;
+        z-index: 1001;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .btn-close-search {
+        display: flex !important;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        z-index: 10;
+        transition: background 0.2s;
+    }
+    
+    .btn-close-search:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (min-width: 769px) {
+    .btn-open-search {
+        display: none !important;
+    }
+    
+    .btn-close-search {
+        display: none !important;
+    }
+}
+`;
+
+// Inyectar estilos
+const style = document.createElement('style');
+style.textContent = mobileStyles;
+document.head.appendChild(style);

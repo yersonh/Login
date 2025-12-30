@@ -184,7 +184,6 @@ body {
 .coordenadas-info div {
     margin-bottom: 4px;
 }
-
 /* ================= RESPONSIVE PARA POPUPS ================= */
 
 /* Ajustes para pantallas pequeñas */
@@ -195,7 +194,7 @@ body {
     }
     
     .info-label {
-        flex: 0 0 80px;
+        flex: 0 0 80px; /* Ancho más pequeño en móviles */
         font-size: 10px;
     }
     
@@ -207,17 +206,11 @@ body {
         font-size: 11px;
     }
 }
+/* ================= ESTILOS PARA BUSCADOR ================= */
 
-/* ================= ESTILOS PARA BUSCADOR - VERSIÓN CORREGIDA ================= */
-
-/* BUSCADOR PARA PC (ESTILOS POR DEFECTO) */
+/* Estilos para el buscador de contratistas - VERSIÓN PROFESIONAL */
 .search-container {
-    position: absolute;
-    top: 70px;
-    left: 20px;
-    width: 320px;
     z-index: 1000;
-    background: transparent;
 }
 
 .search-container .card {
@@ -245,30 +238,6 @@ body {
 
 .search-container .card-body {
     padding: 20px;
-}
-
-/* Botón para cerrar (solo visible en móvil) */
-.search-container .card .btn-close-search {
-    display: none;
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    z-index: 10;
-    transition: background 0.2s;
-}
-
-.search-container .card .btn-close-search:hover {
-    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Formularios profesionales */
@@ -431,6 +400,7 @@ body {
 
 /* ================= ESTILOS PARA MARCADORES ================= */
 
+/* Marcadores del mapa */
 .marcador-contratista {
     background: none;
     border: none;
@@ -489,12 +459,94 @@ body {
     background: #a8a8a8;
 }
 
-/* BUSCADOR PARA MÓVILES */
+/* Responsive para buscador en PC */
 @media (max-width: 768px) {
-    /* 1. BOTÓN PARA ABRIR BUSCADOR EN MÓVIL */
+    .search-container .card {
+        margin: 10px;
+        max-width: calc(100vw - 20px);
+    }
+    
+    .search-container .card-header h6 {
+        font-size: 14px;
+    }
+    
+    .search-container .btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+
+/* ================= BUSCADOR PARA MÓVILES (OPCIÓN 1) ================= */
+@media (max-width: 768px) {
+    /* Modal overlay para móviles */
+    .search-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2000;
+        background: rgba(0, 0, 0, 0.5);
+        display: none; /* Inicialmente oculto */
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+    
+    .search-container.active {
+        display: flex;
+    }
+    
+    .search-container .card {
+        width: 100%;
+        max-width: 450px;
+        max-height: 85vh;
+        overflow-y: auto;
+        margin: 0;
+        animation: slideInMobile 0.3s ease;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    @keyframes slideInMobile {
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    /* Botón para cerrar dentro del card */
+    .search-container .card .btn-close-search {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        z-index: 10;
+        transition: background 0.2s;
+    }
+    
+    .search-container .card .btn-close-search:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Botón para abrir el buscador en móviles */
     .btn-open-search {
         position: fixed;
-        bottom: 80px;
+        bottom: 80px; /* Encima del botón volver */
         right: 20px;
         background: linear-gradient(135deg, #2c3e50, #3498db);
         color: white;
@@ -522,57 +574,11 @@ body {
         font-size: 18px;
     }
     
-    /* 2. MODAL PARA MÓVIL - OCULTAR INICIALMENTE */
-    .search-container {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        z-index: 2000 !important;
-        background: rgba(0, 0, 0, 0.8) !important;
-        display: none !important;
-        justify-content: center !important;
-        align-items: center !important;
-        padding: 15px !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    /* 3. CUANDO EL MODAL ESTÁ ACTIVO */
-    .search-container.active {
-        display: flex !important;
-        opacity: 1;
-    }
-    
-    /* 4. ESTILOS DEL CARD EN MÓVIL */
-    .search-container .card {
-        width: 95% !important;
-        max-width: 450px !important;
-        max-height: 85vh !important;
-        overflow-y: auto !important;
-        margin: 0 !important;
-        transform: translateY(20px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
-    }
-    
-    .search-container.active .card {
-        transform: translateY(0);
-    }
-    
-    /* 5. BOTÓN CERRAR EN MÓVIL */
-    .search-container .card .btn-close-search {
-        display: flex !important;
-    }
-    
-    /* 6. AJUSTES PARA MÓVILES PEQUEÑOS */
+    /* Ajustes para móviles muy pequeños */
     @media (max-width: 480px) {
         .search-container .card {
-            max-height: 90vh !important;
-            width: 100% !important;
+            max-height: 90vh;
+            padding: 5px;
         }
         
         .btn-open-search {
@@ -581,17 +587,6 @@ body {
             padding: 12px 16px;
             font-size: 14px;
         }
-        
-        .search-container {
-            padding: 10px !important;
-        }
-    }
-}
-
-/* EN PC: OCULTAR BOTÓN DE ABRIR BUSCADOR */
-@media (min-width: 769px) {
-    .btn-open-search {
-        display: none !important;
     }
 }
 
@@ -613,6 +608,7 @@ body {
 
 /* ================= COMPATIBILIDAD CON TUS ESTILOS ORIGINALES ================= */
 
+/* Mantener compatibilidad con tus clases originales */
 .search-container .card-title {
     color: #2c3e50;
     font-size: 1rem;
@@ -654,7 +650,7 @@ body {
     cursor: not-allowed;
 }
 
-/* ========== BOTÓN VOLVER FLOTANTE ========== */
+/* ========== BOTÓN VOLVER FLOTANTE - SOLUCIÓN CORREGIDA ========== */
 .volver-btn {
     position: fixed;
     bottom: 25px;
@@ -667,14 +663,14 @@ body {
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-    display: inline-flex;
+    display: inline-flex; /* CAMBIO: inline-flex en lugar de flex */
     align-items: center;
     gap: 10px;
     z-index: 1000;
     transition: all 0.3s ease;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     white-space: nowrap;
-    width: fit-content;
+    width: fit-content; /* NUEVO: Solo ocupa el contenido */
 }
 
 .volver-btn:hover {
@@ -703,42 +699,84 @@ body {
     z-index: 2;
 }
 
-/* ========== RESPONSIVE ========== */
+/* ========== RESPONSIVE CORREGIDO ========== */
 @media (max-width: 768px) {
     .volver-btn {
         bottom: 15px;
-        left: 15px;
+        left: 15px; /* CAMBIADO: Mantener left, no right */
         padding: 12px 18px;
         font-size: 14px;
         z-index: 1001;
-        width: auto;
+        width: auto; /* CAMBIADO: auto en lugar de !important */
     }
 }
 
 @media (max-width: 480px) {
     .volver-btn {
         bottom: 10px;
-        left: 10px;
+        left: 10px; /* CAMBIADO: Mantener left, no right */
         padding: 10px 16px;
         font-size: 13px;
         z-index: 1002;
-        width: auto;
+        width: auto; /* CAMBIADO: auto en lugar de !important */
+    }
+    
+    /* SOLUCIÓN DE EMERGENCIA si sigue sin funcionar */
+    .volver-btn.fixed-width {
+        width: 180px !important;
     }
 }
 
 /* ========== COMPATIBILIDAD CON NAVEGADORES ANTIGUOS ========== */
 @supports not (width: fit-content) {
     .volver-btn {
-        width: intrinsic;
-        width: -moz-max-content;
-        width: -webkit-max-content;
+        width: intrinsic; /* Safari antigua */
+        width: -moz-max-content; /* Firefox */
+        width: -webkit-max-content; /* Chrome/Safari antigua */
     }
 }
 
 /* ========== PARA iOS SAFARI ========== */
 @supports (-webkit-touch-callout: none) {
     .volver-btn {
-        -webkit-appearance: none;
-        min-height: 44px;
+        -webkit-appearance: none; /* Resetear estilos nativos de iOS */
+        min-height: 44px; /* Tamaño mínimo para toques en iOS */
+    }
+}
+
+/* ========== SOLUCIÓN ALTERNATIVA SI TODO FALLA ========== */
+.volver-btn-container {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    z-index: 1000;
+    width: fit-content;
+}
+
+.volver-btn-container .volver-btn {
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+/* ===== SOLO AGREGAR ESTO AL FINAL DE TU CSS ===== */
+
+/* Botón para abrir búsqueda en móvil (ya está en tu CSS) */
+/* Se mantiene igual */
+
+/* Asegurar que en PC el buscador se vea normal */
+@media (min-width: 769px) {
+    .btn-open-search {
+        display: none !important;
+    }
+    
+    .search-container .btn-close-search {
+        display: none !important;
+    }
+}
+
+/* Asegurar que en móvil el botón abrir sea visible */
+@media (max-width: 768px) {
+    .btn-open-search {
+        display: flex !important;
     }
 }
