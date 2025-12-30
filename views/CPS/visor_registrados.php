@@ -3,6 +3,9 @@ session_start();
 require_once __DIR__ . '/../../helpers/config_helper.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/ContratistaModel.php';
+require_once __DIR__ . '/../../models/AreaModel.php';
+require_once __DIR__ . '/../../models/TipoVinculacionModel.php';
+require_once __DIR__ . '/../../models/MunicipioModel.php';
 
 header("Cache-Control: no-cache, no-store, must-revalidate"); 
 header("Pragma: no-cache"); 
@@ -27,42 +30,54 @@ $apellidoUsuario = htmlspecialchars($_SESSION['apellidos'] ?? '');
 $nombreCompleto = trim($nombreUsuario . ' ' . $apellidoUsuario);
 $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreCompleto;
 
-// Obtener contratistas
+// Obtener datos desde la base de datos usando los modelos
 try {
     $database = new Database();
     $db = $database->conectar();
+    
+    // Obtener contratistas
     $contratistaModel = new ContratistaModel($db);
     $contratistas = $contratistaModel->obtenerTodosContratistas();
     
-    // Obtener valores únicos para filtros
-    $areasUnicas = [];
-    $tiposVinculacionUnicos = [];
-    $municipiosUnicos = [];
+    // Obtener áreas desde el modelo AreaModel
+    $areaModel = new AreaModel();
+    $todasLasAreas = $areaModel->obtenerAreasActivas(); // Solo áreas activas
     
-    foreach ($contratistas as $c) {
-        // Áreas
-        if (isset($c['area']) && !empty($c['area']) && !in_array($c['area'], $areasUnicas)) {
-            $areasUnicas[] = $c['area'];
-        }
-        
-        // Tipos de vinculación
-        if (isset($c['tipo_vinculacion']) && !empty($c['tipo_vinculacion']) && !in_array($c['tipo_vinculacion'], $tiposVinculacionUnicos)) {
-            $tiposVinculacionUnicos[] = $c['tipo_vinculacion'];
-        }
-        
-        // Municipios principales
-        if (isset($c['municipio_principal']) && !empty($c['municipio_principal']) && !in_array($c['municipio_principal'], $municipiosUnicos)) {
-            $municipiosUnicos[] = $c['municipio_principal'];
+    // Obtener tipos de vinculación desde el modelo TipoVinculacionModel
+    $tipoVinculacionModel = new TipoVinculacionModel();
+    $todosLosTiposVinculacion = $tipoVinculacionModel->obtenerTiposActivos(); // Solo tipos activos
+    
+    // Obtener municipios desde el modelo MunicipioModel
+    $municipioModel = new MunicipioModel();
+    $todosLosMunicipios = $municipioModel->obtenerMunicipiosActivos(); // Solo municipios activos
+    
+    // Preparar arrays para los filtros
+    $areasUnicas = [];
+    foreach ($todasLasAreas as $area) {
+        if (isset($area['nombre']) && !empty($area['nombre'])) {
+            $areasUnicas[] = $area['nombre'];
         }
     }
-    
-    // Ordenar alfabéticamente
     sort($areasUnicas);
+    
+    $tiposVinculacionUnicos = [];
+    foreach ($todosLosTiposVinculacion as $tipo) {
+        if (isset($tipo['nombre']) && !empty($tipo['nombre'])) {
+            $tiposVinculacionUnicos[] = $tipo['nombre'];
+        }
+    }
     sort($tiposVinculacionUnicos);
+    
+    $municipiosUnicos = [];
+    foreach ($todosLosMunicipios as $municipio) {
+        if (isset($municipio['nombre']) && !empty($municipio['nombre'])) {
+            $municipiosUnicos[] = $municipio['nombre'];
+        }
+    }
     sort($municipiosUnicos);
     
 } catch (Exception $e) {
-    error_log("Error al cargar contratistas: " . $e->getMessage());
+    error_log("Error al cargar datos: " . $e->getMessage());
     $contratistas = [];
     $areasUnicas = [];
     $tiposVinculacionUnicos = [];
@@ -442,7 +457,7 @@ try {
                             <?php endforeach; ?>
                         </select>
                         
-                        <!-- NUEVO FILTRO: Tipo de Vinculación -->
+                        <!-- Filtro: Tipo de Vinculación -->
                         <select id="filterVinculacion" class="filter-select">
                             <option value="">Todos los tipos de vinculación</option>
                             <?php foreach ($tiposVinculacionUnicos as $tipo): ?>
@@ -452,7 +467,7 @@ try {
                             <?php endforeach; ?>
                         </select>
                         
-                        <!-- NUEVO FILTRO: Municipio Principal -->
+                        <!-- Filtro: Municipio Principal -->
                         <select id="filterMunicipio" class="filter-select">
                             <option value="">Todos los municipios</option>
                             <?php foreach ($municipiosUnicos as $municipio): ?>
@@ -950,7 +965,7 @@ try {
             
             // Botones
             document.getElementById('clearFiltersBtn').addEventListener('click', limpiarFiltros);
-            document.getElementById('refreshBtn').addEventListener('click', recargarDatos); // Cambiado a recargarDatos
+            document.getElementById('refreshBtn').addEventListener('click', recargarDatos);
             document.getElementById('volverBtn').addEventListener('click', () => {
                 window.location.href = 'menuContratistas.php';
             });
@@ -960,7 +975,7 @@ try {
                 if (event.key === 'Enter') filtrarTabla();
             });
             
-            // También filtrar al cargar la página (por si hay parámetros en URL)
+            // También filtrar al cargar la página
             filtrarTabla();
         });
         
@@ -972,7 +987,6 @@ try {
         
         function editarContratista(idDetalle) {
             if (!idDetalle || idDetalle === '0') return alert('Error: ID no válido');
-            
             window.location.href = `editar_contratista.php?id_detalle=${idDetalle}`;
         }
     </script>
