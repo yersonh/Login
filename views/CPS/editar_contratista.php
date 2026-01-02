@@ -89,9 +89,9 @@ try {
     }
     
     // Obtener listas para formulario
-    $areas = $areaModel->obtenerTodasAreas();
-    $municipios = $municipioModel->obtenerTodosMunicipios();
-    $tiposVinculacion = $tipoVinculacionModel->obtenerTodosTipos();
+    $areas = $areaModel->obtenerAreasActivas();
+    $municipios = $municipioModel->obtenerMunicipiosActivos();
+    $tiposVinculacion = $tipoVinculacionModel->obtenerTodosTiposActivos();
     
     // Procesar POST si se envió el formulario
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
