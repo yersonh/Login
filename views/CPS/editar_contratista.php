@@ -221,7 +221,6 @@ try {
                 $resultado = $contratistaModel->actualizarContratista($id_detalle, $datosActualizados, $archivos);
                 
                 if ($resultado['success']) {
-                    $_SESSION['success'] = "Contratista actualizado exitosamente";
                     header("Location: ver_detalle.php?id_detalle=$id_detalle");
                     exit();
                 } else {
