@@ -540,7 +540,7 @@ public function actualizarContratista($id_detalle, $datos, $archivos = []) {
         $fecha_final = !empty($datos['fecha_final']) ? $this->formatearFecha($datos['fecha_final']) : null;
         $fecha_rp = !empty($datos['fecha_rp']) ? $this->formatearFecha($datos['fecha_rp']) : null;
 
-        // 5. Actualizar detalle_contrato
+        // 5. Actualizar detalle_contrato (datos básicos)
         $sqlDetalle = "UPDATE detalle_contrato SET 
                         id_area = :id_area,
                         id_tipo_vinculacion = :id_tipo_vinculacion,
@@ -582,11 +582,13 @@ public function actualizarContratista($id_detalle, $datos, $archivos = []) {
         
         $stmtDetalle->execute();
         
+        // 6. ACTUALIZAR DOCUMENTOS ADJUNTOS (NUEVO)
+        $this->actualizarDocumentos($id_detalle, $archivos, $datos);
+        
         $this->conn->commit();
         
         return [
             'success' => true,
-            'mensaje' => 'Contratista actualizado exitosamente',
             'id_detalle' => $id_detalle
         ];
         
@@ -599,6 +601,83 @@ public function actualizarContratista($id_detalle, $datos, $archivos = []) {
             'error' => $e->getMessage()
         ];
     }
+}
+/**
+ * Actualiza todos los documentos adjuntos
+ */
+private function actualizarDocumentos($id_detalle, $archivos, $datos) {
+    // Mapeo de archivos recibidos a tipos de documento
+    $documentosMap = [
+        'adjuntar_cv' => 'cv',
+        'adjuntar_contrato' => 'contrato',
+        'adjuntar_acta_inicio' => 'acta_inicio',
+        'adjuntar_rp' => 'rp'
+    ];
+    
+    foreach ($documentosMap as $archivoKey => $tipoDocumento) {
+        if (isset($archivos[$archivoKey]) && $archivos[$archivoKey]['error'] === UPLOAD_ERR_OK) {
+            $archivo = $archivos[$archivoKey];
+            $nombreOriginal = $datos[$tipoDocumento . '_nombre_original'] ?? $archivo['name'];
+            
+            $this->actualizarDocumentoIndividual($id_detalle, $tipoDocumento, $archivo, $nombreOriginal);
+        }
+    }
+}
+/**
+ * Actualiza un documento específico
+ */
+private function actualizarDocumentoIndividual($id_detalle, $tipoDocumento, $archivo, $nombreOriginal = null) {
+    $columnasMap = [
+        'cv' => [
+            'contenido' => 'cv_archivo',
+            'tipo_mime' => 'cv_tipo_mime',
+            'nombre' => 'cv_nombre_original',
+            'tamano' => 'cv_tamano'
+        ],
+        'contrato' => [
+            'contenido' => 'contrato_archivo',
+            'tipo_mime' => 'contrato_tipo_mime',
+            'nombre' => 'contrato_nombre_original',
+            'tamano' => 'contrato_tamano'
+        ],
+        'acta_inicio' => [
+            'contenido' => 'acta_inicio_archivo',
+            'tipo_mime' => 'acta_inicio_tipo_mime',
+            'nombre' => 'acta_inicio_nombre_original',
+            'tamano' => 'acta_inicio_tamano'
+        ],
+        'rp' => [
+            'contenido' => 'rp_archivo',
+            'tipo_mime' => 'rp_tipo_mime',
+            'nombre' => 'rp_nombre_original',
+            'tamano' => 'rp_tamano'
+        ]
+    ];
+    
+    if (!isset($columnasMap[$tipoDocumento])) {
+        throw new Exception("Tipo de documento no válido: $tipoDocumento");
+    }
+    
+    $columnas = $columnasMap[$tipoDocumento];
+    $nombreArchivo = $nombreOriginal ?: $archivo['name'];
+    $contenido = file_get_contents($archivo['tmp_name']);
+    
+    $sql = "UPDATE detalle_contrato SET 
+            {$columnas['contenido']} = :contenido,
+            {$columnas['tipo_mime']} = :tipo_mime,
+            {$columnas['nombre']} = :nombre,
+            {$columnas['tamano']} = :tamano,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id_detalle = :id_detalle";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(':contenido', $contenido, PDO::PARAM_LOB);
+    $stmt->bindValue(':tipo_mime', $archivo['type']);
+    $stmt->bindValue(':nombre', $nombreArchivo);
+    $stmt->bindValue(':tamano', $archivo['size']);
+    $stmt->bindValue(':id_detalle', $id_detalle);
+    
+    return $stmt->execute();
 }
 
     // ================= MÉTODOS UTILITARIOS =================
