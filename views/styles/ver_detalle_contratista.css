@@ -53,26 +53,34 @@
     margin-bottom: 25px;
 }
 
-/* En móvil, reorganizamos el orden con flexbox y order */
-/* El orden debe ser:
-   1. Foto
-   2. Información Personal
-   3. Información del Contrato
-   4. Información Laboral
-   5. Documentos
-*/
-
-/* Para lograr esto, necesitamos reestructurar el orden de las columnas y sus contenidos */
-.foto-profesion-card {
-    order: 1; /* Foto es la primera */
+/* En móvil: reordenamos las columnas con DISPLAY GRID */
+.left-column {
+    display: contents; /* Esto hace que los hijos directos se comporten como si no hubiera contenedor */
 }
 
-.left-column {
-    order: 2; /* Información viene después de la foto */
+.right-column {
+    display: contents; /* Esto hace que los hijos directos se comporten como si no hubiera contenedor */
+}
+
+/* Ahora podemos reordenar los elementos hijos directamente */
+.foto-profesion-card {
+    order: 1; /* Foto primera */
+}
+
+.info-card:nth-of-type(1) {
+    order: 2; /* Información Personal segunda */
+}
+
+.info-card:nth-of-type(2) {
+    order: 3; /* Información del Contrato tercera */
+}
+
+.info-card:nth-of-type(3) {
+    order: 4; /* Información Laboral cuarta */
 }
 
 .documentos-card {
-    order: 3; /* Documentos son los últimos */
+    order: 5; /* Documentos últimos */
 }
 
 /* === TARJETAS DE INFORMACIÓN === */
@@ -355,18 +363,19 @@
         align-self: center;
     }
     
-    /* En tablet, volvemos al layout de 2 columnas */
+    /* En tablet: volvemos al layout normal con 2 columnas */
     .main-content-grid {
         display: grid;
         grid-template-columns: 2fr 1fr;
         gap: 25px;
     }
     
-    /* Resetear órdenes para tablet/desktop */
-    .foto-profesion-card,
-    .left-column,
-    .documentos-card {
-        order: 0;
+    /* Restauramos el comportamiento normal de las columnas */
+    .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        order: 1;
     }
     
     .right-column {
@@ -376,8 +385,13 @@
         order: 2;
     }
     
-    .left-column {
-        order: 1;
+    /* Reseteamos los órdenes de los elementos hijos */
+    .foto-profesion-card,
+    .info-card:nth-of-type(1),
+    .info-card:nth-of-type(2),
+    .info-card:nth-of-type(3),
+    .documentos-card {
+        order: 0;
     }
     
     .info-grid-compact {
@@ -591,23 +605,28 @@
         gap: 15px;
     }
     
-    /* En horizontal, mantener orden lógico */
+    /* En horizontal: foto y documentos a la derecha */
     .foto-profesion-card {
         order: 1;
         grid-column: 1;
         grid-row: 1;
     }
     
-    .left-column {
+    .info-card:nth-of-type(1),
+    .info-card:nth-of-type(2),
+    .info-card:nth-of-type(3) {
         order: 2;
         grid-column: 2;
-        grid-row: 1 / span 2;
     }
+    
+    .info-card:nth-of-type(1) { grid-row: 1; }
+    .info-card:nth-of-type(2) { grid-row: 2; }
+    .info-card:nth-of-type(3) { grid-row: 3; }
     
     .documentos-card {
         order: 3;
         grid-column: 1;
-        grid-row: 2;
+        grid-row: 2 / span 2;
     }
     
     .foto-contratista {

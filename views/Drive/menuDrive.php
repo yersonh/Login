@@ -150,7 +150,7 @@ $base_url = $protocol . "://" . $_SERVER['HTTP_HOST'];
                             <?php echo htmlspecialchars($nombreCompleto); ?>
                         </strong>
                     </div>
-                    <div class="user-role">Contratista</div>
+                    <div class="user-role">Asistente</div>
                 </div>
             </div>
         </header>
