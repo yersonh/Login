@@ -492,115 +492,114 @@ class ContratistaModel {
     }
 
     // ================= MÉTODOS DE ACTUALIZACIÓN =================
-
-    public function actualizarContratista($id_detalle, $datos, $archivos = []) {
-        $this->conn->beginTransaction();
+public function actualizarContratista($id_detalle, $datos, $archivos = []) {
+    $this->conn->beginTransaction();
+    
+    try {
+        // 1. Obtener id_persona del detalle
+        $sqlGetPersona = "SELECT id_persona FROM detalle_contrato WHERE id_detalle = :id_detalle";
+        $stmtGetPersona = $this->conn->prepare($sqlGetPersona);
+        $stmtGetPersona->bindValue(':id_detalle', $id_detalle);
+        $stmtGetPersona->execute();
+        $resultado = $stmtGetPersona->fetch(PDO::FETCH_ASSOC);
         
-        try {
-            // 1. Obtener id_persona del detalle
-            $sqlGetPersona = "SELECT id_persona FROM detalle_contrato WHERE id_detalle = :id_detalle";
-            $stmtGetPersona = $this->conn->prepare($sqlGetPersona);
-            $stmtGetPersona->bindParam(':id_detalle', $id_detalle);
-            $stmtGetPersona->execute();
-            $resultado = $stmtGetPersona->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$resultado) {
-                throw new Exception('Detalle de contrato no encontrado');
-            }
-            
-            $id_persona = $resultado['id_persona'];
-            
-            // 2. Actualizar datos de persona (incluyendo profesion)
-            $sqlPersona = "UPDATE persona SET 
-                            nombres = :nombres,
-                            apellidos = :apellidos,
-                            cedula = :cedula,
-                            telefono = :telefono,
-                            correo_personal = :correo_personal,
-                            profesion = :profesion
-                        WHERE id_persona = :id_persona";
-            
-            $stmtPersona = $this->conn->prepare($sqlPersona);
-            $stmtPersona->bindParam(':nombres', $datos['nombres']);
-            $stmtPersona->bindParam(':apellidos', $datos['apellidos']);
-            $stmtPersona->bindParam(':cedula', $datos['cedula']);
-            $stmtPersona->bindParam(':telefono', $datos['telefono']);
-            $stmtPersona->bindParam(':correo_personal', $datos['correo_personal']);
-            $stmtPersona->bindParam(':profesion', $datos['profesion'] ?? null);
-            $stmtPersona->bindParam(':id_persona', $id_persona);
-            $stmtPersona->execute();
-            
-            // 3. Actualizar foto de perfil si se subió
-            if (isset($archivos['foto_perfil']) && $archivos['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-                $this->personaModel->guardarFotoPerfil($id_persona, $archivos['foto_perfil']);
-            }
-
-            // 4. Formatear fechas
-            $fecha_contrato = !empty($datos['fecha_contrato']) ? $this->formatearFecha($datos['fecha_contrato']) : null;
-            $fecha_inicio = !empty($datos['fecha_inicio']) ? $this->formatearFecha($datos['fecha_inicio']) : null;
-            $fecha_final = !empty($datos['fecha_final']) ? $this->formatearFecha($datos['fecha_final']) : null;
-            $fecha_rp = !empty($datos['fecha_rp']) ? $this->formatearFecha($datos['fecha_rp']) : null;
-
-            // 5. Actualizar detalle_contrato
-            $sqlDetalle = "UPDATE detalle_contrato SET 
-                            id_area = :id_area,
-                            id_tipo_vinculacion = :id_tipo_vinculacion,
-                            id_municipio_principal = :id_municipio_principal,
-                            id_municipio_secundario = :id_municipio_secundario,
-                            id_municipio_terciario = :id_municipio_terciario,
-                            numero_contrato = :numero_contrato,
-                            fecha_contrato = :fecha_contrato,
-                            fecha_inicio = :fecha_inicio,
-                            fecha_final = :fecha_final,
-                            duracion_contrato = :duracion_contrato,
-                            numero_registro_presupuestal = :numero_registro_presupuestal,
-                            fecha_rp = :fecha_rp,
-                            direccion = :direccion,
-                            direccion_municipio_principal = :direccion_municipio_principal,
-                            direccion_municipio_secundario = :direccion_municipio_secundario,
-                            direccion_municipio_terciario = :direccion_municipio_terciario,
-                            updated_at = CURRENT_TIMESTAMP
-                        WHERE id_detalle = :id_detalle";
-            
-            $stmtDetalle = $this->conn->prepare($sqlDetalle);
-            $stmtDetalle->bindParam(':id_area', $datos['id_area']);
-            $stmtDetalle->bindParam(':id_tipo_vinculacion', $datos['id_tipo_vinculacion']);
-            $stmtDetalle->bindParam(':id_municipio_principal', $datos['id_municipio_principal']);
-            $stmtDetalle->bindParam(':id_municipio_secundario', $datos['id_municipio_secundario']);
-            $stmtDetalle->bindParam(':id_municipio_terciario', $datos['id_municipio_terciario']);
-            $stmtDetalle->bindParam(':numero_contrato', $datos['numero_contrato']);
-            $stmtDetalle->bindParam(':fecha_contrato', $fecha_contrato);
-            $stmtDetalle->bindParam(':fecha_inicio', $fecha_inicio);
-            $stmtDetalle->bindParam(':fecha_final', $fecha_final);
-            $stmtDetalle->bindParam(':duracion_contrato', $datos['duracion_contrato']);
-            $stmtDetalle->bindParam(':numero_registro_presupuestal', $datos['numero_registro_presupuestal']);
-            $stmtDetalle->bindParam(':fecha_rp', $fecha_rp);
-            $stmtDetalle->bindParam(':direccion', $datos['direccion']);
-            $stmtDetalle->bindParam(':direccion_municipio_principal', $datos['direccion_municipio_principal']);
-            $stmtDetalle->bindParam(':direccion_municipio_secundario', $datos['direccion_municipio_secundario']);
-            $stmtDetalle->bindParam(':direccion_municipio_terciario', $datos['direccion_municipio_terciario']);
-            $stmtDetalle->bindParam(':id_detalle', $id_detalle);
-            
-            $stmtDetalle->execute();
-            
-            $this->conn->commit();
-            
-            return [
-                'success' => true,
-                'mensaje' => 'Contratista actualizado exitosamente',
-                'id_detalle' => $id_detalle
-            ];
-            
-        } catch (Exception $e) {
-            $this->conn->rollBack();
-            error_log("Error en actualizarContratista: " . $e->getMessage());
-            
-            return [
-                'success' => false,
-                'error' => $e->getMessage()
-            ];
+        if (!$resultado) {
+            throw new Exception('Detalle de contrato no encontrado');
         }
+        
+        $id_persona = $resultado['id_persona'];
+        
+        // 2. Actualizar datos de persona
+        $sqlPersona = "UPDATE persona SET 
+                        nombres = :nombres,
+                        apellidos = :apellidos,
+                        cedula = :cedula,
+                        telefono = :telefono,
+                        correo_personal = :correo_personal,
+                        profesion = :profesion
+                    WHERE id_persona = :id_persona";
+        
+        $stmtPersona = $this->conn->prepare($sqlPersona);
+        $stmtPersona->bindValue(':nombres', $datos['nombres']);
+        $stmtPersona->bindValue(':apellidos', $datos['apellidos']);
+        $stmtPersona->bindValue(':cedula', $datos['cedula']);
+        $stmtPersona->bindValue(':telefono', $datos['telefono']);
+        $stmtPersona->bindValue(':correo_personal', $datos['correo_personal']);
+        $stmtPersona->bindValue(':profesion', $datos['profesion'] ?? null);
+        $stmtPersona->bindValue(':id_persona', $id_persona);
+        $stmtPersona->execute();
+        
+        // 3. Actualizar foto de perfil si se subió
+        if (isset($archivos['foto_perfil']) && $archivos['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+            $this->personaModel->guardarFotoPerfil($id_persona, $archivos['foto_perfil']);
+        }
+
+        // 4. Formatear fechas
+        $fecha_contrato = !empty($datos['fecha_contrato']) ? $this->formatearFecha($datos['fecha_contrato']) : null;
+        $fecha_inicio = !empty($datos['fecha_inicio']) ? $this->formatearFecha($datos['fecha_inicio']) : null;
+        $fecha_final = !empty($datos['fecha_final']) ? $this->formatearFecha($datos['fecha_final']) : null;
+        $fecha_rp = !empty($datos['fecha_rp']) ? $this->formatearFecha($datos['fecha_rp']) : null;
+
+        // 5. Actualizar detalle_contrato
+        $sqlDetalle = "UPDATE detalle_contrato SET 
+                        id_area = :id_area,
+                        id_tipo_vinculacion = :id_tipo_vinculacion,
+                        id_municipio_principal = :id_municipio_principal,
+                        id_municipio_secundario = :id_municipio_secundario,
+                        id_municipio_terciario = :id_municipio_terciario,
+                        numero_contrato = :numero_contrato,
+                        fecha_contrato = :fecha_contrato,
+                        fecha_inicio = :fecha_inicio,
+                        fecha_final = :fecha_final,
+                        duracion_contrato = :duracion_contrato,
+                        numero_registro_presupuestal = :numero_registro_presupuestal,
+                        fecha_rp = :fecha_rp,
+                        direccion = :direccion,
+                        direccion_municipio_principal = :direccion_municipio_principal,
+                        direccion_municipio_secundario = :direccion_municipio_secundario,
+                        direccion_municipio_terciario = :direccion_municipio_terciario,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id_detalle = :id_detalle";
+        
+        $stmtDetalle = $this->conn->prepare($sqlDetalle);
+        $stmtDetalle->bindValue(':id_area', $datos['id_area']);
+        $stmtDetalle->bindValue(':id_tipo_vinculacion', $datos['id_tipo_vinculacion']);
+        $stmtDetalle->bindValue(':id_municipio_principal', $datos['id_municipio_principal']);
+        $stmtDetalle->bindValue(':id_municipio_secundario', $datos['id_municipio_secundario']);
+        $stmtDetalle->bindValue(':id_municipio_terciario', $datos['id_municipio_terciario']);
+        $stmtDetalle->bindValue(':numero_contrato', $datos['numero_contrato']);
+        $stmtDetalle->bindValue(':fecha_contrato', $fecha_contrato);
+        $stmtDetalle->bindValue(':fecha_inicio', $fecha_inicio);
+        $stmtDetalle->bindValue(':fecha_final', $fecha_final);
+        $stmtDetalle->bindValue(':duracion_contrato', $datos['duracion_contrato']);
+        $stmtDetalle->bindValue(':numero_registro_presupuestal', $datos['numero_registro_presupuestal']);
+        $stmtDetalle->bindValue(':fecha_rp', $fecha_rp);
+        $stmtDetalle->bindValue(':direccion', $datos['direccion']);
+        $stmtDetalle->bindValue(':direccion_municipio_principal', $datos['direccion_municipio_principal']);
+        $stmtDetalle->bindValue(':direccion_municipio_secundario', $datos['direccion_municipio_secundario']);
+        $stmtDetalle->bindValue(':direccion_municipio_terciario', $datos['direccion_municipio_terciario']);
+        $stmtDetalle->bindValue(':id_detalle', $id_detalle);
+        
+        $stmtDetalle->execute();
+        
+        $this->conn->commit();
+        
+        return [
+            'success' => true,
+            'mensaje' => 'Contratista actualizado exitosamente',
+            'id_detalle' => $id_detalle
+        ];
+        
+    } catch (Exception $e) {
+        $this->conn->rollBack();
+        error_log("Error en actualizarContratista: " . $e->getMessage());
+        
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
     }
+}
 
     // ================= MÉTODOS UTILITARIOS =================
 
