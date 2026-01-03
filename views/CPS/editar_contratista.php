@@ -656,7 +656,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- CV -->
                             <div class="form-group">
                                 <label for="cv">
-                                    <i class="fas fa-user-graduate"></i> Hoja de Vida (CV)
+                                    <i class="fas fa-user-graduate doc-icon cv"></i> Hoja de Vida (CV)
                                 </label>
                                 
                                 <?php if (!empty($contratista['cv_nombre_original'])): ?>

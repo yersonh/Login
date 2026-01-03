@@ -813,3 +813,11 @@
 .form-label .fa-file-invoice-dollar {
     color: #fd7e14;
 }
+.doc-icon.cv {
+    background-color: #dc3545; /* Rojo */
+    color: white;              /* Icono blanco */
+    padding: 5px;              /* Espacio interno para que se vea el fondo */
+    border-radius: 4px;        /* Bordes redondeados */
+    margin-right: 8px;         /* Separación del texto */
+    font-size: 0.9em;          /* Ajuste de tamaño opcional */
+}
