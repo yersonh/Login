@@ -429,7 +429,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         <div class="photo-column">
             <div class="photo-container">
                 <div class="photo-header">
-                    <h4><i class="fas fa-camera"></i> Foto de Perfil</h4>
+                    <h4><i class="fas fa-camera"></i> Foto del Contratista</h4>
                 </div>
                 
                 <div class="photo-preview-area">
