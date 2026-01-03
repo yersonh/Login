@@ -251,6 +251,283 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
     <link rel="stylesheet" href="../styles/editar_contratista.css">
+    <style>
+        /* Estilos para el modal de confirmación */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-confirmacion {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            background: #4a6cf7;
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-mensaje {
+            background: #f8f9fa;
+            border-left: 4px solid #4a6cf7;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .modal-mensaje p {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .modal-mensaje i {
+            color: #4a6cf7;
+            font-size: 1.2rem;
+        }
+        
+        .cambios-container {
+            margin-bottom: 25px;
+        }
+        
+        .cambios-container h4 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cambios-container h4 i {
+            color: #4a6cf7;
+        }
+        
+        .lista-cambios {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cambio-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .cambio-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .cambio-item:last-child {
+            border-bottom: none;
+        }
+        
+        .campo-nombre {
+            font-weight: 600;
+            color: #333;
+            min-width: 150px;
+        }
+        
+        .valores-cambio {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            margin: 0 15px;
+        }
+        
+        .valor-anterior {
+            color: #dc3545;
+            font-size: 0.9rem;
+            text-decoration: line-through;
+            padding: 2px 8px;
+            background: #ffeaea;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .valor-nuevo {
+            color: #28a745;
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .valor-anterior::before {
+            content: "Anterior:";
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .valor-nuevo::before {
+            content: "Nuevo:";
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .sin-cambios {
+            text-align: center;
+            color: #6c757d;
+            padding: 20px;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .btn-modal {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .btn-modal-cancelar {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-modal-cancelar:hover {
+            background: #5a6268;
+        }
+        
+        .btn-modal-confirmar {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-modal-confirmar:hover {
+            background: #218838;
+        }
+        
+        .btn-modal-confirmar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4a6cf7;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Estilos para archivos */
+        .archivo-cambio {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .archivo-info {
+            font-size: 0.85rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .archivo-info i {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     
@@ -316,173 +593,169 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 <form method="POST" action="" class="form-container" id="formEditarContratista" enctype="multipart/form-data">
                     
                     <!-- Foto de Perfil y Datos Personales - Con datos en 2 columnas -->
-<div class="form-section">
-    <h3><i class="fas fa-user-circle"></i> Información Personal</h3>
-    
-    <div class="form-grid personal-info-grid">
-        <!-- Columna Izquierda: Datos Personales en 2 columnas -->
-        <div class="personal-data-two-columns">
-            <!-- Fila 1: Nombres y Apellidos -->
-            <div class="two-column-row">
-                <div class="form-group two-column-item">
-                    <label for="nombres">
-                        <i class="fas fa-user"></i> Nombres <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="nombres" 
-                           name="nombres" 
-                           class="form-control"
-                           value="<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>"
-                           required>
-                </div>
-                
-                <div class="form-group two-column-item">
-                    <label for="apellidos">
-                        <i class="fas fa-user"></i> Apellidos <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="apellidos" 
-                           name="apellidos" 
-                           class="form-control"
-                           value="<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>"
-                           required>
-                </div>
-            </div>
-            
-            <!-- Fila 2: Cédula y Profesión -->
-            <div class="two-column-row">
-                <div class="form-group two-column-item">
-                    <label for="cedula">
-                        <i class="fas fa-id-card"></i> Cédula <span class="required">*</span>
-                    </label>
-                    <input type="text" 
-                           id="cedula" 
-                           name="cedula" 
-                           class="form-control"
-                           value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
-                           required>
-                </div>
-                
-                <div class="form-group two-column-item">
-                    <label for="profesion">
-                        <i class="fas fa-graduation-cap"></i> Profesión
-                    </label>
-                    <input type="text" 
-                           id="profesion" 
-                           name="profesion" 
-                           class="form-control"
-                           placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
-                           value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
-                    <span class="form-text">Profesión u oficio del contratista</span>
-                </div>
-            </div>
-            
-            <!-- Fila 3: Dirección y Teléfono -->
-            <div class="two-column-row">
-                <div class="form-group two-column-item">
-                    <label for="direccion">
-                        <i class="fas fa-home"></i> Dirección
-                    </label>
-                    <input type="text" 
-                           id="direccion" 
-                           name="direccion" 
-                           class="form-control"
-                           placeholder="Ej: Calle 123 #45-67"
-                           value="<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>">
-                    <span class="form-text">Dirección de residencia del contratista</span>
-                </div>
-                
-                <div class="form-group two-column-item">
-                    <label for="telefono">
-                        <i class="fas fa-phone"></i> Teléfono
-                    </label>
-                    <input type="tel" 
-                           id="telefono" 
-                           name="telefono" 
-                           class="form-control"
-                           value="<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>">
-                </div>
-            </div>
-            
-            <!-- Fila 4: Correo en una columna -->
-            <div class="two-column-row">
-                <div class="form-group two-column-item">
-                    <label for="correo_personal">
-                        <i class="fas fa-envelope"></i> Correo Personal
-                    </label>
-                    <input type="email" 
-                           id="correo_personal" 
-                           name="correo_personal" 
-                           class="form-control"
-                           value="<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>">
-                    <span class="form-text">Correo para contactar al contratista</span>
-                </div>
-                
-                <!-- Espacio vacío para mantener el diseño de 2 columnas -->
-                <div class="form-group two-column-item">
-                    <!-- Espacio vacío para alinear con la columna derecha -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Columna Derecha: Foto de Perfil -->
-        <div class="photo-column">
-            <div class="photo-container">
-                <div class="photo-header">
-                    <h4><i class="fas fa-camera"></i> Foto del Contratista</h4>
-                </div>
-                
-                <div class="photo-preview-area">
-                    <!-- Mostrar foto actual si existe -->
-                    <?php if (!empty($contratista['foto_contenido'])): ?>
-                    <div class="foto-preview">
-                        <img src="data:<?php echo htmlspecialchars($contratista['foto_tipo_mime'] ?? 'image/jpeg'); ?>;base64,<?php echo base64_encode($contratista['foto_contenido']); ?>" 
-                             alt="Foto actual del contratista"
-                             id="fotoPreview">
-                    </div>
-                    <div class="current-file">
-                        <div class="file-info">
-                            <i class="fas fa-image"></i>
-                            <div class="file-info-content">
-                                <div class="file-name">Foto actual</div>
-                                <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-user-circle"></i> Información Personal</h3>
+                        
+                        <div class="form-grid personal-info-grid">
+                            <!-- Columna Izquierda: Datos Personales en 2 columnas -->
+                            <div class="personal-data-two-columns">
+                                <!-- Fila 1: Nombres y Apellidos -->
+                                <div class="two-column-row">
+                                    <div class="form-group two-column-item">
+                                        <label for="nombres">
+                                            <i class="fas fa-user"></i> Nombres <span class="required">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               id="nombres" 
+                                               name="nombres" 
+                                               class="form-control"
+                                               value="<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="form-group two-column-item">
+                                        <label for="apellidos">
+                                            <i class="fas fa-user"></i> Apellidos <span class="required">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               id="apellidos" 
+                                               name="apellidos" 
+                                               class="form-control"
+                                               value="<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>"
+                                               required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fila 2: Cédula y Profesión -->
+                                <div class="two-column-row">
+                                    <div class="form-group two-column-item">
+                                        <label for="cedula">
+                                            <i class="fas fa-id-card"></i> Cédula <span class="required">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               id="cedula" 
+                                               name="cedula" 
+                                               class="form-control"
+                                               value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="form-group two-column-item">
+                                        <label for="profesion">
+                                            <i class="fas fa-graduation-cap"></i> Profesión
+                                        </label>
+                                        <input type="text" 
+                                               id="profesion" 
+                                               name="profesion" 
+                                               class="form-control"
+                                               placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
+                                               value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
+                                        <span class="form-text">Profesión u oficio del contratista</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fila 3: Dirección y Teléfono -->
+                                <div class="two-column-row">
+                                    <div class="form-group two-column-item">
+                                        <label for="direccion">
+                                            <i class="fas fa-home"></i> Dirección
+                                        </label>
+                                        <input type="text" 
+                                               id="direccion" 
+                                               name="direccion" 
+                                               class="form-control"
+                                               placeholder="Ej: Calle 123 #45-67"
+                                               value="<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>">
+                                        <span class="form-text">Dirección de residencia del contratista</span>
+                                    </div>
+                                    
+                                    <div class="form-group two-column-item">
+                                        <label for="telefono">
+                                            <i class="fas fa-phone"></i> Teléfono
+                                        </label>
+                                        <input type="tel" 
+                                               id="telefono" 
+                                               name="telefono" 
+                                               class="form-control"
+                                               value="<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>">
+                                    </div>
+                                </div>
+                                
+                                <!-- Fila 4: Correo solo en columna izquierda -->
+                                <div class="two-column-row">
+                                    <div class="form-group two-column-item" style="flex: 0 0 50%;">
+                                        <label for="correo_personal">
+                                            <i class="fas fa-envelope"></i> Correo Personal
+                                        </label>
+                                        <input type="email" 
+                                               id="correo_personal" 
+                                               name="correo_personal" 
+                                               class="form-control"
+                                               value="<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>">
+                                        <span class="form-text">Correo para contactar al contratista</span>
+                                    </div>
+                                    <!-- La columna derecha queda vacía automáticamente -->
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Derecha: Foto de Perfil -->
+                            <div class="photo-column">
+                                <div class="photo-container">
+                                    <div class="photo-header">
+                                        <h4><i class="fas fa-camera"></i> Foto de Perfil</h4>
+                                    </div>
+                                    
+                                    <div class="photo-preview-area">
+                                        <!-- Mostrar foto actual si existe -->
+                                        <?php if (!empty($contratista['foto_contenido'])): ?>
+                                        <div class="foto-preview">
+                                            <img src="data:<?php echo htmlspecialchars($contratista['foto_tipo_mime'] ?? 'image/jpeg'); ?>;base64,<?php echo base64_encode($contratista['foto_contenido']); ?>" 
+                                                 alt="Foto actual del contratista"
+                                                 id="fotoPreview">
+                                        </div>
+                                        <div class="current-file">
+                                            <div class="file-info">
+                                                <i class="fas fa-image"></i>
+                                                <div class="file-info-content">
+                                                    <div class="file-name">Foto actual</div>
+                                                    <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php else: ?>
+                                        <div class="foto-preview">
+                                            <div class="foto-placeholder" id="fotoPreviewPlaceholder">
+                                                <i class="fas fa-user"></i>
+                                                <div>Sin foto</div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <div class="photo-upload-area">
+                                        <div class="form-group">
+                                            <label for="foto_perfil" class="photo-upload-label">
+                                                <i class="fas fa-upload"></i> Cambiar Foto
+                                            </label>
+                                            <input type="file" 
+                                                   id="foto_perfil" 
+                                                   name="foto_perfil" 
+                                                   class="form-control-file photo-upload-input"
+                                                   accept="image/jpeg,image/jpg,image/png,image/gif"
+                                                   onchange="previewFoto(this)">
+                                            <div class="photo-upload-help">
+                                                <i class="fas fa-info-circle"></i>
+                                                Formatos: JPG, PNG, GIF (Máx. 5MB)
+                                            </div>
+                                            <div class="photo-upload-note">
+                                                Dejar en blanco para mantener la foto actual
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <?php else: ?>
-                    <div class="foto-preview">
-                        <div class="foto-placeholder" id="fotoPreviewPlaceholder">
-                            <i class="fas fa-user"></i>
-                            <div>Sin foto</div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                
-                <div class="photo-upload-area">
-                    <div class="form-group">
-                        <label for="foto_perfil" class="photo-upload-label">
-                            <i class="fas fa-upload"></i> Cambiar Foto
-                        </label>
-                        <input type="file" 
-                               id="foto_perfil" 
-                               name="foto_perfil" 
-                               class="form-control-file photo-upload-input"
-                               accept="image/jpeg,image/jpg,image/png,image/gif"
-                               onchange="previewFoto(this)">
-                        <div class="photo-upload-help">
-                            <i class="fas fa-info-circle"></i>
-                            Formatos: JPG, PNG, GIF (Máx. 5MB)
-                        </div>
-                        <div class="photo-upload-note">
-                            Dejar en blanco para mantener la foto actual
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
                     
                     <!-- Información del Contrato -->
                     <div class="form-section">
@@ -829,7 +1102,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                         <a href="ver_detalle.php?id_detalle=<?php echo $id_detalle; ?>" class="btn btn-cancelar">
                             <i class="fas fa-times"></i> Cancelar
                         </a>
-                        <button type="submit" class="btn btn-guardar">
+                        <button type="button" class="btn btn-guardar" id="btnMostrarCambios">
                             <i class="fas fa-save"></i> Guardar Cambios
                         </button>
                     </div>
@@ -874,28 +1147,137 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         </footer>
     </div>
     
+    <!-- Modal de Confirmación de Cambios -->
+    <div class="modal-overlay" id="modalConfirmacion">
+        <div class="modal-confirmacion">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-check"></i> Confirmar Cambios</h3>
+                <button class="modal-close" id="btnCerrarModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-mensaje">
+                    <p>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Estás a punto de guardar los siguientes cambios en el contratista.
+                        Por favor, revisa cuidadosamente antes de confirmar.
+                    </p>
+                </div>
+                
+                <div class="cambios-container">
+                    <h4><i class="fas fa-list-check"></i> Cambios Detectados</h4>
+                    
+                    <div id="listaCambios" class="lista-cambios">
+                        <!-- Los cambios se insertarán aquí dinámicamente -->
+                        <div class="sin-cambios">
+                            <i class="fas fa-info-circle"></i>
+                            No se detectaron cambios
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loadingGuardar">
+                    <div class="loading-spinner"></div>
+                    <p>Guardando cambios, por favor espera...</p>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-modal-cancelar" id="btnCancelarCambios">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="btn-modal btn-modal-confirmar" id="btnConfirmarCambios" disabled>
+                    <i class="fas fa-check"></i> Confirmar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script>
+    // Datos originales del contratista (para comparar)
+    const datosOriginales = {
+        nombres: "<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>",
+        apellidos: "<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>",
+        cedula: "<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>",
+        profesion: "<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>",
+        direccion: "<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>",
+        telefono: "<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>",
+        correo_personal: "<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>",
+        numero_contrato: "<?php echo htmlspecialchars($contratista['numero_contrato'] ?? ''); ?>",
+        fecha_contrato: "<?php echo !empty($contratista['fecha_contrato']) ? date('Y-m-d', strtotime($contratista['fecha_contrato'])) : ''; ?>",
+        fecha_inicio: "<?php echo !empty($contratista['fecha_inicio']) ? date('Y-m-d', strtotime($contratista['fecha_inicio'])) : ''; ?>",
+        fecha_final: "<?php echo !empty($contratista['fecha_final']) ? date('Y-m-d', strtotime($contratista['fecha_final'])) : ''; ?>",
+        duracion_contrato: "<?php echo htmlspecialchars($contratista['duracion_contrato'] ?? ''); ?>",
+        numero_registro_presupuestal: "<?php echo htmlspecialchars($contratista['numero_registro_presupuestal'] ?? ''); ?>",
+        fecha_rp: "<?php echo !empty($contratista['fecha_rp']) ? date('Y-m-d', strtotime($contratista['fecha_rp'])) : ''; ?>",
+        id_area: "<?php echo $contratista['id_area'] ?? 0; ?>",
+        id_tipo_vinculacion: "<?php echo $contratista['id_tipo_vinculacion'] ?? 0; ?>",
+        id_municipio_principal: "<?php echo $contratista['id_municipio_principal'] ?? 0; ?>",
+        direccion_municipio_principal: "<?php echo htmlspecialchars($contratista['direccion_municipio_principal'] ?? ''); ?>",
+        id_municipio_secundario: "<?php echo $contratista['id_municipio_secundario'] ?? ''; ?>",
+        direccion_municipio_secundario: "<?php echo htmlspecialchars($contratista['direccion_municipio_secundario'] ?? ''); ?>",
+        id_municipio_terciario: "<?php echo $contratista['id_municipio_terciario'] ?? ''; ?>",
+        direccion_municipio_terciario: "<?php echo htmlspecialchars($contratista['direccion_municipio_terciario'] ?? ''); ?>"
+    };
+    
+    // Nombres de campos para mostrar
+    const nombresCampos = {
+        nombres: "Nombres",
+        apellidos: "Apellidos",
+        cedula: "Cédula",
+        profesion: "Profesión",
+        direccion: "Dirección",
+        telefono: "Teléfono",
+        correo_personal: "Correo Personal",
+        numero_contrato: "Número de Contrato",
+        fecha_contrato: "Fecha del Contrato",
+        fecha_inicio: "Fecha de Inicio",
+        fecha_final: "Fecha Final",
+        duracion_contrato: "Duración del Contrato",
+        numero_registro_presupuestal: "Registro Presupuestal",
+        fecha_rp: "Fecha RP",
+        id_area: "Área",
+        id_tipo_vinculacion: "Tipo de Vinculación",
+        id_municipio_principal: "Municipio Principal",
+        direccion_municipio_principal: "Dirección Principal",
+        id_municipio_secundario: "Municipio Secundario",
+        direccion_municipio_secundario: "Dirección Secundaria",
+        id_municipio_terciario: "Municipio Terciario",
+        direccion_municipio_terciario: "Dirección Terciaria"
+    };
+    
+    // Mapeo de IDs a nombres (para selects)
+    const areasMap = {
+        <?php foreach ($areas as $area): ?>
+        "<?php echo $area['id_area']; ?>": "<?php echo htmlspecialchars($area['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
+    const tiposMap = {
+        <?php foreach ($tiposVinculacion as $tipo): ?>
+        "<?php echo $tipo['id_tipo']; ?>": "<?php echo htmlspecialchars($tipo['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
+    const municipiosMap = {
+        <?php foreach ($municipios as $municipio): ?>
+        "<?php echo $municipio['id_municipio']; ?>": "<?php echo htmlspecialchars($municipio['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
     // Función para previsualizar la foto seleccionada
     function previewFoto(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             
             reader.onload = function(e) {
-                // Verificar si hay una imagen previa o un placeholder
                 var existingImg = document.getElementById('fotoPreview');
                 var placeholder = document.getElementById('fotoPreviewPlaceholder');
                 
                 if (existingImg) {
                     existingImg.src = e.target.result;
                 } else if (placeholder) {
-                    // Reemplazar el placeholder con la imagen
                     placeholder.parentElement.innerHTML = '<img src="' + e.target.result + '" id="fotoPreview" alt="Previsualización de foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">';
-                } else {
-                    // Crear nueva imagen
-                    var fotoPreviewArea = document.querySelector('.foto-preview');
-                    if (fotoPreviewArea) {
-                        fotoPreviewArea.innerHTML = '<img src="' + e.target.result + '" id="fotoPreview" alt="Previsualización de foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">';
-                    }
                 }
             };
             
@@ -903,7 +1285,245 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         }
     }
     
-    // Manejar la visualización de direcciones según selección de municipios
+    // Función para comparar valores y detectar cambios
+    function detectarCambios() {
+        const cambios = [];
+        
+        // Función para comparar valores
+        function compararValor(campo, valorOriginal, valorNuevo, esSelect = false) {
+            if (esSelect) {
+                valorOriginal = valorOriginal.toString();
+                valorNuevo = valorNuevo.toString();
+            }
+            
+            return valorOriginal !== valorNuevo;
+        }
+        
+        // Campos de texto e inputs
+        const campos = [
+            'nombres', 'apellidos', 'cedula', 'profesion', 'direccion', 'telefono', 'correo_personal',
+            'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal',
+            'direccion_municipio_principal', 'direccion_municipio_secundario', 'direccion_municipio_terciario'
+        ];
+        
+        campos.forEach(campo => {
+            const input = document.getElementById(campo);
+            if (input) {
+                const valorOriginal = datosOriginales[campo] || '';
+                const valorNuevo = input.value.trim();
+                
+                if (compararValor(campo, valorOriginal, valorNuevo)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal || '(vacío)',
+                        nuevo: valorNuevo || '(vacío)',
+                        tipo: 'texto'
+                    });
+                }
+            }
+        });
+        
+        // Campos de fecha
+        const camposFecha = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
+        camposFecha.forEach(campo => {
+            const input = document.getElementById(campo);
+            if (input) {
+                const valorOriginal = datosOriginales[campo] || '';
+                const valorNuevo = input.value;
+                
+                if (compararValor(campo, valorOriginal, valorNuevo)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal ? formatFecha(valorOriginal) : '(sin fecha)',
+                        nuevo: valorNuevo ? formatFecha(valorNuevo) : '(sin fecha)',
+                        tipo: 'fecha'
+                    });
+                }
+            }
+        });
+        
+        // Campos select
+        const selects = [
+            {campo: 'id_area', map: areasMap},
+            {campo: 'id_tipo_vinculacion', map: tiposMap},
+            {campo: 'id_municipio_principal', map: municipiosMap},
+            {campo: 'id_municipio_secundario', map: municipiosMap},
+            {campo: 'id_municipio_terciario', map: municipiosMap}
+        ];
+        
+        selects.forEach(({campo, map}) => {
+            const select = document.getElementById(campo);
+            if (select) {
+                const valorOriginal = datosOriginales[campo]?.toString() || '';
+                const valorNuevo = select.value;
+                
+                if (compararValor(campo, valorOriginal, valorNuevo, true)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal ? (map[valorOriginal] || valorOriginal) : '(sin selección)',
+                        nuevo: valorNuevo ? (map[valorNuevo] || valorNuevo) : '(sin selección)',
+                        tipo: 'select'
+                    });
+                }
+            }
+        });
+        
+        // Campos de archivos
+        const archivos = ['foto_perfil', 'cv', 'contrato', 'acta_inicio', 'rp'];
+        archivos.forEach(archivo => {
+            const input = document.getElementById(archivo);
+            if (input && input.files.length > 0) {
+                const nombreArchivo = input.files[0].name;
+                const tamanoArchivo = (input.files[0].size / 1024 / 1024).toFixed(2); // MB
+                
+                cambios.push({
+                    campo: archivo,
+                    nombre: getNombreArchivo(archivo),
+                    anterior: 'Archivo actual se mantendrá',
+                    nuevo: `Nuevo archivo: ${nombreArchivo} (${tamanoArchivo} MB)`,
+                    tipo: 'archivo'
+                });
+            }
+        });
+        
+        return cambios;
+    }
+    
+    // Función para formatear fecha
+    function formatFecha(fecha) {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+    
+    // Función para obtener nombre de archivo
+    function getNombreArchivo(campo) {
+        const nombres = {
+            'foto_perfil': 'Foto de Perfil',
+            'cv': 'Hoja de Vida (CV)',
+            'contrato': 'Contrato',
+            'acta_inicio': 'Acta de Inicio',
+            'rp': 'Registro Presupuestal (RP)'
+        };
+        return nombres[campo] || campo;
+    }
+    
+    // Función para mostrar cambios en el modal
+    function mostrarCambiosEnModal(cambios) {
+        const listaCambios = document.getElementById('listaCambios');
+        const btnConfirmar = document.getElementById('btnConfirmarCambios');
+        
+        if (cambios.length === 0) {
+            listaCambios.innerHTML = `
+                <div class="sin-cambios">
+                    <i class="fas fa-info-circle"></i>
+                    No se detectaron cambios. Todos los valores se mantendrán igual.
+                </div>
+            `;
+            btnConfirmar.disabled = true;
+        } else {
+            let html = '';
+            cambios.forEach(cambio => {
+                html += `
+                    <div class="cambio-item">
+                        <div class="campo-nombre">${cambio.nombre}</div>
+                        <div class="valores-cambio">
+                            <div class="valor-anterior">
+                                <i class="fas fa-arrow-left"></i>
+                                ${cambio.anterior}
+                            </div>
+                            <div class="valor-nuevo">
+                                <i class="fas fa-arrow-right"></i>
+                                ${cambio.nuevo}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            listaCambios.innerHTML = html;
+            btnConfirmar.disabled = false;
+        }
+    }
+    
+    // Función para validar formulario antes de mostrar cambios
+    function validarFormulario() {
+        const form = document.getElementById('formEditarContratista');
+        const inputsRequeridos = form.querySelectorAll('[required]');
+        let valido = true;
+        
+        inputsRequeridos.forEach(input => {
+            if (!input.value.trim()) {
+                valido = false;
+                input.style.borderColor = '#dc3545';
+            } else {
+                input.style.borderColor = '';
+            }
+        });
+        
+        return valido;
+    }
+    
+    // Manejar clic en "Guardar Cambios"
+    document.getElementById('btnMostrarCambios').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Validar formulario
+        if (!validarFormulario()) {
+            alert('Por favor, completa todos los campos obligatorios marcados con *.');
+            return;
+        }
+        
+        // Detectar cambios
+        const cambios = detectarCambios();
+        
+        // Mostrar modal con cambios
+        mostrarCambiosEnModal(cambios);
+        
+        // Mostrar modal
+        document.getElementById('modalConfirmacion').style.display = 'flex';
+    });
+    
+    // Manejar cierre del modal
+    document.getElementById('btnCerrarModal').addEventListener('click', function() {
+        document.getElementById('modalConfirmacion').style.display = 'none';
+    });
+    
+    document.getElementById('btnCancelarCambios').addEventListener('click', function() {
+        document.getElementById('modalConfirmacion').style.display = 'none';
+    });
+    
+    // Cerrar modal al hacer clic fuera de él
+    document.getElementById('modalConfirmacion').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+    
+    // Manejar confirmación de cambios
+    document.getElementById('btnConfirmarCambios').addEventListener('click', function() {
+        const btnConfirmar = this;
+        const loading = document.getElementById('loadingGuardar');
+        const modalBody = document.querySelector('.modal-body');
+        
+        // Mostrar loading
+        btnConfirmar.disabled = true;
+        loading.style.display = 'block';
+        modalBody.style.opacity = '0.5';
+        
+        // Enviar formulario después de 1 segundo (para mostrar el loading)
+        setTimeout(() => {
+            document.getElementById('formEditarContratista').submit();
+        }, 1000);
+    });
+    
+    // Inicializar manejo de municipios
     document.addEventListener('DOMContentLoaded', function() {
         const municipioSelects = document.querySelectorAll('.ubicacion-select');
         
