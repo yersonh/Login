@@ -1287,4 +1287,7 @@
         width: 180px;
         height: 180px;
     }
+}.modal-mensaje strong {
+    white-space: nowrap; /* Evita que el nombre se divida en dos renglones */
+    display: inline;     /* Asegura que se comporte como texto corrido */
 }
