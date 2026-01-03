@@ -1158,8 +1158,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             <div class="modal-body">
                 <div class="modal-mensaje">
                 <p>
-                    <span class="nombre-resaltado"><?php echo htmlspecialchars(trim($nombreCompleto)); ?></span>, 
-                    estás a punto de guardar los siguientes cambios en el contratista. 
+                    Estás a punto de guardar los siguientes cambios en el contratista. 
                     Por favor, revisa cuidadosamente antes de confirmar.
                 </p>
             </div>
