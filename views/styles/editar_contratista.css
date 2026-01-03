@@ -798,8 +798,10 @@
 }
 
 /* ========== ESTILOS PARA ICONOS DE DOCUMENTOS ========== */
-.form-label .fa-file-pdf {
-    color: #dc3545;
+/* Selector más fuerte apuntando a la ruta completa */
+.current-file .file-info i.fa-file-pdf {
+    color: #e74c3c !important; 
+    font-size: 1.5em !important;
 }
 
 .form-label .fa-file-contract {
@@ -820,9 +822,4 @@
     border-radius: 4px;        /* Bordes redondeados */
     margin-right: 8px;         /* Separación del texto */
     font-size: 0.9em;          /* Ajuste de tamaño opcional */
-}
-/* Estilo para el archivo ya cargado (Azul o Verde) */
-.fa-file-pdf {
-    color: #e74c3c; /* Color característico de PDF */
-    font-size: 1.2em;
 }
