@@ -647,114 +647,134 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                         </div>
                     </div>
                     
-                    <!-- Documentos Adjuntos -->
-                    <div class="form-section">
+                    <!-- Documentos Adjuntos (ESTILO IGUAL A VER DETALLE) -->
+                    <div class="documentos-card">
                         <h3><i class="fas fa-paperclip"></i> Documentos Adjuntos</h3>
                         <p><i class="fas fa-info-circle"></i> Puedes actualizar los documentos. Deja en blanco para mantener el documento actual.</p>
                         
-                        <div class="form-grid">
+                        <div class="documentos-grid">
                             <!-- CV -->
-                            <div class="form-group">
-                                <label for="cv">
-                                    <i class="fas fa-user-graduate doc-icon cv"></i> Hoja de Vida (CV)
-                                </label>
-                                
-                                <?php if (!empty($contratista['cv_nombre_original'])): ?>
-                                <div class="current-file">
-                                    <div class="file-info">
-                                        <i class="fas fa-file-pdf"></i>
-                                        <div class="file-info-content">
-                                            <div class="file-name"><?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['cv_tamano'] ?? 0); ?></div>
+                            <div class="documento-item">
+                                <div class="documento-header">
+                                    <div class="documento-title">
+                                        <div class="documento-icon cv">
+                                            <i class="fas fa-user-graduate"></i>
                                         </div>
+                                        Hoja de Vida (CV)
                                     </div>
                                 </div>
-                                <?php endif; ?>
                                 
-                                <input type="file" 
-                                       id="cv" 
-                                       name="cv" 
-                                       class="form-control-file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
-                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
+                                <div class="documento-meta">
+                                    <?php if (!empty($contratista['cv_nombre_original'])): ?>
+                                        <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['cv_nombre_original']); ?></div>
+                                        <div><i class="fas fa-weight"></i> <?php echo formatBytes($contratista['cv_tamano'] ?? 0); ?></div>
+                                        <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['cv_tipo_mime'] ?? 'N/A'); ?></div>
+                                    <?php else: ?>
+                                        <div class="empty-doc">No se ha cargado hoja de vida</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="documento-upload">
+                                    <input type="file" 
+                                           id="cv" 
+                                           name="cv" 
+                                           class="form-control-file"
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                    <div class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</div>
+                                </div>
                             </div>
                             
-                            <!-- Contrato -->
-                            <div class="form-group">
-                                <label for="contrato">
-                                    <i class="fas fa-file-contract doc-icon contrato"></i> Contrato
-                                </label>
-                                
-                                <?php if (!empty($contratista['contrato_nombre_original'])): ?>
-                                <div class="current-file">
-                                    <div class="file-info">
-                                        <i class="fas fa-file-contract"></i>
-                                        <div class="file-info-content">
-                                            <div class="file-name"><?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['contrato_tamano'] ?? 0); ?></div>
+                            <!-- CONTRATO -->
+                            <div class="documento-item">
+                                <div class="documento-header">
+                                    <div class="documento-title">
+                                        <div class="documento-icon contrato">
+                                            <i class="fas fa-file-contract"></i>
                                         </div>
+                                        Contrato
                                     </div>
                                 </div>
-                                <?php endif; ?>
                                 
-                                <input type="file" 
-                                       id="contrato" 
-                                       name="contrato" 
-                                       class="form-control-file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
-                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
+                                <div class="documento-meta">
+                                    <?php if (!empty($contratista['contrato_nombre_original'])): ?>
+                                        <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['contrato_nombre_original']); ?></div>
+                                        <div><i class="fas fa-weight"></i> <?php echo formatBytes($contratista['contrato_tamano'] ?? 0); ?></div>
+                                        <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['contrato_tipo_mime'] ?? 'N/A'); ?></div>
+                                    <?php else: ?>
+                                        <div class="empty-doc">No se ha cargado contrato</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="documento-upload">
+                                    <input type="file" 
+                                           id="contrato" 
+                                           name="contrato" 
+                                           class="form-control-file"
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                    <div class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</div>
+                                </div>
                             </div>
                             
-                            <!-- Acta de Inicio -->
-                            <div class="form-group">
-                                <label for="acta_inicio">
-                                    <i class="fas fa-file-signature"></i> Acta de Inicio
-                                </label>
-                                
-                                <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
-                                <div class="current-file">
-                                    <div class="file-info">
-                                        <i class="fas fa-file-signature doc-icon acta"></i>
-                                        <div class="file-info-content">
-                                            <div class="file-name"><?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
+                            <!-- ACTA DE INICIO -->
+                            <div class="documento-item">
+                                <div class="documento-header">
+                                    <div class="documento-title">
+                                        <div class="documento-icon acta">
+                                            <i class="fas fa-file-signature"></i>
                                         </div>
+                                        Acta de Inicio
                                     </div>
                                 </div>
-                                <?php endif; ?>
                                 
-                                <input type="file" 
-                                       id="acta_inicio" 
-                                       name="acta_inicio" 
-                                       class="form-control-file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
-                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
+                                <div class="documento-meta">
+                                    <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
+                                        <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
+                                        <div><i class="fas fa-weight"></i> <?php echo formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
+                                        <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['acta_inicio_tipo_mime'] ?? 'N/A'); ?></div>
+                                    <?php else: ?>
+                                        <div class="empty-doc">No se ha cargado acta de inicio</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="documento-upload">
+                                    <input type="file" 
+                                           id="acta_inicio" 
+                                           name="acta_inicio" 
+                                           class="form-control-file"
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                    <div class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</div>
+                                </div>
                             </div>
                             
-                            <!-- Registro Presupuestal (RP) -->
-                            <div class="form-group">
-                                <label for="rp">
-                                    <i class="fas fa-file-invoice-dollar doc-icon rp"></i> Registro Presupuestal (RP)
-                                </label>
-                                
-                                <?php if (!empty($contratista['rp_nombre_original'])): ?>
-                                <div class="current-file">
-                                    <div class="file-info">
-                                        <i class="fas fa-file-invoice-dollar"></i>
-                                        <div class="file-info-content">
-                                            <div class="file-name"><?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
-                                            <div class="file-size">Tamaño: <?php echo formatBytes($contratista['rp_tamano'] ?? 0); ?></div>
+                            <!-- REGISTRO PRESUPUESTAL -->
+                            <div class="documento-item">
+                                <div class="documento-header">
+                                    <div class="documento-title">
+                                        <div class="documento-icon rp">
+                                            <i class="fas fa-file-invoice-dollar"></i>
                                         </div>
+                                        Registro Presupuestal (RP)
                                     </div>
                                 </div>
-                                <?php endif; ?>
                                 
-                                <input type="file" 
-                                       id="rp" 
-                                       name="rp" 
-                                       class="form-control-file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
-                                <span class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</span>
+                                <div class="documento-meta">
+                                    <?php if (!empty($contratista['rp_nombre_original'])): ?>
+                                        <div><i class="fas fa-file"></i> <?php echo htmlspecialchars($contratista['rp_nombre_original']); ?></div>
+                                        <div><i class="fas fa-weight"></i> <?php echo formatBytes($contratista['rp_tamano'] ?? 0); ?></div>
+                                        <div><i class="fas fa-code"></i> <?php echo htmlspecialchars($contratista['rp_tipo_mime'] ?? 'N/A'); ?></div>
+                                    <?php else: ?>
+                                        <div class="empty-doc">No se ha cargado registro presupuestal</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="documento-upload">
+                                    <input type="file" 
+                                           id="rp" 
+                                           name="rp" 
+                                           class="form-control-file"
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,image/*">
+                                    <div class="form-help">Formatos: PDF, Word, Excel, imágenes (Máx. 5MB)</div>
+                                </div>
                             </div>
                         </div>
                     </div>
