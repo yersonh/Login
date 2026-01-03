@@ -1300,3 +1300,547 @@
     white-space: nowrap;
     display: inline-block;
 }
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* 1. TABLETS Y PANTALLAS MEDIAS (768px - 992px) */
+@media (max-width: 992px) {
+    .edit-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.95rem;
+    }
+    
+    .form-container {
+        padding: 30px;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem;
+    }
+    
+    /* Personal info grid responsive */
+    .personal-info-grid {
+        flex-direction: column;
+    }
+    
+    .photo-column {
+        width: 100%;
+        min-width: auto;
+        order: -1; /* Mueve la foto arriba en móvil */
+    }
+    
+    .foto-preview {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 15px;
+    }
+}
+
+/* 2. TABLETS PEQUEÑAS (576px - 768px) */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .edit-container {
+        padding: 15px;
+    }
+    
+    .edit-header {
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.4rem;
+        justify-content: center;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-section {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .form-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .form-group {
+        margin-bottom: 18px;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        padding: 12px 15px;
+        font-size: 16px; /* Mejor para tocar en móviles */
+    }
+    
+    .form-control-file {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    /* ACCIONES RESPONSIVE */
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 25px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 14px 20px;
+        justify-content: center;
+        min-width: auto;
+    }
+    
+    /* DOCUMENTOS RESPONSIVE */
+    .documentos-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .documento-item {
+        min-height: 140px;
+    }
+    
+    /* BOTÓN VOLVER RESPONSIVE */
+    .btn-volver {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 8px;
+        text-align: center;
+        justify-content: center;
+        order: 2; /* Lo mueve al final */
+    }
+    
+    /* Foto preview más pequeña en móvil */
+    .foto-preview {
+        width: 150px;
+        height: 150px;
+    }
+    
+    /* Modal message responsive */
+    .modal-mensaje {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .nombre-resaltado {
+        font-size: 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+}
+
+/* 3. MÓVILES MEDIANOS (480px - 576px) */
+@media (max-width: 576px) {
+    .edit-header {
+        padding: 18px;
+        border-radius: 8px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.9rem;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .form-section {
+        padding: 18px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+    }
+    
+    .form-section h3 {
+        font-size: 1rem;
+        margin-bottom: 18px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+    
+    .foto-preview {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .btn {
+        padding: 12px 15px;
+        font-size: 15px;
+    }
+    
+    /* Documentos más compactos */
+    .documento-item {
+        min-height: 130px;
+        padding: 12px;
+    }
+    
+    .documento-title {
+        font-size: 0.85rem;
+    }
+    
+    .documento-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.85rem;
+    }
+}
+
+/* 4. MÓVILES PEQUEÑOS (< 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+    
+    .edit-header {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.85rem;
+    }
+    
+    /* FORMULARIO RESPONSIVE */
+    .form-container {
+        padding: 15px;
+    }
+    
+    .form-section {
+        padding: 15px;
+        margin-bottom: 18px;
+    }
+    
+    .form-section h3 {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+    
+    .form-grid {
+        gap: 12px;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+    
+    .form-control {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    /* File info más compacto */
+    .file-info {
+        padding: 10px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .file-name {
+        font-size: 0.9rem;
+    }
+    
+    /* Foto más pequeña */
+    .foto-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .foto-placeholder i {
+        font-size: 50px;
+    }
+    
+    /* Botones más compactos */
+    .form-actions {
+        margin-top: 25px;
+        padding-top: 20px;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    /* Documentos en 1 columna */
+    .documentos-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .documento-item {
+        min-height: 120px;
+        padding: 10px;
+    }
+    
+    .documento-meta {
+        font-size: 0.7rem;
+    }
+}
+
+/* 5. MÓVILES MUY PEQUEÑOS (< 375px) */
+@media (max-width: 375px) {
+    .edit-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .edit-header p {
+        font-size: 0.8rem;
+    }
+    
+    .form-container {
+        padding: 12px;
+    }
+    
+    .form-section {
+        padding: 12px;
+    }
+    
+    .foto-preview {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .btn {
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+    
+    .modal-mensaje {
+        font-size: 13px;
+    }
+    
+    .nombre-resaltado {
+        font-size: 14px;
+    }
+}
+
+/* 6. ORIENTACIÓN HORIZONTAL EN MÓVILES */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .edit-container {
+        padding: 10px;
+    }
+    
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .form-section.foto-section .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .foto-preview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    /* Modal ajustado para landscape */
+    .modal-mensaje p {
+        font-size: 13px;
+    }
+}
+
+/* 7. DISPOSITIVOS CON ALTURA LIMITADA */
+@media (max-height: 700px) and (max-width: 768px) {
+    body {
+        padding: 5px 0;
+    }
+    
+    .edit-container {
+        padding: 10px;
+    }
+    
+    .form-container {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .form-section {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .form-grid {
+        gap: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    .form-actions {
+        margin-top: 20px;
+        padding-top: 15px;
+    }
+    
+    /* Reduce altura de elementos grandes */
+    .foto-preview {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .documento-item {
+        min-height: 110px;
+    }
+}
+
+/* 8. ACCESIBILIDAD TÁCTIL (dispositivos táctiles) */
+@media (hover: none) and (pointer: coarse) {
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(0, 74, 141, 0.2);
+    }
+    
+    /* Mejora el tamaño de los elementos táctiles */
+    .form-control,
+    .btn,
+    .form-control-file {
+        min-height: 44px; /* Tamaño mínimo recomendado para tocar */
+    }
+    
+    .btn {
+        padding: 12px 20px;
+    }
+    
+    /* Feedback táctil */
+    .btn:active,
+    .btn-volver:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+}
+
+/* 9. AJUSTES PARA SAFARI iOS */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    .edit-container {
+        min-height: -webkit-fill-available;
+    }
+    
+    /* Mejorar el comportamiento de los inputs en iOS */
+    .form-control,
+    .form-control-file,
+    .btn,
+    .btn-volver {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-appearance: none;
+        border-radius: 8px;
+    }
+    
+    input[type="file"] {
+        cursor: pointer;
+    }
+}
+
+/* 10. REDUCCIÓN DE MOVIMIENTO (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 11. MEJORAS PARA MODAL EN MÓVIL */
+@media (max-width: 768px) {
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .modal-mensaje p {
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    .nombre-resaltado {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
+}
+
+/* 12. AJUSTES PARA FORMULARIOS EN MÓVIL */
+@media (max-width: 768px) {
+    /* Asegura que los inputs sean fáciles de tocar */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 16px !important; /* Previene zoom en iOS */
+    }
+    
+    /* Mejora la visualización de selects */
+    select.form-control {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23004a8d'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 20px;
+        padding-right: 40px;
+    }
+}
