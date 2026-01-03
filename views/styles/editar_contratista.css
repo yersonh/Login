@@ -1287,7 +1287,17 @@
         width: 180px;
         height: 180px;
     }
-}.modal-mensaje strong {
-    white-space: nowrap; /* Evita que el nombre se divida en dos renglones */
-    display: inline;     /* Asegura que se comporte como texto corrido */
+}.modal-mensaje p {
+    display: block;      /* El párrafo ocupa su lugar normal */
+    line-height: 1.5;    /* Da un espacio sano entre renglones */
+    text-align: left;    /* Alineación normal a la izquierda */
+    margin: 0;           /* Quita márgenes extraños */
+}
+
+.modal-mensaje strong {
+    display: inline !important; /* Obliga a que NO sea un bloque */
+    font-weight: bold;          /* Solo negrilla */
+    color: inherit;             /* Que use el mismo color del texto normal */
+    padding: 0;                 /* Asegúrate de que no tenga espacio interno */
+    margin: 0;                  /* Asegúrate de que no tenga espacio externo */
 }
