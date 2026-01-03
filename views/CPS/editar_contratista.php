@@ -251,6 +251,136 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../styles/visor_registrados.css">
     <link rel="stylesheet" href="../styles/editar_contratista.css">
+    <style>
+        /* ========== ESTILOS DE ICONOS DE DOCUMENTOS (COMO EN EL VISOR) ========== */
+
+        /* Estilos base para íconos de documentos */
+        .document-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .doc-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Estados cuando NO hay archivo */
+        .doc-icon.no-file {
+            background-color: #f8f9fa;
+            color: #adb5bd;
+            border: 1px solid #dee2e6;
+            cursor: default;
+        }
+
+        .doc-icon.no-file:hover {
+            background-color: #f8f9fa;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Estados cuando SÍ hay archivo */
+        .doc-icon.has-file {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #0062cc;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .doc-icon.has-file:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* COLORES ESPECÍFICOS PARA CADA TIPO DE DOCUMENTO */
+        .doc-icon.cv.has-file {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .doc-icon.cv.has-file:hover {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .doc-icon.contrato.has-file {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .doc-icon.contrato.has-file:hover {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .doc-icon.acta.has-file {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .doc-icon.acta.has-file:hover {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .doc-icon.rp.has-file {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #0062cc;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+        }
+
+        .doc-icon.rp.has-file:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+        }
+
+        /* ========== ESTILOS PARA LOS ÍCONOS EN EL FORMULARIO DE EDICIÓN ========== */
+        .form-group label .document-icons {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .form-group label .doc-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 15px;
+        }
+
+        .form-group label span {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        /* ========== RESPONSIVE PARA ÍCONOS DE DOCUMENTOS ========== */
+        @media (max-width: 768px) {
+            .form-group label .doc-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 13px;
+            }
+            
+            .form-group label .document-icons {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-group label .doc-icon {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
     
@@ -656,7 +786,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- CV -->
                             <div class="form-group">
                                 <label for="cv">
-                                    <i class="fas fa-user-graduate"></i> Hoja de Vida (CV)
+                                    <span>
+                                        <i class="fas fa-user-graduate"></i> Hoja de Vida (CV)
+                                    </span>
+                                    <div class="document-icons">
+                                        <div class="doc-icon cv <?php echo !empty($contratista['cv_nombre_original']) ? 'has-file' : 'no-file'; ?>" 
+                                             title="<?php echo !empty($contratista['cv_nombre_original']) ? htmlspecialchars($contratista['cv_nombre_original']) : 'Sin CV'; ?>">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </div>
+                                    </div>
                                 </label>
                                 
                                 <?php if (!empty($contratista['cv_nombre_original'])): ?>
@@ -682,7 +820,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- Contrato -->
                             <div class="form-group">
                                 <label for="contrato">
-                                    <i class="fas fa-file-contract"></i> Contrato
+                                    <span>
+                                        <i class="fas fa-file-contract"></i> Contrato
+                                    </span>
+                                    <div class="document-icons">
+                                        <div class="doc-icon contrato <?php echo !empty($contratista['contrato_nombre_original']) ? 'has-file' : 'no-file'; ?>" 
+                                             title="<?php echo !empty($contratista['contrato_nombre_original']) ? htmlspecialchars($contratista['contrato_nombre_original']) : 'Sin contrato'; ?>">
+                                            <i class="fas fa-file-contract"></i>
+                                        </div>
+                                    </div>
                                 </label>
                                 
                                 <?php if (!empty($contratista['contrato_nombre_original'])): ?>
@@ -708,7 +854,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- Acta de Inicio -->
                             <div class="form-group">
                                 <label for="acta_inicio">
-                                    <i class="fas fa-file-signature"></i> Acta de Inicio
+                                    <span>
+                                        <i class="fas fa-file-signature"></i> Acta de Inicio
+                                    </span>
+                                    <div class="document-icons">
+                                        <div class="doc-icon acta <?php echo !empty($contratista['acta_inicio_nombre_original']) ? 'has-file' : 'no-file'; ?>" 
+                                             title="<?php echo !empty($contratista['acta_inicio_nombre_original']) ? htmlspecialchars($contratista['acta_inicio_nombre_original']) : 'Sin acta de inicio'; ?>">
+                                            <i class="fas fa-file-signature"></i>
+                                        </div>
+                                    </div>
                                 </label>
                                 
                                 <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
@@ -734,7 +888,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- Registro Presupuestal (RP) -->
                             <div class="form-group">
                                 <label for="rp">
-                                    <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal (RP)
+                                    <span>
+                                        <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal (RP)
+                                    </span>
+                                    <div class="document-icons">
+                                        <div class="doc-icon rp <?php echo !empty($contratista['rp_nombre_original']) ? 'has-file' : 'no-file'; ?>" 
+                                             title="<?php echo !empty($contratista['rp_nombre_original']) ? htmlspecialchars($contratista['rp_nombre_original']) : 'Sin RP'; ?>">
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                        </div>
+                                    </div>
                                 </label>
                                 
                                 <?php if (!empty($contratista['rp_nombre_original'])): ?>
@@ -809,6 +971,61 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         </footer>
     </div>
     <script src="../../javascript/editar_contratista.js"></script>
-    
+    <script>
+        // Script para hacer que los íconos de documentos abran el input file correspondiente
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mapeo de clases de íconos a IDs de inputs
+            const iconToInputMap = {
+                'cv': 'cv',
+                'contrato': 'contrato',
+                'acta': 'acta_inicio',
+                'rp': 'rp'
+            };
+            
+            // Asignar eventos a los íconos que tienen archivo
+            document.querySelectorAll('.doc-icon.has-file').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const iconClasses = this.className.split(' ');
+                    let inputId = null;
+                    
+                    // Buscar la clase que coincida con el mapeo
+                    for (const className of iconClasses) {
+                        if (iconToInputMap[className]) {
+                            inputId = iconToInputMap[className];
+                            break;
+                        }
+                    }
+                    
+                    if (inputId) {
+                        const fileInput = document.getElementById(inputId);
+                        if (fileInput) {
+                            fileInput.click();
+                        }
+                    }
+                });
+            });
+            
+            // Actualizar íconos cuando se seleccione un archivo
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const iconClass = Object.keys(iconToInputMap).find(key => iconToInputMap[key] === this.id);
+                    if (iconClass) {
+                        const icon = document.querySelector(`.doc-icon.${iconClass}`);
+                        if (icon) {
+                            if (this.files.length > 0) {
+                                icon.classList.remove('no-file');
+                                icon.classList.add('has-file');
+                                icon.title = this.files[0].name;
+                            } else {
+                                icon.classList.remove('has-file');
+                                icon.classList.add('no-file');
+                                icon.title = 'Sin archivo';
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
