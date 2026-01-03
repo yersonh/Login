@@ -64,15 +64,25 @@
 }
 
 .form-section h3 {
-    color: var(--primary-color);
+    color: #1e3c72;
     margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.3rem;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #eaeaea;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    font-size: 1.15rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+}
+
+.form-section p {
+    margin-top: -12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* ========== GRID DEL FORMULARIO ========== */
@@ -82,7 +92,7 @@
     gap: 20px;
 }
 
-/* ========== GRUPOS DE FORMULARIO ========== */
+/* ========== GRUPOS DE FORMULARIO (PARA SECCIONES NO-DOCUMENTOS) ========== */
 .form-group {
     margin-bottom: 20px;
 }
@@ -141,46 +151,132 @@
     border-color: var(--primary-color);
 }
 
-/* ========== INFORMACIÓN DE ARCHIVOS ========== */
-.file-info {
-    background-color: #f8f9fa;
-    padding: 12px 15px;
+/* ========== DOCUMENTOS ADJUNTOS (ESTILO IGUAL A VER DETALLE) ========== */
+/* DOCUMENTOS EN 2 COLUMNAS PARA MÓVIL */
+.form-section .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* Ajustes para documentos en móvil (más compactos) */
+.form-section .form-group {
+    background: #f8f9fa;
     border-radius: 8px;
-    margin-top: 8px;
-    border-left: 4px solid var(--primary-color);
+    padding: 12px;
+    border-left: 3px solid #1e3c72;
+    transition: all 0.3s;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+.form-section .form-group label {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 8px;
+}
+
+.doc-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.doc-icon.cv { background-color: #dc3545; }
+.doc-icon.contrato { background-color: #007bff; }
+.doc-icon.acta { background-color: #28a745; }
+.doc-icon.rp { background-color: #fd7e14; }
+
+/* Estilos para archivos actuales */
+.current-file {
+    margin-bottom: 10px;
+    flex: 1;
+}
+
+.file-info {
+    background-color: transparent;
+    padding: 0;
+    border-left: none;
+    display: block;
+    animation: fadeIn 0.3s ease;
 }
 
 .file-info i {
-    color: var(--primary-color);
-    font-size: 1.1rem;
+    display: none; /* Ocultar icono de archivo si no se usa */
 }
 
 .file-info-content {
+    margin-left: 0;
+}
+
+.documento-meta {
+    font-size: 0.7rem;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.3;
     flex: 1;
+}
+
+.documento-meta div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+    word-break: break-word;
 }
 
 .file-name {
     font-weight: 600;
-    color: var(--dark-color);
+    color: #333;
+    font-size: 0.8rem;
     margin-bottom: 2px;
 }
 
 .file-size {
-    font-size: 0.85rem;
-    color: var(--gray-color);
+    font-size: 0.7rem;
+    color: #666;
 }
 
-.current-file {
-    margin-top: 8px;
-    animation: fadeIn 0.3s ease;
+/* Input de archivo para documentos */
+.form-section .form-control-file {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 0.75rem;
+    margin-top: auto;
+    transition: all 0.3s;
+    width: 100%;
+    min-height: 30px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+.form-section .form-control-file:focus {
+    outline: none;
+    border-color: #1e3c72;
+    box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+}
+
+.form-help {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: #999;
+    font-style: italic;
+    line-height: 1.3;
 }
 
 /* ========== PREVIEW DE FOTO ========== */
@@ -223,13 +319,6 @@
     margin-top: 5px;
     display: block;
     line-height: 1.4;
-}
-
-.form-help {
-    font-size: 0.8rem;
-    color: #6c757d;
-    font-style: italic;
-    margin-top: 4px;
 }
 
 /* ========== MENSAJES DE ALERTA ========== */
@@ -354,7 +443,156 @@
     transform: translateX(-3px);
 }
 
-/* ========== RESPONSIVE MEJORADO ========== */
+/* ========== MEDIA QUERIES PARA DOCUMENTOS ========== */
+
+/* ========== MEDIA QUERIES PARA TABLET ========== */
+@media (min-width: 768px) {
+    .form-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+    }
+    
+    /* Documentos en tablet: mantiene 2 columnas pero con más espacio */
+    .form-section .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .form-section .form-group {
+        padding: 14px;
+        min-height: 150px;
+    }
+    
+    .form-section .form-group label {
+        font-size: 0.9rem;
+    }
+    
+    .doc-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.95rem;
+    }
+    
+    .documento-meta {
+        font-size: 0.75rem;
+    }
+    
+    .form-section .form-control-file {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+        min-height: 32px;
+    }
+    
+    .form-help {
+        font-size: 0.7rem;
+    }
+}
+
+/* ========== AJUSTES PARA ESCRITORIO (1024px+) ========== */
+@media (min-width: 1024px) {
+    .form-section {
+        padding: 20px;
+    }
+    
+    .form-section h3 {
+        font-size: 1.2rem;
+    }
+    
+    /* Documentos en grid 2x2 compacto */
+    .form-section .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .form-section .form-group {
+        padding: 12px;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .form-section .form-group label {
+        font-size: 0.88rem;
+    }
+    
+    .doc-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .documento-meta {
+        font-size: 0.75rem;
+        flex: 1;
+        margin-bottom: 12px;
+        min-height: 55px;
+    }
+    
+    .form-section .form-control-file {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+        min-height: 34px;
+    }
+}
+
+/* ========== PARA PANTALLAS MÁS GRANDES (1200px+) ========== */
+@media (min-width: 1200px) {
+    .form-section .form-grid {
+        gap: 18px;
+    }
+    
+    .form-section .form-group {
+        min-height: 160px;
+        padding: 14px;
+    }
+}
+
+/* ========== MEJORAS ESPECÍFICAS PARA MÓVILES MUY PEQUEÑOS ========== */
+@media (max-width: 360px) {
+    /* Documentos en 1 columna para móviles muy pequeños */
+    .form-section .form-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .form-section .form-group {
+        min-height: 130px;
+        padding: 10px;
+    }
+    
+    .form-section .form-group label {
+        font-size: 0.8rem;
+    }
+    
+    .doc-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+    
+    .documento-meta {
+        font-size: 0.65rem;
+    }
+    
+    .form-section .form-control-file {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+        min-height: 28px;
+    }
+}
+
+/* ========== AJUSTES PARA HORIZONTAL EN MÓVILES ========== */
+@media (max-height: 500px) and (orientation: landscape) {
+    /* En horizontal móvil, documentos en 2 columnas */
+    .form-section .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+/* ========== RESPONSIVE MEJORADO (RESTANTE) ========== */
 
 /* ========== DESKTOP GRANDE (> 1200px) ========== */
 @media (min-width: 1201px) {
@@ -798,12 +1036,6 @@
 }
 
 /* ========== ESTILOS PARA ICONOS DE DOCUMENTOS ========== */
-/* Selector más fuerte apuntando a la ruta completa */
-.current-file .file-info i.fa-file-pdf {
-    color: #e74c3c !important; 
-    font-size: 1.5em !important;
-}
-
 .form-label .fa-file-contract {
     color: #007bff;
 }
@@ -815,11 +1047,12 @@
 .form-label .fa-file-invoice-dollar {
     color: #fd7e14;
 }
+
 .doc-icon.cv {
-    background-color: #dc3545; /* Rojo */
-    color: white;              /* Icono blanco */
-    padding: 5px;              /* Espacio interno para que se vea el fondo */
-    border-radius: 4px;        /* Bordes redondeados */
-    margin-right: 8px;         /* Separación del texto */
-    font-size: 0.9em;          /* Ajuste de tamaño opcional */
+    background-color: #dc3545;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 0.9em;
 }
