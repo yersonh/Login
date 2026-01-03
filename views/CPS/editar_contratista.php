@@ -315,139 +315,154 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 <!-- Formulario -->
                 <form method="POST" action="" class="form-container" id="formEditarContratista" enctype="multipart/form-data">
                     
-                    <!-- Foto de Perfil -->
+                    <!-- Foto de Perfil y Datos Personales - Diseño Mejorado -->
                     <div class="form-section">
-                        <h3><i class="fas fa-camera"></i> Foto de Perfil</h3>
+                        <h3><i class="fas fa-user-circle"></i> Información Personal</h3>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="foto_perfil">
-                                    <i class="fas fa-image"></i> Cambiar Foto
-                                </label>
-                                
-                                <!-- Mostrar foto actual si existe -->
-                                <?php if (!empty($contratista['foto_contenido'])): ?>
-                                <div class="foto-preview">
-                                    <img src="data:<?php echo htmlspecialchars($contratista['foto_tipo_mime'] ?? 'image/jpeg'); ?>;base64,<?php echo base64_encode($contratista['foto_contenido']); ?>" 
-                                         alt="Foto actual del contratista">
+                        <div class="form-grid personal-info-grid">
+                            <!-- Columna Izquierda: Datos Personales -->
+                            <div class="personal-data-column">
+                                <div class="form-group">
+                                    <label for="nombres">
+                                        <i class="fas fa-user"></i> Nombres <span class="required">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="nombres" 
+                                           name="nombres" 
+                                           class="form-control"
+                                           value="<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>"
+                                           required>
                                 </div>
-                                <div class="current-file">
-                                    <div class="file-info">
-                                        <i class="fas fa-image"></i>
-                                        <div class="file-info-content">
-                                            <div class="file-name">Foto actual</div>
-                                            <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
+                                
+                                <div class="form-group">
+                                    <label for="apellidos">
+                                        <i class="fas fa-user"></i> Apellidos <span class="required">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="apellidos" 
+                                           name="apellidos" 
+                                           class="form-control"
+                                           value="<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>"
+                                           required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="cedula">
+                                        <i class="fas fa-id-card"></i> Cédula <span class="required">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="cedula" 
+                                           name="cedula" 
+                                           class="form-control"
+                                           value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
+                                           required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="profesion">
+                                        <i class="fas fa-graduation-cap"></i> Profesión
+                                    </label>
+                                    <input type="text" 
+                                           id="profesion" 
+                                           name="profesion" 
+                                           class="form-control"
+                                           placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
+                                           value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
+                                    <span class="form-text">Profesión u oficio del contratista</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="direccion">
+                                        <i class="fas fa-home"></i> Dirección
+                                    </label>
+                                    <input type="text" 
+                                           id="direccion" 
+                                           name="direccion" 
+                                           class="form-control"
+                                           placeholder="Ej: Calle 123 #45-67"
+                                           value="<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>">
+                                    <span class="form-text">Dirección de residencia del contratista</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="telefono">
+                                        <i class="fas fa-phone"></i> Teléfono
+                                    </label>
+                                    <input type="tel" 
+                                           id="telefono" 
+                                           name="telefono" 
+                                           class="form-control"
+                                           value="<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="correo_personal">
+                                        <i class="fas fa-envelope"></i> Correo Personal
+                                    </label>
+                                    <input type="email" 
+                                           id="correo_personal" 
+                                           name="correo_personal" 
+                                           class="form-control"
+                                           value="<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>">
+                                    <span class="form-text">Correo para contactar al contratista</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna Derecha: Foto de Perfil -->
+                            <div class="photo-column">
+                                <div class="photo-container">
+                                    <div class="photo-header">
+                                        <h4><i class="fas fa-camera"></i> Foto de Perfil</h4>
+                                    </div>
+                                    
+                                    <div class="photo-preview-area">
+                                        <!-- Mostrar foto actual si existe -->
+                                        <?php if (!empty($contratista['foto_contenido'])): ?>
+                                        <div class="foto-preview">
+                                            <img src="data:<?php echo htmlspecialchars($contratista['foto_tipo_mime'] ?? 'image/jpeg'); ?>;base64,<?php echo base64_encode($contratista['foto_contenido']); ?>" 
+                                                 alt="Foto actual del contratista"
+                                                 id="fotoPreview">
+                                        </div>
+                                        <div class="current-file">
+                                            <div class="file-info">
+                                                <i class="fas fa-image"></i>
+                                                <div class="file-info-content">
+                                                    <div class="file-name">Foto actual</div>
+                                                    <div class="file-size">Subida: <?php echo date('d/m/Y', strtotime($contratista['foto_fecha_subida'] ?? '')); ?></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php else: ?>
+                                        <div class="foto-preview">
+                                            <div class="foto-placeholder" id="fotoPreviewPlaceholder">
+                                                <i class="fas fa-user"></i>
+                                                <div>Sin foto</div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <div class="photo-upload-area">
+                                        <div class="form-group">
+                                            <label for="foto_perfil" class="photo-upload-label">
+                                                <i class="fas fa-upload"></i> Cambiar Foto
+                                            </label>
+                                            <input type="file" 
+                                                   id="foto_perfil" 
+                                                   name="foto_perfil" 
+                                                   class="form-control-file photo-upload-input"
+                                                   accept="image/jpeg,image/jpg,image/png,image/gif"
+                                                   onchange="previewFoto(this)">
+                                            <div class="photo-upload-help">
+                                                <i class="fas fa-info-circle"></i>
+                                                Formatos: JPG, PNG, GIF (Máx. 5MB)
+                                            </div>
+                                            <div class="photo-upload-note">
+                                                Dejar en blanco para mantener la foto actual
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <?php else: ?>
-                                <div class="foto-preview">
-                                    <div class="foto-placeholder">
-                                        <i class="fas fa-user"></i>
-                                        <div>Sin foto</div>
-                                    </div>
-                                </div>
-                                <?php endif; ?>
-                                
-                                <input type="file" 
-                                       id="foto_perfil" 
-                                       name="foto_perfil" 
-                                       class="form-control-file"
-                                       accept="image/jpeg,image/jpg,image/png,image/gif">
-                                <span class="form-help">Formatos permitidos: JPG, PNG, GIF (Máx. 5MB)</span>
-                                <span class="form-text">Dejar en blanco para mantener la foto actual</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Datos Personales -->
-                    <div class="form-section">
-                        <h3><i class="fas fa-id-card"></i> Datos Personales</h3>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="nombres">
-                                    <i class="fas fa-user"></i> Nombres <span class="required">*</span>
-                                </label>
-                                <input type="text" 
-                                       id="nombres" 
-                                       name="nombres" 
-                                       class="form-control"
-                                       value="<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>"
-                                       required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="apellidos">
-                                    <i class="fas fa-user"></i> Apellidos <span class="required">*</span>
-                                </label>
-                                <input type="text" 
-                                       id="apellidos" 
-                                       name="apellidos" 
-                                       class="form-control"
-                                       value="<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>"
-                                       required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="cedula">
-                                    <i class="fas fa-id-card"></i> Cédula <span class="required">*</span>
-                                </label>
-                                <input type="text" 
-                                       id="cedula" 
-                                       name="cedula" 
-                                       class="form-control"
-                                       value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
-                                       required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="profesion">
-                                    <i class="fas fa-graduation-cap"></i> Profesión
-                                </label>
-                                <input type="text" 
-                                       id="profesion" 
-                                       name="profesion" 
-                                       class="form-control"
-                                       placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
-                                       value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
-                                <span class="form-text">Profesión u oficio del contratista</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="direccion">
-                                    <i class="fas fa-home"></i> Dirección
-                                </label>
-                                <input type="text" 
-                                       id="direccion" 
-                                       name="direccion" 
-                                       class="form-control"
-                                       placeholder="Ej: Calle 123 #45-67"
-                                       value="<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>">
-                                <span class="form-text">Dirección de residencia del contratista</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="telefono">
-                                    <i class="fas fa-phone"></i> Teléfono
-                                </label>
-                                <input type="tel" 
-                                       id="telefono" 
-                                       name="telefono" 
-                                       class="form-control"
-                                       value="<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="correo_personal">
-                                    <i class="fas fa-envelope"></i> Correo Personal
-                                </label>
-                                <input type="email" 
-                                       id="correo_personal" 
-                                       name="correo_personal" 
-                                       class="form-control"
-                                       value="<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>">
-                                <span class="form-text">Correo para contactar al contratista</span>
                             </div>
                         </div>
                     </div>
@@ -841,6 +856,64 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             </div>
         </footer>
     </div>
+    
+    <script>
+    // Función para previsualizar la foto seleccionada
+    function previewFoto(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Verificar si hay una imagen previa o un placeholder
+                var existingImg = document.getElementById('fotoPreview');
+                var placeholder = document.getElementById('fotoPreviewPlaceholder');
+                
+                if (existingImg) {
+                    existingImg.src = e.target.result;
+                } else if (placeholder) {
+                    // Reemplazar el placeholder con la imagen
+                    placeholder.parentElement.innerHTML = '<img src="' + e.target.result + '" id="fotoPreview" alt="Previsualización de foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">';
+                } else {
+                    // Crear nueva imagen
+                    var fotoPreviewArea = document.querySelector('.foto-preview');
+                    if (fotoPreviewArea) {
+                        fotoPreviewArea.innerHTML = '<img src="' + e.target.result + '" id="fotoPreview" alt="Previsualización de foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">';
+                    }
+                }
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Manejar la visualización de direcciones según selección de municipios
+    document.addEventListener('DOMContentLoaded', function() {
+        const municipioSelects = document.querySelectorAll('.ubicacion-select');
+        
+        municipioSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                const containerId = targetId + 'Container';
+                const container = document.querySelector('.' + containerId);
+                
+                if (this.value && this.value !== '') {
+                    if (container) container.style.display = 'block';
+                    if (targetInput) targetInput.required = true;
+                } else {
+                    if (container) container.style.display = 'none';
+                    if (targetInput) {
+                        targetInput.required = false;
+                        targetInput.value = '';
+                    }
+                }
+            });
+            
+            // Disparar evento change al cargar la página
+            select.dispatchEvent(new Event('change'));
+        });
+    });
+    </script>
     
     <script src="../../javascript/editar_contratista.js"></script>
     
