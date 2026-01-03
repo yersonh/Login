@@ -815,11 +815,68 @@
 .form-label .fa-file-invoice-dollar {
     color: #fd7e14;
 }
-.doc-icon.cv {
-    background-color: #dc3545; /* Rojo */
-    color: white;              /* Icono blanco */
-    padding: 5px;              /* Espacio interno para que se vea el fondo */
-    border-radius: 4px;        /* Bordes redondeados */
-    margin-right: 8px;         /* Separación del texto */
-    font-size: 0.9em;          /* Ajuste de tamaño opcional */
+/* Estilo base para los iconos en los labels */
+.doc-icon {
+    width: 32px; /* Un poco más grande para que luzca en el label */
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex; /* Para que se alinee bien con el texto del label */
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+}
+
+/* Colores específicos para cada documento */
+.doc-icon.cv { background-color: #dc3545 !important; color: white !important; }
+.doc-icon.contrato { background-color: #007bff !important; color: white !important; }
+.doc-icon.acta { background-color: #28a745 !important; color: white !important; }
+.doc-icon.rp { background-color: #fd7e14 !important; color: white !important; }
+
+/* Estilo para el contenedor del ARCHIVO YA SUBIDO (current-file) */
+.current-file {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px border;
+    border-left: 5px solid #6c757d; /* Color neutro por defecto */
+    transition: transform 0.2s;
+}
+
+/* Color de la barra lateral según el tipo de documento cargado */
+.form-group:has(#cv) .current-file { border-left-color: #dc3545; }
+.form-group:has(#contrato) .current-file { border-left-color: #007bff; }
+.form-group:has(#acta_inicio) .current-file { border-left-color: #28a745; }
+.form-group:has(#rp) .current-file { border-left-color: #fd7e14; }
+
+.current-file:hover {
+    transform: scale(1.01);
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Estilo para los iconos de archivo (el PDF/Icono grande dentro de current-file) */
+.current-file .file-info i {
+    font-size: 1.8em !important;
+    margin-right: 15px;
+}
+
+/* Forzamos colores de los iconos de PDF/Archivo dentro de la info */
+.form-group:has(#cv) .file-info i { color: #dc3545 !important; }
+.form-group:has(#contrato) .file-info i { color: #007bff !important; }
+.form-group:has(#acta_inicio) .file-info i { color: #28a745 !important; }
+.form-group:has(#rp) .file-info i { color: #fd7e14 !important; }
+
+.file-name {
+    font-weight: 600;
+    color: #333;
+    display: block;
+}
+
+.file-size {
+    font-size: 0.85em;
+    color: #666;
 }

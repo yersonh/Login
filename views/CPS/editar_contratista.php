@@ -682,7 +682,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- Contrato -->
                             <div class="form-group">
                                 <label for="contrato">
-                                    <i class="fas fa-file-contract"></i> Contrato
+                                    <i class="fas fa-file-contract doc-icon contrato"></i> Contrato
                                 </label>
                                 
                                 <?php if (!empty($contratista['contrato_nombre_original'])): ?>
@@ -714,7 +714,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <?php if (!empty($contratista['acta_inicio_nombre_original'])): ?>
                                 <div class="current-file">
                                     <div class="file-info">
-                                        <i class="fas fa-file-signature"></i>
+                                        <i class="fas fa-file-signature doc-icon acta"></i>
                                         <div class="file-info-content">
                                             <div class="file-name"><?php echo htmlspecialchars($contratista['acta_inicio_nombre_original']); ?></div>
                                             <div class="file-size">Tamaño: <?php echo formatBytes($contratista['acta_inicio_tamano'] ?? 0); ?></div>
@@ -734,7 +734,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                             <!-- Registro Presupuestal (RP) -->
                             <div class="form-group">
                                 <label for="rp">
-                                    <i class="fas fa-file-invoice-dollar"></i> Registro Presupuestal (RP)
+                                    <i class="fas fa-file-invoice-dollar doc-icon rp"></i> Registro Presupuestal (RP)
                                 </label>
                                 
                                 <?php if (!empty($contratista['rp_nombre_original'])): ?>
