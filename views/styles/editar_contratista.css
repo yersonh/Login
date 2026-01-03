@@ -821,3 +821,8 @@
     margin-right: 8px;         /* Separación del texto */
     font-size: 0.9em;          /* Ajuste de tamaño opcional */
 }
+/* Estilo para el archivo ya cargado (Azul o Verde) */
+.fa-file-pdf {
+    color: #e74c3c; /* Color característico de PDF */
+    font-size: 1.2em;
+}
