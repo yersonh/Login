@@ -103,6 +103,7 @@ try {
             'telefono' => trim($_POST['telefono'] ?? ''),
             'correo_personal' => trim($_POST['correo_personal'] ?? ''),
             'profesion' => trim($_POST['profesion'] ?? ''),
+            'direccion' => trim($_POST['direccion'] ?? ''),
             'id_area' => (int)($_POST['id_area'] ?? 0),
             'id_tipo_vinculacion' => (int)($_POST['id_tipo_vinculacion'] ?? 0),
             'id_municipio_principal' => (int)($_POST['id_municipio_principal'] ?? 0),
@@ -118,7 +119,6 @@ try {
             'direccion_municipio_principal' => trim($_POST['direccion_municipio_principal'] ?? ''),
             'direccion_municipio_secundario' => trim($_POST['direccion_municipio_secundario'] ?? ''),
             'direccion_municipio_terciario' => trim($_POST['direccion_municipio_terciario'] ?? ''),
-            'direccion' => trim($_POST['direccion_municipio_principal'] ?? '') // Para compatibilidad
         ];
         
         // Validaciones básicas
@@ -357,19 +357,6 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <span class="form-help">Formatos permitidos: JPG, PNG, GIF (Máx. 5MB)</span>
                                 <span class="form-text">Dejar en blanco para mantener la foto actual</span>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="profesion">
-                                    <i class="fas fa-graduation-cap"></i> Profesión
-                                </label>
-                                <input type="text" 
-                                       id="profesion" 
-                                       name="profesion" 
-                                       class="form-control"
-                                       placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
-                                       value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
-                                <span class="form-text">Profesión u oficio del contratista</span>
-                            </div>
                         </div>
                     </div>
                     
@@ -412,6 +399,32 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                        class="form-control"
                                        value="<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>"
                                        required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profesion">
+                                    <i class="fas fa-graduation-cap"></i> Profesión
+                                </label>
+                                <input type="text" 
+                                       id="profesion" 
+                                       name="profesion" 
+                                       class="form-control"
+                                       placeholder="Ej: Ingeniero Civil, Arquitecto, Abogado"
+                                       value="<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>">
+                                <span class="form-text">Profesión u oficio del contratista</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion">
+                                    <i class="fas fa-home"></i> Dirección
+                                </label>
+                                <input type="text" 
+                                       id="direccion" 
+                                       name="direccion" 
+                                       class="form-control"
+                                       placeholder="Ej: Calle 123 #45-67"
+                                       value="<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>">
+                                <span class="form-text">Dirección de residencia del contratista</span>
                             </div>
                             
                             <div class="form-group">
@@ -571,7 +584,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <label for="id_municipio_principal">
                                     <i class="fas fa-map-pin"></i> Municipio Principal <span class="required">*</span>
                                 </label>
-                                <select id="id_municipio_principal" name="id_municipio_principal" class="form-control" required>
+                                <select id="id_municipio_principal" name="id_municipio_principal" class="form-control ubicacion-select" required data-target="direccion_municipio_principal">
                                     <option value="">Seleccione municipio principal</option>
                                     <?php foreach ($municipios as $municipio): ?>
                                     <option value="<?php echo $municipio['id_municipio']; ?>"
@@ -589,15 +602,15 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 <input type="text" 
                                        id="direccion_municipio_principal" 
                                        name="direccion_municipio_principal" 
-                                       class="form-control"
+                                       class="form-control direccion-campo"
                                        value="<?php echo htmlspecialchars($contratista['direccion_municipio_principal'] ?? ''); ?>">
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group municipio-secundario-container">
                                 <label for="id_municipio_secundario">
                                     <i class="fas fa-map-marker"></i> Municipio Secundario
                                 </label>
-                                <select id="id_municipio_secundario" name="id_municipio_secundario" class="form-control">
+                                <select id="id_municipio_secundario" name="id_municipio_secundario" class="form-control ubicacion-select" data-target="direccion_municipio_secundario">
                                     <option value="">Seleccione municipio secundario</option>
                                     <?php foreach ($municipios as $municipio): ?>
                                     <option value="<?php echo $municipio['id_municipio']; ?>"
@@ -608,22 +621,22 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 </select>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group direccion-secundaria-container" style="display: none;">
                                 <label for="direccion_municipio_secundario">
                                     <i class="fas fa-home"></i> Dirección Secundaria
                                 </label>
                                 <input type="text" 
                                        id="direccion_municipio_secundario" 
                                        name="direccion_municipio_secundario" 
-                                       class="form-control"
+                                       class="form-control direccion-campo"
                                        value="<?php echo htmlspecialchars($contratista['direccion_municipio_secundario'] ?? ''); ?>">
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group municipio-terciario-container">
                                 <label for="id_municipio_terciario">
                                     <i class="fas fa-map-marker"></i> Municipio Terciario
                                 </label>
-                                <select id="id_municipio_terciario" name="id_municipio_terciario" class="form-control">
+                                <select id="id_municipio_terciario" name="id_municipio_terciario" class="form-control ubicacion-select" data-target="direccion_municipio_terciario">
                                     <option value="">Seleccione municipio terciario</option>
                                     <?php foreach ($municipios as $municipio): ?>
                                     <option value="<?php echo $municipio['id_municipio']; ?>"
@@ -634,14 +647,14 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                                 </select>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group direccion-terciaria-container" style="display: none;">
                                 <label for="direccion_municipio_terciario">
                                     <i class="fas fa-home"></i> Dirección Terciaria
                                 </label>
                                 <input type="text" 
                                        id="direccion_municipio_terciario" 
                                        name="direccion_municipio_terciario" 
-                                       class="form-control"
+                                       class="form-control direccion-campo"
                                        value="<?php echo htmlspecialchars($contratista['direccion_municipio_terciario'] ?? ''); ?>">
                             </div>
                         </div>
@@ -828,6 +841,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             </div>
         </footer>
     </div>
+    
     <script src="../../javascript/editar_contratista.js"></script>
     
 </body>
