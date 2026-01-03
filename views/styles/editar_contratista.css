@@ -1296,3 +1296,13 @@
     background: none !important; /* Por si heredó fondo de color */
     color: #333 !important;      /* Asegura que sea color texto */
 }
+.nombre-resaltado {
+    font-weight: bold !important;
+    display: inline !important;   /* Asegura que no sea un bloque */
+    width: auto !important;       /* Elimina anchos heredados */
+    height: auto !important;      /* Elimina altos heredados */
+    padding: 0 !important;        /* Quita espacios internos */
+    margin: 0 !important;         /* Quita espacios externos */
+    float: none !important;       /* Por si acaso hay un float */
+    color: #333 !important;       /* Color de texto normal */
+}
