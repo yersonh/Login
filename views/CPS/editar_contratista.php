@@ -1158,7 +1158,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
             <div class="modal-body">
                 <div class="modal-mensaje">
                     <p>
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php echo htmlspecialchars($nombreCompleto); ?>
                         Estás a punto de guardar los siguientes cambios en el contratista.
                         Por favor, revisa cuidadosamente antes de confirmar.
                     </p>
