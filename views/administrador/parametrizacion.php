@@ -1038,7 +1038,6 @@ if (modalDiasRestantes) {
         
         // Esperar a que se carguen las tablas para agregar botones de eliminar
         setTimeout(() => {
-            agregarBotonesEliminar();
             observarCambiosTablas();
         }, 1500);
     });
@@ -1115,87 +1114,6 @@ if (modalDiasRestantes) {
         document.getElementById('confirmEliminarModal').style.display = 'flex';
     }
 
-    // Cerrar modal de eliminación
-    function cerrarModalEliminar() {
-        const modal = document.getElementById('confirmEliminarModal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-        registroEliminarId = null;
-        registroEliminarTipo = null;
-        registroEliminarNombre = null;
-        registroEliminarCodigo = null;
-    }
-
-    // Confirmar eliminación
-    function confirmarEliminacion() {
-        if (!registroEliminarId || !registroEliminarTipo) return;
-
-        const btnEliminar = document.querySelector('#confirmEliminarModal .btn-danger');
-        const originalText = btnEliminar.innerHTML;
-        btnEliminar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
-        btnEliminar.disabled = true;
-
-        // Determinar URL y método según el tipo
-        let url, metodo, datos;
-        switch(registroEliminarTipo) {
-            case 'municipio':
-                url = '../../api/GestionMunicipio.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
-                datos = { id: registroEliminarId };
-                break;
-            case 'area':
-                url = '../../api/areas.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
-                datos = { id: registroEliminarId };
-                break;
-            case 'vinculacion':
-                url = '../../api/tipo_vinculacion.php';
-                metodo = 'DELETE';  // Cambiado de PATCH a DELETE
-                datos = { id_tipo: registroEliminarId };
-                break;
-        }
-
-        // Enviar petición con método DELETE
-        fetch(url, {
-            method: metodo,
-            headers: { 
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'  // Para identificar peticiones AJAX
-            },
-            body: JSON.stringify(datos)
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Remover fila de la tabla con animación
-                removerFila(registroEliminarId, registroEliminarTipo);
-                
-                // Mostrar mensaje de éxito
-                mostrarAlerta('success', `${registroEliminarTipo === 'municipio' ? 'Municipio' : 
-                                        registroEliminarTipo === 'area' ? 'Área' : 
-                                        'Tipo de vinculación'} eliminado permanentemente`);
-                
-                cerrarModalEliminar();
-            } else {
-                mostrarAlerta('error', data.error || 'Error al eliminar registro');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            mostrarAlerta('error', 'Error de conexión o del servidor');
-        })
-        .finally(() => {
-            btnEliminar.innerHTML = originalText;
-            btnEliminar.disabled = false;
-        });
-    }
-
     // Remover fila con animación
     function removerFila(id, tipo) {
         let tablaId;
@@ -1237,66 +1155,7 @@ if (modalDiasRestantes) {
         });
     }
 
-    // Agregar botones de eliminar a las tablas
-    function agregarBotonesEliminar() {
-        agregarBotonEliminarATabla('municipiosTable', 'municipio');
-        agregarBotonEliminarATabla('areasTable', 'area');
-        agregarBotonEliminarATabla('vinculacionesTable', 'vinculacion');
-    }
 
-    function agregarBotonEliminarATabla(tablaId, tipo) {
-        const tablaBody = document.getElementById(tablaId);
-        if (!tablaBody) return;
-
-        const filas = tablaBody.querySelectorAll('tr');
-        filas.forEach(fila => {
-            // Ignorar filas especiales
-            if (fila.classList.contains('loading-row') || 
-                fila.classList.contains('empty-row') || 
-                fila.classList.contains('error-row')) {
-                return;
-            }
-
-            // Verificar si ya tiene botón de eliminar
-            const actionCell = fila.querySelector('.action-buttons');
-            if (!actionCell || actionCell.querySelector('.btn-delete')) return;
-
-            // Obtener datos de la fila
-            const nombre = fila.cells[0]?.textContent || '';
-            const codigo = fila.cells[1]?.textContent || '';
-            const id = obtenerIdDeFila(fila, tipo);
-
-            if (!id) return;
-
-            // Crear botón de eliminar
-            const btnEliminar = document.createElement('button');
-            btnEliminar.className = 'btn-action btn-delete';
-            btnEliminar.title = 'Eliminar';
-            btnEliminar.innerHTML = '<i class="fas fa-trash-alt"></i>';
-            btnEliminar.dataset.id = id;
-            btnEliminar.dataset.tipo = tipo;
-            btnEliminar.dataset.nombre = nombre;
-            btnEliminar.dataset.codigo = codigo;
-
-            // Agregar evento
-            btnEliminar.addEventListener('click', function() {
-                mostrarModalEliminar(
-                    this.dataset.id,
-                    this.dataset.tipo,
-                    this.dataset.nombre,
-                    this.dataset.codigo
-                );
-            });
-
-            // Insertar después del botón de editar
-            const btnEditar = actionCell.querySelector('.btn-edit');
-            if (btnEditar) {
-                btnEditar.insertAdjacentElement('afterend', btnEliminar);
-            } else {
-                actionCell.appendChild(btnEliminar);
-            }
-        });
-    }
 
     // Obtener ID de una fila
     function obtenerIdDeFila(fila, tipo) {
