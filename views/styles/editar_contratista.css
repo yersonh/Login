@@ -2122,3 +2122,246 @@ textarea.form-control {
     word-wrap: break-word !important;
     overflow-wrap: anywhere !important;
 }
+/* ========== CORRECCIÓN ESPECÍFICA PARA INFORMACIÓN PERSONAL ========== */
+
+/* Ajustes para el grid de información personal - DEBEN SER IGUALES A INFORMACIÓN DE CONTRATO */
+.personal-data-two-columns .form-group label {
+    display: block !important; /* Igual que información de contrato */
+    margin-bottom: 8px !important;
+    font-weight: 600 !important;
+    color: var(--dark-color) !important;
+    font-size: 0.95rem !important;
+    align-items: center !important;
+    gap: 8px !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.4 !important;
+}
+
+/* Contenedores de dos columnas deben tener el mismo ancho que form-grid */
+.two-column-item {
+    flex: 1;
+    min-width: 0;
+    width: 100%; /* Asegura que no se salga */
+}
+
+.two-column-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Asegurar que los inputs en información personal sean iguales */
+.personal-data-two-columns .form-control {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* ========== MEDIA QUERIES ESPECÍFICAS PARA INFORMACIÓN PERSONAL ========== */
+
+/* TABLETS (768px - 992px) */
+@media (max-width: 992px) {
+    .personal-data-two-columns .form-group label {
+        font-size: 0.95rem !important;
+    }
+    
+    .two-column-row {
+        gap: 15px;
+    }
+}
+
+/* TABLETS PEQUEÑAS Y MÓVILES (max-width: 768px) */
+@media (max-width: 768px) {
+    .personal-data-two-columns .form-group label {
+        font-size: 0.9rem !important;
+        flex-direction: row !important; /* Mantener icono y texto en línea */
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    .two-column-row {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .two-column-item {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .personal-data-two-columns .form-control {
+        padding: 12px 15px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* MÓVILES MEDIANOS (480px - 576px) */
+@media (max-width: 576px) {
+    .personal-data-two-columns .form-group label {
+        font-size: 0.9rem !important;
+    }
+    
+    .personal-data-two-columns .form-control {
+        padding: 10px 12px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* MÓVILES PEQUEÑOS (< 480px) */
+@media (max-width: 480px) {
+    .personal-data-two-columns .form-group label {
+        font-size: 0.85rem !important;
+    }
+    
+    .personal-data-two-columns .form-control {
+        padding: 10px !important;
+        font-size: 14px !important;
+    }
+    
+    .two-column-row {
+        gap: 12px;
+    }
+}
+
+/* MÓVILES MUY PEQUEÑOS (< 375px) */
+@media (max-width: 375px) {
+    .personal-data-two-columns .form-group label {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ========== CORRECCIÓN PARA DOCUMENTOS ADJUNTOS (2 COLUMNAS SIEMPRE) ========== */
+
+/* REMOVER LA MEDIA QUERY QUE CAMBIA A 1 COLUMNA EN MÓVILES */
+/* Eliminar o comentar esta sección:
+@media (max-width: 480px) {
+    .documentos-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    ...
+}
+*/
+
+/* En su lugar, mantener siempre 2 columnas pero con ajustes responsivos */
+@media (max-width: 768px) {
+    .documentos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .documento-item {
+        min-height: 140px;
+        padding: 10px;
+    }
+    
+    .documento-title {
+        font-size: 0.8rem;
+    }
+    
+    .documento-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .documentos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+    
+    .documento-item {
+        min-height: 130px;
+        padding: 8px;
+    }
+    
+    .documento-title {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .documentos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 6px !important;
+    }
+    
+    .documento-item {
+        min-height: 120px;
+        padding: 6px;
+    }
+    
+    .documento-title {
+        font-size: 0.7rem;
+    }
+}
+
+/* ========== SOLUCIÓN DE EMERGENCIA SI LOS LABELS SIGUEN SALIÉNDOSE ========== */
+
+/* Esta clase se puede aplicar a labels específicos que den problemas */
+.compact-label {
+    font-size: 0.9rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 6px !important;
+}
+
+/* Si hay labels con texto muy largo */
+.truncate-label {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-height: 2.8em !important;
+}
+
+/* Para los campos que están en dos columnas en desktop */
+@media (min-width: 769px) {
+    .two-column-item .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .two-column-item .form-group label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* ========== UNIFICAR ESTILOS ENTRE SECCIONES ========== */
+
+/* Asegurar que todas las secciones usen los mismos estilos base */
+.form-section .form-group,
+.personal-data-two-columns .form-group {
+    margin-bottom: 20px;
+}
+
+.form-section .form-group label,
+.personal-data-two-columns .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--dark-color);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+/* Asegurar consistencia en los inputs */
+.form-section .form-control,
+.personal-data-two-columns .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: var(--transition);
+    background-color: #fafafa;
+    box-sizing: border-box;
+}
