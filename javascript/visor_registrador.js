@@ -1,62 +1,88 @@
- // Función para filtrar tabla - CORREGIDA
+// Función para filtrar tabla - OPTIMIZADA PARA BUSCAR EN TODOS LOS MUNICIPIOS
         function filtrarTabla() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterStatus = document.getElementById('filterStatus').value;
-            const filterArea = document.getElementById('filterArea').value;
-            const filterVinculacion = document.getElementById('filterVinculacion').value;
-            const filterMunicipio = document.getElementById('filterMunicipio').value;
+            const filterArea = document.getElementById('filterArea').value.toLowerCase();
+            const filterVinculacion = document.getElementById('filterVinculacion').value.toLowerCase();
+            const filterMunicipio = document.getElementById('filterMunicipio').value.toLowerCase();
             
             const tbody = document.querySelector('#contratistasTable tbody');
             const allRows = tbody.querySelectorAll('.contratista-row');
             let visibleCount = 0;
             
-            // Primero, mostrar todas las filas originales
-            allRows.forEach(row => {
-                row.style.display = '';
-            });
+            // Variable para almacenar si hay filtros activos
+            const hayFiltros = searchTerm || filterStatus || filterArea || filterVinculacion || filterMunicipio;
             
-            // Ahora filtrar
-            allRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const estadoContrato = row.getAttribute('data-estado-contrato');
-                const area = row.getAttribute('data-area').toLowerCase();
-                const vinculacion = row.getAttribute('data-vinculacion').toLowerCase();
-                const municipio = row.getAttribute('data-municipio').toLowerCase();
-                
-                let matchesSearch = text.includes(searchTerm);
-                let matchesStatus = true;
-                let matchesArea = true;
-                let matchesVinculacion = true;
-                let matchesMunicipio = true;
-                
-                // Filtrar por estado de contrato
-                if (filterStatus) {
-                    if (filterStatus === 'vigente' && estadoContrato !== 'vigente') matchesStatus = false;
-                    if (filterStatus === 'vencido' && estadoContrato !== 'vencido') matchesStatus = false;
-                }
-                
-                // Filtrar por área
-                if (filterArea && area !== filterArea.toLowerCase()) {
-                    matchesArea = false;
-                }
-                
-                // Filtrar por tipo de vinculación
-                if (filterVinculacion && vinculacion !== filterVinculacion.toLowerCase()) {
-                    matchesVinculacion = false;
-                }
-                
-                // Filtrar por municipio principal
-                if (filterMunicipio && municipio !== filterMunicipio.toLowerCase()) {
-                    matchesMunicipio = false;
-                }
-                
-                if (matchesSearch && matchesStatus && matchesArea && matchesVinculacion && matchesMunicipio) {
+            if (!hayFiltros) {
+                // Si no hay filtros, mostrar todas las filas
+                allRows.forEach(row => {
                     row.style.display = '';
                     visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+                });
+            } else {
+                // Aplicar filtros
+                allRows.forEach(row => {
+                    const estadoContrato = row.getAttribute('data-estado-contrato');
+                    const area = row.getAttribute('data-area').toLowerCase();
+                    const vinculacion = row.getAttribute('data-vinculacion').toLowerCase();
+                    const municipioPrincipal = row.getAttribute('data-municipio-principal')?.toLowerCase() || '';
+                    const municipioSecundario = row.getAttribute('data-municipio-secundario')?.toLowerCase() || '';
+                    const municipioTerciario = row.getAttribute('data-municipio-terciario')?.toLowerCase() || '';
+                    
+                    // Verificar si pasa cada filtro
+                    let pasaFiltro = true;
+                    
+                    // 1. Filtro de búsqueda general (incluye todos los municipios)
+                    if (searchTerm) {
+                        const textoTodo = row.textContent.toLowerCase();
+                        const municipiosText = [municipioPrincipal, municipioSecundario, municipioTerciario]
+                            .filter(m => m)
+                            .join(' ');
+                        const textoCompleto = textoTodo + ' ' + municipiosText;
+                        
+                        if (!textoCompleto.includes(searchTerm)) {
+                            pasaFiltro = false;
+                        }
+                    }
+                    
+                    // 2. Filtro de estado de contrato
+                    if (pasaFiltro && filterStatus) {
+                        if ((filterStatus === 'vigente' && estadoContrato !== 'vigente') ||
+                            (filterStatus === 'vencido' && estadoContrato !== 'vencido')) {
+                            pasaFiltro = false;
+                        }
+                    }
+                    
+                    // 3. Filtro de área
+                    if (pasaFiltro && filterArea && area !== filterArea) {
+                        pasaFiltro = false;
+                    }
+                    
+                    // 4. Filtro de vinculación
+                    if (pasaFiltro && filterVinculacion && vinculacion !== filterVinculacion) {
+                        pasaFiltro = false;
+                    }
+                    
+                    // 5. Filtro de municipio - BUSCA EN TODOS LOS MUNICIPIOS
+                    if (pasaFiltro && filterMunicipio) {
+                        const municipios = [municipioPrincipal, municipioSecundario, municipioTerciario];
+                        const encontrado = municipios.some(municipio => 
+                            municipio && municipio.includes(filterMunicipio)
+                        );
+                        
+                        if (!encontrado) {
+                            pasaFiltro = false;
+                        }
+                    }
+                    
+                    if (pasaFiltro) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
             
             document.getElementById('rowCount').textContent = visibleCount;
             
