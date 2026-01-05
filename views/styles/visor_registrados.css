@@ -1325,3 +1325,224 @@ body {
         min-width: 700px !important; /* Menos ancho */
     }
 }
+/* Estilos optimizados */
+        .document-icons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .doc-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 0.85rem;
+        }
+        
+        .doc-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .doc-icon.has-file {
+            opacity: 1;
+        }
+        
+        .doc-icon.no-file {
+            opacity: 0.3;
+            cursor: default;
+        }
+        
+        .doc-icon.cv {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .doc-icon.contrato {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .doc-icon.acta {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .doc-icon.rp {
+            background-color: #fd7e14;
+            color: white;
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            width: 150px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .doc-icon:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .compact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 0.85rem;
+        }
+        
+        .info-line {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .info-line i {
+            width: 16px;
+            color: #6c757d;
+        }
+        
+        .status-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        
+        .badge-success { background-color: #d4edda; color: #155724; }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-danger { background-color: #f8d7da; color: #721c24; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .btn-view { 
+            background-color: #17a2b8; 
+            color: white; 
+        }
+        
+        .btn-view:hover { 
+            background-color: #138496; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+        
+        .btn-edit { 
+            background-color: #ffc107; 
+            color: #212529; 
+        }
+        
+        .btn-edit:hover { 
+            background-color: #e0a800; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+        
+        /* Contenedor de municipios */
+        .municipios-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .municipio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            padding: 2px 4px;
+            border-radius: 3px;
+            background-color: #f8f9fa;
+        }
+        
+        .municipio-item.principal {
+            background-color: #e7f3ff;
+            font-weight: 500;
+        }
+        
+        .municipio-icon {
+            color: #007bff;
+        }
+        
+        /* Responsive para tabla */
+        @media (max-width: 1200px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+            
+            .contratistas-table {
+                min-width: 1000px;
+            }
+        }
+        
+        /* Filtros mejorados */
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            min-width: 180px;
+        }
+        
+        /* Tabla más compacta */
+        .contratistas-table {
+            font-size: 0.9rem;
+        }
+        
+        .contratistas-table th {
+            padding: 12px 8px;
+            font-weight: 600;
+        }
+        
+        .contratistas-table td {
+            padding: 10px 8px;
+            vertical-align: top;
+        }
