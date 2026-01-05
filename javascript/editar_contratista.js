@@ -24,14 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Validar cédula (solo números)
-        const cedula = document.getElementById('cedula');
-        if (cedula.value && !/^\d+$/.test(cedula.value)) {
-            valid = false;
-            alert('La cédula debe contener solo números');
-            cedula.focus();
-        }
-        
         // Validar tamaño de archivos
         const fileInputs = form.querySelectorAll('input[type="file"]');
         const maxSize = 5 * 1024 * 1024; // 5MB
@@ -68,22 +60,132 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Formato automático para teléfono
+    // === FORMATO AUTOMÁTICO PARA TELÉFONO (SOLO NÚMEROS) ===
     const telefono = document.getElementById('telefono');
-    telefono.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            value = value.substring(0, 10); // Limitar a 10 dígitos
-            if (value.length <= 3) {
-                value = value;
-            } else if (value.length <= 6) {
-                value = value.substring(0,3) + '-' + value.substring(3);
-            } else {
-                value = value.substring(0,3) + '-' + value.substring(3,6) + '-' + value.substring(6);
+    if (telefono) {
+        telefono.addEventListener('input', function(e) {
+            // Primero, remover cualquier carácter que no sea número
+            let value = this.value.replace(/\D/g, '');
+            
+            // Limitar a máximo 10 dígitos
+            if (value.length > 10) {
+                value = value.substring(0, 10);
             }
-        }
-        e.target.value = value;
-    });
+            
+            // Aplicar formato automático solo si hay números
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = value.substring(0, 3) + '-' + value.substring(3);
+                } else {
+                    value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6);
+                }
+            }
+            
+            this.value = value;
+        });
+        
+        // Prevenir que se peguen caracteres no numéricos
+        telefono.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            
+            // Extraer solo números del texto pegado
+            const numbersOnly = pastedText.replace(/\D/g, '');
+            
+            // Insertar los números en la posición actual del cursor
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            // Crear nuevo valor con los números insertados
+            const newValue = currentValue.substring(0, startPos) + 
+                            numbersOnly + 
+                            currentValue.substring(endPos);
+            
+            // Aplicar el mismo formato que en el evento input
+            let formattedValue = newValue.replace(/\D/g, '');
+            
+            if (formattedValue.length > 10) {
+                formattedValue = formattedValue.substring(0, 10);
+            }
+            
+            if (formattedValue.length > 0) {
+                if (formattedValue.length <= 3) {
+                    formattedValue = formattedValue;
+                } else if (formattedValue.length <= 6) {
+                    formattedValue = formattedValue.substring(0, 3) + '-' + formattedValue.substring(3);
+                } else {
+                    formattedValue = formattedValue.substring(0, 3) + '-' + 
+                                    formattedValue.substring(3, 6) + '-' + 
+                                    formattedValue.substring(6);
+                }
+            }
+            
+            this.value = formattedValue;
+            
+            // Posicionar el cursor después del texto insertado
+            const newCursorPos = startPos + numbersOnly.length;
+            this.setSelectionRange(newCursorPos, newCursorPos);
+        });
+        
+        // Prevenir que se arrastren y suelten caracteres no numéricos
+        telefono.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const droppedText = e.dataTransfer.getData('text');
+            
+            // Extraer solo números del texto arrastrado
+            const numbersOnly = droppedText.replace(/\D/g, '');
+            
+            // Insertar en la posición actual
+            const startPos = this.selectionStart;
+            const endPos = this.selectionEnd;
+            const currentValue = this.value;
+            
+            const newValue = currentValue.substring(0, startPos) + 
+                            numbersOnly + 
+                            currentValue.substring(endPos);
+            
+            // Aplicar formato
+            let formattedValue = newValue.replace(/\D/g, '');
+            
+            if (formattedValue.length > 10) {
+                formattedValue = formattedValue.substring(0, 10);
+            }
+            
+            if (formattedValue.length > 0) {
+                if (formattedValue.length <= 3) {
+                    formattedValue = formattedValue;
+                } else if (formattedValue.length <= 6) {
+                    formattedValue = formattedValue.substring(0, 3) + '-' + formattedValue.substring(3);
+                } else {
+                    formattedValue = formattedValue.substring(0, 3) + '-' + 
+                                    formattedValue.substring(3, 6) + '-' + 
+                                    formattedValue.substring(6);
+                }
+            }
+            
+            this.value = formattedValue;
+        });
+        
+        // Validar cuando pierde el foco (opcional)
+        telefono.addEventListener('blur', function() {
+            // Asegurar que el formato esté correcto al salir del campo
+            let value = this.value.replace(/\D/g, '');
+            
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = value.substring(0, 3) + '-' + value.substring(3);
+                } else {
+                    value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6);
+                }
+                this.value = value;
+            }
+        });
+    }
     
     // Vista previa de foto de perfil
     const fotoInput = document.getElementById('foto_perfil');
