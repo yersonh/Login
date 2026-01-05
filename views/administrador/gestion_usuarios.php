@@ -498,20 +498,6 @@ function obtenerBadgeTipoUsuario($tipo) {
                                                     <i class="fas fa-envelope"></i>
                                                 </span>
                                             <?php endif; ?>
-                                            
-                                            <!-- Botón para ver detalles -->
-                                            <button class="btn-icon-action btn-view" 
-                                                    onclick="verDetallesUsuario(<?php echo $idUsuario; ?>)"
-                                                    title="Ver detalles del usuario">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            
-                                            <!-- Botón para editar -->
-                                            <button class="btn-icon-action btn-edit" 
-                                                    onclick="editarUsuario(<?php echo $idUsuario; ?>)"
-                                                    title="Editar usuario">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -714,15 +700,6 @@ function obtenerBadgeTipoUsuario($tipo) {
             });
         }
     });
-    
-    // Funciones auxiliares
-    function verDetallesUsuario(idUsuario) {
-        alert(`Ver detalles del usuario ID: ${idUsuario}\n\nEsta funcionalidad se implementará posteriormente.`);
-    }
-    
-    function editarUsuario(idUsuario) {
-        alert(`Editar usuario ID: ${idUsuario}\n\nEsta funcionalidad se implementará posteriormente.`);
-    }
     
     // Función para mostrar notificaciones
     function showNotification(message, type = 'info') {
