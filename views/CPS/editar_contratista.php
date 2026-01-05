@@ -1190,8 +1190,367 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
                 </button>
             </div>
         </div>
-    </div>    
-    <script src="../../javascript/editar_contratista.js"></scrip>
+    </div>
+    
+    <script>
+    // Datos originales del contratista (para comparar)
+    const datosOriginales = {
+        nombres: "<?php echo htmlspecialchars($contratista['nombres'] ?? ''); ?>",
+        apellidos: "<?php echo htmlspecialchars($contratista['apellidos'] ?? ''); ?>",
+        cedula: "<?php echo htmlspecialchars($contratista['cedula'] ?? ''); ?>",
+        profesion: "<?php echo htmlspecialchars($contratista['profesion'] ?? ''); ?>",
+        direccion: "<?php echo htmlspecialchars($contratista['direccion'] ?? ''); ?>",
+        telefono: "<?php echo htmlspecialchars($contratista['telefono'] ?? ''); ?>",
+        correo_personal: "<?php echo htmlspecialchars($contratista['correo_personal'] ?? ''); ?>",
+        numero_contrato: "<?php echo htmlspecialchars($contratista['numero_contrato'] ?? ''); ?>",
+        fecha_contrato: "<?php echo !empty($contratista['fecha_contrato']) ? date('Y-m-d', strtotime($contratista['fecha_contrato'])) : ''; ?>",
+        fecha_inicio: "<?php echo !empty($contratista['fecha_inicio']) ? date('Y-m-d', strtotime($contratista['fecha_inicio'])) : ''; ?>",
+        fecha_final: "<?php echo !empty($contratista['fecha_final']) ? date('Y-m-d', strtotime($contratista['fecha_final'])) : ''; ?>",
+        duracion_contrato: "<?php echo htmlspecialchars($contratista['duracion_contrato'] ?? ''); ?>",
+        numero_registro_presupuestal: "<?php echo htmlspecialchars($contratista['numero_registro_presupuestal'] ?? ''); ?>",
+        fecha_rp: "<?php echo !empty($contratista['fecha_rp']) ? date('Y-m-d', strtotime($contratista['fecha_rp'])) : ''; ?>",
+        id_area: "<?php echo $contratista['id_area'] ?? 0; ?>",
+        id_tipo_vinculacion: "<?php echo $contratista['id_tipo_vinculacion'] ?? 0; ?>",
+        id_municipio_principal: "<?php echo $contratista['id_municipio_principal'] ?? 0; ?>",
+        direccion_municipio_principal: "<?php echo htmlspecialchars($contratista['direccion_municipio_principal'] ?? ''); ?>",
+        id_municipio_secundario: "<?php echo $contratista['id_municipio_secundario'] ?? ''; ?>",
+        direccion_municipio_secundario: "<?php echo htmlspecialchars($contratista['direccion_municipio_secundario'] ?? ''); ?>",
+        id_municipio_terciario: "<?php echo $contratista['id_municipio_terciario'] ?? ''; ?>",
+        direccion_municipio_terciario: "<?php echo htmlspecialchars($contratista['direccion_municipio_terciario'] ?? ''); ?>"
+    };
+    
+    // Nombres de campos para mostrar
+    const nombresCampos = {
+        nombres: "Nombres",
+        apellidos: "Apellidos",
+        cedula: "Cédula",
+        profesion: "Profesión",
+        direccion: "Dirección",
+        telefono: "Teléfono",
+        correo_personal: "Correo Personal",
+        numero_contrato: "Número de Contrato",
+        fecha_contrato: "Fecha del Contrato",
+        fecha_inicio: "Fecha de Inicio",
+        fecha_final: "Fecha Final",
+        duracion_contrato: "Duración del Contrato",
+        numero_registro_presupuestal: "Registro Presupuestal",
+        fecha_rp: "Fecha RP",
+        id_area: "Área",
+        id_tipo_vinculacion: "Tipo de Vinculación",
+        id_municipio_principal: "Municipio Principal",
+        direccion_municipio_principal: "Dirección Principal",
+        id_municipio_secundario: "Municipio Secundario",
+        direccion_municipio_secundario: "Dirección Secundaria",
+        id_municipio_terciario: "Municipio Terciario",
+        direccion_municipio_terciario: "Dirección Terciaria"
+    };
+    
+    // Mapeo de IDs a nombres (para selects)
+    const areasMap = {
+        <?php foreach ($areas as $area): ?>
+        "<?php echo $area['id_area']; ?>": "<?php echo htmlspecialchars($area['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
+    const tiposMap = {
+        <?php foreach ($tiposVinculacion as $tipo): ?>
+        "<?php echo $tipo['id_tipo']; ?>": "<?php echo htmlspecialchars($tipo['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
+    const municipiosMap = {
+        <?php foreach ($municipios as $municipio): ?>
+        "<?php echo $municipio['id_municipio']; ?>": "<?php echo htmlspecialchars($municipio['nombre']); ?>",
+        <?php endforeach; ?>
+    };
+    
+    // Función para previsualizar la foto seleccionada
+    function previewFoto(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                var existingImg = document.getElementById('fotoPreview');
+                var placeholder = document.getElementById('fotoPreviewPlaceholder');
+                
+                if (existingImg) {
+                    existingImg.src = e.target.result;
+                } else if (placeholder) {
+                    placeholder.parentElement.innerHTML = '<img src="' + e.target.result + '" id="fotoPreview" alt="Previsualización de foto" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">';
+                }
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Función para comparar valores y detectar cambios
+    function detectarCambios() {
+        const cambios = [];
+        
+        // Función para comparar valores
+        function compararValor(campo, valorOriginal, valorNuevo, esSelect = false) {
+            if (esSelect) {
+                valorOriginal = valorOriginal.toString();
+                valorNuevo = valorNuevo.toString();
+            }
+            
+            return valorOriginal !== valorNuevo;
+        }
+        
+        // Campos de texto e inputs
+        const campos = [
+            'nombres', 'apellidos', 'cedula', 'profesion', 'direccion', 'telefono', 'correo_personal',
+            'numero_contrato', 'duracion_contrato', 'numero_registro_presupuestal',
+            'direccion_municipio_principal', 'direccion_municipio_secundario', 'direccion_municipio_terciario'
+        ];
+        
+        campos.forEach(campo => {
+            const input = document.getElementById(campo);
+            if (input) {
+                const valorOriginal = datosOriginales[campo] || '';
+                const valorNuevo = input.value.trim();
+                
+                if (compararValor(campo, valorOriginal, valorNuevo)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal || '(vacío)',
+                        nuevo: valorNuevo || '(vacío)',
+                        tipo: 'texto'
+                    });
+                }
+            }
+        });
+        
+        // Campos de fecha
+        const camposFecha = ['fecha_contrato', 'fecha_inicio', 'fecha_final', 'fecha_rp'];
+        camposFecha.forEach(campo => {
+            const input = document.getElementById(campo);
+            if (input) {
+                const valorOriginal = datosOriginales[campo] || '';
+                const valorNuevo = input.value;
+                
+                if (compararValor(campo, valorOriginal, valorNuevo)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal ? formatFecha(valorOriginal) : '(sin fecha)',
+                        nuevo: valorNuevo ? formatFecha(valorNuevo) : '(sin fecha)',
+                        tipo: 'fecha'
+                    });
+                }
+            }
+        });
+        
+        // Campos select
+        const selects = [
+            {campo: 'id_area', map: areasMap},
+            {campo: 'id_tipo_vinculacion', map: tiposMap},
+            {campo: 'id_municipio_principal', map: municipiosMap},
+            {campo: 'id_municipio_secundario', map: municipiosMap},
+            {campo: 'id_municipio_terciario', map: municipiosMap}
+        ];
+        
+        selects.forEach(({campo, map}) => {
+            const select = document.getElementById(campo);
+            if (select) {
+                const valorOriginal = datosOriginales[campo]?.toString() || '';
+                const valorNuevo = select.value;
+                
+                if (compararValor(campo, valorOriginal, valorNuevo, true)) {
+                    cambios.push({
+                        campo: campo,
+                        nombre: nombresCampos[campo],
+                        anterior: valorOriginal ? (map[valorOriginal] || valorOriginal) : '(sin selección)',
+                        nuevo: valorNuevo ? (map[valorNuevo] || valorNuevo) : '(sin selección)',
+                        tipo: 'select'
+                    });
+                }
+            }
+        });
+        
+        // Campos de archivos
+        const archivos = ['foto_perfil', 'cv', 'contrato', 'acta_inicio', 'rp'];
+        archivos.forEach(archivo => {
+            const input = document.getElementById(archivo);
+            if (input && input.files.length > 0) {
+                const nombreArchivo = input.files[0].name;
+                const tamanoArchivo = (input.files[0].size / 1024 / 1024).toFixed(2); // MB
+                
+                cambios.push({
+                    campo: archivo,
+                    nombre: getNombreArchivo(archivo),
+                    anterior: 'Archivo actual se mantendrá',
+                    nuevo: `Nuevo archivo: ${nombreArchivo} (${tamanoArchivo} MB)`,
+                    tipo: 'archivo'
+                });
+            }
+        });
+        
+        return cambios;
+    }
+    
+    // Función para formatear fecha
+    function formatFecha(fecha) {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+    
+    // Función para obtener nombre de archivo
+    function getNombreArchivo(campo) {
+        const nombres = {
+            'foto_perfil': 'Foto de Perfil',
+            'cv': 'Hoja de Vida (CV)',
+            'contrato': 'Contrato',
+            'acta_inicio': 'Acta de Inicio',
+            'rp': 'Registro Presupuestal (RP)'
+        };
+        return nombres[campo] || campo;
+    }
+    
+    // Función para mostrar cambios en el modal
+    function mostrarCambiosEnModal(cambios) {
+        const listaCambios = document.getElementById('listaCambios');
+        const btnConfirmar = document.getElementById('btnConfirmarCambios');
+        
+        if (cambios.length === 0) {
+            listaCambios.innerHTML = `
+                <div class="sin-cambios">
+                    <i class="fas fa-info-circle"></i>
+                    No se detectaron cambios. Todos los valores se mantendrán igual.
+                </div>
+            `;
+            btnConfirmar.disabled = true;
+        } else {
+            let html = '';
+            cambios.forEach(cambio => {
+                html += `
+                    <div class="cambio-item">
+                        <div class="campo-nombre">${cambio.nombre}</div>
+                        <div class="valores-cambio">
+                            <div class="valor-anterior">
+                                <i class="fas fa-arrow-left"></i>
+                                ${cambio.anterior}
+                            </div>
+                            <div class="valor-nuevo">
+                                <i class="fas fa-arrow-right"></i>
+                                ${cambio.nuevo}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            listaCambios.innerHTML = html;
+            btnConfirmar.disabled = false;
+        }
+    }
+    
+    // Función para validar formulario antes de mostrar cambios
+    function validarFormulario() {
+        const form = document.getElementById('formEditarContratista');
+        const inputsRequeridos = form.querySelectorAll('[required]');
+        let valido = true;
+        
+        inputsRequeridos.forEach(input => {
+            if (!input.value.trim()) {
+                valido = false;
+                input.style.borderColor = '#dc3545';
+            } else {
+                input.style.borderColor = '';
+            }
+        });
+        
+        return valido;
+    }
+    
+    // Manejar clic en "Guardar Cambios"
+    document.getElementById('btnMostrarCambios').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Validar formulario
+        if (!validarFormulario()) {
+            alert('Por favor, completa todos los campos obligatorios marcados con *.');
+            return;
+        }
+        
+        // Detectar cambios
+        const cambios = detectarCambios();
+        
+        // Mostrar modal con cambios
+        mostrarCambiosEnModal(cambios);
+        
+        // Mostrar modal
+        document.getElementById('modalConfirmacion').style.display = 'flex';
+    });
+    
+    // Manejar cierre del modal
+    document.getElementById('btnCerrarModal').addEventListener('click', function() {
+        document.getElementById('modalConfirmacion').style.display = 'none';
+    });
+    
+    document.getElementById('btnCancelarCambios').addEventListener('click', function() {
+        document.getElementById('modalConfirmacion').style.display = 'none';
+    });
+    
+    // Cerrar modal al hacer clic fuera de él
+    document.getElementById('modalConfirmacion').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+    
+    // Manejar confirmación de cambios
+    document.getElementById('btnConfirmarCambios').addEventListener('click', function() {
+        const btnConfirmar = this;
+        const loading = document.getElementById('loadingGuardar');
+        const modalBody = document.querySelector('.modal-body');
+        
+        // Mostrar loading
+        btnConfirmar.disabled = true;
+        loading.style.display = 'block';
+        modalBody.style.opacity = '0.5';
+        
+        // Enviar formulario después de 1 segundo (para mostrar el loading)
+        setTimeout(() => {
+            document.getElementById('formEditarContratista').submit();
+        }, 1000);
+    });
+    
+    // Inicializar manejo de municipios
+    document.addEventListener('DOMContentLoaded', function() {
+        const municipioSelects = document.querySelectorAll('.ubicacion-select');
+        
+        municipioSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                const containerId = targetId + 'Container';
+                const container = document.querySelector('.' + containerId);
+                
+                if (this.value && this.value !== '') {
+                    if (container) container.style.display = 'block';
+                    if (targetInput) targetInput.required = true;
+                } else {
+                    if (container) container.style.display = 'none';
+                    if (targetInput) {
+                        targetInput.required = false;
+                        targetInput.value = '';
+                    }
+                }
+            });
+            
+            // Disparar evento change al cargar la página
+            select.dispatchEvent(new Event('change'));
+        });
+    });
+    </script>
+    <script src="../../javascript/editar_contratista.js"></>
     
 </body>
 </html>
