@@ -1550,7 +1550,7 @@ $nombreCompleto = empty($nombreCompleto) ? 'Usuario del Sistema' : $nombreComple
         });
     });
     </script>
-    <script src="../../javascript/editar_contratista.js"></>
+    <script src="../../javascript/editar_contratista.js"></script>
     
 </body>
 </html>
