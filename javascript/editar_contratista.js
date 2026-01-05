@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // === HACER EL CAMPO DE DURACIÓN DE SOLO LECTURA ===
+    const duracionContratoInput = document.getElementById('duracion_contrato');
+    if (duracionContratoInput) {
+        duracionContratoInput.readOnly = true;
+        duracionContratoInput.style.backgroundColor = '#f8f9fa';
+        duracionContratoInput.style.cursor = 'not-allowed';
+        duracionContratoInput.title = 'Este campo no se puede editar directamente';
+    }
+    
     // Validación del formulario
     const form = document.getElementById('formEditarContratista');
     form.addEventListener('submit', function(e) {
