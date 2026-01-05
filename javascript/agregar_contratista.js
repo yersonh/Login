@@ -1,6 +1,46 @@
 document.addEventListener('DOMContentLoaded', function() {
     flatpickr.localize(flatpickr.l10ns.es);
     
+    // Variable para guardar la fecha del contrato
+    let fechaContrato = null;
+    
+    // Configurar el flatpickr para la fecha del contrato
+    const fechaContratoInput = document.getElementById('fecha_contrato');
+    if (fechaContratoInput) {
+        flatpickr(fechaContratoInput, {
+            dateFormat: "d/m/Y",
+            locale: "es",
+            allowInput: true,
+            onChange: function(selectedDates, dateStr, instance) {
+                fechaContrato = selectedDates[0];
+                actualizarMinFechas();
+            }
+        });
+    }
+    
+    // Configurar flatpickr para fechas de inicio y final con mínimo dinámico
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinalInput = document.getElementById('fecha_final');
+    
+    if (fechaInicioInput) {
+        flatpickr(fechaInicioInput, {
+            dateFormat: "d/m/Y",
+            locale: "es",
+            allowInput: true,
+            minDate: "today" // Inicialmente solo bloquea fechas pasadas
+        });
+    }
+    
+    if (fechaFinalInput) {
+        flatpickr(fechaFinalInput, {
+            dateFormat: "d/m/Y",
+            locale: "es",
+            allowInput: true,
+            minDate: "today" // Inicialmente solo bloquea fechas pasadas
+        });
+    }
+    
+    // Configurar otras fechas sin restricciones
     const dateOptions = {
         dateFormat: "d/m/Y",
         locale: "es",
@@ -8,8 +48,25 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     document.querySelectorAll('input[placeholder*="dd/mm/aaaa"]').forEach(input => {
-        flatpickr(input, dateOptions);
+        if (input.id !== 'fecha_contrato' && input.id !== 'fecha_inicio' && input.id !== 'fecha_final') {
+            flatpickr(input, dateOptions);
+        }
     });
+    
+    // Función para actualizar las fechas mínimas según la fecha del contrato
+    function actualizarMinFechas() {
+        if (fechaContrato) {
+            // Configurar fecha mínima para inicio (no puede ser anterior a la fecha del contrato)
+            if (fechaInicioInput && fechaInicioInput._flatpickr) {
+                fechaInicioInput._flatpickr.set('minDate', fechaContrato);
+            }
+            
+            // Configurar fecha mínima para final (no puede ser anterior a la fecha del contrato)
+            if (fechaFinalInput && fechaFinalInput._flatpickr) {
+                fechaFinalInput._flatpickr.set('minDate', fechaContrato);
+            }
+        }
+    }
     
     // === CALCULAR DURACIÓN DEL CONTRATO ===
     document.getElementById('fecha_inicio').addEventListener('change', calcularDuracionContrato);
@@ -392,14 +449,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // MODIFICADO: Eliminada validación de cédula única
         const camposEspecificos = {
-            'cedula': {
-                validar: function(valor) {
-                    if (valor.length < 5) return 'La cédula debe tener al menos 5 dígitos';
-                    if (!/^\d+$/.test(valor)) return 'La cédula solo debe contener números';
-                    return null;
-                }
-            },
             'correo': {
                 validar: function(valor) {
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1030,15 +1081,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Validaciones específicas adicionales
+            // MODIFICADO: Eliminada validación de cédula única
             const camposValidar = {
-                'cedula': {
-                    validar: function(valor) {
-                        if (valor.length < 5) return 'La cédula debe tener al menos 5 dígitos';
-                        if (!/^\d+$/.test(valor)) return 'La cédula solo debe contener números';
-                        return null;
-                    }
-                },
                 'correo': {
                     validar: function(valor) {
                         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
