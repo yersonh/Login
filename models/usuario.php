@@ -118,53 +118,6 @@ class Usuario {
             return [];
         }
     }
-
-    /**
-     * Método para obtener datos completos de usuario con foto
-     */
-    public function obtenerConFoto($correo) {
-        try {
-            // Primero obtener los datos básicos
-            $sql = "SELECT u.*, p.nombres, p.apellidos, p.telefono, p.cedula
-                    FROM usuario u
-                    JOIN persona p ON u.id_persona = p.id_persona
-                    WHERE u.correo = :correo";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':correo', $correo);
-            $stmt->execute();
-            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$usuario) {
-                return false;
-            }
-            
-            // Verificar si tiene foto
-            $sqlFoto = "SELECT tipo_mime, contenido, tamano 
-                       FROM fotos_perfil 
-                       WHERE id_persona = :id_persona 
-                       ORDER BY fecha_subida DESC 
-                       LIMIT 1";
-            
-            $stmtFoto = $this->conn->prepare($sqlFoto);
-            $stmtFoto->bindParam(':id_persona', $usuario['id_persona']);
-            $stmtFoto->execute();
-            $foto = $stmtFoto->fetch(PDO::FETCH_ASSOC);
-            
-            if ($foto) {
-                $usuario['foto_info'] = $foto;
-                $usuario['tiene_foto'] = true;
-            } else {
-                $usuario['tiene_foto'] = false;
-            }
-            
-            return $usuario;
-            
-        } catch (PDOException $e) {
-            error_log("Error al obtener usuario con foto: " . $e->getMessage());
-            return false;
-        }
-    }
     public function obtenerPorEstado($estado = 'todos') {
     $sql = "SELECT u.id_usuario, u.correo, u.tipo_usuario, u.activo, u.fecha_registro,
                    u.fecha_aprobacion, u.notificado_aprobacion, u.aprobado_por,
@@ -192,23 +145,6 @@ class Usuario {
     } catch (PDOException $e) {
         error_log("Error al obtener usuarios por estado: " . $e->getMessage());
         return [];
-    }
-}
-
-public function cambiarEstado($id_usuario, $activo, $admin_id = null) {
-    $sql = "UPDATE usuario 
-            SET activo = :activo 
-            WHERE id_usuario = :id_usuario";
-    
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL); // Esto está bien
-    $stmt->bindParam(':id_usuario', $id_usuario);
-    
-    try {
-        return $stmt->execute();
-    } catch (PDOException $e) {
-        error_log("Error al cambiar estado de usuario: " . $e->getMessage());
-        return false;
     }
 }
 
@@ -351,15 +287,16 @@ public function obtenerInfoParaCorreo($id_usuario) {
 public function desactivarUsuariosContratosVencidos() {
     try {
         // Consulta para obtener usuarios con contratos vencidos
-        $sql = "SELECT u.id_usuario, u.correo, 
+        $sql = "SELECT DISTINCT u.id_usuario, u.correo, 
                        p.nombres, p.apellidos, p.correo_personal,
-                       dc.fecha_final
+                       dc.fecha_final, dc.numero_contrato
                 FROM usuario u
                 JOIN persona p ON u.id_persona = p.id_persona
                 JOIN detalle_contrato dc ON p.id_persona = dc.id_persona
                 WHERE u.activo = true
                   AND u.tipo_usuario = 'contratista'
                   AND dc.fecha_final < CURRENT_DATE
+                  -- Asegurar que no tiene otro contrato activo
                   AND NOT EXISTS (
                       SELECT 1 FROM detalle_contrato dc2
                       WHERE dc2.id_persona = p.id_persona
@@ -375,8 +312,11 @@ public function desactivarUsuariosContratosVencidos() {
         
         foreach ($usuariosVencidos as $usuario) {
             try {
-                // Desactivar usuario
-                $desactivado = $this->desactivarUsuario($usuario['id_usuario']);
+                // USAR desactivarUsuarioConMotivo en lugar de desactivarUsuario
+                $desactivado = $this->desactivarUsuarioConMotivo(
+                    $usuario['id_usuario'], 
+                    'contrato_vencido'
+                );
                 
                 if ($desactivado) {
                     $desactivados++;
@@ -384,10 +324,12 @@ public function desactivarUsuariosContratosVencidos() {
                     // Registrar en log
                     error_log("📅 Usuario desactivado por contrato vencido: " . 
                              $usuario['correo'] . 
-                             " (Fecha fin: " . $usuario['fecha_final'] . ")");
+                             " (Contrato: " . $usuario['numero_contrato'] . 
+                             ", Fecha fin: " . $usuario['fecha_final'] . ")");
                     
-                    // Opcional: Enviar correo de notificación
-                    $this->notificarContratoVencido($usuario);
+                    // SOLO LOG, NO ENVIAR CORREO DESDE AQUÍ
+                    error_log("📧 Debería notificar a " . $usuario['correo_personal'] . 
+                             " sobre vencimiento de contrato");
                 } else {
                     $errores++;
                     error_log("❌ Error al desactivar usuario: " . $usuario['correo']);
@@ -401,7 +343,8 @@ public function desactivarUsuariosContratosVencidos() {
         return [
             'total_encontrados' => count($usuariosVencidos),
             'desactivados' => $desactivados,
-            'errores' => $errores
+            'errores' => $errores,
+            'usuarios_vencidos' => $usuariosVencidos // ← DEVOLVER LOS USUARIOS PARA NOTIFICAR DESDE LA API
         ];
         
     } catch (Exception $e) {
@@ -409,18 +352,78 @@ public function desactivarUsuariosContratosVencidos() {
         return false;
     }
 }
-
 /**
- * Método para notificar por correo sobre contrato vencido
+ * Notifica contratos por vencer (15 días antes)
  */
-private function notificarContratoVencido($usuario) {
-    // Puedes implementar esto más adelante
-    // Por ahora solo log
-    error_log("📧 Debería notificar a " . $usuario['correo_personal'] . 
-              " sobre vencimiento de contrato");
-    return true;
+public function notificarContratosPorVencer($diasAnticipacion = 15) {
+    try {
+        $sql = "SELECT DISTINCT u.id_usuario, u.correo, 
+                       p.nombres, p.apellidos, p.correo_personal,
+                       dc.fecha_final, dc.numero_contrato
+                FROM usuario u
+                JOIN persona p ON u.id_persona = p.id_persona
+                JOIN detalle_contrato dc ON p.id_persona = dc.id_persona
+                WHERE u.activo = true
+                  AND u.tipo_usuario = 'contratista'
+                  AND dc.fecha_final >= CURRENT_DATE
+                  AND dc.fecha_final <= CURRENT_DATE + INTERVAL '$diasAnticipacion days'
+                  -- Verificar que este es su contrato más reciente
+                  AND dc.fecha_final = (
+                      SELECT MAX(dc2.fecha_final)
+                      FROM detalle_contrato dc2
+                      WHERE dc2.id_persona = p.id_persona
+                  )";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $contratosPorVencer = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $contratosParaNotificar = [];
+        
+        foreach ($contratosPorVencer as $contrato) {
+            try {
+                // Calcular días restantes
+                $fechaFinal = new DateTime($contrato['fecha_final']);
+                $hoy = new DateTime();
+                $diasRestantes = $hoy->diff($fechaFinal)->days;
+                
+                // Solo notificar si realmente está por vencer
+                if ($diasRestantes <= $diasAnticipacion) {
+                    $contratosParaNotificar[] = [
+                        'usuario' => $contrato,
+                        'dias_restantes' => $diasRestantes
+                    ];
+                }
+                
+            } catch (Exception $e) {
+                error_log("❌ Excepción al procesar contrato por vencer: " . $e->getMessage());
+            }
+        }
+        
+        return [
+            'contratos_por_vencer' => count($contratosPorVencer),
+            'contratos_para_notificar' => $contratosParaNotificar
+        ];
+        
+    } catch (Exception $e) {
+        error_log("❌ Error en notificarContratosPorVencer: " . $e->getMessage());
+        return false;
+    }
 }
-
+/**
+ * Método unificado para verificar vencimientos
+ */
+public function verificarVencimientosCompleto($diasAnticipacion = 15) {
+    $resultados = [];
+    
+    // 1. Notificar contratos por vencer
+    $resultados['preventivas'] = $this->notificarContratosPorVencer($diasAnticipacion);
+    
+    // 2. Desactivar contratos vencidos
+    $resultados['vencidos'] = $this->desactivarUsuariosContratosVencidos();
+    
+    return $resultados;
+}
 /**
  * Verificar si un usuario específico tiene contrato vencido
  */

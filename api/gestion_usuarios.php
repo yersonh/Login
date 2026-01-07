@@ -129,6 +129,71 @@ try {
                 ]);
                 break;
                 
+            // ================= NUEVAS ACCIONES PARA VENCIMIENTOS =================
+            
+            case 'verificar_vencimientos':
+                // Verificación completa: notifica contratos por vencer y desactiva vencidos
+                $diasAnticipacion = isset($input['dias_anticipacion']) ? intval($input['dias_anticipacion']) : 15;
+                $resultado = $usuarioModel->verificarVencimientosCompleto($diasAnticipacion);
+                
+                if ($resultado !== false) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Verificación de vencimientos completada',
+                        'resultados' => $resultado
+                    ]);
+                } else {
+                    throw new Exception('Error en la verificación de vencimientos');
+                }
+                break;
+                
+            case 'notificar_contratos_por_vencer':
+                // Solo notificar contratos por vencer (preventivo)
+                $diasAnticipacion = isset($input['dias_anticipacion']) ? intval($input['dias_anticipacion']) : 15;
+                $resultado = $usuarioModel->notificarContratosPorVencer($diasAnticipacion);
+                
+                if ($resultado !== false) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Notificaciones de contratos por vencer enviadas',
+                        'resultados' => $resultado
+                    ]);
+                } else {
+                    throw new Exception('Error al notificar contratos por vencer');
+                }
+                break;
+                
+            case 'desactivar_contratos_vencidos':
+                // Solo desactivar usuarios con contratos vencidos
+                $resultado = $usuarioModel->desactivarUsuariosContratosVencidos();
+                
+                if ($resultado !== false) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Usuarios con contratos vencidos desactivados',
+                        'resultados' => $resultado
+                    ]);
+                } else {
+                    throw new Exception('Error al desactivar contratos vencidos');
+                }
+                break;
+                
+            case 'verificar_contrato_usuario':
+                // Verificar si un usuario específico tiene contrato vencido
+                if (!isset($input['id_usuario'])) {
+                    throw new Exception('ID de usuario no especificado');
+                }
+                
+                $id_usuario = intval($input['id_usuario']);
+                $tieneContratoVencido = $usuarioModel->tieneContratoVencido($id_usuario);
+                
+                echo json_encode([
+                    'success' => true,
+                    'tiene_contrato_vencido' => $tieneContratoVencido,
+                    'id_usuario' => $id_usuario
+                ]);
+                break;
+                
             default:
                 throw new Exception('Acción no válida');
         }

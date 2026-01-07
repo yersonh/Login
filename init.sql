@@ -40,6 +40,12 @@ ALTER TABLE public.usuario
 ADD CONSTRAINT chk_usuario_tipo
 CHECK (tipo_usuario IN ('contratista', 'asistente', 'administrador', 'superAdmin'));
 
+-- Agrega los campos si no existen:
+ALTER TABLE usuario 
+ADD COLUMN IF NOT EXISTS motivo_desactivacion VARCHAR(50);
+
+ALTER TABLE usuario 
+ADD COLUMN IF NOT EXISTS fecha_desactivacion TIMESTAMP;
 
 CREATE TABLE public.recovery_tokens (
     id_recovery SERIAL PRIMARY KEY,
