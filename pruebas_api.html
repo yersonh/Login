@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas API - Gestión de Usuarios y Contratos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+            text-align: center;
+        }
+
+        .warning strong {
+            color: #d39e00;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+
+        .results-panel {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+            border: 2px solid #e2e8f0;
+        }
+
+        .results-panel.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .results-header h3 {
+            color: #2d3748;
+            font-size: 1.3rem;
+        }
+
+        .clear-btn {
+            background: #cbd5e0;
+            color: #4a5568;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #48bb78;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #f56565;
+        }
+
+        .status.loading {
+            background: #bee3f8;
+            color: #2a4365;
+            border-left: 4px solid #4299e1;
+        }
+
+        .response-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+
+        .api-info {
+            background: #ebf8ff;
+            border: 2px solid #bee3f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .api-info h4 {
+            color: #2b6cb0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .api-info p {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .api-info code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #2d3748;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .auto-fill {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .auto-fill-btn {
+            flex: 1;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .auto-fill-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .response-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .summary-card .label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .timestamp {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            text-align: right;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧪 Panel de Pruebas API</h1>
+            <p class="subtitle">Sistema de Gestión de Usuarios y Contratos - SGEA</p>
+            <div class="warning">
+                <strong>⚠️ MODO PRUEBA ACTIVADO</strong> - Validación de administrador desactivada temporalmente
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Panel izquierdo: Configuración y acciones generales -->
+            <div>
+                <!-- Configuración de API -->
+                <div class="card config-section">
+                    <h2><span class="icon">⚙️</span> Configuración API</h2>
+                    <div class="form-group">
+                        <label for="api_url">URL de la API:</label>
+                        <input type="text" id="api_url" value="api/gestion_usuarios.php" placeholder="Ruta relativa a la API">
+                    </div>
+                    <div class="form-group">
+                        <label for="dias_anticipacion">Días de anticipación:</label>
+                        <input type="number" id="dias_anticipacion" value="15" min="1" max="90">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_usuario">ID Usuario (para acciones específicas):</label>
+                        <input type="number" id="id_usuario" placeholder="Ej: 1" min="1">
+                    </div>
+                    <div class="auto-fill">
+                        <button class="auto-fill-btn" onclick="cargarEjemplos()">📋 Cargar ejemplos</button>
+                        <button class="auto-fill-btn" onclick="resetearCampos()">🔄 Reiniciar</button>
+                    </div>
+                </div>
+
+                <!-- Acciones de vencimiento -->
+                <div class="card">
+                    <h2><span class="icon">📅</span> Vencimiento de Contratos</h2>
+                    <div class="grid-buttons">
+                        <button class="btn btn-info" onclick="probarAccion('verificar_vencimientos')">
+                            🔍 Verificación Completa
+                        </button>
+                        <button class="btn btn-warning" onclick="probarAccion('notificar_contratos_por_vencer')">
+                            📧 Notificar por Vencer
+                        </button>
+                        <button class="btn btn-danger" onclick="probarAccion('desactivar_contratos_vencidos')">
+                            ⚠️ Desactivar Vencidos
+                        </button>
+                        <button class="btn" onclick="probarAccion('verificar_contrato_usuario')">
+                            🔎 Verificar Usuario
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel derecho: Gestión de usuarios -->
+            <div>
+                <!-- Gestión de usuarios -->
+                <div class="card">
+                    <h2><span class="icon">👥</span> Gestión de Usuarios</h2>
+                    <p style="color: #718096; margin-bottom: 15px; font-size: 0.95rem;">
+                        Acciones sobre usuarios específicos (requiere ID de usuario)
+                    </p>
+                    <div class="grid-buttons">
+                        <button class="btn btn-success" onclick="probarAccion('aprobar_usuario')">
+                            ✅ Aprobar Usuario
+                        </button>
+                        <button class="btn" onclick="probarAccion('activar_usuario')">
+                            🔄 Activar Usuario
+                        </button>
+                        <button class="btn btn-danger" onclick="probarAccion('desactivar_usuario')">
+                            ⛔ Desactivar Usuario
+                        </button>
+                        <button class="btn" onclick="probarAccion('mantener_pendiente')">
+                            ⏳ Mantener Pendiente
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Información del sistema -->
+                <div class="card">
+                    <h2><span class="icon">📊</span> Estado del Sistema</h2>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 3rem; color: #667eea; margin-bottom: 10px;">🔄</div>
+                        <p style="color: #718096;">API lista para pruebas</p>
+                        <div class="timestamp" id="last-test-time"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de resultados -->
+        <div class="results-panel" id="results-panel">
+            <div class="results-header">
+                <h3>📋 Resultados de la Prueba</h3>
+                <button class="clear-btn" onclick="limpiarResultados()">Limpiar resultados</button>
+            </div>
+            
+            <div id="status" class="status"></div>
+            
+            <div id="response-summary" class="response-summary" style="display: none;">
+                <!-- Se llena dinámicamente -->
+            </div>
+            
+            <div class="response-container">
+                <pre id="response"></pre>
+            </div>
+            
+            <div class="timestamp" id="response-time"></div>
+        </div>
+
+        <!-- Información de la API -->
+        <div class="api-info">
+            <h4>📝 Información Técnica</h4>
+            <p><strong>Endpoint API:</strong> <code>POST api/gestion_usuarios.php</code></p>
+            <p><strong>Acciones disponibles:</strong> <code>verificar_vencimientos</code>, <code>desactivar_contratos_vencidos</code>, <code>aprobar_usuario</code>, etc.</p>
+            <p><strong>Modo actual:</strong> <span style="color: #e53e3e; font-weight: bold;">Validación de administrador desactivada</span></p>
+            <p><strong>Nota:</strong> Esta interfaz es solo para pruebas de desarrollo. No usar en producción.</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let lastResponse = null;
+        let testHistory = [];
+
+        // Función principal para probar acciones
+        async function probarAccion(accion) {
+            const apiUrl = document.getElementById('api_url').value;
+            const diasAnticipacion = document.getElementById('dias_anticipacion').value;
+            const idUsuario = document.getElementById('id_usuario').value;
+            
+            // Validaciones básicas
+            if (!apiUrl) {
+                alert('Por favor ingresa la URL de la API');
+                return;
+            }
+            
+            // Preparar datos según la acción
+            let datos = {
+                accion: accion
+            };
+            
+            // Agregar parámetros específicos
+            if (idUsuario && accion !== 'desactivar_contratos_vencidos' && 
+                accion !== 'notificar_contratos_por_vencer' && 
+                accion !== 'verificar_vencimientos') {
+                datos.id_usuario = parseInt(idUsuario);
+            }
+            
+            if (diasAnticipacion && (accion === 'verificar_vencimientos' || 
+                accion === 'notificar_contratos_por_vencer')) {
+                datos.dias_anticipacion = parseInt(diasAnticipacion);
+            }
+            
+            // Mostrar estado de carga
+            const resultsPanel = document.getElementById('results-panel');
+            const statusDiv = document.getElementById('status');
+            const responseDiv = document.getElementById('response');
+            const responseTimeDiv = document.getElementById('response-time');
+            const lastTestTimeDiv = document.getElementById('last-test-time');
+            const responseSummaryDiv = document.getElementById('response-summary');
+            
+            resultsPanel.classList.add('active');
+            statusDiv.innerHTML = `
+                <div class="status loading">
+                    <span>⏳</span>
+                    <div>
+                        <strong>Enviando petición...</strong><br>
+                        <small>Acción: ${accion}</small>
+                    </div>
+                </div>
+            `;
+            responseDiv.textContent = '';
+            responseSummaryDiv.style.display = 'none';
+            
+            // Registrar hora
+            const startTime = new Date();
+            
+            try {
+                // Enviar petición
+                console.log(`📤 Enviando ${accion} a ${apiUrl}`, datos);
+                
+                const respuesta = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+                
+                const tiempoRespuesta = new Date() - startTime;
+                const datosRespuesta = await respuesta.json();
+                lastResponse = datosRespuesta;
+                
+                // Registrar en historial
+                testHistory.push({
+                    accion: accion,
+                    timestamp: new Date(),
+                    response: datosRespuesta,
+                    duration: tiempoRespuesta
+                });
+                
+                // Mostrar resultados
+                let statusHtml = '';
+                if (datosRespuesta.success) {
+                    statusHtml = `
+                        <div class="status success">
+                            <span>✅</span>
+                            <div>
+                                <strong>Éxito: ${datosRespuesta.message || 'Acción completada'}</strong><br>
+                                <small>Tiempo de respuesta: ${tiempoRespuesta}ms</small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Mostrar resumen si hay datos relevantes
+                    mostrarResumen(datosRespuesta, accion);
+                } else {
+                    statusHtml = `
+                        <div class="status error">
+                            <span>❌</span>
+                            <div>
+                                <strong>Error: ${datosRespuesta.error || 'Error desconocido'}</strong><br>
+                                <small>Tiempo de respuesta: ${tiempoRespuesta}ms</small>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                statusDiv.innerHTML = statusHtml;
+                responseDiv.textContent = JSON.stringify(datosRespuesta, null, 2);
+                responseTimeDiv.textContent = `Respuesta recibida: ${new Date().toLocaleTimeString()}`;
+                lastTestTimeDiv.textContent = `Última prueba: ${new Date().toLocaleTimeString()}`;
+                
+                // Scroll automático a los resultados
+                resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Mostrar datos en consola
+                console.log(`📥 Respuesta recibida en ${tiempoRespuesta}ms:`, datosRespuesta);
+                
+            } catch (error) {
+                const tiempoRespuesta = new Date() - startTime;
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        <span>🚫</span>
+                        <div>
+                            <strong>Error de conexión: ${error.message}</strong><br>
+                            <small>Tiempo transcurrido: ${tiempoRespuesta}ms</small>
+                        </div>
+                    </div>
+                `;
+                responseDiv.textContent = `Error al conectar con la API: ${error.message}`;
+                console.error('❌ Error:', error);
+            }
+        }
+        
+        // Función para mostrar resumen de resultados
+        function mostrarResumen(datos, accion) {
+            const responseSummaryDiv = document.getElementById('response-summary');
+            
+            let summaryHTML = '';
+            
+            if (accion === 'verificar_vencimientos' || accion === 'desactivar_contratos_vencidos') {
+                const preventivas = datos.resultados?.preventivas;
+                const vencidos = datos.resultados?.vencidos;
+                const correos = datos.correos_enviados;
+                
+                if (preventivas) {
+                    summaryHTML += `
+                        <div class="summary-card">
+                            <div class="number">${preventivas.contratos_por_vencer || 0}</div>
+                            <div class="label">Contratos por vencer</div>
+                        </div>
+                    `;
+                }
+                
+                if (vencidos) {
+                    summaryHTML += `
+                        <div class="summary-card">
+                            <div class="number">${vencidos.total_encontrados || 0}</div>
+                            <div class="label">Contratos vencidos</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="number">${vencidos.desactivados || 0}</div>
+                            <div class="label">Usuarios desactivados</div>
+                        </div>
+                    `;
+                }
+                
+                if (correos) {
+                    if (correos.preventivos > 0) {
+                        summaryHTML += `
+                            <div class="summary-card">
+                                <div class="number">${correos.preventivos}</div>
+                                <div class="label">Correos preventivos</div>
+                            </div>
+                        `;
+                    }
+                    if (correos.vencidos > 0) {
+                        summaryHTML += `
+                            <div class="summary-card">
+                                <div class="number">${correos.vencidos}</div>
+                                <div class="label">Correos vencidos</div>
+                            </div>
+                        `;
+                    }
+                }
+            } else if (accion === 'aprobar_usuario' || accion === 'activar_usuario' || accion === 'desactivar_usuario') {
+                summaryHTML += `
+                    <div class="summary-card">
+                        <div class="number">${datos.correo_enviado ? '✅' : '❌'}</div>
+                        <div class="label">Correo enviado</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="number" style="color: ${datos.estado_clase === 'status-active' ? '#48bb78' : '#f56565'}">
+                            ${datos.estado_texto || 'N/A'}
+                        </div>
+                        <div class="label">Estado usuario</div>
+                    </div>
+                `;
+            }
+            
+            if (summaryHTML) {
+                responseSummaryDiv.innerHTML = summaryHTML;
+                responseSummaryDiv.style.display = 'grid';
+            }
+        }
+        
+        // Funciones auxiliares
+        function limpiarResultados() {
+            document.getElementById('results-panel').classList.remove('active');
+            document.getElementById('response').textContent = '';
+            document.getElementById('status').innerHTML = '';
+        }
+        
+        function cargarEjemplos() {
+            // Cargar IDs de ejemplo (puedes ajustar según tu BD)
+            document.getElementById('id_usuario').value = '1';
+            document.getElementById('dias_anticipacion').value = '15';
+            
+            alert('Ejemplos cargados. Ajusta los valores según tu base de datos.');
+        }
+        
+        function resetearCampos() {
+            document.getElementById('id_usuario').value = '';
+            document.getElementById('dias_anticipacion').value = '15';
+            document.getElementById('api_url').value = 'api/gestion_usuarios.php';
+            limpiarResultados();
+        }
+        
+        // Función para probar todas las acciones secuencialmente
+        async function probarTodas() {
+            const acciones = [
+                'verificar_vencimientos',
+                'desactivar_contratos_vencidos',
+                'aprobar_usuario',
+                'activar_usuario',
+                'desactivar_usuario'
+            ];
+            
+            alert('⚠️ Esta función probará todas las acciones secuencialmente. Solo para desarrollo.');
+            
+            for (let accion of acciones) {
+                console.log(`🔧 Probando: ${accion}`);
+                await probarAccion(accion);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
+            }
+            
+            alert('✅ Todas las pruebas completadas. Revisa la consola y resultados.');
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 Panel de pruebas API cargado');
+            console.log('📌 Modo: Validación de administrador desactivada');
+            console.log('🎯 Para probar, haz clic en cualquier botón');
+            
+            // Asignar la hora actual
+            document.getElementById('last-test-time').textContent = 
+                `Esperando pruebas... ${new Date().toLocaleTimeString()}`;
+        });
+        
+        // Exponer funciones globales para la consola
+        window.probarAccion = probarAccion;
+        window.probarTodas = probarTodas;
+        window.verHistorial = () => console.log('📊 Historial:', testHistory);
+        window.verUltimaRespuesta = () => console.log('📥 Última respuesta:', lastResponse);
+    </script>
+</body>
+</html>
