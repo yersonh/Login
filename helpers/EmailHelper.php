@@ -43,7 +43,7 @@ class EmailHelper {
             $telefono = ConfigHelper::obtener('telefono', '(57 -608) 6 818503');
             
             // URL de acceso al sistema (ajusta según tu configuración)
-            $urlLogin = $base_url . "/index.php";
+            $urlLogin = $base_url . "../index.php";
             
             // Asunto del correo
             $subject = "Cuenta de Usuario Aprobada - $sistema - $entidad";
@@ -345,7 +345,7 @@ class EmailHelper {
             $telefono = ConfigHelper::obtener('telefono', '(57 -608) 6 818503');
             
             // URL de acceso al sistema
-            $urlLogin = $base_url . "/index.php";
+            $urlLogin = $base_url . "../index.php";
             
             // Formatear fecha
             $fechaFormateada = date('d/m/Y', strtotime($fechaVencimiento));
